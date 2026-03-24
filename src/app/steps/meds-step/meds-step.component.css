@@ -1,0 +1,106 @@
+/* ===== Medicaciones — CSS sin :host ===== */
+
+/* Utilidades usadas en tu HTML */
+.w-full {
+  width: 100%;
+}
+
+.mt-2 {
+  margin-top: .5rem;
+}
+
+.mb-3 {
+  margin-bottom: .75rem;
+}
+
+/* El form-field ocupa todo el ancho de la card */
+mat-form-field.w-full {
+  width: 100%;
+  display: block;
+}
+
+/* Chip list: que no estire nada raro y tenga aire */
+mat-chip-listbox {
+  display: block;
+  max-width: 100%;
+  margin-top: .5rem;
+}
+
+/* Si los chips se pegan demasiado, añade separación entre ellos
+   (si no ves efecto, puedes mover esto a styles.css global) */
+.mdc-evolution-chip-set__chips {
+  gap: 8px;
+}
+
+/* ─────────── BOTONERA ─────────── */
+
+/* Contenedor de botones al pie del step:
+   grid para ignorar reglas heredadas de block/width y alinearlos a la derecha */
+.botones {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* ─────────── MEDICACIONES EXCLUIDAS ─────────── */
+
+/* Contenedor de opción de medicación */
+.medication-option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+/* Nombre de la medicación con icono */
+.medication-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1em;
+}
+
+/* Razón de exclusión (criterio STOPP) */
+.exclusion-reason {
+  font-size: 0.85em;
+  line-height: 1.4;
+  color: #555;
+  padding-left: 8px;
+  border-left: 3px solid #ff9800;
+  margin-top: 2px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.exclusion-reason strong {
+  color: #d84315;
+  font-weight: 600;
+}
+
+/* Opciones deshabilitadas (medicaciones excluidas) */
+mat-option.excluded-medication,
+mat-option.excluded-medication.mat-mdc-option,
+.mat-mdc-option.excluded-medication {
+  opacity: 0.85;
+  cursor: not-allowed !important;
+  pointer-events: auto !important;
+}
+
+mat-option.excluded-medication:hover,
+mat-option.excluded-medication.mat-mdc-option:hover,
+.mat-mdc-option.excluded-medication:hover {
+  background-color: #fff3e0 !important;
+  cursor: not-allowed !important;
+}
+
+.excluded-medication .medication-name {
+  color: #757575;
+}
+
+.exclusion-indicator {
+  margin-left: 8px;
+  font-size: 1.1em;
+}

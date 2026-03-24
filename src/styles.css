@@ -1,0 +1,124 @@
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #fafafa;
+}
+
+/* ========================
+   MENÚ LATERAL (STEPS)
+======================== */
+.steps {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  padding-left: 2.5rem;
+}
+
+.rail {
+  position: absolute;
+  left: 1.35rem;
+  top: .5rem;
+  bottom: .5rem;
+  width: 2px;
+  background: #e5e7eb;
+  border-radius: 1px;
+  z-index: 0;
+}
+
+.nav-item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .35rem .5rem;
+  border-radius: .6rem;
+  color: #374151;
+  text-decoration: none;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+.nav-item:hover {
+  background: #f8fafc;
+  color: #111827;
+}
+
+.step-dot {
+  position: absolute;
+  left: -2.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem;
+  font-weight: 600;
+  color: #1f2937;
+  background: #e5e7eb;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 0 0 2px #fff;
+  z-index: 1;
+}
+
+.nav-item.active {
+  background: #eef2ff;
+  color: #1f3a8a;
+}
+.nav-item.active .step-dot {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+  transform: translateY(-50%) scale(1.02);
+  box-shadow: 0 0 0 2px #eef2ff;
+}
+
+.nav-item:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  background: #eef2ff;
+}
+
+/* ========================
+   FORMULARIOS Y CARD
+======================== */
+.card { padding: 24px; }
+.mat-mdc-form-field { margin-bottom: 12px; }
+
+.row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.section {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 8px 0;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.mdc-button--raised.mdc-button--disabled { opacity: .6; }
+
+.mat-mdc-form-field-hint { color: #6b7280 !important; }
+.mat-mdc-form-field-error { color: #b91c1c !important; font-weight: 500; }
+
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.main-container { max-width: 980px; }
+.page-wrap { padding-top: 24px; }

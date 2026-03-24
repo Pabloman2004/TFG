@@ -1,0 +1,60 @@
+<h2 class="mb-3">Diagnósticos / Enfermedades del paciente</h2>
+
+<!-- Campo de autocompletado -->
+<mat-form-field class="w-full" appearance="outline">
+  <mat-label>Añadir diagnóstico o enfermedad</mat-label>
+  <input matInput [formControl]="queryCtrl" [matAutocomplete]="auto" (keydown)="onKeydown($event)"
+    aria-label="Campo de búsqueda de enfermedades" />
+  <mat-hint>Empieza a escribir para buscar una enfermedad o añade una nueva</mat-hint>
+</mat-form-field>
+
+<!-- Autocompletado dinámico y reactivo -->
+<mat-autocomplete #auto="matAutocomplete" (optionSelected)="addFromAutocomplete($event)">
+  @for (opt of filtered$ | async; track opt.name) {
+  <mat-option [value]="opt.name" [disabled]="contains(opt.name)">
+    <span class="opt-group">{{ opt.group }}</span> — {{ opt.name }}
+  </mat-option>
+  }
+</mat-autocomplete>
+
+<!-- 🔹 Diagnósticos seleccionados agrupados -->
+<div class="selected-container mt-3"> <!-- el espacion indica dos clases -->
+  <h3 class="mb-2">Diagnósticos seleccionados por sistema</h3>
+  @if (selected.length === 0) {
+  <p class="muted"> <!-- *ngIf nos permite usar variables del componente -->
+    No hay diagnósticos seleccionados aún.
+  </p>
+  }
+
+  <!-- Recorremos cada grupo -->
+  @for (g of allGroups; track g.group) {
+  @if (hasSelectedInGroup(g.items)) {
+  <div class="group-block">
+    <h4 class="group-title">
+
+      {{ g.group }}
+    </h4>
+
+    <mat-chip-listbox>
+      @for (d of g.items; track d) {
+      @if (contains(d)) {
+      <mat-chip [ngClass]="g.group.toLowerCase()" (removed)="remove(d)" removable selected>
+        {{ d }}
+        <button matChipRemove [attr.aria-label]="'Quitar ' + d">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-chip>
+      }
+      }
+    </mat-chip-listbox>
+  </div>
+  }
+  }
+</div>
+
+
+<!-- Botones -->
+<div class="botones">
+  <button mat-stroked-button type="button" class="boton" (click)="navigateBack()">Atrás</button>
+  <button mat-flat-button color="primary" class="boton" type="button" (click)="navigateNext()">Siguiente</button>
+</div>

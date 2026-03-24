@@ -1,0 +1,85 @@
+<div class="patient-scroll">
+<h2 class="mb-3">Datos del paciente</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="grid gap-4" aria-label="Formulario de datos del paciente">
+    <mat-form-field appearance="outline">
+        <mat-label>Nombre completo</mat-label>
+        <input matInput type="text" formControlName="name" autocomplete="name" aria-describedby="nameHelp" />
+        <mat-hint id="nameHelp">Ej.: Ana Pérez López</mat-hint>
+        @if (form.controls.name.hasError('required')) {
+        <mat-error>El nombre es obligatorio.</mat-error>
+        }
+        @if (form.controls.name.hasError('minlength')) {
+        <mat-error>Mínimo 2 caracteres.</mat-error>
+        }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Edad</mat-label>
+        <input matInput type="number" formControlName="age" inputmode="numeric" min="0" max="120"
+            aria-describedby="ageHelp" />
+        <mat-hint id="ageHelp">0 a 120 años</mat-hint>
+        @if (form.controls.age.hasError('required')) {
+        <mat-error>La edad es obligatoria.</mat-error>
+        }
+        @if (form.controls.age.hasError('min')) {
+        <mat-error>La edad no puede ser negativa.</mat-error>
+        }
+        @if (form.controls.age.hasError('max')) {
+        <mat-error>La edad máxima permitida es 120.</mat-error>
+        }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Sexo</mat-label>
+        <mat-select formControlName="sex">
+            <mat-option [value]="'F'">Femenino</mat-option>
+            <mat-option [value]="'M'">Masculino</mat-option>
+        </mat-select>
+        @if (form.controls.sex.hasError('required')) {
+        <mat-error>El sexo es obligatorio.</mat-error>
+        }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>N.º historia clínica (opcional)</mat-label>
+        <input matInput type="text" formControlName="mrn" autocomplete="off" />
+    </mat-form-field>
+
+    <div class="row-2">
+        <mat-form-field appearance="outline">
+            <mat-label>Peso (kg)</mat-label>
+            <input matInput type="number" formControlName="weightKg" min="0" max="400" inputmode="decimal" />
+            @if (form.controls.weightKg.hasError('min')) {
+            <mat-error>No puede ser negativo.</mat-error>
+            }
+            @if (form.controls.weightKg.hasError('max')) {
+            <mat-error>Demasiado alto.</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Altura (cm)</mat-label>
+            <input matInput type="number" formControlName="heightCm" min="0" max="300" inputmode="decimal" />
+            @if (form.controls.heightCm.hasError('min')) {
+            <mat-error>No puede ser negativo.</mat-error>
+            }
+            @if (form.controls.heightCm.hasError('max')) {
+            <mat-error>Demasiado alto.</mat-error>
+            }
+        </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Observaciones (opcional)</mat-label>
+        <textarea matInput formControlName="notes" rows="3"></textarea>
+    </mat-form-field>
+
+    <div class="actions">
+        <button mat-stroked-button type="button">Atrás</button>
+        <button mat-flat-button color="primary" class="boton_siguiente" type="submit" [disabled]="form.invalid">
+            Siguiente<mat-icon style="margin-left:4px">arrow_forward</mat-icon>
+        </button>
+    </div>
+</form>
+</div>

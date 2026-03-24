@@ -1,0 +1,52 @@
+<h2 class="mb-3">Medicaciones</h2>
+
+<mat-form-field class="w-full" appearance="outline">
+    <mat-label>Añadir medicación</mat-label>
+    <input #medInput matInput [formControl]="queryCtrl" [matAutocomplete]="auto" (keydown)="onKeydown($event)"
+        aria-label="Campo de búsqueda de medicaciones" />
+</mat-form-field>
+
+<!-- Autocomplete -->
+<mat-autocomplete #auto="matAutocomplete" (optionSelected)="addFromAutocomplete($event)">
+
+    @for (opt of filtered$ | async; track opt.name) {
+    <mat-option [value]="opt.name" [disabled]="opt.disabled" [class.excluded-medication]="opt.disabled">
+
+        <div class="medication-option">
+            <div class="medication-name">
+                {{ opt.name }}
+                @if (opt.disabled) {
+                <span class="exclusion-indicator">⚠️</span>
+                }
+            </div>
+
+            @if (opt.disabled && opt.criterion) {
+            <div class="exclusion-reason">
+                <strong>{{ opt.criterion.id }}</strong>: {{ opt.criterion.summary }}
+            </div>
+            }
+        </div>
+
+    </mat-option>
+    }
+
+</mat-autocomplete>
+
+<!-- Chips -->
+<mat-chip-listbox class="mt-2" aria-label="Medicaciones seleccionadas">
+    @for (m of selected; track track($index, m)) {
+    <mat-chip (removed)="remove(m)" removable selected>
+
+        {{ m.id }} <!-- 🔥 MOSTRAR NOMBRE, NO OBJETO -->
+
+        <button matChipRemove [attr.aria-label]="'Quitar ' + m.id">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-chip>
+    }
+</mat-chip-listbox>
+
+<div class="botones">
+    <button mat-stroked-button type="button" (click)="navigateBack()">Atrás</button>
+    <button mat-flat-button color="primary" type="button" (click)="navigateNext()">Siguiente</button>
+</div>

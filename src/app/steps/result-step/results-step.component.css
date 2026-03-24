@@ -1,0 +1,84 @@
+/* ---------- Layout general ---------- */
+.results-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ---------- Scroll principal ---------- */
+.scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 1rem 1rem 1rem;
+  scroll-behavior: smooth;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Contenido (accordion) ---------- */
+.accordion-container {
+  flex-grow: 1;
+  margin-bottom: 2rem; /* espacio antes de los botones */
+}
+
+/* ---------- Botones ---------- */
+.buttons-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 1rem;
+
+  background: #fff;
+
+  /*  fijar dentro del contenedor blanco, no en la ventana */
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* ---------- Scrollbar estética ---------- */
+.scroll-container::-webkit-scrollbar { width: 8px; }
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+.scroll-container::-webkit-scrollbar-thumb:hover { background-color: #999; }
+
+/* ---------- Tarjetas ---------- */
+.criterios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.criterio-card {
+  padding: 0.75rem 1rem;
+  border-left: 4px solid transparent;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.criterio-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* ---------- Colores STOPP/START ---------- */
+.criterio-card.stopp { border-left-color: #ef5350; }
+.criterio-card.start { border-left-color: #66bb6a; }
+
+/* ---------- Utilidades ---------- */
+.flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.items-center { align-items: center; }
+.m-0 { margin: 0; }
+.muted { color: #666; font-size: 0.9rem; }
