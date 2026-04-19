@@ -4,7 +4,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import { vfs as pdfFontsVfs } from 'pdfmake/build/vfs_fonts';
 import { Med, PatientInfo, Crit } from './types';
 
-(pdfMake as any).vfs = pdfFontsVfs;
+pdfMake.vfs = pdfFontsVfs;
 
 @Injectable({ providedIn: 'root' })
 export class ReportService {
@@ -18,20 +18,17 @@ export class ReportService {
     const { patient, diagnoses, meds, results = [], fileName = this.defaultFileName(patient) } = options;
     const today = new Date().toLocaleString();
 
-    const docDefinition: any = {
+    const docDefinition: PdfDocDefinition = {
       pageMargins: [40, 60, 40, 60],
       content: [
         { text: 'Informe STOPP/START', style: 'h1' },
         { text: `Fecha: ${today}`, style: 'meta', margin: [0, 0, 0, 10] },
 
-        { text: 'Paciente', style: 'h2' },
-        this.patientBlock(patient),
-
         { text: 'Diagnósticos / Factores', style: 'h2', margin: [0, 12, 0, 6] },
         this.bulletOrEmpty(diagnoses, 'Sin datos'),
 
         { text: 'Medicaciones', style: 'h2', margin: [0, 12, 0, 6] },
-        this.bulletOrEmpty(meds.map(m => m.id), 'Sin datos'), // el map recorre cada posicion de meds y devuelve el id (nombre del medicamnento)
+        this.bulletOrEmpty(meds.map(m => m.id), 'Sin datos'),
 
         ...(results.length ? [
           { text: 'Criterios aplicables', style: 'h2', margin: [0, 12, 0, 6] },
@@ -52,7 +49,7 @@ export class ReportService {
       }
     };
 
-    (pdfMake as any).createPdf(docDefinition).download(fileName);
+    pdfMake.createPdf(docDefinition).download(fileName);
   }
 
   private defaultFileName(p: PatientInfo | null) {

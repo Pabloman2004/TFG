@@ -7,6 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 
 import { CaseStoreService } from '../core/case-store.service';
 import { SavedCase } from '../core/types';
+import { ROUTES } from '../app.routes.constants';
 
 @Component({
   selector: 'app-historial',
@@ -23,7 +24,7 @@ export class HistorialComponent {
 
   load(entry: SavedCase): void {
     this.store.loadFromHistory(entry);
-    this.router.navigate(['/resultados']);
+    this.router.navigate([ROUTES.MEDICACIONES]);
   }
 
   delete(id: string): void {

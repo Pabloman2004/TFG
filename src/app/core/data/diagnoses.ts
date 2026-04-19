@@ -108,6 +108,7 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
 
   // --- Antihipertensivos de acción central ---
   "Riesgo de caídas de repetición": "Síntoma",
+  "Intolerancia/fallo a otros antihipertensivos": "Cardiovascular",
 
   // --- IECA y ARA-II ---
   "Hiperpotasemia": "Metabólico",
@@ -189,6 +190,7 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "ERGE grave o estenosis esofágica péptica": "Gastrointestinal",
   "Esofagitis por reflujo": "Gastrointestinal",
   "Diverticulosis": "Gastrointestinal",
+  "Úlcera péptica activa por H. pylori": "Gastrointestinal",
 
   // --- START criterios respiratorio ---
   "Asma crónica": "Respiratorio",
@@ -325,6 +327,7 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
 
   // --- Antihipertensivos de acción central ---
   "Riesgo de caídas de repetición": "riesgo_caidas_repeticion",
+  "Intolerancia/fallo a otros antihipertensivos": "intolerancia_otros_antihipertensivos",
 
   // --- IECA y ARA-II ---
   "Hiperpotasemia": "hiperpotasemia",
@@ -406,6 +409,7 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "ERGE grave o estenosis esofágica péptica": "erge_grave",
   "Esofagitis por reflujo": "esofagitis",
   "Diverticulosis": "diverticulosis",
+  "Úlcera péptica activa por H. pylori": "ulcera_peptica_activa_h_pylori",
 
   // --- START criterios respiratorio ---
   "Asma crónica": "asma_cronica",

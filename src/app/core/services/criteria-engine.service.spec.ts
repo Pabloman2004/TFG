@@ -1,0 +1,162 @@
+import { CriteriaEngineService } from './criteria-engine.service';
+import { makeCase, makeLabs, makeMed, setupEngine } from './criteria-test-helpers';
+
+describe('CriteriaEngineService — Motor genérico', () => {
+  let engine: CriteriaEngineService;
+
+  beforeEach(() => { engine = setupEngine(); });
+
+  describe('evaluate()', () => {
+    it('devuelve array vacío cuando ningún criterio se cumple', () => {
+      expect(engine.evaluate(makeCase(), [
+        { id: 'X', type: 'STOPP', system: 'Test', summary: 'Test',
+          logic: { in: ['hta', { var: 'diagnoses' }] } },
+      ])).toEqual([]);
+    });
+
+    it('devuelve el criterio cuando se cumple la condición de diagnóstico', () => {
+      const result = engine.evaluate(
+        makeCase({ diagnoses: ['hta'] }),
+        [{ id: 'X', type: 'STOPP', system: 'Test', summary: 'Test',
+           logic: { in: ['hta', { var: 'diagnoses' }] } }],
+      );
+      expect(result.length).toBe(1);
+    });
+
+    it('compara diagnósticos sin distinguir mayúsculas', () => {
+      const result = engine.evaluate(
+        makeCase({ diagnoses: ['HTA'] }),
+        [{ id: 'X', type: 'STOPP', system: 'Test', summary: 'Test',
+           logic: { in: ['hta', { var: 'diagnoses' }] } }],
+      );
+      expect(result.length).toBe(1);
+    });
+
+    it('devuelve solo los criterios que coinciden', () => {
+      const result = engine.evaluate(makeCase({ diagnoses: ['hta'] }), [
+        { id: 'MATCH',    type: 'STOPP', system: 'Test', summary: 'Test', logic: { in: ['hta', { var: 'diagnoses' }] } },
+        { id: 'NO_MATCH', type: 'STOPP', system: 'Test', summary: 'Test', logic: { in: ['dm2', { var: 'diagnoses' }] } },
+      ]);
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe('MATCH');
+    });
+
+    it('evalúa condiciones de analíticas', () => {
+      const patient = makeCase({ labs: makeLabs({ egfr_ml_min_173: 25 }) });
+      const result = engine.evaluate(patient, [
+        { id: 'E1', type: 'STOPP', system: 'Test', summary: 'Test',
+          logic: { '<': [{ var: 'labs.egfr_ml_min_173' }, 30] } },
+      ]);
+      expect(result.length).toBe(1);
+    });
+
+    it('no dispara cuando la analítica no cumple la condición', () => {
+      const patient = makeCase({ labs: makeLabs({ egfr_ml_min_173: 50 }) });
+      expect(engine.evaluate(patient, [
+        { id: 'E1', type: 'STOPP', system: 'Test', summary: 'Test',
+          logic: { '<': [{ var: 'labs.egfr_ml_min_173' }, 30] } },
+      ])).toEqual([]);
+    });
+
+    it('ignora criterios sin lógica', () => {
+      expect(engine.evaluate(makeCase(), [
+        { id: 'X', type: 'STOPP', system: 'Test', summary: 'Test' },
+      ])).toEqual([]);
+    });
+
+    it('no lanza excepción con lógica inválida', () => {
+      expect(engine.evaluate(makeCase(), [
+        { id: 'BAD', type: 'STOPP', system: 'Test', summary: 'Test', logic: { __invalid__: [] } },
+      ])).toEqual([]);
+    });
+  });
+
+  describe('operador inDrugClass', () => {
+    const criterion = { id: 'X', type: 'STOPP' as const, system: 'Test', summary: 'Test',
+      logic: { inDrugClass: ['aine', { var: 'medications' }] } };
+
+    it('activa el criterio con un medicamento de esa clase', () => {
+      const p = makeCase({ medications: [makeMed('Ibuprofeno', ['AINE'])] });
+      expect(engine.evaluate(p, [criterion]).length).toBe(1);
+    });
+
+    it('no activa el criterio sin medicamentos de esa clase', () => {
+      const p = makeCase({ medications: [makeMed('Enalapril', ['IECA'])] });
+      expect(engine.evaluate(p, [criterion])).toEqual([]);
+    });
+
+    it('compara clases sin distinguir mayúsculas', () => {
+      const p = makeCase({ medications: [makeMed('Ibuprofeno', ['aine'])] });
+      expect(engine.evaluate(p, [criterion]).length).toBe(1);
+    });
+
+    it('no activa el criterio sin medicamentos', () => {
+      expect(engine.evaluate(makeCase(), [criterion])).toEqual([]);
+    });
+  });
+
+  describe('operador digoxinaDosisAlta', () => {
+    const criterion = { id: 'B1', type: 'STOPP' as const, system: 'Test', summary: 'Test',
+      logic: { digoxinaDosisAlta: [{ var: 'medications' }] } };
+
+    it('activa el criterio con dosis ≥125 mcg y duración >90 días', () => {
+      const p = makeCase({ medications: [makeMed('Digoxina', ['digoxina'], { doseMcgDay: 125, durationDays: 91 })] });
+      expect(engine.evaluate(p, [criterion]).length).toBe(1);
+    });
+
+    it('no activa con dosis por debajo del umbral', () => {
+      const p = makeCase({ medications: [makeMed('Digoxina', ['digoxina'], { doseMcgDay: 124, durationDays: 91 })] });
+      expect(engine.evaluate(p, [criterion])).toEqual([]);
+    });
+
+    it('no activa con duración ≤90 días', () => {
+      const p = makeCase({ medications: [makeMed('Digoxina', ['digoxina'], { doseMcgDay: 125, durationDays: 90 })] });
+      expect(engine.evaluate(p, [criterion])).toEqual([]);
+    });
+  });
+
+  describe('operador multipleNSAIDs', () => {
+    const criterion = { id: 'A3', type: 'STOPP' as const, system: 'Test', summary: 'Test',
+      logic: { multipleNSAIDs: [{ var: 'medications' }] } };
+
+    it('activa con 2 AINEs', () => {
+      const p = makeCase({ medications: [makeMed('Ibuprofeno', ['aine']), makeMed('Naproxeno', ['aine'])] });
+      expect(engine.evaluate(p, [criterion]).length).toBe(1);
+    });
+
+    it('no activa con 1 AINE', () => {
+      const p = makeCase({ medications: [makeMed('Ibuprofeno', ['aine'])] });
+      expect(engine.evaluate(p, [criterion])).toEqual([]);
+    });
+  });
+
+  describe('getExcludedMedications()', () => {
+    it('devuelve mapa vacío cuando ningún criterio está activo', () => {
+      const result = engine.getExcludedMedications(makeCase(), [
+        { id: 'A1', type: 'STOPP', system: 'Test', summary: 'Test',
+          logic: { in: ['hta', { var: 'diagnoses' }] } },
+      ]);
+      expect(result.size).toBe(0);
+    });
+
+    it('excluye medicamentos específicos cuando el criterio está activo', () => {
+      const patient = makeCase({ diagnoses: ['hta'] });
+      const result = engine.getExcludedMedications(patient, [
+        { id: 'A1', type: 'STOPP', system: 'Test', summary: 'Test',
+          logic: { in: ['hta', { var: 'diagnoses' }] },
+          excludes: { medications: ['Digoxina'] } },
+      ]);
+      expect(result.has('digoxina')).toBeTrue();
+    });
+
+    it('no excluye cuando el criterio no está activo', () => {
+      const patient = makeCase({ diagnoses: ['hta'] });
+      const result = engine.getExcludedMedications(patient, [
+        { id: 'A1', type: 'STOPP', system: 'Test', summary: 'Test',
+          logic: { in: ['dm2', { var: 'diagnoses' }] },
+          excludes: { medications: ['Digoxina'] } },
+      ]);
+      expect(result.size).toBe(0);
+    });
+  });
+});

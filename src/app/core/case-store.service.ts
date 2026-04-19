@@ -5,14 +5,9 @@ import { Crit, PatientInfo, Labs, PatientCase, Med, SavedCase } from './types';
 export class CaseStoreService {
 
   patient = signal<PatientInfo | null>(null);
-
   diagnoses = signal<string[]>([]);
-
-  // Ahora medicamentos como objetos
   meds = signal<Med[]>([]);
-
   labs = signal<Labs | null>(null);
-
   results = signal<Crit[]>([]);
   activeSystem = signal<string>('Todos');
   history = signal<SavedCase[]>([]);
@@ -20,30 +15,49 @@ export class CaseStoreService {
   private readonly HISTORY_KEY = 'historial';
 
   constructor() {
+    this.patient.set(this.load('patient'));
+    this.diagnoses.set(this.load('diagnoses') ?? []);
+    this.meds.set(this.load('meds') ?? []);
+    this.labs.set(this.load('labs'));
+    this.activeSystem.set(this.loadString('activeSystem') ?? 'Todos');
+    this.history.set(this.load(this.HISTORY_KEY) ?? []);
+    this.persist('results', null); // limpiar resultados cacheados de versiones anteriores
 
-    // Cargar de localStorage
-    const sp = localStorage.getItem('patient');
-    const sd = localStorage.getItem('diagnoses');
-    const sm = localStorage.getItem('meds');
-    const sl = localStorage.getItem('labs');
-    const ss = localStorage.getItem('activeSystem');
-    const sh = localStorage.getItem(this.HISTORY_KEY);
-    localStorage.removeItem('results'); // limpiar resultados cacheados de versiones anteriores
+    effect(() => this.persist('patient', this.patient()));
+    effect(() => this.persist('diagnoses', this.diagnoses()));
+    effect(() => this.persist('meds', this.meds()));
+    effect(() => this.persist('labs', this.labs()));
+    effect(() => this.persist('activeSystem', this.activeSystem()));
+    effect(() => this.persist(this.HISTORY_KEY, this.history()));
+  }
 
-    if (sp) this.patient.set(JSON.parse(sp));
-    if (sd) this.diagnoses.set(JSON.parse(sd));
-    if (sm) this.meds.set(JSON.parse(sm));    // ahora objetos
-    if (sl) this.labs.set(JSON.parse(sl));
-    if (ss) this.activeSystem.set(ss);
-    if (sh) this.history.set(JSON.parse(sh));
+  private load<T>(key: string): T | null {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? (JSON.parse(raw) as T) : null;
+    } catch {
+      return null;
+    }
+  }
 
-    // Guardado automático (results no se persiste: siempre se recalculan)
-    effect(() => localStorage.setItem('patient', JSON.stringify(this.patient())));
-    effect(() => localStorage.setItem('diagnoses', JSON.stringify(this.diagnoses())));
-    effect(() => localStorage.setItem('meds', JSON.stringify(this.meds())));
-    effect(() => localStorage.setItem('labs', JSON.stringify(this.labs())));
-    effect(() => localStorage.setItem('activeSystem', this.activeSystem()));
-    effect(() => localStorage.setItem(this.HISTORY_KEY, JSON.stringify(this.history())));
+  private loadString(key: string): string | null {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
+  private persist(key: string, value: unknown): void {
+    try {
+      if (value === null) {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+    } catch {
+      // Cuota excedida o modo incógnito sin almacenamiento — la app sigue funcionando
+    }
   }
 
   setResults(list: Crit[]) { this.results.set(list); }
@@ -57,7 +71,7 @@ export class CaseStoreService {
     this.results.set([]);
     this.activeSystem.set('Todos');
     ['patient', 'diagnoses', 'meds', 'labs', 'activeSystem']
-      .forEach(k => localStorage.removeItem(k));
+      .forEach(k => this.persist(k, null));
   }
 
   saveToHistory(): void {
@@ -83,12 +97,11 @@ export class CaseStoreService {
     this.activeSystem.set('Todos');
   }
 
-  /** ← ESTA ES LA QUE EL MOTOR EVALÚA */
   get patientCase(): PatientCase {
     return {
       info: this.patient(),
       diagnoses: this.diagnoses(),
-      medications: this.meds(),   // ahora objetos
+      medications: this.meds(),
       labs: this.labs(),
     };
   }
@@ -96,5 +109,4 @@ export class CaseStoreService {
   setLabs(l: Labs | null) {
     this.labs.set(l);
   }
-
 }

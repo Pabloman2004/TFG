@@ -39,8 +39,8 @@ export const MEDICATIONS: Med[] = [
   { id: "Losartán", drugClasses: ["ARA2"] },
 
   // -------- ANTAGONISTAS DE ALDOSTERONA --------
-  { id: "Espironolactona", drugClasses: ["ANTAGONISTA_ALDOSTERONA", "DIURETICO_AHORRADOR_POTASIO"] },
-  { id: "Eplerenona", drugClasses: ["ANTAGONISTA_ALDOSTERONA", "DIURETICO_AHORRADOR_POTASIO"] },
+  { id: "Espironolactona", drugClasses: ["ANTAGONISTA_ALDOSTERONA"] },
+  { id: "Eplerenona", drugClasses: ["ANTAGONISTA_ALDOSTERONA"] },
 
   // -------- DIURÉTICOS AHORRADORES DE POTASIO (otros) --------
   { id: "Amilorida", drugClasses: ["DIURETICO_AHORRADOR_POTASIO"] },
@@ -94,12 +94,12 @@ export const MEDICATIONS: Med[] = [
   { id: "Clorpromazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
   { id: "Levomepromazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
   { id: "Tioridazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
-  { id: "Proclorperazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO"] },
+  { id: "Proclorperazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROCINETICO"] },
 
   // -------- ANTIARRÍTMICOS --------
   { id: "Amiodarona", drugClasses: ["ANTIARITMICO", "ANTIARITMICO_CLASE_III", "PROLONGADOR_QTC", "INHIBIDOR_GLUCOPROTEINA_P"] },
   { id: "Flecainida", drugClasses: ["ANTIARITMICO", "ANTIARITMICO_CLASE_IC"] },
-  { id: "Digoxina", drugClasses: ["GLUCOSIDO_CARDIACO", "CONTROL_FRECUENCIA_FA"] },
+  { id: "Digoxina", drugClasses: ["GLUCOSIDO_CARDIACO", "DIGOXINA", "CONTROL_FRECUENCIA_FA"] },
 
   // -------- RELAJANTES MUSCULARES --------
   { id: "Tizanidina", drugClasses: ["RELAJANTE_MUSCULAR", "ANTICOLINERGICO", "PROLONGADOR_QTC"] },
@@ -110,6 +110,7 @@ export const MEDICATIONS: Med[] = [
   // -------- ANTIHISTAMÍNICOS 1ª GENERACIÓN --------
   { id: "Difenhidramina", drugClasses: ["ANTIHISTAMINICO_1GEN", "ANTICOLINERGICO"] },
   { id: "Clorfeniramina", drugClasses: ["ANTIHISTAMINICO_1GEN", "ANTICOLINERGICO"] },
+  { id: "Dexclorfeniramina", drugClasses: ["ANTIHISTAMINICO_1GEN", "ANTICOLINERGICO"] },
 
   // -------- TRATAMIENTO VEJIGA HIPERACTIVA --------
   { id: "Mirabegrón", drugClasses: ["AGONISTA_BETA3", "AGONISTA_BETA3_URINARIO", "PROLONGADOR_QTC"] },
@@ -162,10 +163,10 @@ export const MEDICATIONS: Med[] = [
   { id: "Pravastatina", drugClasses: ["ESTATINA"] },
 
   // -------- ANTIGOTOSOS --------
-  { id: "Colchicina", drugClasses: ["ANTIGOTOSO"] },
+  { id: "Colchicina", drugClasses: ["ANTIGOTOSO", "COLCHICINA"] },
 
   // -------- ANTIBIÓTICOS URINARIOS --------
-  { id: "Nitrofurantoína", drugClasses: ["ANTIBIOTICO_URINARIO", "ANTIBIOTICO"] },
+  { id: "Nitrofurantoína", drugClasses: ["ANTIBIOTICO_URINARIO", "ANTIBIOTICO", "NITROFURANTOINA"] },
 
   // -------- BIFOSFONATOS --------
   { id: "Alendronato", drugClasses: ["BIFOSFONATO", "ANTIRRESORTIVO"] },
@@ -177,7 +178,7 @@ export const MEDICATIONS: Med[] = [
   { id: "Metotrexato", drugClasses: ["ANTIMETABOLITO", "INMUNOSUPRESOR", "FAME"] },
 
   // -------- PROCINÉTICOS --------
-  { id: "Metoclopramida", drugClasses: ["PROCINÉTICO"] },
+  { id: "Metoclopramida", drugClasses: ["PROCINETICO"] },
 
   // -------- HIERRO ORAL --------
   { id: "Sulfato ferroso", drugClasses: ["HIERRO_ORAL"] },
@@ -206,6 +207,7 @@ export const MEDICATIONS: Med[] = [
   // -------- ALFABLOQUEANTES (para criterios I5, K9, K10; NO Silodosina) --------
   { id: "Alfuzosina", drugClasses: ["ALFABLOQUEANTE"] },
   { id: "Doxazosina", drugClasses: ["ALFABLOQUEANTE"] },
+  { id: "Prazosina", drugClasses: ["ALFABLOQUEANTE"] },
   { id: "Indoramina", drugClasses: ["ALFABLOQUEANTE"] },
   { id: "Tamsulosina", drugClasses: ["ALFABLOQUEANTE"] },
   { id: "Terazosina", drugClasses: ["ALFABLOQUEANTE"] },
@@ -239,7 +241,7 @@ export const MEDICATIONS: Med[] = [
   { id: "Trihexifenidilo", drugClasses: ["ANTIPARKINSONIAN_ANTICOLINERGICO", "ANTICOLINERGICO"] },
 
   // -------- ANTIDEMENCIA --------
-  { id: "Memantina", drugClasses: ["ANTIDEMENCIA"] },
+  { id: "Memantina", drugClasses: ["ANTIDEMENCIA", "ANTAGONISTA_NMDA"] },
 
   // -------- AGONISTAS DOPAMINÉRGICOS --------
   { id: "Pramipexol", drugClasses: ["AGONISTA_DOPAMINERGICO"] },
@@ -272,6 +274,7 @@ export const MEDICATIONS: Med[] = [
   // -------- NOOTRÓPICOS --------
   { id: "Ginkgo biloba", drugClasses: ["NOOTROPICO"] },
   { id: "Piracetam", drugClasses: ["NOOTROPICO"] },
+  { id: "Citicolina", drugClasses: ["NOOTROPICO"] },
 
   // -------- ANESTÉSICO TÓPICO --------
   { id: "Lidocaína parche", drugClasses: ["ANESTESICO_TOPICO"] },
@@ -280,7 +283,7 @@ export const MEDICATIONS: Med[] = [
   { id: "Metformina", drugClasses: ["BIGUANIDA"] },
   { id: "Ácido acetilsalicílico", drugClasses: ["ANTIAGREGANTE", "AAS"] },
   { id: "Clopidogrel", drugClasses: ["ANTIAGREGANTE"] },
-  { id: "Ticlopidina", drugClasses: ["ANTIAGREGANTE"] },
+  { id: "Ticlopidina", drugClasses: ["ANTIAGREGANTE", "TICLOPIDINA"] },
   { id: "Prasugrel", drugClasses: ["ANTIAGREGANTE"] },
   { id: "Ticagrelor", drugClasses: ["ANTIAGREGANTE", "INHIBIDOR_GLUCOPROTEINA_P"] },
   { id: "Verapamilo", drugClasses: ["CALCIOANTAGONISTA_NO_DHP", "INHIBIDOR_GLUCOPROTEINA_P"] },
@@ -292,6 +295,13 @@ export const MEDICATIONS: Med[] = [
   { id: "Quinina", drugClasses: ["ANTIPALUDICO", "INHIBIDOR_GLUCOPROTEINA_P", "PROLONGADOR_QTC"] },
   { id: "Ranolazina", drugClasses: ["ANTIANGINOSO", "INHIBIDOR_GLUCOPROTEINA_P", "PROLONGADOR_QTC"] },
   { id: "Tamoxifeno", drugClasses: ["ANTINEOPLASICO", "INHIBIDOR_GLUCOPROTEINA_P", "PROLONGADOR_QTC"] },
+
+  // -------- CALCIOANTAGONISTAS DIHIDROPIRIDÍNICOS (DHP) --------
+  { id: "Amlodipino", drugClasses: ["CALCIOANTAGONISTA_DHP"] },
+  { id: "Nifedipino", drugClasses: ["CALCIOANTAGONISTA_DHP"] },
+  { id: "Lercanidipino", drugClasses: ["CALCIOANTAGONISTA_DHP"] },
+  { id: "Nitrendipino", drugClasses: ["CALCIOANTAGONISTA_DHP"] },
+  { id: "Felodipino", drugClasses: ["CALCIOANTAGONISTA_DHP"] },
 
   // -------- BETABLOQUEANTES --------
   // Cardioselectivos (β1-selectivos)
@@ -320,6 +330,7 @@ export const MEDICATIONS: Med[] = [
   { id: "Atropina", drugClasses: ["ANTICOLINERGICO"] },
   { id: "Oxibutinina", drugClasses: ["ANTICOLINERGICO", "ANTIESPASMÓDICO_URINARIO"] },
   { id: "Tolterodina", drugClasses: ["ANTICOLINERGICO", "ANTIESPASMÓDICO_URINARIO"] },
+  { id: "Solifenacina", drugClasses: ["ANTICOLINERGICO", "ANTIESPASMÓDICO_URINARIO"] },
   { id: "Hioscina", drugClasses: ["ANTICOLINERGICO", "ANTIESPASMÓDICO"] },
 
   // -------- ESTRÓGENOS --------

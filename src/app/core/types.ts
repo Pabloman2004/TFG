@@ -1,5 +1,7 @@
 export type Sex = 'F' | 'M';
 
+export type JsonLogicRule = Record<string, unknown>;
+
 export interface PatientInfo {
   name: string | null;
   age: number | null;
@@ -23,7 +25,7 @@ export interface Crit {
   type: 'STOPP' | 'START';
   system: string;
   summary: string;
-  logic?: any;           // opcional (para pruebas o mocks)
+  logic?: JsonLogicRule; // opcional (para pruebas o mocks)
   excludes?: {           // 🆕 Qué medicaciones descartar cuando se cumple este criterio
     medications?: string[];   // Medicaciones específicas: ["Digoxina"]
     drugClasses?: string[];   // O clases enteras: ["DIGOXINA"]

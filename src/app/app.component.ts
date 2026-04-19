@@ -30,20 +30,11 @@ import { CaseStoreService } from './core/case-store.service';
       <div class="divider mb-4"></div>
     
       <nav class="steps">
-        <a class="nav-item" (click)="go('paciente')" [class.active]="isActive('/paciente')">
-          <span class="step-dot">1</span> Paciente
+        <a class="nav-item" (click)="go('medicaciones')" [class.active]="isActive('/medicaciones')">
+          <span class="step-dot">1</span> Medicaciones
         </a>
         <a class="nav-item" (click)="go('diagnosticos')" [class.active]="isActive('/diagnosticos')">
           <span class="step-dot">2</span> Diagnósticos
-        </a>
-        <a class="nav-item" (click)="go('analitica')" [class.active]="isActive('/analitica')">
-          <span class="step-dot">3</span> Analítica
-        </a>
-        <a class="nav-item" (click)="go('medicaciones')" [class.active]="isActive('/medicaciones')">
-          <span class="step-dot">4</span> Medicaciones
-        </a>
-        <a class="nav-item" (click)="go('resultados')" [class.active]="isActive('/resultados')">
-          <span class="step-dot">5</span> Resultados
         </a>
         <span class="rail"></span>
       </nav>
@@ -137,6 +128,6 @@ export class AppComponent {
 
   resetCase() {
     this.store.reset();
-    this.router.navigate(['/paciente']);
+    this.router.navigate(['/medicaciones']);
   }
 }

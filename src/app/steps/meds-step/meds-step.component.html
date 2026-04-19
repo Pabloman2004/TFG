@@ -1,52 +1,119 @@
-<h2 class="mb-3">Medicaciones</h2>
+<div class="wrap">
+  <div class="screen">
 
-<mat-form-field class="w-full" appearance="outline">
-    <mat-label>Añadir medicación</mat-label>
-    <input #medInput matInput [formControl]="queryCtrl" [matAutocomplete]="auto" (keydown)="onKeydown($event)"
-        aria-label="Campo de búsqueda de medicaciones" />
-</mat-form-field>
+    <div class="topbar">
+      <span class="topbar-title">Medicamentos</span>
+      <div class="filter-group">
+        <button type="button"
+                class="fb"
+                [class.active]="filter() === 'all'"
+                (click)="setFilter('all')">Todos</button>
+        <button type="button"
+                class="fb"
+                [class.active]="filter() === 'STOPP'"
+                (click)="setFilter('STOPP')">STOPP</button>
+        <button type="button"
+                class="fb"
+                [class.active]="filter() === 'START'"
+                (click)="setFilter('START')">START</button>
+      </div>
+    </div>
 
-<!-- Autocomplete -->
-<mat-autocomplete #auto="matAutocomplete" (optionSelected)="addFromAutocomplete($event)">
-
-    @for (opt of filtered$ | async; track opt.name) {
-    <mat-option [value]="opt.name" [disabled]="opt.disabled" [class.excluded-medication]="opt.disabled">
-
-        <div class="medication-option">
-            <div class="medication-name">
-                {{ opt.name }}
-                @if (opt.disabled) {
-                <span class="exclusion-indicator">⚠️</span>
-                }
-            </div>
-
-            @if (opt.disabled && opt.criterion) {
-            <div class="exclusion-reason">
-                <strong>{{ opt.criterion.id }}</strong>: {{ opt.criterion.summary }}
-            </div>
-            }
-        </div>
-
-    </mat-option>
-    }
-
-</mat-autocomplete>
-
-<!-- Chips -->
-<mat-chip-listbox class="mt-2" aria-label="Medicaciones seleccionadas">
-    @for (m of selected; track track($index, m)) {
-    <mat-chip (removed)="remove(m)" removable selected>
-
-        {{ m.id }} <!-- 🔥 MOSTRAR NOMBRE, NO OBJETO -->
-
-        <button matChipRemove [attr.aria-label]="'Quitar ' + m.id">
-            <mat-icon>close</mat-icon>
+    <div class="tabs-bar">
+      @for (cat of categories; track trackCat($index, cat)) {
+        <button type="button"
+                class="tab"
+                [class.active]="activeCategoryId() === cat.id"
+                (click)="setCategory(cat.id)">
+          {{ cat.label }}
         </button>
-    </mat-chip>
-    }
-</mat-chip-listbox>
+      }
+    </div>
 
-<div class="botones">
-    <button mat-stroked-button type="button" (click)="navigateBack()">Atrás</button>
+    <div class="scroll-hint">
+      <span>Desliza para ver todos los grupos</span>
+      <span class="arrow-r"></span>
+    </div>
+
+    <div class="hscroll-wrapper">
+      <div class="hscroll-area">
+        @if (activeCategory(); as cat) {
+          @for (group of cat.groups; track trackGroup($index, group)) {
+            @let state = groupState(group);
+            @let anySel = groupHasAnySelection(group);
+            <div class="group-col" [class.has-sel]="anySel">
+              <div class="col-header" (click)="toggleGroup(group)" role="button" tabindex="0">
+                <div class="cbx"
+                     [class.checked]="state === 'all'"
+                     [class.ind]="state === 'some'"></div>
+                <span class="col-title" [class.active-title]="anySel">
+                  {{ group.label }}
+                </span>
+              </div>
+
+              @for (drug of group.drugs; track trackDrug($index, drug)) {
+                @let sel = isSelected(drug);
+                <div class="drug-row" (click)="toggleDrug(drug)">
+                  <div class="cbx" [class.checked]="sel"></div>
+                  <span class="drug-name" [class.sel]="sel">{{ drug }}</span>
+                </div>
+              }
+
+              @for (custom of customDrugsFor(group); track custom.id) {
+                <div class="drug-row custom" (click)="removeMed(custom.id)"
+                     title="Medicación personalizada — click para quitar">
+                  <div class="cbx checked"></div>
+                  <span class="drug-name sel">{{ custom.id }}</span>
+                </div>
+              }
+
+              @if (otroInputFor() === group.id) {
+                <div class="otro-input-row" (click)="$event.stopPropagation()">
+                  <input #otroInput type="text" class="otro-input"
+                         placeholder="Nombre…"
+                         autocomplete="off"
+                         autofocus
+                         (keydown.enter)="confirmOtro(group, otroInput.value); otroInput.value=''"
+                         (keydown.escape)="cancelOtro()"
+                         (blur)="confirmOtro(group, otroInput.value); otroInput.value=''" />
+                </div>
+              } @else {
+                <div class="otro-row" (click)="startOtro(group)">
+                  <span class="otro-plus">+</span>
+                  <span class="otro-name">Otro</span>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+      <div class="fade-right"></div>
+    </div>
+
+    <div class="crit-area">
+      <div class="crit-header">
+        <span class="crit-title">Criterios aplicables</span>
+        <span class="crit-count">{{ applicableCriteria().length }} criterios</span>
+      </div>
+
+      @if (applicableCriteria().length === 0) {
+        <div class="crit-empty">Sin criterios aplicables con la selección actual.</div>
+      } @else {
+        <div class="crit-list">
+          @for (c of applicableCriteria(); track trackCrit($index, c)) {
+            <div class="crit-row" [class.crit-highlight]="c.id === lastCriterionId()">
+              <span [class]="criterionBadgeClass(c)">{{ c.type }} {{ c.id }}</span>
+              <span class="crit-txt">{{ c.summary }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+
+  <div class="botones">
+    <button mat-flat-button color="primary" type="button" (click)="onExportPdf()">Exportar PDF</button>
     <button mat-flat-button color="primary" type="button" (click)="navigateNext()">Siguiente</button>
+  </div>
 </div>

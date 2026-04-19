@@ -31,6 +31,7 @@
     "@angular/material": "^20.2.8",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
+    "json-logic-js": "^2.0.5",
     "pdfmake": "^0.2.20",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

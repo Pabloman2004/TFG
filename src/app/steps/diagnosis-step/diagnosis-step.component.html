@@ -1,60 +1,108 @@
-<h2 class="mb-3">Diagnósticos / Enfermedades del paciente</h2>
+<div class="wrap">
+  <div class="screen">
 
-<!-- Campo de autocompletado -->
-<mat-form-field class="w-full" appearance="outline">
-  <mat-label>Añadir diagnóstico o enfermedad</mat-label>
-  <input matInput [formControl]="queryCtrl" [matAutocomplete]="auto" (keydown)="onKeydown($event)"
-    aria-label="Campo de búsqueda de enfermedades" />
-  <mat-hint>Empieza a escribir para buscar una enfermedad o añade una nueva</mat-hint>
-</mat-form-field>
+    <div class="topbar">
+      <span class="topbar-title">Diagnósticos</span>
+      <div class="filter-group">
+        <button type="button"
+                class="fb"
+                [class.active]="filter() === 'all'"
+                (click)="setFilter('all')">Todos</button>
+        <button type="button"
+                class="fb"
+                [class.active]="filter() === 'STOPP'"
+                (click)="setFilter('STOPP')">STOPP</button>
+        <button type="button"
+                class="fb"
+                [class.active]="filter() === 'START'"
+                (click)="setFilter('START')">START</button>
+      </div>
+    </div>
 
-<!-- Autocompletado dinámico y reactivo -->
-<mat-autocomplete #auto="matAutocomplete" (optionSelected)="addFromAutocomplete($event)">
-  @for (opt of filtered$ | async; track opt.name) {
-  <mat-option [value]="opt.name" [disabled]="contains(opt.name)">
-    <span class="opt-group">{{ opt.group }}</span> — {{ opt.name }}
-  </mat-option>
-  }
-</mat-autocomplete>
+    <div class="scroll-hint">
+      <span>Desliza para ver todos los sistemas</span>
+      <span class="arrow-r"></span>
+    </div>
 
-<!-- 🔹 Diagnósticos seleccionados agrupados -->
-<div class="selected-container mt-3"> <!-- el espacion indica dos clases -->
-  <h3 class="mb-2">Diagnósticos seleccionados por sistema</h3>
-  @if (selected.length === 0) {
-  <p class="muted"> <!-- *ngIf nos permite usar variables del componente -->
-    No hay diagnósticos seleccionados aún.
-  </p>
-  }
+    <div class="hscroll-wrapper">
+      <div class="hscroll-area">
+        @for (group of groups; track trackGroup($index, group)) {
+          @let state = groupState(group);
+          @let anySel = groupHasAnySelection(group);
+          <div class="group-col" [class.has-sel]="anySel">
+            <div class="col-header" (click)="toggleGroup(group)" role="button" tabindex="0">
+              <div class="cbx"
+                   [class.checked]="state === 'all'"
+                   [class.ind]="state === 'some'"></div>
+              <span class="col-title" [class.active-title]="anySel">
+                {{ group.label }}
+              </span>
+            </div>
 
-  <!-- Recorremos cada grupo -->
-  @for (g of allGroups; track g.group) {
-  @if (hasSelectedInGroup(g.items)) {
-  <div class="group-block">
-    <h4 class="group-title">
+            <div class="col-scroll">
+              @for (dx of group.diagnoses; track trackDx($index, dx)) {
+                @let sel = isSelected(dx);
+                <div class="drug-row" (click)="toggleDiagnosis(dx)">
+                  <div class="cbx" [class.checked]="sel"></div>
+                  <span class="drug-name" [class.sel]="sel">{{ dx }}</span>
+                </div>
+              }
 
-      {{ g.group }}
-    </h4>
+              @for (custom of customDxFor(group); track custom) {
+                <div class="drug-row custom" (click)="removeCustomDx(group, custom)"
+                     title="Diagnóstico personalizado — click para quitar">
+                  <div class="cbx checked"></div>
+                  <span class="drug-name sel">{{ custom }}</span>
+                </div>
+              }
 
-    <mat-chip-listbox>
-      @for (d of g.items; track d) {
-      @if (contains(d)) {
-      <mat-chip [ngClass]="g.group.toLowerCase()" (removed)="remove(d)" removable selected>
-        {{ d }}
-        <button matChipRemove [attr.aria-label]="'Quitar ' + d">
-          <mat-icon>close</mat-icon>
-        </button>
-      </mat-chip>
+              @if (otroInputFor() === group.id) {
+                <div class="otro-input-row" (click)="$event.stopPropagation()">
+                  <input #otroInput type="text" class="otro-input"
+                         placeholder="Diagnóstico…"
+                         autocomplete="off"
+                         autofocus
+                         (keydown.enter)="confirmOtro(group, otroInput.value); otroInput.value=''"
+                         (keydown.escape)="cancelOtro()"
+                         (blur)="confirmOtro(group, otroInput.value); otroInput.value=''" />
+                </div>
+              } @else {
+                <div class="otro-row" (click)="startOtro(group)">
+                  <span class="otro-plus">+</span>
+                  <span class="otro-name">Otro</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+      <div class="fade-right"></div>
+    </div>
+
+    <div class="crit-area">
+      <div class="crit-header">
+        <span class="crit-title">Criterios aplicables</span>
+        <span class="crit-count">{{ applicableCriteria().length }} criterios</span>
+      </div>
+
+      @if (applicableCriteria().length === 0) {
+        <div class="crit-empty">Sin criterios aplicables con la selección actual.</div>
+      } @else {
+        <div class="crit-list">
+          @for (c of applicableCriteria(); track trackCrit($index, c)) {
+            <div class="crit-row" [class.crit-highlight]="c.id === lastCriterionId()">
+              <span [class]="criterionBadgeClass(c)">{{ c.type }} {{ c.id }}</span>
+              <span class="crit-txt">{{ c.summary }}</span>
+            </div>
+          }
+        </div>
       }
-      }
-    </mat-chip-listbox>
+    </div>
+
   </div>
-  }
-  }
-</div>
 
-
-<!-- Botones -->
-<div class="botones">
-  <button mat-stroked-button type="button" class="boton" (click)="navigateBack()">Atrás</button>
-  <button mat-flat-button color="primary" class="boton" type="button" (click)="navigateNext()">Siguiente</button>
+  <div class="botones">
+    <button mat-flat-button color="primary" type="button" (click)="navigateBack()">Volver</button>
+    <button mat-flat-button color="primary" type="button" (click)="onExportPdf()">Exportar PDF</button>
+  </div>
 </div>
