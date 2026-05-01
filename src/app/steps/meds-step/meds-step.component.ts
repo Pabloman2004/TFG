@@ -11,7 +11,6 @@ import { MEDICATIONS } from '../../core/data/medications';
 import { DRUG_CATEGORIES, DrugCategory, DrugGroup } from '../../core/data/medications-taxonomy';
 import { ROUTES } from '../../app.routes.constants';
 
-type CritFilter = 'all' | 'STOPP' | 'START';
 type GroupState = 'none' | 'some' | 'all';
 
 @Component({
@@ -25,10 +24,8 @@ type GroupState = 'none' | 'some' | 'all';
 export class MedsStepComponent implements OnInit {
   readonly categories = DRUG_CATEGORIES;
   readonly activeCategoryId = signal<string>(DRUG_CATEGORIES[0]?.id ?? 'cardiovascular');
-  readonly filter = signal<CritFilter>('all');
   readonly criteria = signal<Crit[]>([]);
   readonly exclusions = signal<Map<string, Crit>>(new Map());
-  readonly otroInputFor = signal<string | null>(null);
   readonly lastCriterionId = signal<string | null>(null);
   private previousCriteriaIds = new Set<string>();
 
@@ -46,10 +43,16 @@ export class MedsStepComponent implements OnInit {
     this.store.meds();
     this.store.diagnoses();
     this.store.labs();
-    const fired = this.criteriaEngine.evaluate(this.store.patientCase, crits);
-    const f = this.filter();
-    return f === 'all' ? fired : fired.filter(c => c.type === f);
+    return this.criteriaEngine.evaluate(this.store.patientCase, crits);
   });
+
+  readonly stoppCriteria = computed(() =>
+    this.applicableCriteria().filter(c => c.type === 'STOPP'),
+  );
+
+  readonly startCriteria = computed(() =>
+    this.applicableCriteria().filter(c => c.type === 'START'),
+  );
 
   constructor(
     private router: Router,
@@ -89,7 +92,6 @@ export class MedsStepComponent implements OnInit {
   }
 
   setCategory(id: string): void { this.activeCategoryId.set(id); }
-  setFilter(f: CritFilter): void { this.filter.set(f); }
 
   isSelected(name: string): boolean { return this.selectedNames().has(name); }
 
@@ -113,26 +115,28 @@ export class MedsStepComponent implements OnInit {
     const dc = group.drugClass;
     const knownSet = new Set(group.drugs);
     return this.store.meds().filter(m =>
-      m.drugClasses.includes(dc) && !knownSet.has(m.id)
+      m.drugClasses.includes(dc) && !knownSet.has(m.id) && !m.id.startsWith('otro__')
     );
   }
 
-  startOtro(group: DrugGroup): void {
-    this.otroInputFor.set(group.id);
+  /** Id del medicamento genérico "Otro" para un grupo */
+  private otroId(group: DrugGroup): string {
+    return `otro__${group.id}`;
   }
 
-  cancelOtro(): void {
-    this.otroInputFor.set(null);
+  isOtroSelected(group: DrugGroup): boolean {
+    return this.isSelected(this.otroId(group));
   }
 
-  confirmOtro(group: DrugGroup, rawName: string): void {
-    const name = rawName.trim();
-    this.otroInputFor.set(null);
-    if (!name) return;
-    if (this.isSelected(name)) return;
-    const classes = group.drugClass ? [group.drugClass] : [];
-    const med: Med = { id: name, drugClasses: classes };
-    this.store.meds.set([...this.store.meds(), med]);
+  toggleOtro(group: DrugGroup): void {
+    const id = this.otroId(group);
+    const current = this.store.meds();
+    if (this.isSelected(id)) {
+      this.store.meds.set(current.filter(m => m.id !== id));
+      return;
+    }
+    const med: Med = { id, drugClasses: group.drugClass ? [group.drugClass] : [] };
+    this.store.meds.set([...current, med]);
   }
 
   removeMed(name: string): void {
@@ -166,10 +170,6 @@ export class MedsStepComponent implements OnInit {
       return found ?? { id: n, drugClasses: [] };
     });
     this.store.meds.set([...current, ...toAdd]);
-  }
-
-  criterionBadgeClass(c: Crit): string {
-    return c.type === 'STOPP' ? 'crit-badge stopp' : 'crit-badge start';
   }
 
   navigateNext(): void {

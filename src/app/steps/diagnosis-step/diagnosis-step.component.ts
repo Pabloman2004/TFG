@@ -11,7 +11,6 @@ import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP } from '../../core/data/diagn
 import { DIAGNOSIS_CATEGORIES, DiagnosisGroup } from '../../core/data/diagnoses-taxonomy';
 import { ROUTES } from '../../app.routes.constants';
 
-type CritFilter = 'all' | 'STOPP' | 'START';
 type GroupState = 'none' | 'some' | 'all';
 
 @Component({
@@ -24,9 +23,7 @@ type GroupState = 'none' | 'some' | 'all';
 })
 export class DiagnosisStepComponent implements OnInit {
   readonly groups = DIAGNOSIS_CATEGORIES;
-  readonly filter = signal<CritFilter>('all');
   readonly criteria = signal<Crit[]>([]);
-  readonly otroInputFor = signal<string | null>(null);
   readonly lastCriterionId = signal<string | null>(null);
   private previousCriteriaIds = new Set<string>();
 
@@ -40,10 +37,16 @@ export class DiagnosisStepComponent implements OnInit {
     this.store.diagnoses();
     this.store.meds();
     this.store.labs();
-    const fired = this.criteriaEngine.evaluate(this.store.patientCase, crits);
-    const f = this.filter();
-    return f === 'all' ? fired : fired.filter(c => c.type === f);
+    return this.criteriaEngine.evaluate(this.store.patientCase, crits);
   });
+
+  readonly stoppCriteria = computed(() =>
+    this.applicableCriteria().filter(c => c.type === 'STOPP'),
+  );
+
+  readonly startCriteria = computed(() =>
+    this.applicableCriteria().filter(c => c.type === 'START'),
+  );
 
   constructor(
     private router: Router,
@@ -68,8 +71,6 @@ export class DiagnosisStepComponent implements OnInit {
     const loaded = await this.criteriaEngine.loadCriteria();
     this.criteria.set(loaded);
   }
-
-  setFilter(f: CritFilter): void { this.filter.set(f); }
 
   isSelected(label: string): boolean {
     return this.selectedCodes().has(normalizeDiagnosis(label));
@@ -113,9 +114,7 @@ export class DiagnosisStepComponent implements OnInit {
 
   customDxFor(group: DiagnosisGroup): string[] {
     const knownCodes = new Set(group.diagnoses.map(d => normalizeDiagnosis(d)));
-    const knownAnyCode = new Set(
-      Object.keys(DIAGNOSIS_REVERSE_MAP),
-    );
+    const knownAnyCode = new Set(Object.keys(DIAGNOSIS_REVERSE_MAP));
     return this.store.diagnoses().filter(code => {
       if (knownCodes.has(code)) return false;
       if (knownAnyCode.has(code)) return false;
@@ -123,31 +122,27 @@ export class DiagnosisStepComponent implements OnInit {
     }).map(code => code.slice(group.id.length + 2));
   }
 
-  startOtro(group: DiagnosisGroup): void {
-    this.otroInputFor.set(group.id);
-  }
-
-  cancelOtro(): void {
-    this.otroInputFor.set(null);
-  }
-
-  confirmOtro(group: DiagnosisGroup, rawName: string): void {
-    const name = rawName.trim();
-    this.otroInputFor.set(null);
-    if (!name) return;
-    const code = `${group.id}__${name}`;
-    const current = this.store.diagnoses();
-    if (current.includes(code)) return;
-    this.store.diagnoses.set([...current, code]);
-  }
-
   removeCustomDx(group: DiagnosisGroup, display: string): void {
     const code = `${group.id}__${display}`;
     this.store.diagnoses.set(this.store.diagnoses().filter(c => c !== code));
   }
 
-  criterionBadgeClass(c: Crit): string {
-    return c.type === 'STOPP' ? 'crit-badge stopp' : 'crit-badge start';
+  private otroCode(group: DiagnosisGroup): string {
+    return `${group.id}__otro`;
+  }
+
+  isOtroDxSelected(group: DiagnosisGroup): boolean {
+    return this.store.diagnoses().includes(this.otroCode(group));
+  }
+
+  toggleOtroDx(group: DiagnosisGroup): void {
+    const code = this.otroCode(group);
+    const current = this.store.diagnoses();
+    if (current.includes(code)) {
+      this.store.diagnoses.set(current.filter(c => c !== code));
+    } else {
+      this.store.diagnoses.set([...current, code]);
+    }
   }
 
   navigateBack(): void {

@@ -1,6 +1,8 @@
-html, body { height: 100%; }
-body {
+html, body {
+  height: 100%;
   margin: 0;
+}
+body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   background-color: #fafafa;
 }

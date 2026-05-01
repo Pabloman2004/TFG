@@ -1,108 +1,115 @@
-<div class="wrap">
-  <div class="screen">
+<div class="page-layout">
 
-    <div class="topbar">
-      <span class="topbar-title">Diagnósticos</span>
-      <div class="filter-group">
-        <button type="button"
-                class="fb"
-                [class.active]="filter() === 'all'"
-                (click)="setFilter('all')">Todos</button>
-        <button type="button"
-                class="fb"
-                [class.active]="filter() === 'STOPP'"
-                (click)="setFilter('STOPP')">STOPP</button>
-        <button type="button"
-                class="fb"
-                [class.active]="filter() === 'START'"
-                (click)="setFilter('START')">START</button>
-      </div>
+  <!-- ══ Título superior ══ -->
+  <nav class="top-nav">
+    <div class="nav-brand">
+      <span class="brand-name">STOPP/START</span>
+      <span class="brand-sep">·</span>
+      <span class="step-title">Diagnósticos</span>
     </div>
+  </nav>
 
-    <div class="scroll-hint">
-      <span>Desliza para ver todos los sistemas</span>
-      <span class="arrow-r"></span>
-    </div>
+  <!-- ══ Contenido principal ══ -->
+  <div class="content-split">
 
-    <div class="hscroll-wrapper">
-      <div class="hscroll-area">
-        @for (group of groups; track trackGroup($index, group)) {
-          @let state = groupState(group);
-          @let anySel = groupHasAnySelection(group);
-          <div class="group-col" [class.has-sel]="anySel">
-            <div class="col-header" (click)="toggleGroup(group)" role="button" tabindex="0">
-              <div class="cbx"
-                   [class.checked]="state === 'all'"
-                   [class.ind]="state === 'some'"></div>
-              <span class="col-title" [class.active-title]="anySel">
-                {{ group.label }}
-              </span>
-            </div>
+    <!-- ── Panel izquierdo 60 %: formulario ── -->
+    <div class="form-panel">
+      <div class="groups-grid-wrapper">
+        <div class="groups-grid">
+          @for (group of groups; track trackGroup($index, group)) {
+            @let anySel = groupHasAnySelection(group);
+            @let state  = groupState(group);
+            <div class="group-card" [class.has-sel]="anySel">
 
-            <div class="col-scroll">
-              @for (dx of group.diagnoses; track trackDx($index, dx)) {
-                @let sel = isSelected(dx);
-                <div class="drug-row" (click)="toggleDiagnosis(dx)">
-                  <div class="cbx" [class.checked]="sel"></div>
-                  <span class="drug-name" [class.sel]="sel">{{ dx }}</span>
+              <div class="col-header" (click)="toggleGroup(group)" role="button" tabindex="0">
+                <div class="cbx"
+                     [class.checked]="state === 'all'"
+                     [class.ind]="state === 'some'"></div>
+                <span class="col-title" [class.active-title]="anySel">{{ group.label }}</span>
+              </div>
+
+              <div class="col-scroll">
+                @for (dx of group.diagnoses; track trackDx($index, dx)) {
+                  @let sel = isSelected(dx);
+                  <div class="drug-row" (click)="toggleDiagnosis(dx)">
+                    <div class="cbx" [class.checked]="sel"></div>
+                    <span class="drug-name" [class.sel]="sel">{{ dx }}</span>
+                  </div>
+                }
+
+                @for (custom of customDxFor(group); track custom) {
+                  <div class="drug-row custom"
+                       (click)="removeCustomDx(group, custom)"
+                       title="Diagnóstico personalizado — click para quitar">
+                    <div class="cbx checked"></div>
+                    <span class="drug-name sel">{{ custom }}</span>
+                  </div>
+                }
+
+                <!-- Fila "Otro" (diagnóstico genérico del sistema) -->
+                @let otroDxSel = isOtroDxSelected(group);
+                <div class="drug-row otro-row" (click)="toggleOtroDx(group)">
+                  <div class="cbx" [class.checked]="otroDxSel"></div>
+                  <span class="drug-name otro-name" [class.sel]="otroDxSel">Otro</span>
                 </div>
-              }
+              </div>
 
-              @for (custom of customDxFor(group); track custom) {
-                <div class="drug-row custom" (click)="removeCustomDx(group, custom)"
-                     title="Diagnóstico personalizado — click para quitar">
-                  <div class="cbx checked"></div>
-                  <span class="drug-name sel">{{ custom }}</span>
-                </div>
-              }
-
-              @if (otroInputFor() === group.id) {
-                <div class="otro-input-row" (click)="$event.stopPropagation()">
-                  <input #otroInput type="text" class="otro-input"
-                         placeholder="Diagnóstico…"
-                         autocomplete="off"
-                         autofocus
-                         (keydown.enter)="confirmOtro(group, otroInput.value); otroInput.value=''"
-                         (keydown.escape)="cancelOtro()"
-                         (blur)="confirmOtro(group, otroInput.value); otroInput.value=''" />
-                </div>
-              } @else {
-                <div class="otro-row" (click)="startOtro(group)">
-                  <span class="otro-plus">+</span>
-                  <span class="otro-name">Otro</span>
-                </div>
-              }
-            </div>
-          </div>
-        }
-      </div>
-      <div class="fade-right"></div>
-    </div>
-
-    <div class="crit-area">
-      <div class="crit-header">
-        <span class="crit-title">Criterios aplicables</span>
-        <span class="crit-count">{{ applicableCriteria().length }} criterios</span>
-      </div>
-
-      @if (applicableCriteria().length === 0) {
-        <div class="crit-empty">Sin criterios aplicables con la selección actual.</div>
-      } @else {
-        <div class="crit-list">
-          @for (c of applicableCriteria(); track trackCrit($index, c)) {
-            <div class="crit-row" [class.crit-highlight]="c.id === lastCriterionId()">
-              <span [class]="criterionBadgeClass(c)">{{ c.type }} {{ c.id }}</span>
-              <span class="crit-txt">{{ c.summary }}</span>
             </div>
           }
         </div>
-      }
+      </div>
     </div>
 
+    <!-- ── Panel derecho 40 %: criterios ── -->
+    <div class="criteria-panel">
+
+      <!-- START (mitad superior) -->
+      <div class="crit-section start-section">
+        <div class="crit-section-header">
+          <span class="crit-type-label start-label">START</span>
+          <span class="crit-count-badge start-badge">{{ startCriteria().length }}</span>
+        </div>
+        <div class="crit-list">
+          @if (startCriteria().length === 0) {
+            <div class="crit-empty">Sin criterios START aplicables.</div>
+          } @else {
+            @for (c of startCriteria(); track trackCrit($index, c)) {
+              <div class="crit-row" [class.crit-highlight]="c.id === lastCriterionId()">
+                <span class="crit-badge start">START</span>
+                <span class="crit-txt">{{ c.summary }}</span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- STOPP (mitad inferior) -->
+      <div class="crit-section stopp-section">
+        <div class="crit-section-header">
+          <span class="crit-type-label stopp-label">STOPP</span>
+          <span class="crit-count-badge stopp-badge">{{ stoppCriteria().length }}</span>
+        </div>
+        <div class="crit-list">
+          @if (stoppCriteria().length === 0) {
+            <div class="crit-empty">Sin criterios STOPP aplicables.</div>
+          } @else {
+            @for (c of stoppCriteria(); track trackCrit($index, c)) {
+              <div class="crit-row" [class.crit-highlight]="c.id === lastCriterionId()">
+                <span class="crit-badge stopp">STOPP</span>
+                <span class="crit-txt">{{ c.summary }}</span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <div class="botones">
-    <button mat-flat-button color="primary" type="button" (click)="navigateBack()">Volver</button>
-    <button mat-flat-button color="primary" type="button" (click)="onExportPdf()">Exportar PDF</button>
+  <!-- ══ Barra de navegación inferior ══ -->
+  <div class="bottom-bar">
+    <button mat-flat-button color="primary" type="button" (click)="navigateBack()">← Anterior</button>
+    <button mat-stroked-button type="button" (click)="onExportPdf()">Exportar PDF</button>
   </div>
+
 </div>
