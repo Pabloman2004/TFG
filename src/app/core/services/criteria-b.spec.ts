@@ -213,8 +213,8 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
   describe('B10-DIURETICO-ASA-INCONTINENCIA', () => {
     const c = crit('STOPP-B10-DIURETICO-ASA-INCONTINENCIA');
 
-    it('dispara con Incontinencia urinaria + diurético de asa', () => {
-      const p = makeCase({ diagnoses: ['incontinencia_urinaria'], medications: [diureticoAsa()] });
+    it('dispara con Incontinencia urinaria + HTA + diurético de asa', () => {
+      const p = makeCase({ diagnoses: ['incontinencia_urinaria', 'hta'], medications: [diureticoAsa()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
@@ -317,8 +317,8 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
   describe('B15-ISRS-QTC-PROLONGADO', () => {
     const c = crit('STOPP-B15-ISRS-QTC-PROLONGADO');
 
-    it('dispara con intervalo QTc prolongado + ISRS', () => {
-      const p = makeCase({ diagnoses: ['intervalo_qtc_prolongado'], medications: [isrs()] });
+    it('dispara con QTc ≥ 450 ms + ISRS', () => {
+      const p = makeCase({ medications: [isrs()], labs: makeLabs({ qtc_ms: 460 }) });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
@@ -371,8 +371,8 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
   describe('B19-AINE-INSUFICIENCIA-CARDIACA', () => {
     const c = crit('STOPP-B19-AINE-INSUFICIENCIA-CARDIACA');
 
-    it('dispara con insuficiencia cardíaca + AINE', () => {
-      const p = makeCase({ diagnoses: ['insuficiencia_cardiaca'], medications: [aine()] });
+    it('dispara con insuficiencia cardíaca + AINE + diurético de asa', () => {
+      const p = makeCase({ diagnoses: ['insuficiencia_cardiaca'], medications: [aine(), diureticoAsa()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 

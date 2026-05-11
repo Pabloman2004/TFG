@@ -10,9 +10,15 @@ export class CaseStoreService {
   labs = signal<Labs | null>(null);
   results = signal<Crit[]>([]);
   activeSystem = signal<string>('Todos');
+  activeSystemTab = signal<string>('cardiovascular');
+  collapsedSections = signal<string[]>([]);
+  reviewedMedTabs = signal<Set<string>>(new Set());
+  reviewedDxTabs = signal<Set<string>>(new Set());
   history = signal<SavedCase[]>([]);
 
   private readonly HISTORY_KEY = 'historial';
+  private readonly REVIEWED_MED_KEY = 'reviewedMedTabs';
+  private readonly REVIEWED_DX_KEY = 'reviewedDxTabs';
 
   constructor() {
     this.patient.set(this.load('patient'));
@@ -20,6 +26,9 @@ export class CaseStoreService {
     this.meds.set(this.load('meds') ?? []);
     this.labs.set(this.load('labs'));
     this.activeSystem.set(this.loadString('activeSystem') ?? 'Todos');
+    this.activeSystemTab.set(this.loadString('activeSystemTab') ?? 'cardiovascular');
+    this.reviewedMedTabs.set(new Set(this.load<string[]>(this.REVIEWED_MED_KEY) ?? []));
+    this.reviewedDxTabs.set(new Set(this.load<string[]>(this.REVIEWED_DX_KEY) ?? []));
     this.history.set(this.load(this.HISTORY_KEY) ?? []);
     this.persist('results', null); // limpiar resultados cacheados de versiones anteriores
 
@@ -28,6 +37,9 @@ export class CaseStoreService {
     effect(() => this.persist('meds', this.meds()));
     effect(() => this.persist('labs', this.labs()));
     effect(() => this.persist('activeSystem', this.activeSystem()));
+    effect(() => this.persist('activeSystemTab', this.activeSystemTab()));
+    effect(() => this.persist(this.REVIEWED_MED_KEY, [...this.reviewedMedTabs()]));
+    effect(() => this.persist(this.REVIEWED_DX_KEY, [...this.reviewedDxTabs()]));
     effect(() => this.persist(this.HISTORY_KEY, this.history()));
   }
 
@@ -63,6 +75,23 @@ export class CaseStoreService {
   setResults(list: Crit[]) { this.results.set(list); }
   setActiveSystem(s: string) { this.activeSystem.set(s); }
 
+  isMedTabReviewed(tabId: string): boolean { return this.reviewedMedTabs().has(tabId); }
+  isDxTabReviewed(tabId: string): boolean { return this.reviewedDxTabs().has(tabId); }
+
+  toggleMedTabReviewed(tabId: string): void {
+    this.reviewedMedTabs.update(s => toggleInSet(s, tabId));
+  }
+  toggleDxTabReviewed(tabId: string): void {
+    this.reviewedDxTabs.update(s => toggleInSet(s, tabId));
+  }
+
+  clearMedTabReviewed(tabId: string): void {
+    this.reviewedMedTabs.update(s => removeFromSet(s, tabId));
+  }
+  clearDxTabReviewed(tabId: string): void {
+    this.reviewedDxTabs.update(s => removeFromSet(s, tabId));
+  }
+
   reset() {
     this.patient.set(null);
     this.diagnoses.set([]);
@@ -70,7 +99,12 @@ export class CaseStoreService {
     this.labs.set(null);
     this.results.set([]);
     this.activeSystem.set('Todos');
-    ['patient', 'diagnoses', 'meds', 'labs', 'activeSystem']
+    this.activeSystemTab.set('cardiovascular');
+    this.collapsedSections.set([]);
+    this.reviewedMedTabs.set(new Set());
+    this.reviewedDxTabs.set(new Set());
+    ['patient', 'diagnoses', 'meds', 'labs', 'activeSystem', 'activeSystemTab',
+      this.REVIEWED_MED_KEY, this.REVIEWED_DX_KEY]
       .forEach(k => this.persist(k, null));
   }
 
@@ -88,11 +122,16 @@ export class CaseStoreService {
   }
 
   loadFromHistory(entry: SavedCase): void {
-    const { info, diagnoses, medications, labs } = entry.patientCase;
-    this.patient.set(info);
-    this.diagnoses.set(diagnoses);
-    this.meds.set(medications);
-    this.labs.set(labs);
+    this.loadCase(entry.patientCase);
+  }
+
+  loadCase(patientCase: PatientCase): void {
+    this.patient.set(patientCase.info);
+    this.diagnoses.set(patientCase.diagnoses);
+    this.meds.set(patientCase.medications);
+    this.labs.set(patientCase.labs);
+    this.reviewedMedTabs.set(new Set(patientCase.reviewedMedTabs ?? []));
+    this.reviewedDxTabs.set(new Set(patientCase.reviewedDxTabs ?? []));
     this.results.set([]);
     this.activeSystem.set('Todos');
   }
@@ -103,10 +142,25 @@ export class CaseStoreService {
       diagnoses: this.diagnoses(),
       medications: this.meds(),
       labs: this.labs(),
+      reviewedMedTabs: [...this.reviewedMedTabs()],
+      reviewedDxTabs: [...this.reviewedDxTabs()],
     };
   }
 
   setLabs(l: Labs | null) {
     this.labs.set(l);
   }
+}
+
+function toggleInSet(set: ReadonlySet<string>, id: string): Set<string> {
+  const next = new Set(set);
+  if (next.has(id)) next.delete(id); else next.add(id);
+  return next;
+}
+
+function removeFromSet(set: ReadonlySet<string>, id: string): Set<string> {
+  if (!set.has(id)) return set as Set<string>;
+  const next = new Set(set);
+  next.delete(id);
+  return next;
 }

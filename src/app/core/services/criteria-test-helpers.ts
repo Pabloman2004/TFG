@@ -65,9 +65,9 @@ export const tiazida       = (id = 'Hidroclorotiazida')  => makeMed(id, ['DIURET
 export const estatina      = (id = 'Atorvastatina')      => makeMed(id, ['ESTATINA']);
 export const isrs          = (id = 'Citalopram')         => makeMed(id, ['ISRS']);
 export const neuroleptico  = (id = 'Haloperidol')        => makeMed(id, ['NEUROLEPTICO']);
-export const adt           = (id = 'Amitriptilina')      => makeMed(id, ['ADT', 'ANTICOLINERGICO']);
+export const adt           = (id = 'Amitriptilina')      => makeMed(id, ['ANTIDEPRESIVO_TRICICLICO', 'ANTICOLINERGICO']);
 export const antihipertCentral = (id = 'Metildopa')      => makeMed(id, ['ANTIHIPERTENSIVO_CENTRAL']);
-export const antiagTico    = ()                          => makeMed('Ticlopidina', ['ANTIAGREGANTE']);
+export const antiagTico    = ()                          => makeMed('Ticlopidina', ['ANTIAGREGANTE', 'TICLOPIDINA']);
 export const amiodarona    = ()                          => makeMed('Amiodarona', ['ANTIARITMICO', 'PROLONGADOR_QTC']);
 export const nitrato       = ()                          => makeMed('Isosorbide', ['NITRATO']);
 export const pde5          = ()                          => makeMed('Sildenafilo', ['INHIBIDOR_PDE5']);

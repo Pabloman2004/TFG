@@ -1,3 +1,7 @@
+:root {
+  --font-scale: 1;
+}
+
 html, body {
   height: 100%;
   margin: 0;
@@ -124,3 +128,55 @@ body {
 
 .main-container { max-width: 980px; }
 .page-wrap { padding-top: 24px; }
+
+/* ========================
+   CUSTOM TOOLTIP
+======================== */
+.app-tooltip {
+  position: fixed;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.10), 0 1px 3px rgba(0,0,0,.06);
+  color: #374151;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: nowrap;
+  padding: 5px 10px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  z-index: 9999;
+  --arrow-x: 50%;
+}
+
+.app-tooltip--visible {
+  opacity: 1;
+}
+
+/* Downward arrow pointing to the trigger */
+.app-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: var(--arrow-x);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top: 6px solid #ffffff;
+  border-bottom: 0;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.07));
+}
+
+/* Outer border for the arrow */
+.app-tooltip::before {
+  content: '';
+  position: absolute;
+  top: calc(100% + 1px);
+  left: var(--arrow-x);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top: 6px solid #e5e7eb;
+  border-bottom: 0;
+}

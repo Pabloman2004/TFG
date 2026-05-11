@@ -6,7 +6,13 @@ export interface DiagnosisGroup {
   diagnoses: string[];
 }
 
-const SYSTEM_ORDER: string[] = [
+export interface DiagnosisTab {
+  id: string;
+  label: string;
+  groups: DiagnosisGroup[];
+}
+
+const TAB_ORDER: string[] = [
   'Cardiovascular',
   'Neurológico',
   'Psiquiátrico',
@@ -19,6 +25,9 @@ const SYSTEM_ORDER: string[] = [
   'Ginecológico',
   'Reumatológico',
   'Hematológico',
+];
+
+const OTROS_SYSTEMS = new Set([
   'Oncológico',
   'Hepático',
   'Oftalmológico',
@@ -28,25 +37,71 @@ const SYSTEM_ORDER: string[] = [
   'Geriátrico',
   'Sintomático',
   'Síntoma',
+]);
+
+const OTROS_GROUP_ORDER: string[] = [
+  'Geriátrico',
+  'Sintomático',
+  'Síntoma',
+  'Oncológico',
+  'Hepático',
+  'Oftalmológico',
+  'Dermatológico',
+  'Inmunológico',
+  'Infeccioso',
 ];
 
 const slug = (s: string): string =>
-  s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_');
+  s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '_');
 
-const buildGroups = (): DiagnosisGroup[] => {
-  const bySystem: Record<string, string[]> = {};
+const groupBySystem = (): Record<string, string[]> => {
+  const result: Record<string, string[]> = {};
   for (const [label, system] of Object.entries(DIAGNOSIS_GROUPS)) {
-    (bySystem[system] ??= []).push(label);
+    (result[system] ??= []).push(label);
   }
-  const ordered = [
-    ...SYSTEM_ORDER.filter(s => bySystem[s]),
-    ...Object.keys(bySystem).filter(s => !SYSTEM_ORDER.includes(s)),
-  ];
-  return ordered.map(system => ({
+  return result;
+};
+
+const buildTabs = (): DiagnosisTab[] => {
+  const bySystem = groupBySystem();
+  const tabs: DiagnosisTab[] = [];
+
+  for (const system of TAB_ORDER) {
+    if (!bySystem[system]) continue;
+    const id = slug(system);
+    tabs.push({
+      id,
+      label: system,
+      groups: [{ id, label: system, diagnoses: bySystem[system].slice().sort((a, b) => a.localeCompare(b, 'es')) }],
+    });
+  }
+
+  for (const system of Object.keys(bySystem)) {
+    if (TAB_ORDER.includes(system) || OTROS_SYSTEMS.has(system)) continue;
+    const id = slug(system);
+    tabs.push({
+      id,
+      label: system,
+      groups: [{ id, label: system, diagnoses: bySystem[system].slice().sort((a, b) => a.localeCompare(b, 'es')) }],
+    });
+  }
+
+  const otrosGroups: DiagnosisGroup[] = [
+    ...OTROS_GROUP_ORDER.filter(s => bySystem[s]),
+    ...Object.keys(bySystem).filter(s => OTROS_SYSTEMS.has(s) && !OTROS_GROUP_ORDER.includes(s)),
+  ].map(system => ({
     id: slug(system),
     label: system,
     diagnoses: bySystem[system].slice().sort((a, b) => a.localeCompare(b, 'es')),
   }));
+
+  if (otrosGroups.length > 0) {
+    tabs.push({ id: 'otros', label: 'Otros', groups: otrosGroups });
+  }
+
+  return tabs;
 };
 
-export const DIAGNOSIS_CATEGORIES: DiagnosisGroup[] = buildGroups();
+export const DIAGNOSIS_TABS: DiagnosisTab[] = buildTabs();
+
+export const DIAGNOSIS_CATEGORIES: DiagnosisGroup[] = DIAGNOSIS_TABS.flatMap(t => t.groups);

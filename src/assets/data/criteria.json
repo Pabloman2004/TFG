@@ -501,7 +501,7 @@
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar añadir anticoagulantes con antiagregantes plaquetarios en fibrilación auricular crónica. La combinación no aporta beneficio adicional en FA, salvo stent coronario o estenosis de alto grado (>50%).",
-      "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"inDrugClass":["ANTIAGREGANTE",{"var":"medications"}]}]},
+      "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"inDrugClass":["ANTIAGREGANTE",{"var":"medications"}]},{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]}]},
       "excludes": {"medications":[],"drugClasses":["ANTICOAGULANTE"]}
     },
     {
@@ -573,7 +573,7 @@
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar antagonistas de la vitamina K como anticoagulantes de primera línea en la fibrilación auricular, salvo prótesis valvular metálica, estenosis mitral moderada-grave o TFGe < 15 ml/min/1,73 m². Los ACOD son igual de eficaces y más seguros.",
-      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"!":{"in":["protesis_valvular_metalica",{"var":"diagnoses"}]}},{"!":{"in":["estenosis_mitral_moderada_grave",{"var":"diagnoses"}]}},{"or":[{"==":[{"var":"labs.egfr_ml_min_173"},null]},{">=":[{"var":"labs.egfr_ml_min_173"},15]}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE_AVK",{"var":"medications"}]},{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"!":{"in":["protesis_valvular_metalica",{"var":"diagnoses"}]}},{"!":{"in":["estenosis_mitral_moderada_grave",{"var":"diagnoses"}]}},{"or":[{"==":[{"var":"labs.egfr_ml_min_173"},null]},{">=":[{"var":"labs.egfr_ml_min_173"},15]}]}]},
       "excludes": {"medications":["Warfarina","Acenocumarol"],"drugClasses":["ANTICOAGULANTE_AVK"]}
     },
     {

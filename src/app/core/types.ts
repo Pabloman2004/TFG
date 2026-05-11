@@ -60,10 +60,18 @@ export interface PatientCase {
   diagnoses: string[];
   medications: Med[];
   labs: Labs | null;
+  reviewedMedTabs?: string[];
+  reviewedDxTabs?: string[];
 }
 
 export interface SavedCase {
   id: string;              // crypto.randomUUID()
   savedAt: string;         // new Date().toISOString()
+  patientCase: PatientCase;
+}
+
+export interface CaseExport {
+  version: string;
+  exportedAt: string;
   patientCase: PatientCase;
 }

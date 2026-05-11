@@ -1,37 +1,43 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, signal, computed, effect, ViewChild, ElementRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { QuickGuideDialogComponent } from './quick-guide-dialog.component';
+import { ConfirmResetDialogComponent } from './confirm-reset-dialog.component';
 import { CaseStoreService } from './core/case-store.service';
+import { CaseIoService } from './core/case-io.service';
+
+const SCALES = [1, 1.15, 1.3] as const;
+type Scale = (typeof SCALES)[number];
+
+function loadScale(): Scale {
+  const v = parseFloat(localStorage.getItem('font-scale') ?? '1');
+  return (SCALES.includes(v as Scale) ? v : 1) as Scale;
+}
 
 @Component({
   selector: 'app-root',
   standalone: true,
   encapsulation: ViewEncapsulation.None,
-  imports: [RouterModule, MatButtonModule, MatIconModule, MatDialogModule],
+  imports: [RouterModule, MatButtonModule, MatIconModule, MatDialogModule, MatSnackBarModule],
   template: `
     <router-outlet></router-outlet>
 
-    <div class="fab-stack" aria-label="Acciones rápidas">
-      <button mat-fab class="fab ghost" (click)="openQuickGuide()" aria-label="Guía rápida">
-        <mat-icon>help_outline</mat-icon>
-      </button>
-      <button mat-fab color="warn" class="fab" (click)="resetCase()" aria-label="Reiniciar caso">
-        <mat-icon>restart_alt</mat-icon>
-      </button>
-    </div>
+    <input #fileInput type="file" accept=".json" (change)="onLoad($event)"
+           style="display:none" aria-hidden="true">
   `,
   styles: [`
     .fab-stack {
       position: fixed;
-      right: 24px;
+      left: 24px;
       bottom: 24px;
       display: flex;
       flex-direction: column;
+      align-items: flex-end;
       gap: 12px;
       z-index: 2000;
     }
@@ -39,21 +45,130 @@ import { CaseStoreService } from './core/case-store.service';
     .fab.ghost { background: #e8eefc; color: #1e40af; }
     .fab.ghost:hover { background: #dbe7ff; }
     .fab:focus-visible { outline: 2px solid rgba(99,102,241,.6); outline-offset: 3px; }
+
+    .io-ctrl {
+      display: flex;
+      gap: 4px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    }
+    .io-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      border: 1px solid #e5e7eb;
+      border-radius: 5px;
+      background: #f9fafb;
+      color: #374151;
+      cursor: pointer;
+      transition: background .12s, color .12s;
+      line-height: 1.4;
+    }
+    .io-btn mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    .io-btn:hover { background: #e8eefc; color: #1e40af; }
+    .io-btn:focus-visible { outline: 2px solid rgba(99,102,241,.6); outline-offset: 2px; }
+
+    .font-ctrl {
+      display: flex;
+      gap: 4px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    }
+    .font-btn {
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      border: 1px solid #e5e7eb;
+      border-radius: 5px;
+      background: #f9fafb;
+      color: #374151;
+      cursor: pointer;
+      transition: background .12s, color .12s;
+      line-height: 1.4;
+    }
+    .font-btn:hover:not(:disabled) { background: #e8eefc; color: #1e40af; }
+    .font-btn:disabled { opacity: .4; cursor: default; }
+    .font-btn:focus-visible { outline: 2px solid rgba(99,102,241,.6); outline-offset: 2px; }
   `]
 })
 export class AppComponent {
+  @ViewChild('fileInput') private fileInputRef!: ElementRef<HTMLInputElement>;
+
+  readonly fontScale = signal<Scale>(loadScale());
+  readonly atMin = computed(() => this.fontScale() === SCALES[0]);
+  readonly atMax = computed(() => this.fontScale() === SCALES[SCALES.length - 1]);
+
   constructor(
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private router: Router,
     private store: CaseStoreService,
-  ) {}
+    private caseIo: CaseIoService,
+  ) {
+    document.documentElement.style.setProperty('--font-scale', String(this.fontScale()));
+
+    effect(() => {
+      const scale = this.fontScale();
+      document.documentElement.style.setProperty('--font-scale', String(scale));
+      localStorage.setItem('font-scale', String(scale));
+    });
+  }
+
+  increaseScale(): void {
+    const idx = SCALES.indexOf(this.fontScale());
+    if (idx < SCALES.length - 1) this.fontScale.set(SCALES[idx + 1]);
+  }
+
+  decreaseScale(): void {
+    const idx = SCALES.indexOf(this.fontScale());
+    if (idx > 0) this.fontScale.set(SCALES[idx - 1]);
+  }
+
+  onSave(): void {
+    this.caseIo.exportCase();
+  }
+
+  async onLoad(event: Event): Promise<void> {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    try {
+      await this.caseIo.importFile(file);
+      this.snackBar.open('Caso cargado correctamente.', 'OK', { duration: 3000 });
+      this.router.navigate(['/medicaciones']);
+    } catch (err) {
+      this.snackBar.open(
+        err instanceof Error ? err.message : 'Error al cargar el archivo.',
+        'Cerrar',
+        { duration: 6000 },
+      );
+    } finally {
+      (event.target as HTMLInputElement).value = '';
+    }
+  }
 
   openQuickGuide(): void {
     this.dialog.open(QuickGuideDialogComponent, { width: '480px', panelClass: 'rounded-xl' });
   }
 
   resetCase(): void {
-    this.store.reset();
-    this.router.navigate(['/medicaciones']);
+    this.dialog.open(ConfirmResetDialogComponent, { width: '360px', panelClass: 'rounded-xl' })
+      .afterClosed()
+      .subscribe(confirmed => {
+        if (confirmed) {
+          this.store.reset();
+          this.router.navigate(['/medicaciones']);
+        }
+      });
   }
 }
