@@ -27,7 +27,7 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
   describe('C2-ANTIAGREGANTE-RIESGO-SANGRADO', () => {
     const c = crit('STOPP-C2-ANTIAGREGANTE-RIESGO-SANGRADO');
 
-    it('dispara con hipertensión grave + antiagregante', () => {
+    it('dispara con HTA grave + antiagregante', () => {
       const p = makeCase({ diagnoses: ['hipertension_grave'], medications: [antiag()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });

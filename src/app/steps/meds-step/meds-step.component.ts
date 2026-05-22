@@ -21,6 +21,16 @@ import { groupBySystem, critCode, CritGroup } from '../../core/criteria-groups';
 import { isMedGroupChecked } from '../../core/group-checked';
 import { TooltipDirective } from '../../shared/tooltip.directive';
 
+interface ForeignGroup extends DrugGroup {
+  readonly originTabId: string;
+  readonly originTabLabel: string;
+}
+
+interface GroupBuckets {
+  readonly ownAll: readonly DrugGroup[];
+  readonly foreignRelevant: readonly ForeignGroup[];
+}
+
 const SCALES = [1, 1.15, 1.3] as const;
 type Scale = (typeof SCALES)[number];
 function currentScale(): Scale {
@@ -94,22 +104,53 @@ export class MedsStepComponent implements OnInit {
     this.extractInDrugClasses(this.criteria()),
   );
 
-  readonly effectiveGroups = computed<DrugGroup[]>(() => {
-    if (this.activeCategoryId() === this.OTROS_TAB_ID) {
+  private readonly esCollator = new Intl.Collator('es', { sensitivity: 'base' });
+
+  readonly groupBuckets = computed<GroupBuckets>(() => {
+    const activeId = this.activeCategoryId();
+
+    if (activeId === this.OTROS_TAB_ID) {
       const drugs = this.categories.flatMap(cat =>
         cat.groups.filter(g => g.drugs.length === 1).flatMap(g => g.drugs),
       );
-      return drugs.length === 0 ? [] : [{ id: 'otros', label: 'Otros medicamentos', drugs }];
+      if (drugs.length === 0) return { ownAll: [], foreignRelevant: [] };
+      return {
+        ownAll: [{
+          id: 'otros',
+          label: 'Otros medicamentos',
+          drugs: drugs.slice().sort((a, b) => this.esCollator.compare(a, b)),
+        }],
+        foreignRelevant: [],
+      };
     }
-    const activeId = this.activeCategoryId();
+
     const cat = this.activeCategory();
-    const primaryGroups = cat ? cat.groups.filter(g => g.drugs.length > 1) : [];
-    const crossGroups = this.categories
-      .filter(c => c.id !== activeId)
-      .flatMap(c => c.groups.filter(g =>
-        g.drugs.length > 1 && g.additionalCategories?.includes(activeId),
-      ));
-    return [...primaryGroups, ...crossGroups];
+    const ownAll = (cat ? cat.groups.filter(g => g.drugs.length > 1) : [])
+      .slice()
+      .sort((a, b) => this.esCollator.compare(a.label, b.label));
+
+    const rel = this.criteriaEngine.relevance();
+    const relevantClasses = rel?.classesByTab.get(activeId) ?? new Set<string>();
+
+    const ownClasses = new Set(
+      ownAll.map(g => g.drugClass).filter((dc): dc is string => !!dc),
+    );
+    const seenForeign = new Set<string>();
+    const foreignRelevant: ForeignGroup[] = [];
+    for (const c of this.categories) {
+      if (c.id === activeId) continue;
+      for (const g of c.groups) {
+        if (g.drugs.length <= 1 || !g.drugClass) continue;
+        if (!relevantClasses.has(g.drugClass)) continue;
+        if (ownClasses.has(g.drugClass)) continue;
+        if (seenForeign.has(g.drugClass)) continue;
+        seenForeign.add(g.drugClass);
+        foreignRelevant.push({ ...g, originTabId: c.id, originTabLabel: c.label });
+      }
+    }
+    foreignRelevant.sort((a, b) => this.esCollator.compare(a.label, b.label));
+
+    return { ownAll, foreignRelevant };
   });
 
   constructor(
@@ -150,6 +191,36 @@ export class MedsStepComponent implements OnInit {
     }, { allowSignalWrites: true });
   }
 
+  private groupsVisibleInTab(tabId: string): readonly DrugGroup[] {
+    if (tabId === this.OTROS_TAB_ID) {
+      const drugs = this.categories.flatMap(cat =>
+        cat.groups.filter(g => g.drugs.length === 1).flatMap(g => g.drugs),
+      );
+      return drugs.length === 0 ? [] : [{ id: 'otros', label: 'Otros medicamentos', drugs }];
+    }
+    const cat = this.categories.find(c => c.id === tabId);
+    const ownGroups = cat ? cat.groups.filter(g => g.drugs.length > 1) : [];
+    const ownClasses = new Set(
+      ownGroups.map(g => g.drugClass).filter((dc): dc is string => !!dc),
+    );
+    const rel = this.criteriaEngine.relevance();
+    const relevantClasses = rel?.classesByTab.get(tabId) ?? new Set<string>();
+    const seenForeign = new Set<string>();
+    const foreignGroups: DrugGroup[] = [];
+    for (const c of this.categories) {
+      if (c.id === tabId) continue;
+      for (const g of c.groups) {
+        if (g.drugs.length <= 1 || !g.drugClass) continue;
+        if (!relevantClasses.has(g.drugClass)) continue;
+        if (ownClasses.has(g.drugClass)) continue;
+        if (seenForeign.has(g.drugClass)) continue;
+        seenForeign.add(g.drugClass);
+        foreignGroups.push(g);
+      }
+    }
+    return [...ownGroups, ...foreignGroups];
+  }
+
   tabHasSelection(tabId: string): boolean {
     if (tabId === this.OTROS_TAB_ID) {
       const singleDrugs = new Set(
@@ -157,22 +228,7 @@ export class MedsStepComponent implements OnInit {
       );
       return this.store.meds().some(m => singleDrugs.has(m.id));
     }
-    const cat = this.categories.find(c => c.id === tabId);
-    const primaryGroups = cat ? cat.groups.filter(g => g.drugs.length > 1) : [];
-    const crossGroups = this.categories
-      .filter(c => c.id !== tabId)
-      .flatMap(c => c.groups.filter(g =>
-        g.drugs.length > 1 && g.additionalCategories?.includes(tabId),
-      ));
-    return [...primaryGroups, ...crossGroups].some(g => this.groupHasAnySelection(g));
-  }
-
-  /** Devuelve la etiqueta de la categoría primaria si el grupo es una referencia cruzada en el tab activo. */
-  getCrossListInfo(group: DrugGroup): string | null {
-    const activeId = this.activeCategoryId();
-    if (!group.additionalCategories?.includes(activeId)) return null;
-    const primaryCat = this.categories.find(c => c.groups.includes(group));
-    return primaryCat?.label ?? null;
+    return this.groupsVisibleInTab(tabId).some(g => this.groupHasAnySelection(g));
   }
 
   isReviewedDisabled(tabId: string): boolean {
@@ -192,6 +248,34 @@ export class MedsStepComponent implements OnInit {
     return this.store.isMedTabReviewed(tabId) && !this.tabHasSelection(tabId);
   }
 
+  showTabCheck(tabId: string): boolean {
+    return this.isTabExplicitlyReviewed(tabId) || this.tabHasSelection(tabId);
+  }
+
+  tabSelectionCount(tabId: string): number {
+    const meds = this.store.meds();
+    if (tabId === this.OTROS_TAB_ID) {
+      const singleDrugs = new Set(
+        this.categories.flatMap(c => c.groups.filter(g => g.drugs.length === 1).flatMap(g => g.drugs)),
+      );
+      return meds.filter(m => singleDrugs.has(m.id)).length;
+    }
+    const groups = this.groupsVisibleInTab(tabId);
+    const counted = new Set<string>();
+    for (const g of groups) {
+      const knownDrugs = new Set(g.drugs);
+      for (const m of meds) {
+        if (counted.has(m.id)) continue;
+        if (knownDrugs.has(m.id)) { counted.add(m.id); continue; }
+        if (m.id === `otro__${g.id}`) { counted.add(m.id); continue; }
+        if (g.drugClass && m.drugClasses.includes(g.drugClass) && !m.id.startsWith('otro__')) {
+          counted.add(m.id);
+        }
+      }
+    }
+    return counted.size;
+  }
+
   async ngOnInit(): Promise<void> {
     this.applyScale(currentScale());
     const loaded = await this.criteriaEngine.loadCriteria();
@@ -206,6 +290,17 @@ export class MedsStepComponent implements OnInit {
   }
 
   setCategory(id: string): void { this.store.activeSystemTab.set(id); }
+
+  onTabSelectChange(event: Event): void {
+    this.setCategory((event.target as HTMLSelectElement).value);
+  }
+
+  tabSelectLabel(tabId: string, label: string): string {
+    const n = this.tabSelectionCount(tabId);
+    if (n > 0) return `${label} (${n})`;
+    if (this.isTabExplicitlyReviewed(tabId)) return `${label} ✓`;
+    return label;
+  }
 
   isSelected(name: string): boolean { return this.selectedNames().has(name); }
 

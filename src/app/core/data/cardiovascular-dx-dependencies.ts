@@ -34,7 +34,7 @@ export const CARDIOVASCULAR_DX_DEPS: Record<string, DxTrigger> = {
     classes: ['DIGOXINA', 'CALCIOANTAGONISTA_NO_DHP'],
     tooltip: 'Disponible si se marca Digoxina o Verapamilo/Diltiazem',
   },
-  'Hipertensión arterial no complicada': {
+  'HTA no complicada': {
     classes: [
       'BETABLOQUEANTE',
       'DIURETICO_ASA',
@@ -44,11 +44,11 @@ export const CARDIOVASCULAR_DX_DEPS: Record<string, DxTrigger> = {
     tooltip:
       'Disponible si se marca betabloqueante, diurético de asa, antihipertensivo central o Amiodarona',
   },
-  'Hipertensión grave': {
+  'HTA grave': {
     classes: ['DIURETICO_ASA', 'ANTIHIPERTENSIVO_CENTRAL'],
     tooltip: 'Disponible si se marca diurético de asa o antihipertensivo central',
   },
-  'Hipertensión moderada': {
+  'HTA moderada': {
     classes: ['DIURETICO_ASA', 'ANTIHIPERTENSIVO_CENTRAL'],
     tooltip: 'Disponible si se marca diurético de asa o antihipertensivo central',
   },
@@ -67,7 +67,7 @@ export const CARDIOVASCULAR_DX_DEPS: Record<string, DxTrigger> = {
     tooltip:
       'Disponible si se marca betabloqueante, antihipertensivo central, diurético de asa, tiazida o alfabloqueante',
   },
-  'Insuficiencia cardíaca grave con hipotensión (PAS < 90 mmHg)': {
+  'Insuficiencia cardíaca grave': {
     classes: ['INHIBIDOR_PDE5', 'NITRATO'],
     tooltip: 'Disponible si se marca inhibidor PDE5 (Sildenafilo, Tadalafilo) o un nitrato',
   },

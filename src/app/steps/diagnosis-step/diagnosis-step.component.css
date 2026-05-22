@@ -173,6 +173,17 @@
   color: #166534;
   border: 1px solid #bbf7d0;
 }
+.count-chip--dual {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+}
+.count-chip-part { white-space: nowrap; }
+.count-chip-sep {
+  opacity: 0.45;
+  font-weight: 500;
+}
 
 /* Panel card */
 .panel-card {
@@ -204,10 +215,41 @@
   overflow-x: auto;
   border-bottom: 1px solid #eef2f7;
   scrollbar-width: thin;
-  scrollbar-color: #cdd5e0 transparent;
+  scrollbar-color: #94a3b8 #f1f5f9;
 }
-.tabs-bar::-webkit-scrollbar { height: 3px; }
-.tabs-bar::-webkit-scrollbar-thumb { background: #cdd5e0; border-radius: 2px; }
+.tabs-bar::-webkit-scrollbar { height: 6px; }
+.tabs-bar::-webkit-scrollbar-track { background: #f1f5f9; }
+.tabs-bar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+.tabs-bar::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+/* Narrow-screen dropdown (hidden by default; shown via media query) */
+.tabs-select-wrap {
+  display: none;
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid #eef2f7;
+}
+.tabs-select {
+  width: 100%;
+  padding: 9px 36px 9px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-accent);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.tabs-select:focus {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 1px;
+}
 
 .tab {
   position: relative;
@@ -246,6 +288,14 @@
   display: inline-block;
   vertical-align: -1px;
   margin-left: 4px;
+}
+.tab .tab-check-count {
+  display: inline-block;
+  margin-left: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #16a34a;
+  vertical-align: 0;
 }
 
 /* Reviewed toggle bar */
@@ -293,6 +343,43 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+/* ── Divisor entre buckets — estilo "fieldset legend" ──────────────── */
+.bucket-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 16px 16px;
+}
+.bucket-divider::before,
+.bucket-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0,
+    #cbd5e1 18%,
+    #cbd5e1 82%,
+    transparent 100%
+  );
+}
+.bucket-divider-label {
+  font-size: calc(11px * var(--font-scale, 1));
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* ── Diferenciador sutil para columnas del bucket B ────────────────── */
+.drug-col--foreign {
+  background: #fafbfd;
+}
+.drug-col--foreign.drug-col-sel {
+  background: #ebf2fc;
 }
 
 /* Otros tab: auto-filling grid, no horizontal scroll */
@@ -509,10 +596,24 @@
 /* ── Right column ── */
 .right-col {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: auto 1fr 1fr;
   gap: 14px;
   min-height: 0;
   overflow: hidden;
+}
+
+.right-col-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px;
+}
+.right-col-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: .01em;
 }
 
 .result-box {
@@ -702,9 +803,14 @@
 /* Responsive */
 @media (max-width: 1024px) {
   .main-grid { grid-template-columns: 1fr; grid-template-rows: auto auto; overflow-y: auto; }
-  .right-col { grid-template-rows: auto auto; overflow: visible; }
+  .right-col { grid-template-rows: auto auto auto; overflow: visible; }
   .result-box { min-height: 220px; }
   .result-items { overflow: visible; max-height: none; padding-top: 52px; }
+}
+
+@media (max-width: 768px) {
+  .tabs-bar { display: none; }
+  .tabs-select-wrap { display: block; }
 }
 
 @media (max-width: 600px) {

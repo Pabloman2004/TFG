@@ -22,12 +22,12 @@ const byClass = (dc: string): string[] =>
     .filter(m => m.drugClasses.includes(dc))
     .map(m => m.id);
 
-export const DRUG_CATEGORIES: DrugCategory[] = [
+const RAW_DRUG_CATEGORIES: DrugCategory[] = [
   {
     id: 'cardiovascular',
     label: 'Cardiovascular',
     groups: [
-      { id: 'betabloqueantes', label: 'Betabloqueantes', drugs: byClass('BETABLOQUEANTE'), drugClass: 'BETABLOQUEANTE' },
+      { id: 'betabloqueantes', label: 'Betabloqueantes', fullName: 'Betabloqueantes. Cardioselectivos (para START-B6 en IC con FE reducida): bisoprolol, nebivolol, metoprolol, carvedilol', drugs: byClass('BETABLOQUEANTE'), drugClass: 'BETABLOQUEANTE' },
       { id: 'ieca', label: 'IECA', fullName: 'Inhibidores de la enzima convertidora de angiotensina', drugs: byClass('IECA'), drugClass: 'IECA' },
       { id: 'ara2', label: 'ARA-II', fullName: 'Antagonistas del receptor de angiotensina II', drugs: byClass('ARA2'), drugClass: 'ARA2' },
       { id: 'diur_asa', label: 'Diurét. de asa', fullName: 'Diuréticos de asa (furosemida, torasemida)', drugs: byClass('DIURETICO_ASA'), drugClass: 'DIURETICO_ASA' },
@@ -173,3 +173,12 @@ export const DRUG_CATEGORIES: DrugCategory[] = [
     ],
   },
 ];
+
+const ES_COLLATOR = new Intl.Collator('es', { sensitivity: 'base' });
+
+export const DRUG_CATEGORIES: DrugCategory[] = RAW_DRUG_CATEGORIES.map(cat => ({
+  ...cat,
+  groups: cat.groups
+    .map(g => ({ ...g, drugs: g.drugs.slice().sort((a, b) => ES_COLLATOR.compare(a, b)) }))
+    .sort((a, b) => ES_COLLATOR.compare(a.label, b.label)),
+}));

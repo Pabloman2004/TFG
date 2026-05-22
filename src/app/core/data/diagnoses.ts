@@ -32,7 +32,7 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "Síncopes recurrentes": "Cardiovascular",
 
   // --- criterio B21 ---
-  "Fibrilación auricular": "Cardiovascular",
+  "FA": "Cardiovascular",
 
   // --- criterio C3 ---
   "Ictus previo": "Neurológico",
@@ -78,11 +78,12 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
 
   // --- AINEs ---
   "Insuficiencia cardíaca": "Cardiovascular",
-  "Hipertensión grave": "Cardiovascular",
-  "Hipertensión moderada": "Cardiovascular",
+  "HTA grave": "Cardiovascular",
+  "HTA moderada": "Cardiovascular",
   "Antecedentes de úlcera péptica": "Gastrointestinal",
   "Antecedentes de hemorragia HC": "Gastrointestinal",
   "Gota activa": "Reumatológico",
+  "Antecedentes de gota": "Reumatológico",
   "Dolor leve": "Sintomático",
   "Dolor leve-moderado": "Sintomático",
   "Dolor moderado-grave": "Sintomático",
@@ -92,7 +93,7 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "Artrosis": "Reumatológico",
 
   // --- Betabloqueantes ---
-  "Hipertensión arterial no complicada": "Cardiovascular",
+  "HTA no complicada": "Cardiovascular",
   "Diabetes con episodios frecuentes de hipoglucemia": "Endocrino",
 
   // --- Amiodarona ---
@@ -121,8 +122,8 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   // --- Inhibidores Factor Xa ---
   "Insuficiencia renal terminal (TFGe < 15 ml/min)": "Renal",
 
-  // --- Inhibidores PDE5 ---
-  "Insuficiencia cardíaca grave con hipotensión (PAS < 90 mmHg)": "Cardiovascular",
+  // --- Inhibidores PDE5 (B14) ---
+  "Insuficiencia cardíaca grave": "Cardiovascular",
 
   // --- Prolongadores QTc ---
   "Intervalo QTc prolongado": "Cardiovascular",
@@ -142,7 +143,7 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   // --- Estrógenos ---
   "Antecedentes de cáncer de mama o útero": "Oncológico",
   "Antecedentes de tromboembolismo venoso": "Hematológico",
-  "Antecedentes de enfermedad coronaria o vascular": "Cardiovascular",
+  "Antecedentes de enfermedad coronaria, cerebrovascular o vascular periférica": "Cardiovascular",
   "Útero intacto sin progestágenos": "Ginecológico",
 
   // --- Sistema nervioso central (D) ---
@@ -166,11 +167,16 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "Hepatopatía crónica": "Hepático",
   "Malnutrición": "Metabólico",
 
+  // --- Diagnósticos referenciados por STOPP-B8 (exclusiones de edemas) ---
+  "Insuficiencia hepática": "Hepático",
+  "Insuficiencia renal": "Renal",
+  "Síndrome nefrótico": "Renal",
+
   // --- START criterios cardiovascular ---
   "Cardiopatía isquémica": "Cardiovascular",
   "Insuficiencia cardíaca con FE reducida": "Cardiovascular",
-  "Fibrilación auricular paroxística": "Cardiovascular",
-  "FA con mal control de frecuencia cardíaca": "Cardiovascular",
+  "FA paroxística": "Cardiovascular",
+  "Fibrilación auricular crónica con mal control de frecuencia cardíaca": "Cardiovascular",
   "Déficit de hierro": "Hematológico",
 
   // --- START criterios neurológico/psiquiátrico ---
@@ -251,7 +257,7 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "Síncopes recurrentes": "sincopes_recurrentes",
 
   // --- criterio B21 ---
-  "Fibrilación auricular": "fibrilacion_auricular",
+  "FA": "fibrilacion_auricular",
 
   // --- criterio C3 ---
   "Ictus previo": "ictus_previo",
@@ -297,11 +303,12 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
 
   // --- AINEs ---
   "Insuficiencia cardíaca": "insuficiencia_cardiaca",
-  "Hipertensión grave": "hipertension_grave",
-  "Hipertensión moderada": "hipertension_moderada",
+  "HTA grave": "hipertension_grave",
+  "HTA moderada": "hipertension_moderada",
   "Antecedentes de úlcera péptica": "antecedentes_ulcera_peptica",
   "Antecedentes de hemorragia HC": "antecedentes_hemorragia_hc",
   "Gota activa": "gota_activa",
+  "Antecedentes de gota": "antecedentes_gota",
   "Dolor leve": "dolor_leve",
   "Dolor leve-moderado": "dolor_leve_moderado",
   "Dolor moderado-grave": "dolor_moderado_grave",
@@ -311,7 +318,7 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "Artrosis": "artrosis",
 
   // --- Betabloqueantes ---
-  "Hipertensión arterial no complicada": "hta_no_complicada",
+  "HTA no complicada": "hta_no_complicada",
   "Diabetes con episodios frecuentes de hipoglucemia": "diabetes_hipoglucemias_frecuentes",
 
   // --- Amiodarona ---
@@ -340,8 +347,8 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   // --- Inhibidores Factor Xa ---
   "Insuficiencia renal terminal (TFGe < 15 ml/min)": "insuficiencia_renal_terminal",
 
-  // --- Inhibidores PDE5 ---
-  "Insuficiencia cardíaca grave con hipotensión (PAS < 90 mmHg)": "insuficiencia_cardiaca_grave_hipotension",
+  // --- Inhibidores PDE5 (B14) ---
+  "Insuficiencia cardíaca grave": "insuficiencia_cardiaca_grave",
 
   // --- Prolongadores QTc ---
   "Intervalo QTc prolongado": "intervalo_qtc_prolongado",
@@ -361,7 +368,7 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   // --- Estrógenos ---
   "Antecedentes de cáncer de mama o útero": "cancer_mama_utero",
   "Antecedentes de tromboembolismo venoso": "tromboembolismo_venoso",
-  "Antecedentes de enfermedad coronaria o vascular": "enfermedad_coronaria_vascular",
+  "Antecedentes de enfermedad coronaria, cerebrovascular o vascular periférica": "enfermedad_coronaria_vascular",
   "Útero intacto sin progestágenos": "utero_intacto_sin_progestagenos",
 
   // --- Sistema nervioso central (D) ---
@@ -385,11 +392,16 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "Hepatopatía crónica": "hepatopatia_cronica",
   "Malnutrición": "malnutricion",
 
+  // --- Diagnósticos referenciados por STOPP-B8 (exclusiones de edemas) ---
+  "Insuficiencia hepática": "insuficiencia_hepatica",
+  "Insuficiencia renal": "insuficiencia_renal",
+  "Síndrome nefrótico": "sindrome_nefrotico",
+
   // --- START criterios cardiovascular ---
   "Cardiopatía isquémica": "cardiopatia_isquemica",
   "Insuficiencia cardíaca con FE reducida": "insuficiencia_cardiaca_fe_reducida",
-  "Fibrilación auricular paroxística": "fibrilacion_auricular_paroxistica",
-  "FA con mal control de frecuencia cardíaca": "fa_mal_control_frecuencia",
+  "FA paroxística": "fibrilacion_auricular_paroxistica",
+  "Fibrilación auricular crónica con mal control de frecuencia cardíaca": "fa_mal_control_frecuencia",
   "Déficit de hierro": "deficit_hierro",
 
   // --- START criterios neurológico/psiquiátrico ---
@@ -436,6 +448,52 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   // --- START criterios analgésicos ---
   "Neuralgia postherpética": "neuralgia_postherpetica",
 
+};
+
+// 🔹 Subgrupos dentro de un tab (opcional). Si un sistema no tiene entradas, el tab se renderiza como hasta ahora (un único grupo).
+export const DIAGNOSIS_SUBGROUPS: Record<string, string> = {
+  // --- Cardiovascular ---
+  // Arritmias y conducción
+  "Bloqueo AV completo": "Arritmias y conducción",
+  "Bloqueo AV de segundo grado": "Arritmias y conducción",
+  "Bradicardia": "Arritmias y conducción",
+  "FA": "Arritmias y conducción",
+  "Fibrilación auricular crónica con mal control de frecuencia cardíaca": "Arritmias y conducción",
+  "FA paroxística": "Arritmias y conducción",
+  "Intervalo QTc prolongado": "Arritmias y conducción",
+  "Taquiarritmias supraventriculares": "Arritmias y conducción",
+  "Trastornos de conducción cardíaca": "Arritmias y conducción",
+  // Enfermedad vascular
+  "Aneurisma aórtico": "Enfermedad vascular",
+  "Angina de pecho": "Enfermedad vascular",
+  "Antecedentes de enfermedad coronaria, cerebrovascular o vascular periférica": "Enfermedad vascular",
+  "Cardiopatía isquémica": "Enfermedad vascular",
+  "Enfermedad cardiovascular establecida": "Enfermedad vascular",
+  "Enfermedad vascular cerebral": "Enfermedad vascular",
+  "Enfermedad vascular coronaria": "Enfermedad vascular",
+  "Enfermedad vascular estable": "Enfermedad vascular",
+  "Enfermedad vascular estable sin indicación clara": "Enfermedad vascular",
+  "Enfermedad vascular periférica": "Enfermedad vascular",
+  // Estenosis y valvulopatía
+  "Estenosis aórtica grave sintomática": "Estenosis y valvulopatía",
+  "Estenosis mitral moderada-grave": "Estenosis y valvulopatía",
+  "Prótesis valvular metálica": "Estenosis y valvulopatía",
+  // Hipertensión
+  "HTA": "Hipertensión",
+  "HTA grave": "Hipertensión",
+  "HTA moderada": "Hipertensión",
+  "HTA no complicada": "Hipertensión",
+  "Intolerancia/fallo a otros antihipertensivos": "Hipertensión",
+  // Hipotensión y síncope
+  "Hipotensión ortostática": "Hipotensión y síncope",
+  "Hipotensión sintomática": "Hipotensión y síncope",
+  "Síncopes recurrentes": "Hipotensión y síncope",
+  // Insuficiencia cardíaca
+  "Insuficiencia cardíaca": "Insuficiencia cardíaca",
+  "Insuficiencia cardíaca con FE reducida": "Insuficiencia cardíaca",
+  "Insuficiencia cardíaca con función sistólica conservada": "Insuficiencia cardíaca",
+  "Insuficiencia cardíaca grave": "Insuficiencia cardíaca",
+  "Insuficiencia cardíaca NYHA III-IV": "Insuficiencia cardíaca",
 };
 
 export const DIAGNOSIS_REVERSE_MAP: Record<string, string> =

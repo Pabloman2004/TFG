@@ -50,9 +50,150 @@
         <button class="tbtn" (click)="openQuickGuide()" title="Guía rápida">Guía</button>
         <button class="tbtn tbtn-reset" (click)="resetCase()" title="Reiniciar caso">Reiniciar</button>
         <div class="tbar-spacer"></div>
-        @if (store.diagnoses().length > 0) {
-          <span class="count-chip">{{ store.diagnoses().length }} diagnóstico{{ store.diagnoses().length !== 1 ? 's' : '' }}</span>
+        @if (store.meds().length > 0 || store.diagnoses().length > 0) {
+          <span class="count-chip count-chip--dual">
+            <span class="count-chip-part">{{ store.meds().length }} medicación{{ store.meds().length !== 1 ? 'es' : '' }}</span>
+            <span class="count-chip-sep">|</span>
+            <span class="count-chip-part">{{ store.diagnoses().length }} diagnóstico{{ store.diagnoses().length !== 1 ? 's' : '' }}</span>
+          </span>
         }
+      </div>
+
+      <!-- Panel card -->
+      <div class="panel-card">
+
+        <!-- Card header -->
+        <div class="card-hdr">
+          <span class="card-title">Diagnósticos</span>
+        </div>
+
+        <!-- System dropdown (narrow screens) -->
+        <div class="tabs-select-wrap">
+          <select class="tabs-select"
+                  [value]="activeTabId()"
+                  (change)="onTabSelectChange($event)"
+                  aria-label="Seleccionar sistema">
+            @for (tab of tabs; track trackTab($index, tab)) {
+              <option [value]="tab.id">{{ tabSelectLabel(tab) }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- System tabs -->
+        <div class="tabs-bar">
+          @for (tab of tabs; track trackTab($index, tab)) {
+            <button class="tab"
+                    [class.on]="activeTabId() === tab.id"
+                    [class.has-sel]="tabHasSelection(tab)"
+                    [class.is-reviewed]="isTabExplicitlyReviewed(tab)"
+                    (click)="setTab(tab.id)">
+              {{ tab.label }}
+              @if (showTabCheck(tab)) {
+                <svg class="tab-check" width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 13l4 4L19 7" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                @if (tabSelectionCount(tab) > 0) {
+                  <span class="tab-check-count">{{ tabSelectionCount(tab) }}</span>
+                }
+              }
+            </button>
+          }
+        </div>
+
+        <!-- Reviewed-tab toggle -->
+        <div class="reviewed-bar">
+          <label class="reviewed-toggle"
+                 [class.reviewed-toggle--disabled]="isReviewedDisabled(activeTab())"
+                 (click)="toggleReviewed(activeTab())">
+            <span class="cbx reviewed-cbx" [class.checked]="isReviewedChecked(activeTab())"></span>
+            <span class="reviewed-label">Marcar como revisado</span>
+          </label>
+        </div>
+
+        <!-- Diagnosis columns -->
+        <div class="cols-wrap" [class.cols-wrap--cols]="activeTabId() === 'otros'">
+
+          <!-- Bucket A: del sistema -->
+          <div class="cols-flex" [class.cols-flex--cols]="activeTabId() === 'otros'">
+            @for (group of groupBuckets().ownGroups; track trackGroup($index, group)) {
+              <div class="drug-col" [class.drug-col-sel]="isGroupChecked(group)">
+                <div class="drug-col-hd drug-col-hd--readonly">
+                  <div class="cbx cbx--readonly" [class.checked]="isGroupChecked(group)" aria-hidden="true"></div>
+                  <span class="col-label" [class.col-label-act]="isGroupChecked(group)">
+                    {{ group.label }}
+                  </span>
+                </div>
+
+                <div class="dx-list">
+                  @for (dx of group.diagnoses; track trackDx($index, dx)) {
+                    <div class="drug-row"
+                         [class.dx-disabled]="!isDxEnabled(dx)"
+                         [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
+                         (click)="toggleDiagnosis(dx)">
+                      <div class="cbx" [class.checked]="isSelected(dx)"></div>
+                      <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
+                    </div>
+                  }
+                  @for (custom of customDxFor(group); track custom) {
+                    <div class="drug-row drug-row-custom"
+                         (click)="removeCustomDx(group, custom)"
+                         title="Diagnóstico personalizado — click para quitar">
+                      <div class="cbx checked"></div>
+                      <span class="drug-name sel">{{ custom }}</span>
+                    </div>
+                  }
+                </div>
+
+                <button class="otro-btn" (click)="toggleOtroDx(group)">
+                  <span class="otro-plus">+</span>
+                  Otro
+                </button>
+              </div>
+            }
+          </div>
+
+          <!-- Divisor + Bucket B: relevantes de otros sistemas -->
+          @if (groupBuckets().foreignRelevant.length > 0) {
+            <div class="bucket-divider" role="separator">
+              <span class="bucket-divider-label">Relevantes de otros sistemas</span>
+            </div>
+
+            <div class="cols-flex">
+              @for (group of groupBuckets().foreignRelevant; track trackGroup($index, group)) {
+                <div class="drug-col drug-col--foreign" [class.drug-col-sel]="isGroupChecked(group)">
+                  <div class="drug-col-hd drug-col-hd--readonly">
+                    <div class="cbx cbx--readonly" [class.checked]="isGroupChecked(group)" aria-hidden="true"></div>
+                    <span class="col-label" [class.col-label-act]="isGroupChecked(group)">{{ group.label }}</span>
+                    <span class="cross-badge"
+                          [title]="'Sistema de origen: ' + group.originTabLabel">{{ group.originTabLabel }}</span>
+                  </div>
+
+                  <div class="dx-list">
+                    @for (dx of group.diagnoses; track trackDx($index, dx)) {
+                      <div class="drug-row"
+                           [class.dx-disabled]="!isDxEnabled(dx)"
+                           [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
+                           (click)="toggleDiagnosis(dx)">
+                        <div class="cbx" [class.checked]="isSelected(dx)"></div>
+                        <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Right column: two result boxes ── -->
+    <div class="right-col">
+
+      <!-- Criteria header with copy action -->
+      <div class="right-col-hdr">
+        <span class="right-col-title">Criterios activados</span>
         <button class="tbtn tbtn-copy"
                 [class.tbtn-copied]="copied()"
                 [disabled]="applicableCriteria().length === 0"
@@ -72,95 +213,6 @@
           }
         </button>
       </div>
-
-      <!-- Panel card -->
-      <div class="panel-card">
-
-        <!-- Card header -->
-        <div class="card-hdr">
-          <span class="card-title">Diagnósticos</span>
-        </div>
-
-        <!-- System tabs -->
-        <div class="tabs-bar">
-          @for (tab of tabs; track trackTab($index, tab)) {
-            <button class="tab"
-                    [class.on]="activeTabId() === tab.id"
-                    [class.has-sel]="tabHasSelection(tab)"
-                    [class.is-reviewed]="isTabExplicitlyReviewed(tab)"
-                    (click)="setTab(tab.id)">
-              {{ tab.label }}
-              @if (isTabExplicitlyReviewed(tab)) {
-                <svg class="tab-check" width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M5 13l4 4L19 7" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              }
-            </button>
-          }
-        </div>
-
-        <!-- Reviewed-tab toggle -->
-        <div class="reviewed-bar">
-          <label class="reviewed-toggle"
-                 [class.reviewed-toggle--disabled]="isReviewedDisabled(activeTab())"
-                 (click)="toggleReviewed(activeTab())">
-            <span class="cbx reviewed-cbx" [class.checked]="isReviewedChecked(activeTab())"></span>
-            <span class="reviewed-label">Marcar como revisado</span>
-          </label>
-        </div>
-
-        <!-- Diagnosis columns -->
-        <div class="cols-wrap" [class.cols-wrap--cols]="activeTabId() === 'otros'">
-          <div class="cols-flex" [class.cols-flex--cols]="activeTabId() === 'otros'">
-            @for (group of activeTab().groups; track trackGroup($index, group)) {
-              <div class="drug-col" [class.drug-col-sel]="isGroupChecked(group)">
-
-                <!-- Column header — indicator only, not interactive -->
-                <div class="drug-col-hd drug-col-hd--readonly">
-                  <div class="cbx cbx--readonly" [class.checked]="isGroupChecked(group)" aria-hidden="true"></div>
-                  <span class="col-label" [class.col-label-act]="isGroupChecked(group)">
-                    {{ group.label }}
-                  </span>
-                </div>
-
-                <!-- Diagnosis rows -->
-                <div class="dx-list">
-                  @for (dx of group.diagnoses; track trackDx($index, dx)) {
-                    <div class="drug-row"
-                         [class.dx-disabled]="!isDxEnabled(dx)"
-                         [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
-                         (click)="toggleDiagnosis(dx)">
-                      <div class="cbx" [class.checked]="isSelected(dx)"></div>
-                      <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
-                    </div>
-                  }
-
-                  <!-- Custom diagnoses -->
-                  @for (custom of customDxFor(group); track custom) {
-                    <div class="drug-row drug-row-custom"
-                         (click)="removeCustomDx(group, custom)"
-                         title="Diagnóstico personalizado — click para quitar">
-                      <div class="cbx checked"></div>
-                      <span class="drug-name sel">{{ custom }}</span>
-                    </div>
-                  }
-                </div>
-
-                <!-- Otro -->
-                <button class="otro-btn" (click)="toggleOtroDx(group)">
-                  <span class="otro-plus">+</span>
-                  Otro
-                </button>
-
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Right column: two result boxes ── -->
-    <div class="right-col">
 
       <!-- START box (top) -->
       <div class="result-box start-box">

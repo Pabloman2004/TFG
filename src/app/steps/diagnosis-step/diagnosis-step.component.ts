@@ -23,6 +23,16 @@ function currentScale(): Scale {
 }
 import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP } from '../../core/data/diagnoses';
 import { DIAGNOSIS_TABS, DiagnosisTab, DiagnosisGroup } from '../../core/data/diagnoses-taxonomy';
+
+interface ForeignDxGroup extends DiagnosisGroup {
+  readonly originTabId: string;
+  readonly originTabLabel: string;
+}
+
+interface DxBuckets {
+  readonly ownGroups: readonly DiagnosisGroup[];
+  readonly foreignRelevant: readonly ForeignDxGroup[];
+}
 import { CARDIOVASCULAR_DX_DEPS, isDiagnosisEnabled } from '../../core/data/cardiovascular-dx-dependencies';
 import { ROUTES } from '../../app.routes.constants';
 import { buildCriteriaText } from '../../core/clipboard-text';
@@ -80,6 +90,46 @@ export class DiagnosisStepComponent implements OnInit {
 
   readonly startGroups = computed<CritGroup[]>(() => groupBySystem(this.startCriteria()));
   readonly stoppGroups = computed<CritGroup[]>(() => groupBySystem(this.stoppCriteria()));
+
+  private readonly esCollator = new Intl.Collator('es', { sensitivity: 'base' });
+
+  readonly groupBuckets = computed<DxBuckets>(() => {
+    const tab = this.activeTab();
+    if (tab.id === 'otros') return { ownGroups: tab.groups, foreignRelevant: [] };
+
+    const ownDxCodes = new Set<string>();
+    for (const g of tab.groups) {
+      for (const dx of g.diagnoses) ownDxCodes.add(normalizeDiagnosis(dx));
+    }
+    const rel = this.criteriaEngine.relevance();
+    const relevantDxs = rel?.dxsByTab.get(tab.id) ?? new Set<string>();
+    if (relevantDxs.size === 0) return { ownGroups: tab.groups, foreignRelevant: [] };
+
+    const seen = new Set<string>(ownDxCodes);
+    const foreignRelevant: ForeignDxGroup[] = [];
+    for (const t of this.tabs) {
+      if (t.id === tab.id) continue;
+      const dxs: string[] = [];
+      for (const g of t.groups) {
+        for (const dx of g.diagnoses) {
+          const code = normalizeDiagnosis(dx);
+          if (!relevantDxs.has(code)) continue;
+          if (seen.has(code)) continue;
+          seen.add(code);
+          dxs.push(dx);
+        }
+      }
+      if (dxs.length === 0) continue;
+      foreignRelevant.push({
+        id: `foreign__${t.id}`,
+        label: t.label,
+        diagnoses: dxs.slice().sort((a, b) => this.esCollator.compare(a, b)),
+        originTabId: t.id,
+        originTabLabel: t.label,
+      });
+    }
+    return { ownGroups: tab.groups, foreignRelevant };
+  });
 
   @ViewChild('fileInput') private fileInputRef!: ElementRef<HTMLInputElement>;
 
@@ -155,6 +205,54 @@ export class DiagnosisStepComponent implements OnInit {
     return this.store.isDxTabReviewed(tab.id) && !this.tabHasSelection(tab);
   }
 
+  showTabCheck(tab: DiagnosisTab): boolean {
+    return this.isTabExplicitlyReviewed(tab) || this.tabHasSelection(tab);
+  }
+
+  private dxGroupsVisibleInTab(tab: DiagnosisTab): readonly DiagnosisGroup[] {
+    if (tab.id === 'otros') return tab.groups;
+    const ownDxCodes = new Set<string>();
+    for (const g of tab.groups) {
+      for (const dx of g.diagnoses) ownDxCodes.add(normalizeDiagnosis(dx));
+    }
+    const rel = this.criteriaEngine.relevance();
+    const relevantDxs = rel?.dxsByTab.get(tab.id) ?? new Set<string>();
+    if (relevantDxs.size === 0) return tab.groups;
+    const seen = new Set<string>(ownDxCodes);
+    const foreignGroups: DiagnosisGroup[] = [];
+    for (const t of this.tabs) {
+      if (t.id === tab.id) continue;
+      const dxs: string[] = [];
+      for (const g of t.groups) {
+        for (const dx of g.diagnoses) {
+          const code = normalizeDiagnosis(dx);
+          if (!relevantDxs.has(code)) continue;
+          if (seen.has(code)) continue;
+          seen.add(code);
+          dxs.push(dx);
+        }
+      }
+      if (dxs.length === 0) continue;
+      foreignGroups.push({ id: `foreign__${t.id}`, label: t.label, diagnoses: dxs });
+    }
+    return [...tab.groups, ...foreignGroups];
+  }
+
+  tabSelectionCount(tab: DiagnosisTab): number {
+    const sel = this.selectedCodes();
+    let count = 0;
+    for (const g of this.dxGroupsVisibleInTab(tab)) {
+      for (const d of g.diagnoses) {
+        if (sel.has(normalizeDiagnosis(d))) count++;
+      }
+      if (!g.id.startsWith('foreign__')) {
+        if (this.isOtroDxSelected(g)) count++;
+        count += this.customDxFor(g).length;
+      }
+    }
+    return count;
+  }
+
   async ngOnInit(): Promise<void> {
     this.applyScale(currentScale());
     const loaded = await this.criteriaEngine.loadCriteria();
@@ -163,12 +261,23 @@ export class DiagnosisStepComponent implements OnInit {
 
   setTab(id: string): void { this.store.activeSystemTab.set(id); }
 
+  onTabSelectChange(event: Event): void {
+    this.setTab((event.target as HTMLSelectElement).value);
+  }
+
+  tabSelectLabel(tab: DiagnosisTab): string {
+    const n = this.tabSelectionCount(tab);
+    if (n > 0) return `${tab.label} (${n})`;
+    if (this.isTabExplicitlyReviewed(tab)) return `${tab.label} ✓`;
+    return tab.label;
+  }
+
   tabHasSelection(tab: DiagnosisTab): boolean {
     const sel = this.selectedCodes();
-    return tab.groups.some(g =>
+    return this.dxGroupsVisibleInTab(tab).some(g =>
       g.diagnoses.some(d => sel.has(normalizeDiagnosis(d))) ||
-      this.isOtroDxSelected(g) ||
-      this.customDxFor(g).length > 0,
+      (!g.id.startsWith('foreign__') &&
+        (this.isOtroDxSelected(g) || this.customDxFor(g).length > 0)),
     );
   }
 

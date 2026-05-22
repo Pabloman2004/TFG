@@ -1,4 +1,4 @@
-import { DIAGNOSIS_GROUPS } from './diagnoses';
+import { DIAGNOSIS_GROUPS, DIAGNOSIS_SUBGROUPS } from './diagnoses';
 
 export interface DiagnosisGroup {
   id: string;
@@ -62,27 +62,48 @@ const groupBySystem = (): Record<string, string[]> => {
   return result;
 };
 
+const buildGroupsForSystem = (system: string, labels: string[]): DiagnosisGroup[] => {
+  const subgroupOf = (label: string): string | undefined => DIAGNOSIS_SUBGROUPS[label];
+  const labelsWithSubgroup = labels.filter(l => subgroupOf(l) !== undefined);
+  if (labelsWithSubgroup.length === 0) {
+    const id = slug(system);
+    return [{ id, label: system, diagnoses: labels.slice().sort((a, b) => a.localeCompare(b, 'es')) }];
+  }
+
+  const bySub: Record<string, string[]> = {};
+  for (const label of labels) {
+    const sub = subgroupOf(label) ?? system;
+    (bySub[sub] ??= []).push(label);
+  }
+
+  return Object.keys(bySub)
+    .sort((a, b) => a.localeCompare(b, 'es'))
+    .map(sub => ({
+      id: slug(sub),
+      label: sub,
+      diagnoses: bySub[sub].slice().sort((a, b) => a.localeCompare(b, 'es')),
+    }));
+};
+
 const buildTabs = (): DiagnosisTab[] => {
   const bySystem = groupBySystem();
   const tabs: DiagnosisTab[] = [];
 
   for (const system of TAB_ORDER) {
     if (!bySystem[system]) continue;
-    const id = slug(system);
     tabs.push({
-      id,
+      id: slug(system),
       label: system,
-      groups: [{ id, label: system, diagnoses: bySystem[system].slice().sort((a, b) => a.localeCompare(b, 'es')) }],
+      groups: buildGroupsForSystem(system, bySystem[system]),
     });
   }
 
   for (const system of Object.keys(bySystem)) {
     if (TAB_ORDER.includes(system) || OTROS_SYSTEMS.has(system)) continue;
-    const id = slug(system);
     tabs.push({
-      id,
+      id: slug(system),
       label: system,
-      groups: [{ id, label: system, diagnoses: bySystem[system].slice().sort((a, b) => a.localeCompare(b, 'es')) }],
+      groups: buildGroupsForSystem(system, bySystem[system]),
     });
   }
 
@@ -96,6 +117,7 @@ const buildTabs = (): DiagnosisTab[] => {
   }));
 
   if (otrosGroups.length > 0) {
+    otrosGroups.sort((a, b) => a.label.localeCompare(b.label, 'es'));
     tabs.push({ id: 'otros', label: 'Otros', groups: otrosGroups });
   }
 

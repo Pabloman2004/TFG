@@ -1,11 +1,14 @@
 // src/app/core/services/criteria-engine.service.ts
 
-import { Injectable } from '@angular/core';
+import { Injectable, Signal, signal } from '@angular/core';
 import * as jsonLogic from 'json-logic-js';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { PatientCase, Crit, Med, Labs } from '../types';
 import { MEDICATIONS } from '../data/medications';
+import { DRUG_CATEGORIES } from '../data/medications-taxonomy';
+import { DIAGNOSIS_TABS } from '../data/diagnoses-taxonomy';
+import { Relevance, buildRelevance } from '../data/system-relevance';
 
 interface CriteriaFile {
   criteria: Crit[];
@@ -15,9 +18,18 @@ interface CriteriaFile {
 export class CriteriaEngineService {
 
   private criteriaCache: Promise<Crit[]> | null = null;
+  private readonly _relevance = signal<Relevance | null>(null);
+  /** Índice de relevancia por tab, calculado tras loadCriteria(). */
+  readonly relevance: Signal<Relevance | null> = this._relevance.asReadonly();
 
   constructor(private http: HttpClient) {
     this.registerCustomOperators();
+  }
+
+  private getAllTabIds(): readonly string[] {
+    const medTabs = DRUG_CATEGORIES.map(c => c.id);
+    const dxTabs = DIAGNOSIS_TABS.map(t => t.id);
+    return Array.from(new Set([...medTabs, ...dxTabs]));
   }
 
   /** =======================
@@ -28,7 +40,11 @@ export class CriteriaEngineService {
       const bust = `?v=${Date.now()}`;
       this.criteriaCache = firstValueFrom(
         this.http.get<CriteriaFile>(`assets/data/criteria.json${bust}`)
-      ).then(file => file.criteria);
+      ).then(file => {
+        const crits = file.criteria;
+        this._relevance.set(buildRelevance(crits, this.getAllTabIds()));
+        return crits;
+      });
     }
     return this.criteriaCache;
   }

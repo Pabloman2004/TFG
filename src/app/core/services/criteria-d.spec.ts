@@ -118,17 +118,17 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
   describe('D3-ISRN-HIPERTENSION-GRAVE', () => {
     const c = crit('STOPP-D3-ISRN-HIPERTENSION-GRAVE');
 
-    it('dispara con hipertensión grave + Venlafaxina', () => {
+    it('dispara con HTA grave + Venlafaxina', () => {
       const p = makeCase({ diagnoses: ['hipertension_grave'], medications: [isrn()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('dispara con hipertensión grave + Duloxetina', () => {
+    it('dispara con HTA grave + Duloxetina', () => {
       const p = makeCase({ diagnoses: ['hipertension_grave'], medications: [isrn('Duloxetina')] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('no dispara sin hipertensión grave', () => {
+    it('no dispara sin HTA grave', () => {
       expect(engine.evaluate(makeCase({ medications: [isrn()] }), [c])).toEqual([]);
     });
 

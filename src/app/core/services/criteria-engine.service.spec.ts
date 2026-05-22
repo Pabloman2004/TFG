@@ -1,3 +1,5 @@
+import { HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { CriteriaEngineService } from './criteria-engine.service';
 import { makeCase, makeLabs, makeMed, setupEngine } from './criteria-test-helpers';
 
@@ -157,6 +159,33 @@ describe('CriteriaEngineService — Motor genérico', () => {
           excludes: { medications: ['Digoxina'] } },
       ]);
       expect(result.size).toBe(0);
+    });
+  });
+
+  describe('signal relevance', () => {
+    it('arranca como null antes de cargar criterios', () => {
+      expect(engine.relevance()).toBeNull();
+    });
+
+    it('se rellena tras loadCriteria() con un índice de tabs derivado', async () => {
+      const httpMock = TestBed.inject(HttpTestingController);
+      const loaded = engine.loadCriteria();
+
+      const req = httpMock.expectOne(r => r.url.startsWith('assets/data/criteria.json'));
+      req.flush({
+        criteria: [
+          { id: 'X', type: 'STOPP', system: 'Sistema cardiovascular', summary: '',
+            logic: { inDrugClass: ['BETABLOQUEANTE', { var: 'medications' }] } },
+        ],
+      });
+
+      await loaded;
+
+      const rel = engine.relevance();
+      expect(rel).not.toBeNull();
+      expect(rel!.classesByTab.get('cardiovascular')?.has('BETABLOQUEANTE')).toBeTrue();
+
+      httpMock.verify();
     });
   });
 });

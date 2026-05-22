@@ -50,8 +50,9 @@ export interface Labs {
   sodio_mmol_l: number | null;    // Sodio sérico (mmol/L)
   calcio_corregido_mmol_l: number | null;  // Calcio sérico corregido (mmol/L)
 
-  // Presión arterial (para STOPP-B14 PDE5 inhibitors)
+  // Presión arterial (para STOPP-B14 PDE5 inhibitors y START-B1)
   pas_mmhg: number | null;        // Presión Arterial Sistólica (mmHg)
+  pad_mmhg: number | null;        // Presión Arterial Diastólica (mmHg)
 }
 
 /** Objeto completo evaluable por el motor */

@@ -73,22 +73,6 @@
       "excludes": {"medications":["Digoxina"],"drugClasses":["DIGOXINA"]}
     },
     {
-      "id": "STOPP-B2-DRONEDARONA-IC-NYHA",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar dronedarona en pacientes con insuficiencia cardíaca NYHA III o IV. Aumenta la mortalidad y la morbilidad cardiovascular en pacientes con insuficiencia cardíaca descompensada.",
-      "logic": {"and":[{"inDrugClass":["ANTIARITMICO",{"var":"medications"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Dronedarona"],"drugClasses":[]}
-    },
-    {
-      "id": "STOPP-B2-ITRACONAZOL-IC",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar itraconazol en pacientes con insuficiencia cardíaca congestiva. Tiene efectos inotrópicos negativos y puede precipitar o empeorar la insuficiencia cardíaca.",
-      "logic": {"and":[{"inDrugClass":["ANTIFUNGICO",{"var":"medications"}]},{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Itraconazol"],"drugClasses":[]}
-    },
-    {
       "id": "STOPP-B2-VERAPAMILO-IC-NYHA",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
@@ -103,14 +87,6 @@
       "summary": "Evitar uso concomitante de verapamilo/diltiazem con betabloqueantes. Riesgo de bloqueo cardíaco grave.",
       "logic": {"and":[{"inDrugClass":["CALCIOANTAGONISTA_NO_DHP",{"var":"medications"}]},{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]}]},
       "excludes": {"medications":["Verapamilo","Diltiazem"],"drugClasses":["CALCIOANTAGONISTA_NO_DHP"]}
-    },
-    {
-      "id": "STOPP-B4-AMIODARONA-PROLONGA-QTC",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar uso conjunto de amiodarona con otros fármacos que prolongan el QTc. Potenciación del riesgo de arritmias ventriculares.",
-      "logic": {"and":[{"inDrugClass":["ANTIARITMICO",{"var":"medications"}]},{"or":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]}]}]},
-      "excludes": {"medications":["Amiodarona"],"drugClasses":["ANTIARITMICO"]}
     },
     {
       "id": "STOPP-B4-BETABLOQUEANTE-BRADICARDIA",
@@ -156,7 +132,7 @@
       "id": "STOPP-B5-BETABLOQUEANTE-HTA-NO-COMPLICADA",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
-      "summary": "Evitar betabloqueantes en hipertensión arterial no complicada. No hay evidencia sólida de su eficacia como monoterapia para esta condición específica.",
+      "summary": "Evitar betabloqueantes en HTA no complicada. No hay evidencia sólida de su eficacia como monoterapia para esta condición específica.",
       "logic": {"and":[{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Metoprolol","Bisoprolol","Atenolol","Nebivolol","Carvedilol","Propranolol"],"drugClasses":["BETABLOQUEANTE"]}
     },
@@ -169,26 +145,10 @@
       "excludes": {"medications":["Amiodarona"],"drugClasses":["ANTIARITMICO"]}
     },
     {
-      "id": "STOPP-B6-ANTIARITMICO-PRIMERA-LINEA-FA",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar antiarrítmicos de clase I a III (amiodarona, flecainida) como primera línea para el control de la frecuencia en la fibrilación auricular. Preferir betabloqueantes o antagonistas del calcio.",
-      "logic": {"and":[{"inDrugClass":["ANTIARITMICO",{"var":"medications"}]},{"in":["fibrilacion_auricular",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Amiodarona","Flecainida"],"drugClasses":["ANTIARITMICO_CLASE_III","ANTIARITMICO_CLASE_IC"]}
-    },
-    {
-      "id": "STOPP-B6-DRONEDARONA-FA-PERMANENTE",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar dronedarona en fibrilación auricular permanente. Contraindicada si no se puede o no se planea restaurar el ritmo sinusal, por riesgo de eventos cardiovasculares graves.",
-      "logic": {"and":[{"inDrugClass":["ANTIARITMICO",{"var":"medications"}]},{"in":["fibrilacion_auricular",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Dronedarona"],"drugClasses":[]}
-    },
-    {
       "id": "STOPP-B7-DIURETICO-ASA-PRIMERA-LINEA-HTA",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
-      "summary": "Evitar diuréticos de asa como tratamiento de primera línea de la hipertensión. Existen alternativas más efectivas y con menos efectos adversos, salvo que exista insuficiencia cardíaca.",
+      "summary": "Evitar diuréticos de asa como tratamiento de primera línea de la HTA. Existen alternativas más efectivas y con menos efectos adversos, salvo que exista insuficiencia cardíaca.",
       "logic": {"and":[{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]}]},{"!":{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]}}]},
       "excludes": {"medications":["Furosemida","Torasemida"],"drugClasses":["DIURETICO_ASA"]}
     },
@@ -205,7 +165,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar diuréticos tiazídicos en pacientes con antecedentes de gota. Las tiazidas pueden producir gota.",
-      "logic": {"and":[{"inDrugClass":["DIURETICO_TIAZIDICO",{"var":"medications"}]},{"in":["gota_activa",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["DIURETICO_TIAZIDICO",{"var":"medications"}]},{"or":[{"in":["gota_activa",{"var":"diagnoses"}]},{"in":["gota_recurrente",{"var":"diagnoses"}]},{"in":["antecedentes_gota",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Hidroclorotiazida","Clortalidona","Indapamida"],"drugClasses":["DIURETICO_TIAZIDICO"]}
     },
     {
@@ -236,7 +196,7 @@
       "id": "STOPP-B10-DIURETICO-ASA-INCONTINENCIA",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
-      "summary": "Evitar diuréticos de asa para el tratamiento de la hipertensión cuando existe incontinencia urinaria. Pueden empeorar la incontinencia.",
+      "summary": "Evitar diuréticos de asa para el tratamiento de la HTA cuando existe incontinencia urinaria. Pueden empeorar la incontinencia.",
       "logic": {"and":[{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]}]},{"in":["incontinencia_urinaria",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["DIURETICO_ASA"]}
     },
@@ -249,14 +209,6 @@
       "excludes": {"medications":["Metildopa","Clonidina","Moxonidina","Rilmenidina","Guanfacina"],"drugClasses":["ANTIHIPERTENSIVO_CENTRAL"]}
     },
     {
-      "id": "STOPP-B12-ANTAGONISTA-ALDOSTERONA-HIPERPOTASEMIA",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar antagonistas de la aldosterona en presencia de hiperpotasemia significativa (Potasio sérico > 5.5 mmol/l). Riesgo de exacerbar peligrosamente la hiperpotasemia.",
-      "logic": {"and":[{"inDrugClass":["ANTAGONISTA_ALDOSTERONA",{"var":"medications"}]},{"or":[{"in":["hiperpotasemia",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.potasio_mmol_l"},null]},{">":[{"var":"labs.potasio_mmol_l"},5.5]}]}]}]},
-      "excludes": {"medications":["Espironolactona","Eplerenona"],"drugClasses":["ANTAGONISTA_ALDOSTERONA"]}
-    },
-    {
       "id": "STOPP-B12-ARA2-HIPERPOTASEMIA",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
@@ -265,28 +217,12 @@
       "excludes": {"medications":["Valsartán","Candesartán","Losartán"],"drugClasses":["ARA2"]}
     },
     {
-      "id": "STOPP-B12-DIURETICO-AHORRADOR-POTASIO-HIPERPOTASEMIA",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar diuréticos ahorradores de potasio (amilorida, triamtereno) en presencia de hiperpotasemia significativa (Potasio sérico > 5.5 mmol/l). Riesgo de exacerbar la hiperpotasemia.",
-      "logic": {"and":[{"inDrugClass":["DIURETICO_AHORRADOR_POTASIO",{"var":"medications"}]},{"or":[{"in":["hiperpotasemia",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.potasio_mmol_l"},null]},{">":[{"var":"labs.potasio_mmol_l"},5.5]}]}]}]},
-      "excludes": {"medications":["Amilorida","Triamtereno"],"drugClasses":["DIURETICO_AHORRADOR_POTASIO"]}
-    },
-    {
       "id": "STOPP-B12-IECA-HIPERPOTASEMIA",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar IECA en presencia de hiperpotasemia significativa (Potasio sérico > 5.5 mmol/l). Riesgo de exacerbar la hiperpotasemia.",
       "logic": {"and":[{"inDrugClass":["IECA",{"var":"medications"}]},{"or":[{"in":["hiperpotasemia",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.potasio_mmol_l"},null]},{">":[{"var":"labs.potasio_mmol_l"},5.5]}]}]}]},
       "excludes": {"medications":["Enalapril","Ramipril"],"drugClasses":["IECA"]}
-    },
-    {
-      "id": "STOPP-B13-ANTAGONISTA-ALDOSTERONA-HIPERPOTASEMIA",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar antagonistas de la aldosterona junto con otros fármacos que puedan aumentar los niveles de potasio (IECA, ARA-II, amilorida, triamtereno) sin monitorizar el potasio sérico. Riesgo de hiperpotasemia grave (> 6,0 mmol/l).",
-      "logic": {"and":[{"inDrugClass":["ANTAGONISTA_ALDOSTERONA",{"var":"medications"}]},{"or":[{"in":["hiperpotasemia",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.potasio_mmol_l"},null]},{">":[{"var":"labs.potasio_mmol_l"},5.5]}]}]}]},
-      "excludes": {"medications":["Espironolactona","Eplerenona"],"drugClasses":["ANTAGONISTA_ALDOSTERONA"]}
     },
     {
       "id": "STOPP-B13-ANTAGONISTA-ALDOSTERONA-IECA-ARA2-POTASIO",
@@ -341,7 +277,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar inhibidores de la fosfodiesterasa 5 (sildenafilo, tadalafilo, vardenafilo) en insuficiencia cardíaca grave con hipotensión (presión arterial sistólica < 90 mmHg). Riesgo de colapso cardiovascular.",
-      "logic": {"and":[{"inDrugClass":["INHIBIDOR_PDE5",{"var":"medications"}]},{"or":[{"in":["insuficiencia_cardiaca_grave_hipotension",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.pas_mmhg"},null]},{"<":[{"var":"labs.pas_mmhg"},90]}]}]}]},
+      "logic": {"and":[{"inDrugClass":["INHIBIDOR_PDE5",{"var":"medications"}]},{"in":["insuficiencia_cardiaca_grave",{"var":"diagnoses"}]},{"or":[{"in":["hipotension_sintomatica",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.pas_mmhg"},null]},{"<":[{"var":"labs.pas_mmhg"},90]}]}]}]},
       "excludes": {"medications":["Sildenafilo","Tadalafilo","Vardenafilo","Isosorbide","Nitroglicerina","Mononitrato de isosorbide"],"drugClasses":["INHIBIDOR_PDE5","NITRATO"]}
     },
     {
@@ -351,46 +287,6 @@
       "summary": "Evitar uso de inhibidores de la fosfodiesterasa 5 (sildenafilo, tadalafilo, vardenafilo) con nitratos (isosorbide, nitroglicerina). Riesgo de colapso cardiovascular grave por hipotensión severa.",
       "logic": {"and":[{"inDrugClass":["INHIBIDOR_PDE5",{"var":"medications"}]},{"inDrugClass":["NITRATO",{"var":"medications"}]}]},
       "excludes": {"medications":["Sildenafilo","Tadalafilo","Vardenafilo"],"drugClasses":["INHIBIDOR_PDE5"]}
-    },
-    {
-      "id": "STOPP-B15-ADT-QTC-PROLONGADO",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar antidepresivos tricíclicos en pacientes con intervalo QTc prolongado (≥ 450 ms en hombres / ≥ 470 ms en mujeres). Riesgo de arritmias ventriculares potencialmente mortales.",
-      "logic": {"and":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"or":[{"and":[{"==":[{"var":"info.sex"},"M"]},{"!=":[{"var":"labs.qtc_ms"},null]},{">=":[{"var":"labs.qtc_ms"},450]}]},{"and":[{"==":[{"var":"info.sex"},"F"]},{"!=":[{"var":"labs.qtc_ms"},null]},{">=":[{"var":"labs.qtc_ms"},470]}]}]}]},
-      "excludes": {"medications":["Amitriptilina","Imipramina","Nortriptilina","Clomipramina","Doxepina"],"drugClasses":["ANTIDEPRESIVO_TRICICLICO"]}
-    },
-    {
-      "id": "STOPP-B15-AMIODARONA-HTA-QTC",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar amiodarona en hipertensión arterial no complicada. Riesgo de arritmias ventriculares potencialmente mortales (>450 ms en hombres / >470 ms en mujeres).",
-      "logic": {"and":[{"inDrugClass":["ANTIARITMICO",{"var":"medications"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Amiodarona"],"drugClasses":["ANTIARITMICO"]}
-    },
-    {
-      "id": "STOPP-B15-DIGOXINA-QTC-PROLONGADO",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar digoxina en pacientes con intervalo QTc prolongado (≥ 450 ms en hombres / ≥ 470 ms en mujeres). Riesgo de arritmias ventriculares potencialmente mortales.",
-      "logic": {"and":[{"inDrugClass":["DIGOXINA",{"var":"medications"}]},{"or":[{"and":[{"==":[{"var":"info.sex"},"M"]},{"!=":[{"var":"labs.qtc_ms"},null]},{">=":[{"var":"labs.qtc_ms"},450]}]},{"and":[{"==":[{"var":"info.sex"},"F"]},{"!=":[{"var":"labs.qtc_ms"},null]},{">=":[{"var":"labs.qtc_ms"},470]}]}]}]},
-      "excludes": {"medications":["Digoxina"],"drugClasses":["DIGOXINA"]}
-    },
-    {
-      "id": "STOPP-B15-ISRS-QTC-PROLONGADO",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar citalopram y escitalopram en pacientes con intervalo QTc prolongado (≥ 450 ms en hombres / ≥ 470 ms en mujeres). Riesgo de arritmias ventriculares.",
-      "logic": {"and":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"!=":[{"var":"labs.qtc_ms"},null]},{">=":[{"var":"labs.qtc_ms"},450]}]},
-      "excludes": {"medications":["Citalopram","Escitalopram"],"drugClasses":["ANTIDEPRESIVO_ISRS"]}
-    },
-    {
-      "id": "STOPP-B15-NEUROLEPTICO-QTC-PROLONGADO",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar neurolépticos en pacientes con intervalo QTc prolongado (≥ 450 ms en hombres / ≥ 470 ms en mujeres). Riesgo de arritmias ventriculares potencialmente mortales.",
-      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"and":[{"==":[{"var":"info.sex"},"M"]},{"!=":[{"var":"labs.qtc_ms"},null]},{">=":[{"var":"labs.qtc_ms"},450]}]},{"and":[{"==":[{"var":"info.sex"},"F"]},{"!=":[{"var":"labs.qtc_ms"},null]},{">=":[{"var":"labs.qtc_ms"},470]}]}]}]},
-      "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Risperidona","Olanzapina","Quetiapina","Aripiprazol","Clozapina"],"drugClasses":["NEUROLEPTICO"]}
     },
     {
       "id": "STOPP-B15-PROLONGADOR-QTC-INTERVALO-PROLONGADO",
@@ -433,6 +329,14 @@
       "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib","Prednisona","Metilprednisolona","Dexametasona","Hidrocortisona"],"drugClasses":["AINE","CORTICOIDE"]}
     },
     {
+      "id": "STOPP-B19-CORTICOIDE-SISTEMICO-IC",
+      "type": "STOPP",
+      "system": "Sistema cardiovascular",
+      "summary": "Evitar corticoides sistémicos en pacientes con insuficiencia cardíaca que requiera diuréticos de asa. Riesgo de descompensación de la insuficiencia cardíaca por retención hidrosalina.",
+      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]},{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]}]},
+      "excludes": {"medications":["Prednisona","Metilprednisolona","Dexametasona","Hidrocortisona"],"drugClasses":["CORTICOIDE_SISTEMICO","CORTICOIDE"]}
+    },
+    {
       "id": "STOPP-B20-ANTIHIPERTENSIVO-ESTENOSIS-AORTICA",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
@@ -452,7 +356,7 @@
       "id": "STOPP-B21-DIGOXINA-FA",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
-      "summary": "Evitar digoxina como primera línea en fibrilación auricular a largo plazo (> 3 meses). Asociada a mayor mortalidad; se prefieren betabloqueantes.",
+      "summary": "Evitar digoxina como primera línea en FA a largo plazo (> 3 meses). Asociada a mayor mortalidad; se prefieren betabloqueantes.",
       "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"inDrugClass":["DIGOXINA",{"var":"medications"}]}]},
       "excludes": {"medications":["Digoxina"],"drugClasses":["DIGOXINA"]}
     },
@@ -476,7 +380,7 @@
       "id": "STOPP-C2-ANTIAGREGANTE-RIESGO-SANGRADO",
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar antiagregantes plaquetarios en pacientes con riesgo significativo de sangrado. Alto riesgo de hemorragia en presencia de hipertensión grave no controlada o diátesis hemorrágica.",
+      "summary": "Evitar antiagregantes plaquetarios en pacientes con riesgo significativo de sangrado. Alto riesgo de hemorragia en presencia de HTA grave no controlada o diátesis hemorrágica.",
       "logic": {"and":[{"inDrugClass":["ANTIAGREGANTE",{"var":"medications"}]},{"or":[{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["diatesis_hemorragica",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Ácido acetilsalicílico","Clopidogrel","Prasugrel","Ticagrelor","Ticlopidina"],"drugClasses":["ANTIAGREGANTE"]}
     },
@@ -484,7 +388,7 @@
       "id": "STOPP-C2-AVK-RIESGO-SANGRADO",
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar antagonistas de vitamina K en pacientes con riesgo significativo de sangrado. Alto riesgo de hemorragia en presencia de hipertensión grave no controlada o diátesis hemorrágica.",
+      "summary": "Evitar antagonistas de vitamina K en pacientes con riesgo significativo de sangrado. Alto riesgo de hemorragia en presencia de HTA grave no controlada o diátesis hemorrágica.",
       "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"or":[{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["diatesis_hemorragica",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Warfarina","Acenocumarol","Dabigatrán","Apixaban","Edoxaban","Rivaroxaban"],"drugClasses":["ANTICOAGULANTE"]}
     },
@@ -500,7 +404,7 @@
       "id": "STOPP-C4-ANTICOAGULANTE-ANTIAGREGANTE-FA",
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar añadir anticoagulantes con antiagregantes plaquetarios en fibrilación auricular crónica. La combinación no aporta beneficio adicional en FA, salvo stent coronario o estenosis de alto grado (>50%).",
+      "summary": "Evitar añadir anticoagulantes con antiagregantes plaquetarios en FA crónica. La combinación no aporta beneficio adicional en FA, salvo stent coronario o estenosis de alto grado (>50%).",
       "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"inDrugClass":["ANTIAGREGANTE",{"var":"medications"}]},{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]}]},
       "excludes": {"medications":[],"drugClasses":["ANTICOAGULANTE"]}
     },
@@ -540,7 +444,7 @@
       "id": "STOPP-C7-ANTIAGREGANTE-FA-SIN-ANTICOAGULANTE",
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar antiagregantes como alternativa a los anticoagulantes en la fibrilación auricular crónica. No hay evidencia de eficacia para prevención del ictus; los anticoagulantes son el tratamiento indicado.",
+      "summary": "Evitar antiagregantes como alternativa a los anticoagulantes en la FA crónica. No hay evidencia de eficacia para prevención del ictus; los anticoagulantes son el tratamiento indicado.",
       "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"inDrugClass":["ANTIAGREGANTE",{"var":"medications"}]},{"!":{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]}}]},
       "excludes": {"drugClasses":["ANTIAGREGANTE"]}
     },
@@ -572,7 +476,7 @@
       "id": "STOPP-C11-AVK-FA-PRIMERA-LINEA",
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar antagonistas de la vitamina K como anticoagulantes de primera línea en la fibrilación auricular, salvo prótesis valvular metálica, estenosis mitral moderada-grave o TFGe < 15 ml/min/1,73 m². Los ACOD son igual de eficaces y más seguros.",
+      "summary": "Evitar antagonistas de la vitamina K como anticoagulantes de primera línea en la FA, salvo prótesis valvular metálica, estenosis mitral moderada-grave o TFGe < 15 ml/min/1,73 m². Los ACOD son igual de eficaces y más seguros.",
       "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE_AVK",{"var":"medications"}]},{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"!":{"in":["protesis_valvular_metalica",{"var":"diagnoses"}]}},{"!":{"in":["estenosis_mitral_moderada_grave",{"var":"diagnoses"}]}},{"or":[{"==":[{"var":"labs.egfr_ml_min_173"},null]},{">=":[{"var":"labs.egfr_ml_min_173"},15]}]}]},
       "excludes": {"medications":["Warfarina","Acenocumarol"],"drugClasses":["ANTICOAGULANTE_AVK"]}
     },
@@ -684,7 +588,7 @@
       "id": "STOPP-D3-ISRN-HIPERTENSION-GRAVE",
       "type": "STOPP",
       "system": "Sistema nervioso central",
-      "summary": "Evitar inhibidores de la recaptación de serotonina/noradrenalina (venlafaxina, duloxetina) en presencia de hipertensión grave (PAS > 180 mmHg). Riesgo de empeoramiento de la hipertensión.",
+      "summary": "Evitar inhibidores de la recaptación de serotonina/noradrenalina (venlafaxina, duloxetina) en presencia de HTA grave (PAS > 180 mmHg). Riesgo de empeoramiento de la HTA.",
       "logic": {"and":[{"inDrugClass":["ISRN",{"var":"medications"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]}]},
       "excludes": {"medications":["Venlafaxina","Duloxetina"],"drugClasses":["ISRN"]}
     },
@@ -1100,7 +1004,7 @@
       "id": "STOPP-H2-AINE-HIPERTENSION-GRAVE",
       "type": "STOPP",
       "system": "Sistema musculoesquelético",
-      "summary": "Evitar AINEs en pacientes con hipertensión grave/moderada. Riesgo de empeoramiento de la hipertensión.",
+      "summary": "Evitar AINEs en pacientes con HTA grave/moderada. Riesgo de empeoramiento de la HTA.",
       "logic": {"and":[{"inDrugClass":["AINE",{"var":"medications"}]},{"or":[{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib"],"drugClasses":["AINE"]}
     },
@@ -1196,7 +1100,7 @@
       "id": "STOPP-I6-MIRABEGRON-HIPERTENSION-GRAVE",
       "type": "STOPP",
       "system": "Sistema urogenital",
-      "summary": "Evitar mirabegrón en hipertensión grave o lábil. Riesgo de empeoramiento de la hipertensión arterial.",
+      "summary": "Evitar mirabegrón en HTA grave o lábil. Riesgo de empeoramiento de la HTA.",
       "logic": {"and":[{"inDrugClass":["AGONISTA_BETA3",{"var":"medications"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]}]},
       "excludes": {"medications":["Mirabegrón"],"drugClasses":["AGONISTA_BETA3"]}
     },
@@ -1507,8 +1411,8 @@
       "id": "START-B1-ANTIHIPERTENSIVO-HTA",
       "type": "START",
       "system": "Sistema cardiovascular",
-      "summary": "Considerar iniciar antihipertensivo. El paciente tiene hipertensión arterial y no está recibiendo tratamiento antihipertensivo (IECA, ARA-II, betabloqueante, diurético tiazídico u otros).",
-      "logic": {"and":[{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.pas_mmhg"},null]},{">":[{"var":"labs.pas_mmhg"},150]}]}]},{"!":{"inDrugClass":["IECA",{"var":"medications"}]}},{"!":{"inDrugClass":["ARA2",{"var":"medications"}]}},{"!":{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]}},{"!":{"inDrugClass":["DIURETICO_TIAZIDICO",{"var":"medications"}]}},{"!":{"inDrugClass":["CALCIOANTAGONISTA_NO_DHP",{"var":"medications"}]}},{"!":{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]}}]}
+      "summary": "Considerar iniciar antihipertensivo. El paciente tiene HTA y no está recibiendo tratamiento antihipertensivo (IECA, ARA-II, betabloqueante, diurético tiazídico u otros).",
+      "logic": {"and":[{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.pas_mmhg"},null]},{">":[{"var":"labs.pas_mmhg"},140]}]},{"and":[{"!=":[{"var":"labs.pad_mmhg"},null]},{">":[{"var":"labs.pad_mmhg"},90]}]}]},{"!":{"inDrugClass":["IECA",{"var":"medications"}]}},{"!":{"inDrugClass":["ARA2",{"var":"medications"}]}},{"!":{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]}},{"!":{"inDrugClass":["DIURETICO_TIAZIDICO",{"var":"medications"}]}},{"!":{"inDrugClass":["CALCIOANTAGONISTA_NO_DHP",{"var":"medications"}]}},{"!":{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]}}]}
     },
     {
       "id": "START-B2-ESTATINA-ENFERMEDAD-VASCULAR",
@@ -1556,7 +1460,7 @@
       "id": "START-B8-ISGLT2-INSUFICIENCIA-CARDIACA",
       "type": "START",
       "system": "Sistema cardiovascular",
-      "summary": "Considerar iniciar iSGLT2 (canagliflozina, dapagliflozina, empagliflozina). El paciente tiene insuficiencia cardíaca sintomática y no recibe inhibidores SGLT2.",
+      "summary": "Considerar iniciar iSGLT2 (canagliflozina, dapagliflozina, empagliflozina, ertugliflozina). El paciente tiene insuficiencia cardíaca sintomática y no recibe inhibidores SGLT2.",
       "logic": {"and":[{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_fe_reducida",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["ISGLT2",{"var":"medications"}]}}]}
     },
     {
@@ -1570,7 +1474,7 @@
       "id": "START-B10-BETABLOQUEANTE-FA-MAL-CONTROL",
       "type": "START",
       "system": "Sistema cardiovascular",
-      "summary": "Considerar iniciar betabloqueante. El paciente tiene fibrilación auricular crónica con mal control de la frecuencia cardíaca y no recibe betabloqueantes.",
+      "summary": "Considerar iniciar betabloqueante. El paciente tiene FA crónica con mal control de la frecuencia cardíaca y no recibe betabloqueantes.",
       "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"in":["fa_mal_control_frecuencia",{"var":"diagnoses"}]},{"!":{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]}}]}
     },
     {
@@ -1584,7 +1488,7 @@
       "id": "START-C1-ANTICOAGULANTE-FA",
       "type": "START",
       "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Considerar iniciar anticoagulante (ACOD preferentemente o AVK). El paciente tiene fibrilación auricular crónica o paroxística y no está anticoagulado.",
+      "summary": "Considerar iniciar anticoagulante (ACOD preferentemente o AVK). El paciente tiene FA crónica o paroxística y no está anticoagulado.",
       "logic": {"and":[{"or":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"in":["fibrilacion_auricular_paroxistica",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]}}]}
     },
     {
@@ -1627,7 +1531,7 @@
       "type": "START",
       "system": "Sistema nervioso central",
       "summary": "Considerar iniciar ISRS (o ISRN o pregabalina si los ISRS están contraindicados). El paciente tiene ansiedad grave persistente que interfiere con la independencia funcional y no recibe tratamiento.",
-      "logic": {"and":[{"in":["ansiedad_grave",{"var":"diagnoses"}]},{"!":{"inDrugClass":["ISRS",{"var":"medications"}]}},{"!":{"inDrugClass":["ISRN",{"var":"medications"}]}},{"!":{"in":["pregabalina",{"var":"medications"}]}}]}
+      "logic": {"and":[{"in":["ansiedad_grave",{"var":"diagnoses"}]},{"!":{"inDrugClass":["ISRS",{"var":"medications"}]}},{"!":{"inDrugClass":["ISRN",{"var":"medications"}]}},{"!":{"inDrugClass":["GABAPENTINOIDE",{"var":"medications"}]}}]}
     },
     {
       "id": "START-D6-AGONISTA-DOPAMINERGICO-PIERNAS-INQUIETAS",

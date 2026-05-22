@@ -70,8 +70,8 @@ export const MEDICATIONS: Med[] = [
   { id: "Ondansetrón", drugClasses: ["ANTIEMETICO_5HT3", "PROLONGADOR_QTC"] },
 
   // -------- ANTIDEPRESIVOS ISRS --------
-  { id: "Citalopram", drugClasses: ["ISRS", "ANTIDEPRESIVO_ISRS", "PROLONGADOR_QTC"] },
-  { id: "Escitalopram", drugClasses: ["ISRS", "ANTIDEPRESIVO_ISRS", "PROLONGADOR_QTC"] },
+  { id: "Citalopram", drugClasses: ["ISRS", "PROLONGADOR_QTC"] },
+  { id: "Escitalopram", drugClasses: ["ISRS", "PROLONGADOR_QTC"] },
 
   // -------- ANTIDEPRESIVOS IRSN (Inhibidores duales) --------
   { id: "Venlafaxina", drugClasses: ["ISRN"] },
@@ -94,18 +94,18 @@ export const MEDICATIONS: Med[] = [
   { id: "Clorpromazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
   { id: "Levomepromazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
   { id: "Tioridazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
-  { id: "Proclorperazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROCINETICO"] },
+  { id: "Proclorperazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROCINETICO", "PROLONGADOR_QTC"] },
 
   // -------- ANTIARRÍTMICOS --------
   { id: "Amiodarona", drugClasses: ["ANTIARITMICO", "ANTIARITMICO_CLASE_III", "PROLONGADOR_QTC", "INHIBIDOR_GLUCOPROTEINA_P"] },
   { id: "Flecainida", drugClasses: ["ANTIARITMICO", "ANTIARITMICO_CLASE_IC"] },
-  { id: "Digoxina", drugClasses: ["GLUCOSIDO_CARDIACO", "DIGOXINA", "CONTROL_FRECUENCIA_FA"] },
+  { id: "Digoxina", drugClasses: ["DIGOXINA"] },
 
   // -------- RELAJANTES MUSCULARES --------
   { id: "Tizanidina", drugClasses: ["RELAJANTE_MUSCULAR", "ANTICOLINERGICO", "PROLONGADOR_QTC"] },
 
   // -------- ANTIHISTAMÍNICOS --------
-  { id: "Astemizol", drugClasses: ["ANTIHISTAMINICO", "ANTIHISTAMINICO_H1", "ANTIHISTAMINICO_1GEN", "PROLONGADOR_QTC"] },
+  { id: "Astemizol", drugClasses: ["ANTIHISTAMINICO_1GEN", "PROLONGADOR_QTC"] },
 
   // -------- ANTIHISTAMÍNICOS 1ª GENERACIÓN --------
   { id: "Difenhidramina", drugClasses: ["ANTIHISTAMINICO_1GEN", "ANTICOLINERGICO"] },
@@ -113,7 +113,7 @@ export const MEDICATIONS: Med[] = [
   { id: "Dexclorfeniramina", drugClasses: ["ANTIHISTAMINICO_1GEN", "ANTICOLINERGICO"] },
 
   // -------- TRATAMIENTO VEJIGA HIPERACTIVA --------
-  { id: "Mirabegrón", drugClasses: ["AGONISTA_BETA3", "AGONISTA_BETA3_URINARIO", "PROLONGADOR_QTC"] },
+  { id: "Mirabegrón", drugClasses: ["AGONISTA_BETA3", "PROLONGADOR_QTC"] },
 
   // -------- ANTIHIPERTENSIVOS DE ACCIÓN CENTRAL (α2-agonistas) --------
   { id: "Metildopa", drugClasses: ["ANTIHIPERTENSIVO_CENTRAL"] },

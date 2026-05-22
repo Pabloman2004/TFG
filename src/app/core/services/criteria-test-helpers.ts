@@ -34,7 +34,7 @@ export const makeLabs = (overrides: Partial<Labs> = {}): Labs => ({
   glucosa_mg_dl: null, colesterol_total_mg_dl: null, trigliceridos_mg_dl: null,
   hdl_mg_dl: null, ldl_mg_dl: null, creatinina_mg_dl: null, egfr_ml_min_173: null,
   inr: null, tsh_uUl: null, fc_lpm: null, qtc_ms: null, potasio_mmol_l: null,
-  sodio_mmol_l: null, calcio_corregido_mmol_l: null, pas_mmhg: null,
+  sodio_mmol_l: null, calcio_corregido_mmol_l: null, pas_mmhg: null, pad_mmhg: null,
   ...overrides,
 });
 

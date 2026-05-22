@@ -50,12 +50,12 @@ describe('isDiagnosisEnabled()', () => {
       'Bradicardia',                                              // B4
       'Bloqueo AV de segundo grado',                              // B4
       'Bloqueo AV completo',                                      // B4
-      'Hipertensión arterial no complicada',                      // B5, B7, B11, B15-amio
-      'Hipertensión grave',                                       // B7, B10, B11
-      'Hipertensión moderada',                                    // B7, B10, B11
+      'HTA no complicada',                                        // B5, B7, B11, B15-amio
+      'HTA grave',                                                // B7, B10, B11
+      'HTA moderada',                                             // B7, B10, B11
       'Taquiarritmias supraventriculares',                        // B6
       'Estenosis aórtica grave sintomática',                      // B20
-      'Insuficiencia cardíaca grave con hipotensión (PAS < 90 mmHg)', // B14
+      'Insuficiencia cardíaca grave',                             // B14
       'Intervalo QTc prolongado',                                 // B15
     ];
     for (const key of requiredKeys) {
@@ -70,7 +70,7 @@ describe('isDiagnosisEnabled()', () => {
     const startTriggers = [
       'HTA',                            // START-B1: antihipertensivo cuando HTA
       'Insuficiencia cardíaca',         // START-B8: iSGLT2 en IC sin meds
-      'Fibrilación auricular',          // START-B10/C1: betabloq/anticoag en FA
+      'FA',                             // START-B10/C1: betabloq/anticoag en FA
       'Enfermedad vascular coronaria',  // START-B2/C2: estatina/antiagregante
       'Enfermedad vascular cerebral',   // START-B2/C2
       'Enfermedad vascular periférica', // START-B2/C2
@@ -95,10 +95,10 @@ describe('isDiagnosisEnabled()', () => {
     }
   });
 
-  it('B14: PDE5 inhibidor habilita IC grave con hipotensión', () => {
+  it('B14: PDE5 inhibidor habilita Insuficiencia cardíaca grave', () => {
     const meds = [med('Sildenafilo', ['INHIBIDOR_PDE5'])];
     expect(
-      isDiagnosisEnabled('Insuficiencia cardíaca grave con hipotensión (PAS < 90 mmHg)', meds),
+      isDiagnosisEnabled('Insuficiencia cardíaca grave', meds),
     ).toBe(true);
   });
 
@@ -113,8 +113,8 @@ describe('isDiagnosisEnabled()', () => {
     expect(isDiagnosisEnabled('Enfermedad vascular periférica', [])).toBe(true);
   });
 
-  it('Fibrilación auricular está siempre habilitada (disparador START-B10 y START-C1)', () => {
-    expect(isDiagnosisEnabled('Fibrilación auricular', [])).toBe(true);
+  it('FA está siempre habilitada (disparador START-B10 y START-C1)', () => {
+    expect(isDiagnosisEnabled('FA', [])).toBe(true);
   });
 
   it('B6: Antiarrítmico habilita Taquiarritmias supraventriculares', () => {

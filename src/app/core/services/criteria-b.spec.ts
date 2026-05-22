@@ -2,8 +2,8 @@ import { CriteriaEngineService } from './criteria-engine.service';
 import {
   setupEngine, makeCase, makeLabs, crit, withAge, makeMed,
   aine, betabloq, ieca, ara2, calcioNodhp, digoxina,
-  diureticoAsa, tiazida, estatina, isrs, antihipertCentral,
-  amiodarona, nitrato, pde5, aldosterona, dronedarona,
+  diureticoAsa, tiazida, estatina, antihipertCentral,
+  amiodarona, nitrato, pde5, aldosterona,
 } from './criteria-test-helpers';
 
 describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
@@ -21,19 +21,6 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
 
     it('no dispara con Digoxina sin ese diagnóstico', () => {
       expect(engine.evaluate(makeCase({ medications: [digoxina()] }), [c])).toEqual([]);
-    });
-  });
-
-  describe('B2-DRONEDARONA-IC-NYHA', () => {
-    const c = crit('STOPP-B2-DRONEDARONA-IC-NYHA');
-
-    it('dispara con IC NYHA III-IV + Dronedarona', () => {
-      const p = makeCase({ diagnoses: ['ic_nyha_3_4'], medications: [dronedarona()] });
-      expect(engine.evaluate(p, [c]).length).toBe(1);
-    });
-
-    it('no dispara sin ese diagnóstico', () => {
-      expect(engine.evaluate(makeCase({ medications: [dronedarona()] }), [c])).toEqual([]);
     });
   });
 
@@ -111,19 +98,6 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
     });
   });
 
-  describe('B6-ANTIARITMICO-PRIMERA-LINEA-FA', () => {
-    const c = crit('STOPP-B6-ANTIARITMICO-PRIMERA-LINEA-FA');
-
-    it('dispara con FA + Amiodarona', () => {
-      const p = makeCase({ diagnoses: ['fibrilacion_auricular'], medications: [amiodarona()] });
-      expect(engine.evaluate(p, [c]).length).toBe(1);
-    });
-
-    it('no dispara con Amiodarona sin FA', () => {
-      expect(engine.evaluate(makeCase({ medications: [amiodarona()] }), [c])).toEqual([]);
-    });
-  });
-
   describe('B7-DIURETICO-ASA-PRIMERA-LINEA-HTA', () => {
     const c = crit('STOPP-B7-DIURETICO-ASA-PRIMERA-LINEA-HTA');
 
@@ -155,6 +129,16 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
 
     it('dispara con Gota activa + tiazida', () => {
       const p = makeCase({ diagnoses: ['gota_activa'], medications: [tiazida()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con Gota recurrente + tiazida', () => {
+      const p = makeCase({ diagnoses: ['gota_recurrente'], medications: [tiazida()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con Antecedentes de gota + tiazida', () => {
+      const p = makeCase({ diagnoses: ['antecedentes_gota'], medications: [tiazida()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
@@ -231,7 +215,7 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('dispara con hipertensión grave en lugar de HTA', () => {
+    it('dispara con HTA grave en lugar de HTA', () => {
       const p = makeCase({ info: withAge(70), diagnoses: ['hipertension_grave'], medications: [antihipertCentral()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
@@ -301,6 +285,37 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
     });
   });
 
+  describe('B14-INHIBIDOR-PDE5-INSUFICIENCIA-CARDIACA-HIPOTENSION', () => {
+    const c = crit('STOPP-B14-INHIBIDOR-PDE5-INSUFICIENCIA-CARDIACA-HIPOTENSION');
+
+    it('dispara con PDE5 + IC grave + Hipotensión sintomática', () => {
+      const p = makeCase({
+        diagnoses: ['insuficiencia_cardiaca_grave', 'hipotension_sintomatica'],
+        medications: [pde5()],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con PDE5 + IC grave + PAS < 90 medida', () => {
+      const p = makeCase({
+        diagnoses: ['insuficiencia_cardiaca_grave'],
+        medications: [pde5()],
+        labs: makeLabs({ pas_mmhg: 85 }),
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('no dispara con PDE5 + IC grave sin hipotensión', () => {
+      const p = makeCase({ diagnoses: ['insuficiencia_cardiaca_grave'], medications: [pde5()] });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('no dispara con PDE5 + Hipotensión sin IC grave', () => {
+      const p = makeCase({ diagnoses: ['hipotension_sintomatica'], medications: [pde5()] });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+  });
+
   describe('B14-INHIBIDOR-PDE5-NITRATOS', () => {
     const c = crit('STOPP-B14-INHIBIDOR-PDE5-NITRATOS');
 
@@ -311,19 +326,6 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
 
     it('no dispara con solo PDE5', () => {
       expect(engine.evaluate(makeCase({ medications: [pde5()] }), [c])).toEqual([]);
-    });
-  });
-
-  describe('B15-ISRS-QTC-PROLONGADO', () => {
-    const c = crit('STOPP-B15-ISRS-QTC-PROLONGADO');
-
-    it('dispara con QTc ≥ 450 ms + ISRS', () => {
-      const p = makeCase({ medications: [isrs()], labs: makeLabs({ qtc_ms: 460 }) });
-      expect(engine.evaluate(p, [c]).length).toBe(1);
-    });
-
-    it('no dispara con ISRS sin QTc prolongado', () => {
-      expect(engine.evaluate(makeCase({ medications: [isrs()] }), [c])).toEqual([]);
     });
   });
 
