@@ -11,10 +11,10 @@ export const MEDICATIONS: Med[] = [
   { id: "Celecoxib", drugClasses: ["AINE", "AINE_COX2"] },
 
   // -------- CORTICOIDES --------
-  { id: "Prednisona", drugClasses: ["CORTICOIDE", "CORTICOIDE_SISTEMICO"] },
-  { id: "Metilprednisolona", drugClasses: ["CORTICOIDE", "CORTICOIDE_SISTEMICO"] },
-  { id: "Dexametasona", drugClasses: ["CORTICOIDE", "CORTICOIDE_SISTEMICO"] },
-  { id: "Hidrocortisona", drugClasses: ["CORTICOIDE", "CORTICOIDE_SISTEMICO"] },
+  { id: "Prednisona", drugClasses: ["CORTICOIDE_SISTEMICO"] },
+  { id: "Metilprednisolona", drugClasses: ["CORTICOIDE_SISTEMICO"] },
+  { id: "Dexametasona", drugClasses: ["CORTICOIDE_SISTEMICO"] },
+  { id: "Hidrocortisona", drugClasses: ["CORTICOIDE_SISTEMICO"] },
 
   // -------- ISRS --------
   { id: "Sertralina", drugClasses: ["ISRS"] },
@@ -88,13 +88,13 @@ export const MEDICATIONS: Med[] = [
   { id: "Litio", drugClasses: ["ESTABILIZADOR_ANIMO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
 
   // -------- NEUROLÉPTICOS / ANTIPSICÓTICOS --------
-  { id: "Haloperidol", drugClasses: ["NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
+  { id: "Haloperidol", drugClasses: ["NEUROLEPTICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
 
   // -------- FENOTIAZINAS (Antipsicóticos típicos) --------
-  { id: "Clorpromazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
-  { id: "Levomepromazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
-  { id: "Tioridazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
-  { id: "Proclorperazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTIPSICOTICO_TIPICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROCINETICO", "PROLONGADOR_QTC"] },
+  { id: "Clorpromazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
+  { id: "Levomepromazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
+  { id: "Tioridazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROLONGADOR_QTC"] },
+  { id: "Proclorperazina", drugClasses: ["FENOTIAZINA", "NEUROLEPTICO", "ANTICOLINERGICO", "PSICOTROPICO", "PROCINETICO", "PROLONGADOR_QTC"] },
 
   // -------- ANTIARRÍTMICOS --------
   { id: "Amiodarona", drugClasses: ["ANTIARITMICO", "ANTIARITMICO_CLASE_III", "PROLONGADOR_QTC", "INHIBIDOR_GLUCOPROTEINA_P"] },
@@ -320,11 +320,11 @@ export const MEDICATIONS: Med[] = [
   { id: "Galantamina", drugClasses: ["INHIBIDOR_ACETILCOLINESTERASA"] },
 
   // -------- ANTIPSICÓTICOS ATÍPICOS --------
-  { id: "Risperidona", drugClasses: ["NEUROLEPTICO", "NEUROLEPTICO_ATIPICO"] },
-  { id: "Olanzapina", drugClasses: ["NEUROLEPTICO", "NEUROLEPTICO_ATIPICO", "ANTICOLINERGICO"] },
-  { id: "Quetiapina", drugClasses: ["NEUROLEPTICO", "NEUROLEPTICO_ATIPICO", "ANTICOLINERGICO"] },
-  { id: "Aripiprazol", drugClasses: ["NEUROLEPTICO", "NEUROLEPTICO_ATIPICO"] },
-  { id: "Clozapina", drugClasses: ["NEUROLEPTICO", "NEUROLEPTICO_ATIPICO", "ANTICOLINERGICO"] },
+  { id: "Risperidona", drugClasses: ["NEUROLEPTICO"] },
+  { id: "Olanzapina", drugClasses: ["NEUROLEPTICO", "ANTICOLINERGICO"] },
+  { id: "Quetiapina", drugClasses: ["NEUROLEPTICO", "ANTICOLINERGICO"] },
+  { id: "Aripiprazol", drugClasses: ["NEUROLEPTICO"] },
+  { id: "Clozapina", drugClasses: ["NEUROLEPTICO", "ANTICOLINERGICO"] },
 
   // -------- OTROS ANTICOLINÉRGICOS --------
   { id: "Atropina", drugClasses: ["ANTICOLINERGICO"] },

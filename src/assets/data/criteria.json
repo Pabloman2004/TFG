@@ -326,7 +326,7 @@
       "system": "Sistema cardiovascular",
       "summary": "Evitar AINEs o corticoides en pacientes con insuficiencia cardíaca que requiera diuréticos de asa. Riesgo de descompensación de la insuficiencia cardíaca.",
       "logic": {"and":[{"inDrugClass":["AINE",{"var":"medications"}]},{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]},{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]}]},
-      "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib","Prednisona","Metilprednisolona","Dexametasona","Hidrocortisona"],"drugClasses":["AINE","CORTICOIDE"]}
+      "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib","Prednisona","Metilprednisolona","Dexametasona","Hidrocortisona"],"drugClasses":["AINE","CORTICOIDE_SISTEMICO"]}
     },
     {
       "id": "STOPP-B19-CORTICOIDE-SISTEMICO-IC",
@@ -334,7 +334,7 @@
       "system": "Sistema cardiovascular",
       "summary": "Evitar corticoides sistémicos en pacientes con insuficiencia cardíaca que requiera diuréticos de asa. Riesgo de descompensación de la insuficiencia cardíaca por retención hidrosalina.",
       "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]},{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]}]},
-      "excludes": {"medications":["Prednisona","Metilprednisolona","Dexametasona","Hidrocortisona"],"drugClasses":["CORTICOIDE_SISTEMICO","CORTICOIDE"]}
+      "excludes": {"medications":["Prednisona","Metilprednisolona","Dexametasona","Hidrocortisona"],"drugClasses":["CORTICOIDE_SISTEMICO"]}
     },
     {
       "id": "STOPP-B20-ANTIHIPERTENSIVO-ESTENOSIS-AORTICA",
@@ -910,7 +910,7 @@
       "system": "Sistema gastrointestinal",
       "summary": "Evitar corticosteroides con antecedentes de enfermedad ulcerosa péptica o esofagitis erosiva sin uso simultáneo de un IBP. Riesgo de reaparición de la enfermedad ulcerosa.",
       "logic": {"and":[{"in":["antecedentes_ulcera_peptica",{"var":"diagnoses"}]},{"!":{"inDrugClass":["IBP",{"var":"medications"}]}}]},
-      "excludes": {"drugClasses":["CORTICOIDE"]}
+      "excludes": {"drugClasses":["CORTICOIDE_SISTEMICO"]}
     },
     {
       "id": "STOPP-F6-AAS-EVAG",
@@ -973,7 +973,7 @@
       "type": "STOPP",
       "system": "Sistema respiratorio",
       "summary": "Evitar corticosteroides sistémicos en lugar de inhalados para el tratamiento de mantenimiento de la EPOC moderada-grave. Exposición innecesaria a efectos secundarios a largo plazo; existen alternativas inhaladas más efectivas.",
-      "logic": {"and":[{"inDrugClass":["CORTICOIDE",{"var":"medications"}]},{"in":["epoc",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"in":["epoc",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["CORTICOIDE_SISTEMICO"]}
     },
     {
@@ -1021,16 +1021,16 @@
       "type": "STOPP",
       "system": "Sistema musculoesquelético",
       "summary": "Evitar corticosteroides a largo plazo (> 3 meses) como monoterapia en la artritis reumatoide. Riesgo de efectos secundarios sistémicos de los corticosteroides. (Alerta de revisión de duración e indicación.)",
-      "logic": {"and":[{"inDrugClass":["CORTICOIDE",{"var":"medications"}]},{"in":["artritis_reumatoide",{"var":"diagnoses"}]}]},
-      "excludes": {"drugClasses":["CORTICOIDE"]}
+      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"in":["artritis_reumatoide",{"var":"diagnoses"}]}]},
+      "excludes": {"drugClasses":["CORTICOIDE_SISTEMICO"]}
     },
     {
       "id": "STOPP-H5-CORTICOIDE-ARTROSIS",
       "type": "STOPP",
       "system": "Sistema musculoesquelético",
       "summary": "Evitar corticosteroides sistémicos para la artrosis (salvo inyecciones intraarticulares periódicas para el dolor monoarticular). Riesgo de efectos secundarios sistémicos de los corticosteroides.",
-      "logic": {"and":[{"inDrugClass":["CORTICOIDE",{"var":"medications"}]},{"in":["artrosis",{"var":"diagnoses"}]}]},
-      "excludes": {"drugClasses":["CORTICOIDE"]}
+      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"in":["artrosis",{"var":"diagnoses"}]}]},
+      "excludes": {"drugClasses":["CORTICOIDE_SISTEMICO"]}
     },
     {
       "id": "STOPP-H6-AINE-GOTA-ACTIVA",
@@ -1045,8 +1045,8 @@
       "type": "STOPP",
       "system": "Sistema musculoesquelético",
       "summary": "Evitar AINEs en combinación con corticosteroides para el tratamiento de artritis/enfermedades reumatológicas. Mayor riesgo de enfermedad ulcerosa péptica.",
-      "logic": {"and":[{"inDrugClass":["AINE",{"var":"medications"}]},{"inDrugClass":["CORTICOIDE",{"var":"medications"}]},{"or":[{"in":["artritis",{"var":"diagnoses"}]},{"in":["artritis_reumatoide",{"var":"diagnoses"}]},{"in":["artritis_reumatoide_activa",{"var":"diagnoses"}]},{"in":["artrosis",{"var":"diagnoses"}]},{"in":["gota_activa",{"var":"diagnoses"}]},{"in":["gota_recurrente",{"var":"diagnoses"}]}]}]},
-      "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib","Prednisona","Metilprednisolona","Dexametasona","Hidrocortisona"],"drugClasses":["AINE","CORTICOIDE"]}
+      "logic": {"and":[{"inDrugClass":["AINE",{"var":"medications"}]},{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"or":[{"in":["artritis",{"var":"diagnoses"}]},{"in":["artritis_reumatoide",{"var":"diagnoses"}]},{"in":["artritis_reumatoide_activa",{"var":"diagnoses"}]},{"in":["artrosis",{"var":"diagnoses"}]},{"in":["gota_activa",{"var":"diagnoses"}]},{"in":["gota_recurrente",{"var":"diagnoses"}]}]}]},
+      "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib","Prednisona","Metilprednisolona","Dexametasona","Hidrocortisona"],"drugClasses":["AINE","CORTICOIDE_SISTEMICO"]}
     },
     {
       "id": "STOPP-H8-BIFOSFONATO-ENFERMEDAD-DIGESTIVA-ALTA",
@@ -1285,7 +1285,7 @@
       "system": "Riesgo de caídas",
       "summary": "Evitar psicotrópicos (antidepresivos, litio) en presencia de caídas de repetición. Los psicotrópicos pueden reducir el nivel de conciencia y aumentar el riesgo de caídas.",
       "logic": {"and":[{"inDrugClass":["PSICOTROPICO",{"var":"medications"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Citalopram","Escitalopram","Amitriptilina","Nortriptilina","Imipramina","Clomipramina","Doxepina","Litio","Venlafaxina","Duloxetina"],"drugClasses":["ANTIDEPRESIVO_ISRS","ANTIDEPRESIVO_TRICICLICO","PSICOTROPICO","ISRN"]}
+      "excludes": {"medications":["Amitriptilina","Nortriptilina","Imipramina","Clomipramina","Doxepina","Litio","Venlafaxina","Duloxetina"],"drugClasses":["ANTIDEPRESIVO_TRICICLICO","PSICOTROPICO","ISRN"]}
     },
     {
       "id": "STOPP-K9-ALFABLOQUEANTE-HTA-CAIDAS",
@@ -1650,7 +1650,7 @@
       "type": "START",
       "system": "Sistema musculoesquelético",
       "summary": "Considerar añadir bisfosfonato y vitamina D (con calcio) para prevención de osteoporosis inducida por corticosteroides. El paciente recibe corticosteroides orales a largo plazo sin protección ósea.",
-      "logic": {"and":[{"inDrugClass":["CORTICOIDE",{"var":"medications"}]},{"or":[{"!":{"inDrugClass":["BIFOSFONATO",{"var":"medications"}]}},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}]}
+      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"or":[{"!":{"inDrugClass":["BIFOSFONATO",{"var":"medications"}]}},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}]}
     },
     {
       "id": "START-H3-VITAMINA-D-OSTEOPOROSIS",
