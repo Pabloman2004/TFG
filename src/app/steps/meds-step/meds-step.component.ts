@@ -241,10 +241,6 @@ export class MedsStepComponent implements OnInit {
     return this.store.isMedTabReviewed(tabId) && !this.tabHasSelection(tabId);
   }
 
-  showTabCheck(tabId: string): boolean {
-    return this.isTabExplicitlyReviewed(tabId) || this.tabHasSelection(tabId);
-  }
-
   tabSelectionCount(tabId: string): number {
     const meds = this.store.meds();
     if (tabId === this.OTROS_TAB_ID) {

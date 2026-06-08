@@ -199,10 +199,6 @@ export class DiagnosisStepComponent implements OnInit {
     return this.store.isDxTabReviewed(tab.id) && !this.tabHasSelection(tab);
   }
 
-  showTabCheck(tab: DiagnosisTab): boolean {
-    return this.isTabExplicitlyReviewed(tab) || this.tabHasSelection(tab);
-  }
-
   private dxGroupsVisibleInTab(tab: DiagnosisTab): readonly DiagnosisGroup[] {
     if (tab.id === 'otros') return tab.groups;
     const ownDxCodes = new Set<string>();

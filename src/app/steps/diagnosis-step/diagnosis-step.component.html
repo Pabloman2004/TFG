@@ -98,13 +98,13 @@
                     [class.is-reviewed]="isTabExplicitlyReviewed(tab)"
                     (click)="setTab(tab.id)">
               {{ tab.label }}
-              @if (showTabCheck(tab)) {
+              @if (tabSelectionCount(tab) > 0) {
+                <span class="tab-check-count">{{ tabSelectionCount(tab) }}</span>
+              }
+              @if (isTabExplicitlyReviewed(tab)) {
                 <svg class="tab-check" width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M5 13l4 4L19 7" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                @if (tabSelectionCount(tab) > 0) {
-                  <span class="tab-check-count">{{ tabSelectionCount(tab) }}</span>
-                }
               }
             </button>
           }

@@ -99,13 +99,13 @@
                     [appTooltip]="cat.fullName ?? null"
                     (click)="setCategory(cat.id)">
               {{ cat.label }}
-              @if (showTabCheck(cat.id)) {
+              @if (tabSelectionCount(cat.id) > 0) {
+                <span class="tab-check-count">{{ tabSelectionCount(cat.id) }}</span>
+              }
+              @if (isTabExplicitlyReviewed(cat.id)) {
                 <svg class="tab-check" width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M5 13l4 4L19 7" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                @if (tabSelectionCount(cat.id) > 0) {
-                  <span class="tab-check-count">{{ tabSelectionCount(cat.id) }}</span>
-                }
               }
             </button>
           }
