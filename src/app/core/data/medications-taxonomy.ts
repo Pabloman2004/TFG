@@ -150,7 +150,7 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
     fullName: 'Osteoarticular / Músculo-esquelético',
     groups: [
       { id: 'bifosf', label: 'Bifosfonatos', drugs: byClass('BIFOSFONATO'), drugClass: 'BIFOSFONATO' },
-      { id: 'antirres', label: 'Antirresortivos', fullName: 'Antirresortivos no bifosfonatos (denosumab)', drugs: byClass('ANTIRRESORTIVO'), drugClass: 'ANTIRRESORTIVO' },
+      { id: 'antirres', label: 'Antirresortivos (amplio)', fullName: 'Categoría amplia de antirresortivos: incluye los bifosfonatos y el denosumab. Los bifosfonatos se muestran también en su grupo propio; el solapamiento es intencional, no es un duplicado.', drugs: byClass('ANTIRRESORTIVO'), drugClass: 'ANTIRRESORTIVO' },
       { id: 'anab_oseo', label: 'Anabolizantes óseos', fullName: 'Anabolizantes óseos (teriparatida)', drugs: byClass('ANABOLIZANTE_OSEO'), drugClass: 'ANABOLIZANTE_OSEO' },
       { id: 'colchi', label: 'Colchicina', drugs: byClass('COLCHICINA'), drugClass: 'COLCHICINA' },
       { id: 'fame', label: 'FAMEs', fullName: 'Fármacos antirreumáticos modificadores de la enfermedad (metotrexato, leflunomida…)', drugs: byClass('FAME'), drugClass: 'FAME' },
