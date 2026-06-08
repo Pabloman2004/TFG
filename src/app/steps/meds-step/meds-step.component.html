@@ -15,12 +15,25 @@
       <button class="htab on">Medicamentos</button>
       <button class="htab" (click)="navigateNext()">Diagnósticos</button>
     </div>
-    <button class="btn-primary" (click)="onExportPdf()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-        <path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Exportar PDF
-    </button>
+    <div class="nav-actions">
+      <button class="btn-secondary" (click)="openDisplayOptions()" title="Opciones de visualización">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <line x1="4" y1="7" x2="20" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="4" y1="17" x2="20" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="9" cy="7" r="2.3" fill="currentColor"/>
+          <circle cx="15" cy="12" r="2.3" fill="currentColor"/>
+          <circle cx="9" cy="17" r="2.3" fill="currentColor"/>
+        </svg>
+        Visualización
+      </button>
+      <button class="btn-primary" (click)="onExportPdf()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+          <path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Exportar PDF
+      </button>
+    </div>
   </header>
 
   <!-- ══ Main grid ══ -->
@@ -43,9 +56,6 @@
           </svg>
           Cargar
         </button>
-        <div class="tbar-sep"></div>
-        <button class="az" (click)="decreaseScale()">A−</button>
-        <button class="az" (click)="increaseScale()">A+</button>
         <div class="tbar-sep"></div>
         <button class="tbtn" (click)="openQuickGuide()" title="Guía rápida">Guía</button>
         <button class="tbtn tbtn-reset" (click)="resetCase()" title="Reiniciar caso">Reiniciar</button>
@@ -120,7 +130,9 @@
               @for (group of groupBuckets().ownAll; track trackGroup($index, group)) {
                 <div class="drug-col" [class.drug-col-sel]="isGroupChecked(group)">
                   <div class="drug-col-hd drug-col-hd--readonly">
-                    <div class="cbx cbx--readonly" [class.checked]="isGroupChecked(group)" aria-hidden="true"></div>
+                    @if (groupSelectionCount(group) > 0) {
+                      <span class="group-sel-badge" aria-hidden="true">{{ groupSelectionCount(group) }}</span>
+                    }
                     <span class="col-label" [class.col-label-act]="isGroupChecked(group)"
                           [appTooltip]="group.fullName ?? null">{{ group.label }}</span>
                   </div>
@@ -158,7 +170,9 @@
               @for (group of groupBuckets().foreignRelevant; track trackGroup($index, group)) {
                 <div class="drug-col drug-col--foreign" [class.drug-col-sel]="isGroupChecked(group)">
                   <div class="drug-col-hd drug-col-hd--readonly">
-                    <div class="cbx cbx--readonly" [class.checked]="isGroupChecked(group)" aria-hidden="true"></div>
+                    @if (groupSelectionCount(group) > 0) {
+                      <span class="group-sel-badge" aria-hidden="true">{{ groupSelectionCount(group) }}</span>
+                    }
                     <span class="col-label" [class.col-label-act]="isGroupChecked(group)"
                           [appTooltip]="group.fullName ?? null">{{ group.label }}</span>
                     <span class="cross-badge"
@@ -225,15 +239,28 @@
         </div>
 
         @if (startCriteria().length === 0) {
-          <div class="empty-state">
-            <div class="empty-ic start-ic">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M5 13l4 4L19 7" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+          @if (store.meds().length === 0 && store.diagnoses().length === 0) {
+            <div class="empty-state">
+              <div class="empty-ic start-ic">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="empty-ttl">Sin sugerencias START</div>
+              <div class="empty-sub">Selecciona medicamentos para analizar posibles criterios START.</div>
             </div>
-            <div class="empty-ttl">Sin sugerencias START</div>
-            <div class="empty-sub">Las medicaciones recomendadas aparecerán aquí.</div>
-          </div>
+          } @else {
+            <div class="empty-state">
+              <div class="empty-ic neutral-ic">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="7" stroke="#94a3b8" stroke-width="2"/>
+                  <path d="M16.5 16.5L21 21" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="empty-ttl">Ningún criterio START activado</div>
+              <div class="empty-sub">La combinación actual no activa ningún criterio START.</div>
+            </div>
+          }
         } @else {
           <div class="result-items">
             @for (group of startGroups(); track group.system) {
@@ -270,15 +297,28 @@
         </div>
 
         @if (stoppCriteria().length === 0) {
-          <div class="empty-state">
-            <div class="empty-ic stopp-ic">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M12 9v4m0 3.5v.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4a2 2 0 00-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+          @if (store.meds().length === 0 && store.diagnoses().length === 0) {
+            <div class="empty-state">
+              <div class="empty-ic stopp-ic">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 9v4m0 3.5v.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4a2 2 0 00-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="empty-ttl">Sin alertas STOPP</div>
+              <div class="empty-sub">Selecciona medicamentos para analizar posibles criterios STOPP.</div>
             </div>
-            <div class="empty-ttl">Sin alertas STOPP</div>
-            <div class="empty-sub">Posibles prescripciones inadecuadas aparecerán aquí.</div>
-          </div>
+          } @else {
+            <div class="empty-state">
+              <div class="empty-ic neutral-ic">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="7" stroke="#94a3b8" stroke-width="2"/>
+                  <path d="M16.5 16.5L21 21" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="empty-ttl">Ningún criterio STOPP activado</div>
+              <div class="empty-sub">La combinación actual no activa ningún criterio STOPP.</div>
+            </div>
+          }
         } @else {
           <div class="result-items">
             @for (group of stoppGroups(); track group.system) {

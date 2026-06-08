@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, signal, computed, effect, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -10,14 +10,7 @@ import { QuickGuideDialogComponent } from './quick-guide-dialog.component';
 import { ConfirmResetDialogComponent } from './confirm-reset-dialog.component';
 import { CaseStoreService } from './core/case-store.service';
 import { CaseIoService } from './core/case-io.service';
-
-const SCALES = [1, 1.15, 1.3] as const;
-type Scale = (typeof SCALES)[number];
-
-function loadScale(): Scale {
-  const v = parseFloat(localStorage.getItem('font-scale') ?? '1');
-  return (SCALES.includes(v as Scale) ? v : 1) as Scale;
-}
+import { DisplaySettingsService } from './core/display-settings.service';
 
 @Component({
   selector: 'app-root',
@@ -75,39 +68,10 @@ function loadScale(): Scale {
     .io-btn:hover { background: #e8eefc; color: #1e40af; }
     .io-btn:focus-visible { outline: 2px solid rgba(99,102,241,.6); outline-offset: 2px; }
 
-    .font-ctrl {
-      display: flex;
-      gap: 4px;
-      background: #fff;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      padding: 4px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.12);
-    }
-    .font-btn {
-      padding: 4px 10px;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: inherit;
-      border: 1px solid #e5e7eb;
-      border-radius: 5px;
-      background: #f9fafb;
-      color: #374151;
-      cursor: pointer;
-      transition: background .12s, color .12s;
-      line-height: 1.4;
-    }
-    .font-btn:hover:not(:disabled) { background: #e8eefc; color: #1e40af; }
-    .font-btn:disabled { opacity: .4; cursor: default; }
-    .font-btn:focus-visible { outline: 2px solid rgba(99,102,241,.6); outline-offset: 2px; }
   `]
 })
 export class AppComponent {
   @ViewChild('fileInput') private fileInputRef!: ElementRef<HTMLInputElement>;
-
-  readonly fontScale = signal<Scale>(loadScale());
-  readonly atMin = computed(() => this.fontScale() === SCALES[0]);
-  readonly atMax = computed(() => this.fontScale() === SCALES[SCALES.length - 1]);
 
   constructor(
     private dialog: MatDialog,
@@ -115,25 +79,8 @@ export class AppComponent {
     private router: Router,
     private store: CaseStoreService,
     private caseIo: CaseIoService,
-  ) {
-    document.documentElement.style.setProperty('--font-scale', String(this.fontScale()));
-
-    effect(() => {
-      const scale = this.fontScale();
-      document.documentElement.style.setProperty('--font-scale', String(scale));
-      localStorage.setItem('font-scale', String(scale));
-    });
-  }
-
-  increaseScale(): void {
-    const idx = SCALES.indexOf(this.fontScale());
-    if (idx < SCALES.length - 1) this.fontScale.set(SCALES[idx + 1]);
-  }
-
-  decreaseScale(): void {
-    const idx = SCALES.indexOf(this.fontScale());
-    if (idx > 0) this.fontScale.set(SCALES[idx - 1]);
-  }
+    private displaySettings: DisplaySettingsService,
+  ) {}
 
   onSave(): void {
     this.caseIo.exportCase();

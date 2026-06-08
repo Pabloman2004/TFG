@@ -7,6 +7,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { QuickGuideDialogComponent } from '../../quick-guide-dialog.component';
 import { ConfirmResetDialogComponent } from '../../confirm-reset-dialog.component';
+import { DisplayOptionsDialogComponent } from '../../display-options-dialog.component';
 
 import { CaseStoreService } from '../../core/case-store.service';
 import { CriteriaEngineService } from '../../core/services/criteria-engine.service';
@@ -15,12 +16,6 @@ import { CaseIoService } from '../../core/case-io.service';
 import { Crit, Med } from '../../core/types';
 import { MEDICATIONS } from '../../core/data/medications';
 
-const SCALES = [1, 1.15, 1.3] as const;
-type Scale = (typeof SCALES)[number];
-function currentScale(): Scale {
-  const v = parseFloat(localStorage.getItem('font-scale') ?? '1');
-  return (SCALES.includes(v as Scale) ? v : 1) as Scale;
-}
 import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP } from '../../core/data/diagnoses';
 import { DIAGNOSIS_TABS, DiagnosisTab, DiagnosisGroup } from '../../core/data/diagnoses-taxonomy';
 
@@ -48,7 +43,6 @@ import { isDxGroupChecked } from '../../core/group-checked';
   styleUrls: ['./diagnosis-step.component.css'],
 })
 export class DiagnosisStepComponent implements OnInit {
-  private readonly el = inject(ElementRef<HTMLElement>);
   readonly store = inject(CaseStoreService);
   readonly tabs = DIAGNOSIS_TABS;
   readonly activeTabId = computed<string>(() => {
@@ -254,7 +248,6 @@ export class DiagnosisStepComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.applyScale(currentScale());
     const loaded = await this.criteriaEngine.loadCriteria();
     this.criteria.set(loaded);
   }
@@ -333,6 +326,16 @@ export class DiagnosisStepComponent implements OnInit {
     return isDxGroupChecked(group, this.store.diagnoses());
   }
 
+  groupSelectionCount(group: DiagnosisGroup): number {
+    const sel = this.selectedCodes();
+    let count = group.diagnoses.filter(d => sel.has(normalizeDiagnosis(d))).length;
+    if (!group.id.startsWith('foreign__')) {
+      if (this.isOtroDxSelected(group)) count++;
+      count += this.customDxFor(group).length;
+    }
+    return count;
+  }
+
   groupHasAnySelection(group: DiagnosisGroup): boolean {
     return this.isGroupChecked(group);
   }
@@ -357,25 +360,12 @@ export class DiagnosisStepComponent implements OnInit {
     }
   }
 
-  increaseScale(): void {
-    const idx = SCALES.indexOf(currentScale());
-    if (idx < SCALES.length - 1) this.applyScale(SCALES[idx + 1]);
-  }
-
-  decreaseScale(): void {
-    const idx = SCALES.indexOf(currentScale());
-    if (idx > 0) this.applyScale(SCALES[idx - 1]);
-  }
-
-  private applyScale(s: Scale): void {
-    const v = String(s);
-    document.documentElement.style.setProperty('--font-scale', v);
-    this.el.nativeElement.style.setProperty('--font-scale', v);
-    localStorage.setItem('font-scale', v);
-  }
-
   openQuickGuide(): void {
     this.dialog.open(QuickGuideDialogComponent, { width: '480px', panelClass: 'rounded-xl' });
+  }
+
+  openDisplayOptions(): void {
+    this.dialog.open(DisplayOptionsDialogComponent, { width: '420px', panelClass: 'rounded-xl' });
   }
 
   resetCase(): void {
