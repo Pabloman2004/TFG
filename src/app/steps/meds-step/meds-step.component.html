@@ -160,45 +160,51 @@
             </div>
           }
 
-          <!-- Divisor + Bucket B: relevantes de otros sistemas -->
+          <!-- Bucket B: relevantes de otros sistemas -->
           @if (groupBuckets().foreignRelevant.length > 0) {
-            <div class="bucket-divider" role="separator">
-              <span class="bucket-divider-label">Relevantes de otros sistemas</span>
-            </div>
+            <div class="bucket-foreign-zone">
+              <div class="bucket-foreign-header">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>Relevantes de otros sistemas</span>
+              </div>
 
-            <div class="cols-flex">
-              @for (group of groupBuckets().foreignRelevant; track trackGroup($index, group)) {
-                <div class="drug-col drug-col--foreign" [class.drug-col-sel]="isGroupChecked(group)">
-                  <div class="drug-col-hd drug-col-hd--readonly">
-                    @if (groupSelectionCount(group) > 0) {
-                      <span class="group-sel-badge" aria-hidden="true">{{ groupSelectionCount(group) }}</span>
+              <div class="cols-flex">
+                @for (group of groupBuckets().foreignRelevant; track trackGroup($index, group)) {
+                  <div class="drug-col drug-col--foreign" [class.drug-col-sel]="isGroupChecked(group)">
+                    <div class="drug-col-hd drug-col-hd--readonly">
+                      @if (groupSelectionCount(group) > 0) {
+                        <span class="group-sel-badge" aria-hidden="true">{{ groupSelectionCount(group) }}</span>
+                      }
+                      <span class="col-label" [class.col-label-act]="isGroupChecked(group)"
+                            [appTooltip]="group.fullName ?? null">{{ group.label }}</span>
+                      <span class="cross-badge"
+                            [title]="'Sistema primario: ' + group.originTabLabel">{{ group.originTabLabel }}</span>
+                    </div>
+                    @for (drug of group.drugs; track trackDrug($index, drug)) {
+                      <div class="drug-row" (click)="toggleDrug(drug)">
+                        <div class="cbx" [class.checked]="isSelected(drug)"></div>
+                        <span class="drug-name" [class.sel]="isSelected(drug)">{{ drug }}</span>
+                      </div>
                     }
-                    <span class="col-label" [class.col-label-act]="isGroupChecked(group)"
-                          [appTooltip]="group.fullName ?? null">{{ group.label }}</span>
-                    <span class="cross-badge"
-                          [title]="'Sistema primario: ' + group.originTabLabel">{{ group.originTabLabel }}</span>
+                    @for (custom of customDrugsFor(group); track custom.id) {
+                      <div class="drug-row drug-row-custom" (click)="removeMed(custom.id)"
+                           title="Medicación personalizada — click para quitar">
+                        <div class="cbx checked"></div>
+                        <span class="drug-name sel">{{ custom.id }}</span>
+                      </div>
+                    }
+                    @if (showOtroFor(group)) {
+                      <button class="otro-btn" (click)="toggleOtro(group)">
+                        <div class="cbx" [class.checked]="isOtroSelected(group)"></div>
+                        Otro
+                      </button>
+                    }
                   </div>
-                  @for (drug of group.drugs; track trackDrug($index, drug)) {
-                    <div class="drug-row" (click)="toggleDrug(drug)">
-                      <div class="cbx" [class.checked]="isSelected(drug)"></div>
-                      <span class="drug-name" [class.sel]="isSelected(drug)">{{ drug }}</span>
-                    </div>
-                  }
-                  @for (custom of customDrugsFor(group); track custom.id) {
-                    <div class="drug-row drug-row-custom" (click)="removeMed(custom.id)"
-                         title="Medicación personalizada — click para quitar">
-                      <div class="cbx checked"></div>
-                      <span class="drug-name sel">{{ custom.id }}</span>
-                    </div>
-                  }
-                  @if (showOtroFor(group)) {
-                    <button class="otro-btn" (click)="toggleOtro(group)">
-                      <div class="cbx" [class.checked]="isOtroSelected(group)"></div>
-                      Otro
-                    </button>
-                  }
-                </div>
-              }
+                }
+              </div>
             </div>
           }
 

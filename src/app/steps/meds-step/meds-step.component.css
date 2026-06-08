@@ -377,41 +377,33 @@
   align-content: start;
 }
 
-/* ── Divisor entre buckets — estilo "fieldset legend" ──────────────── */
-.bucket-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 28px 16px 16px;
-}
-.bucket-divider::before,
-.bucket-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent 0,
-    #cbd5e1 18%,
-    #cbd5e1 82%,
-    transparent 100%
-  );
-}
-.bucket-divider-label {
-  font-size: calc(12px * var(--font-scale, 1));
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #64748b;
-  white-space: nowrap;
+/* ── Zona "Relevantes de otros sistemas" ─────────────────────────── */
+.bucket-foreign-zone {
+  margin-top: 12px;
+  border-top: 2px solid #b8cfe8;
+  background: #eef3fb;
 }
 
-/* ── Diferenciador sutil para columnas del bucket B ────────────────── */
+.bucket-foreign-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  background: #dce9f7;
+  border-bottom: 1px solid #c3d8ee;
+  font-size: calc(12px * var(--font-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #2563a8;
+}
+
+/* ── Columnas del bucket B dentro de la zona ─────────────────────── */
 .drug-col--foreign {
-  background: #fafbfd;
+  background: transparent;
 }
 .drug-col--foreign.drug-col-sel {
-  background: #ebf2fc;
+  background: #d4e5f7;
 }
 
 .drug-col {
@@ -469,12 +461,12 @@
 
 .cross-badge {
   font-size: calc(10px * var(--font-scale, 1));
-  font-weight: 500;
-  color: #6b7280;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  font-weight: 600;
+  color: #1d4ed8;
+  background: #dbeafe;
+  border: 1px solid #93c5fd;
   border-radius: 4px;
-  padding: 1px 4px;
+  padding: 1px 5px;
   white-space: nowrap;
   flex-shrink: 0;
   margin-left: auto;
