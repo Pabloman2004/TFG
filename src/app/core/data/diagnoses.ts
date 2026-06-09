@@ -505,3 +505,17 @@ export const DIAGNOSIS_REVERSE_MAP: Record<string, string> =
 export function normalizeDiagnosis(d: string): string {
   return DIAGNOSIS_MAP[d] ?? d.toLowerCase().replace(/\s+/g, "_");
 }
+
+// 🔹 Resuelve un código interno al label legible para mostrar en informes
+export function resolveDiagnosisLabel(code: string): string {
+  const known = DIAGNOSIS_REVERSE_MAP[code];
+  if (known) return known;
+
+  const sepIdx = code.indexOf('__');
+  if (sepIdx === -1) return code;
+
+  const suffix = code.slice(sepIdx + 2);
+  if (suffix === 'otro') return 'Otro (sin especificar)';
+
+  return `${suffix.charAt(0).toUpperCase()}${suffix.slice(1)} (añadido)`;
+}

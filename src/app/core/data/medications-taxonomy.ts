@@ -182,3 +182,14 @@ export const DRUG_CATEGORIES: DrugCategory[] = RAW_DRUG_CATEGORIES.map(cat => ({
     .map(g => ({ ...g, drugs: g.drugs.slice().sort((a, b) => ES_COLLATOR.compare(a, b)) }))
     .sort((a, b) => ES_COLLATOR.compare(a.label, b.label)),
 }));
+
+const MED_GROUP_LABEL_MAP: Record<string, string> = Object.fromEntries(
+  RAW_DRUG_CATEGORIES.flatMap(cat => cat.groups.map(g => [g.id, g.label]))
+);
+
+export function resolveMedicationLabel(id: string): string {
+  if (!id.startsWith('otro__')) return id;
+  const groupId = id.slice('otro__'.length);
+  const groupLabel = MED_GROUP_LABEL_MAP[groupId];
+  return groupLabel ? `Otro (${groupLabel})` : 'Otro (sin especificar)';
+}

@@ -10,23 +10,43 @@ interface PdfContent {
     headerRows?: number;
     body: unknown[][];
   };
+  columns?: unknown[];
+  stack?: unknown[];
+  canvas?: unknown[];
+  image?: string;
+  width?: number | string;
+  height?: number;
   layout?: string;
   bold?: boolean;
   fontSize?: number;
   color?: string;
   fillColor?: string;
+  alignment?: 'left' | 'center' | 'right';
+  italics?: boolean;
+  columnGap?: number;
+  colSpan?: number;
+  fontFeatures?: Record<string, boolean>;
 }
+
+type PdfFontSpec = { normal: string; bold?: string; italics?: string; bolditalics?: string };
 
 interface PdfDocDefinition {
   content: unknown[];
   pageMargins?: Margins;
   styles?: Record<string, Partial<PdfContent>>;
+  defaultStyle?: Partial<PdfContent> & { font?: string };
+  footer?: (currentPage: number, pageCount: number) => unknown;
 }
 
 declare module 'pdfmake/build/pdfmake' {
   interface PdfMakeBrowser {
     vfs: Record<string, string>;
-    createPdf(docDefinition: PdfDocDefinition): { download(fileName?: string): void };
+    fonts: Record<string, PdfFontSpec>;
+    createPdf(
+      docDefinition: PdfDocDefinition,
+      tableLayouts?: unknown,
+      fonts?: Record<string, PdfFontSpec>,
+    ): { download(fileName?: string): void };
   }
   const pdfMake: PdfMakeBrowser;
   export default pdfMake;

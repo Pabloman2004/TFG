@@ -378,7 +378,7 @@ export class DiagnosisStepComponent implements OnInit {
     const patient = this.store.patientCase;
     const criteria = await this.criteriaEngine.loadCriteria();
     const results = this.criteriaEngine.evaluate(patient, criteria);
-    this.report.exportCase({
+    await this.report.exportCase({
       patient: this.store.patient(),
       diagnoses: this.store.diagnoses(),
       meds: this.store.meds(),
