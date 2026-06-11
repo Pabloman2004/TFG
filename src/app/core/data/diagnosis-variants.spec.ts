@@ -104,6 +104,12 @@ describe('applyMutex — exclusividad mutua pura sobre códigos seleccionados', 
     expect(applyMutex(['hipertension_grave'], 'hipertension_grave')).toEqual([]);
   });
 
+  it('toggle-off NO arrastra a un hermano coexistente (estado heredado de JSON antiguo)', () => {
+    // Deseleccionar SOLO quita la elegida; solo SELECCIONAR colapsa a una variante.
+    expect(applyMutex(['hipertension_grave', 'hipertension_moderada'], 'hipertension_grave'))
+      .toEqual(['hipertension_moderada']);
+  });
+
   it('la raíz "sin especificar" también es excluyente con las variantes', () => {
     expect(applyMutex(['hipertension_grave'], 'hta')).toEqual(['hta']);
     expect(applyMutex(['hta'], 'hipertension_grave')).toEqual(['hipertension_grave']);

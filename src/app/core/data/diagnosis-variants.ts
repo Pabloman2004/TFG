@@ -64,11 +64,14 @@ export const MUTEX_SIBLINGS: Record<string, string[]> = Object.fromEntries(
 // el elegido alternado (toggle). Códigos sin familia → toggle simple (sin efecto
 // de exclusividad). No muta la entrada.
 export const applyMutex = (selected: readonly string[], chosenCode: string): string[] => {
+  if (selected.includes(chosenCode)) {
+    // Toggle-off: solo retira la elegida. No arrastra hermanos coexistentes
+    // (un estado heredado de JSON antiguo se respeta hasta que el usuario SELECCIONE).
+    return selected.filter(code => code !== chosenCode);
+  }
+  // Selección: colapsa la familia a la elegida retirando sus hermanos.
   const siblings = new Set(MUTEX_SIBLINGS[chosenCode] ?? []);
-  const withoutSiblings = selected.filter(code => !siblings.has(code));
-  return withoutSiblings.includes(chosenCode)
-    ? withoutSiblings.filter(code => code !== chosenCode)
-    : [...withoutSiblings, chosenCode];
+  return [...selected.filter(code => !siblings.has(code)), chosenCode];
 };
 
 // Guard de integridad en tiempo de carga: todo label declarado debe existir en el

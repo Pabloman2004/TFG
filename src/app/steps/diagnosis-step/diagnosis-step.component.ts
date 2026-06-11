@@ -19,6 +19,7 @@ import { Crit, Med } from '../../core/types';
 import { MEDICATIONS } from '../../core/data/medications';
 
 import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP } from '../../core/data/diagnoses';
+import { applyMutex } from '../../core/data/diagnosis-variants';
 import { DIAGNOSIS_TABS, DiagnosisTab, DiagnosisGroup } from '../../core/data/diagnoses-taxonomy';
 import { CARDIOVASCULAR_DX_DEPS, isDiagnosisEnabled } from '../../core/data/cardiovascular-dx-dependencies';
 import { ROUTES } from '../../app.routes.constants';
@@ -209,12 +210,12 @@ export class DiagnosisStepComponent implements OnInit {
   toggleDiagnosis(label: string): void {
     const code = normalizeDiagnosis(label);
     const current = this.store.diagnoses();
-    if (current.includes(code)) {
-      this.store.diagnoses.set(current.filter(c => c !== code));
-      return;
-    }
-    if (!this.isDxEnabled(label)) return;
-    this.store.diagnoses.set([...current, code]);
+    const isAdding = !current.includes(code);
+    if (isAdding && !this.isDxEnabled(label)) return;
+    // applyMutex impone la exclusividad de variantes (P15): al seleccionar una
+    // variante de una familia retira a sus hermanas; para diagnósticos sin
+    // familia equivale a un toggle simple.
+    this.store.diagnoses.set(applyMutex(current, code));
   }
 
   customDxFor(group: DiagnosisGroup): string[] {
