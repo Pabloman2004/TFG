@@ -188,4 +188,44 @@ describe('CriteriaEngineService — Motor genérico', () => {
       httpMock.verify();
     });
   });
+
+});
+
+describe('CriteriaEngineService — loadCriteria() caché', () => {
+  let engine: CriteriaEngineService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    engine = setupEngine();
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => httpMock.verify());
+
+  it('rechaza la promesa cuando el servidor devuelve error', async () => {
+    const p = engine.loadCriteria();
+    const req = httpMock.expectOne(r => r.url.includes('criteria.json'));
+    req.flush('Error del servidor', { status: 500, statusText: 'Internal Server Error' });
+
+    await expectAsync(p).toBeRejected();
+  });
+
+  it('reintenta la carga en la segunda llamada tras un fallo', async () => {
+    const firstCall = engine.loadCriteria();
+    const req1 = httpMock.expectOne(r => r.url.includes('criteria.json'));
+    req1.flush('Error', { status: 500, statusText: 'Internal Server Error' });
+    await expectAsync(firstCall).toBeRejected();
+
+    const mockCriteria = [
+      { id: 'T1', type: 'STOPP' as const, system: 'Test', summary: 'Test',
+        logic: { in: ['hta', { var: 'diagnoses' }] } },
+    ];
+    const secondCall = engine.loadCriteria();
+    const req2 = httpMock.expectOne(r => r.url.includes('criteria.json'));
+    req2.flush({ criteria: mockCriteria });
+
+    const result = await secondCall;
+    expect(result.length).toBe(1);
+    expect(result[0].id).toBe('T1');
+  });
 });

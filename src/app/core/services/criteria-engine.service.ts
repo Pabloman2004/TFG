@@ -1,4 +1,6 @@
 // src/app/core/services/criteria-engine.service.ts
+// @linked docs/motor-criterios.md
+// Si cambias la carga de criterios, los operadores custom o la lógica de exclusión, actualiza el doc enlazado.
 
 import { Injectable, Signal, signal } from '@angular/core';
 import * as jsonLogic from 'json-logic-js';
@@ -44,6 +46,9 @@ export class CriteriaEngineService {
         const crits = file.criteria;
         this._relevance.set(buildRelevance(crits, this.getAllTabIds()));
         return crits;
+      }).catch(err => {
+        this.criteriaCache = null;
+        return Promise.reject(err);
       });
     }
     return this.criteriaCache;
