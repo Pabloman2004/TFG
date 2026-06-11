@@ -132,6 +132,21 @@ body {
 .page-wrap { padding-top: 24px; }
 
 /* ========================
+   P14 — REJILLA ADAPTATIVA COMPARTIDA (opciones de medicamentos y diagnósticos)
+   Patrón único de columnas autollenado usado por meds-step y diagnosis-step.
+   El resto del estilo de .drug-col (borde, padding, min-height…) vive en cada
+   componente; aquí solo la orientación de rejilla, que antes divergía.
+======================== */
+.cols-flex {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(200px * var(--font-scale, 1)), 1fr));
+  align-content: start;
+}
+.drug-col {
+  width: auto;
+}
+
+/* ========================
    CUSTOM TOOLTIP
 ======================== */
 .app-tooltip {
