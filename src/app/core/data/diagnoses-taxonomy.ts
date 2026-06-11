@@ -1,4 +1,7 @@
-import { DIAGNOSIS_GROUPS, DIAGNOSIS_SUBGROUPS } from './diagnoses';
+// @linked docs/catalogo-clinico.md
+// Si cambias TAB_ORDER, OTROS_SYSTEMS, buildTabs o la construcción de DIAGNOSIS_TABS, actualiza el doc enlazado.
+
+import { DIAGNOSIS_GROUPS, DIAGNOSIS_SUBGROUPS, slug } from './diagnoses';
 
 export interface DiagnosisGroup {
   id: string;
@@ -51,8 +54,6 @@ const OTROS_GROUP_ORDER: string[] = [
   'Infeccioso',
 ];
 
-const slug = (s: string): string =>
-  s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '_');
 
 const groupBySystem = (): Record<string, string[]> => {
   const result: Record<string, string[]> = {};

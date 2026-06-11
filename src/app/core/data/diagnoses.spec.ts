@@ -1,4 +1,4 @@
-import { resolveDiagnosisLabel } from './diagnoses';
+import { resolveDiagnosisLabel, normalizeDiagnosis, DIAGNOSIS_MAP } from './diagnoses';
 
 describe('resolveDiagnosisLabel', () => {
   it('devuelve el label legible para un código conocido del catálogo', () => {
@@ -31,5 +31,28 @@ describe('resolveDiagnosisLabel', () => {
 
   it('devuelve el código en bruto si no tiene separador y no está en el catálogo', () => {
     expect(resolveDiagnosisLabel('codigo_desconocido')).toBe('codigo_desconocido');
+  });
+});
+
+describe('normalizeDiagnosis', () => {
+  it('devuelve el valor del DIAGNOSIS_MAP para una entrada conocida', () => {
+    const [label, key] = Object.entries(DIAGNOSIS_MAP)[0];
+    expect(normalizeDiagnosis(label)).toBe(key);
+  });
+
+  it('entry ya mapeada en DIAGNOSIS_MAP: pasa por el mapa, no por el fallback', () => {
+    expect(normalizeDiagnosis('HTA')).toBe('hta');
+  });
+
+  it('entrada desconocida sin acento: convierte a minúsculas y reemplaza espacios', () => {
+    expect(normalizeDiagnosis('Diabetes Mellitus')).toBe('diabetes_mellitus');
+  });
+
+  it('[T9] entrada desconocida CON acento: normaliza NFD igual que slug (sin acento)', () => {
+    expect(normalizeDiagnosis('Ictús agudo')).toBe('ictus_agudo');
+  });
+
+  it('[T9] otro acento: "Fibrilación" → "fibrilacion"', () => {
+    expect(normalizeDiagnosis('Fibrilación no mapeada')).toBe('fibrilacion_no_mapeada');
   });
 });

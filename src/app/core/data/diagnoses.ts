@@ -1,4 +1,6 @@
 // src/app/core/data/diagnoses.ts
+// @linked docs/catalogo-clinico.md
+// Si cambias los mapas de diagnósticos, claves internas o la normalización, actualiza el doc enlazado.
 
 // 🔹 Grupo de cada diagnóstico
 export const DIAGNOSIS_GROUPS: Record<string, string> = {
@@ -501,9 +503,13 @@ export const DIAGNOSIS_REVERSE_MAP: Record<string, string> =
     Object.entries(DIAGNOSIS_MAP).map(([label, key]) => [key, label])
   );
 
+// 🔹 Slug: minúsculas, sin acentos (NFD), espacios → guion bajo
+export const slug = (s: string): string =>
+  s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '_');
+
 // 🔹 Normalizador
 export function normalizeDiagnosis(d: string): string {
-  return DIAGNOSIS_MAP[d] ?? d.toLowerCase().replace(/\s+/g, "_");
+  return DIAGNOSIS_MAP[d] ?? slug(d);
 }
 
 // 🔹 Resuelve un código interno al label legible para mostrar en informes
