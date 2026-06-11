@@ -1,3 +1,5 @@
+// @linked docs/flujo-pasos.md
+// Si cambias la lógica de groupBuckets, groupsVisibleInTab, tabs revisados o ítems "Otro", actualiza el doc enlazado.
 import { Component, ChangeDetectionStrategy, OnInit, computed, signal, effect, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -20,17 +22,8 @@ import { ROUTES } from '../../app.routes.constants';
 import { buildCriteriaText } from '../../core/clipboard-text';
 import { groupBySystem, critCode, CritGroup } from '../../core/criteria-groups';
 import { isMedGroupChecked } from '../../core/group-checked';
+import { computeMedGroupBuckets, medGroupsVisibleInTab, MedGroupBuckets, MedForeignGroup } from '../../core/group-visibility';
 import { TooltipDirective } from '../../shared/tooltip.directive';
-
-interface ForeignGroup extends DrugGroup {
-  readonly originTabId: string;
-  readonly originTabLabel: string;
-}
-
-interface GroupBuckets {
-  readonly ownAll: readonly DrugGroup[];
-  readonly foreignRelevant: readonly ForeignGroup[];
-}
 
 @Component({
   selector: 'app-meds-step',
@@ -97,54 +90,14 @@ export class MedsStepComponent implements OnInit {
     this.extractInDrugClasses(this.criteria()),
   );
 
-  private readonly esCollator = new Intl.Collator('es', { sensitivity: 'base' });
-
-  readonly groupBuckets = computed<GroupBuckets>(() => {
-    const activeId = this.activeCategoryId();
-
-    if (activeId === this.OTROS_TAB_ID) {
-      const drugs = this.categories.flatMap(cat =>
-        cat.groups.filter(g => g.drugs.length === 1).flatMap(g => g.drugs),
-      );
-      if (drugs.length === 0) return { ownAll: [], foreignRelevant: [] };
-      return {
-        ownAll: [{
-          id: 'otros',
-          label: 'Otros medicamentos',
-          drugs: drugs.slice().sort((a, b) => this.esCollator.compare(a, b)),
-        }],
-        foreignRelevant: [],
-      };
-    }
-
-    const cat = this.activeCategory();
-    const ownAll = (cat ? cat.groups.filter(g => g.drugs.length > 1) : [])
-      .slice()
-      .sort((a, b) => this.esCollator.compare(a.label, b.label));
-
-    const rel = this.criteriaEngine.relevance();
-    const relevantClasses = rel?.classesByTab.get(activeId) ?? new Set<string>();
-
-    const ownClasses = new Set(
-      ownAll.map(g => g.drugClass).filter((dc): dc is string => !!dc),
-    );
-    const seenForeign = new Set<string>();
-    const foreignRelevant: ForeignGroup[] = [];
-    for (const c of this.categories) {
-      if (c.id === activeId) continue;
-      for (const g of c.groups) {
-        if (g.drugs.length <= 1 || !g.drugClass) continue;
-        if (!relevantClasses.has(g.drugClass)) continue;
-        if (ownClasses.has(g.drugClass)) continue;
-        if (seenForeign.has(g.drugClass)) continue;
-        seenForeign.add(g.drugClass);
-        foreignRelevant.push({ ...g, originTabId: c.id, originTabLabel: c.label });
-      }
-    }
-    foreignRelevant.sort((a, b) => this.esCollator.compare(a.label, b.label));
-
-    return { ownAll, foreignRelevant };
-  });
+  readonly groupBuckets = computed<MedGroupBuckets>(() =>
+    computeMedGroupBuckets(
+      this.activeCategoryId(),
+      this.categories,
+      this.criteriaEngine.relevance(),
+      this.OTROS_TAB_ID,
+    ),
+  );
 
   constructor(
     private router: Router,
@@ -185,33 +138,7 @@ export class MedsStepComponent implements OnInit {
   }
 
   private groupsVisibleInTab(tabId: string): readonly DrugGroup[] {
-    if (tabId === this.OTROS_TAB_ID) {
-      const drugs = this.categories.flatMap(cat =>
-        cat.groups.filter(g => g.drugs.length === 1).flatMap(g => g.drugs),
-      );
-      return drugs.length === 0 ? [] : [{ id: 'otros', label: 'Otros medicamentos', drugs }];
-    }
-    const cat = this.categories.find(c => c.id === tabId);
-    const ownGroups = cat ? cat.groups.filter(g => g.drugs.length > 1) : [];
-    const ownClasses = new Set(
-      ownGroups.map(g => g.drugClass).filter((dc): dc is string => !!dc),
-    );
-    const rel = this.criteriaEngine.relevance();
-    const relevantClasses = rel?.classesByTab.get(tabId) ?? new Set<string>();
-    const seenForeign = new Set<string>();
-    const foreignGroups: DrugGroup[] = [];
-    for (const c of this.categories) {
-      if (c.id === tabId) continue;
-      for (const g of c.groups) {
-        if (g.drugs.length <= 1 || !g.drugClass) continue;
-        if (!relevantClasses.has(g.drugClass)) continue;
-        if (ownClasses.has(g.drugClass)) continue;
-        if (seenForeign.has(g.drugClass)) continue;
-        seenForeign.add(g.drugClass);
-        foreignGroups.push(g);
-      }
-    }
-    return [...ownGroups, ...foreignGroups];
+    return medGroupsVisibleInTab(tabId, this.categories, this.criteriaEngine.relevance(), this.OTROS_TAB_ID);
   }
 
   tabHasSelection(tabId: string): boolean {

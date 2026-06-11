@@ -1,3 +1,5 @@
+// @linked docs/flujo-pasos.md
+// Si cambias la lógica de groupBuckets, dxGroupsVisibleInTab, tabs revisados, dependencias cardiovasculares o ítems "Otro", actualiza el doc enlazado.
 import { Component, ChangeDetectionStrategy, OnInit, computed, signal, effect, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -18,21 +20,12 @@ import { MEDICATIONS } from '../../core/data/medications';
 
 import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP } from '../../core/data/diagnoses';
 import { DIAGNOSIS_TABS, DiagnosisTab, DiagnosisGroup } from '../../core/data/diagnoses-taxonomy';
-
-interface ForeignDxGroup extends DiagnosisGroup {
-  readonly originTabId: string;
-  readonly originTabLabel: string;
-}
-
-interface DxBuckets {
-  readonly ownGroups: readonly DiagnosisGroup[];
-  readonly foreignRelevant: readonly ForeignDxGroup[];
-}
 import { CARDIOVASCULAR_DX_DEPS, isDiagnosisEnabled } from '../../core/data/cardiovascular-dx-dependencies';
 import { ROUTES } from '../../app.routes.constants';
 import { buildCriteriaText } from '../../core/clipboard-text';
 import { groupBySystem, critCode, CritGroup } from '../../core/criteria-groups';
 import { isDxGroupChecked } from '../../core/group-checked';
+import { computeDxGroupBuckets, dxGroupsVisibleInTab, DxGroupBuckets } from '../../core/group-visibility';
 
 @Component({
   selector: 'app-diagnosis-step',
@@ -85,45 +78,9 @@ export class DiagnosisStepComponent implements OnInit {
   readonly startGroups = computed<CritGroup[]>(() => groupBySystem(this.startCriteria()));
   readonly stoppGroups = computed<CritGroup[]>(() => groupBySystem(this.stoppCriteria()));
 
-  private readonly esCollator = new Intl.Collator('es', { sensitivity: 'base' });
-
-  readonly groupBuckets = computed<DxBuckets>(() => {
-    const tab = this.activeTab();
-    if (tab.id === 'otros') return { ownGroups: tab.groups, foreignRelevant: [] };
-
-    const ownDxCodes = new Set<string>();
-    for (const g of tab.groups) {
-      for (const dx of g.diagnoses) ownDxCodes.add(normalizeDiagnosis(dx));
-    }
-    const rel = this.criteriaEngine.relevance();
-    const relevantDxs = rel?.dxsByTab.get(tab.id) ?? new Set<string>();
-    if (relevantDxs.size === 0) return { ownGroups: tab.groups, foreignRelevant: [] };
-
-    const seen = new Set<string>(ownDxCodes);
-    const foreignRelevant: ForeignDxGroup[] = [];
-    for (const t of this.tabs) {
-      if (t.id === tab.id) continue;
-      const dxs: string[] = [];
-      for (const g of t.groups) {
-        for (const dx of g.diagnoses) {
-          const code = normalizeDiagnosis(dx);
-          if (!relevantDxs.has(code)) continue;
-          if (seen.has(code)) continue;
-          seen.add(code);
-          dxs.push(dx);
-        }
-      }
-      if (dxs.length === 0) continue;
-      foreignRelevant.push({
-        id: `foreign__${t.id}`,
-        label: t.label,
-        diagnoses: dxs.slice().sort((a, b) => this.esCollator.compare(a, b)),
-        originTabId: t.id,
-        originTabLabel: t.label,
-      });
-    }
-    return { ownGroups: tab.groups, foreignRelevant };
-  });
+  readonly groupBuckets = computed<DxGroupBuckets>(() =>
+    computeDxGroupBuckets(this.activeTab(), this.tabs, this.criteriaEngine.relevance()),
+  );
 
   @ViewChild('fileInput') private fileInputRef!: ElementRef<HTMLInputElement>;
 
@@ -200,32 +157,7 @@ export class DiagnosisStepComponent implements OnInit {
   }
 
   private dxGroupsVisibleInTab(tab: DiagnosisTab): readonly DiagnosisGroup[] {
-    if (tab.id === 'otros') return tab.groups;
-    const ownDxCodes = new Set<string>();
-    for (const g of tab.groups) {
-      for (const dx of g.diagnoses) ownDxCodes.add(normalizeDiagnosis(dx));
-    }
-    const rel = this.criteriaEngine.relevance();
-    const relevantDxs = rel?.dxsByTab.get(tab.id) ?? new Set<string>();
-    if (relevantDxs.size === 0) return tab.groups;
-    const seen = new Set<string>(ownDxCodes);
-    const foreignGroups: DiagnosisGroup[] = [];
-    for (const t of this.tabs) {
-      if (t.id === tab.id) continue;
-      const dxs: string[] = [];
-      for (const g of t.groups) {
-        for (const dx of g.diagnoses) {
-          const code = normalizeDiagnosis(dx);
-          if (!relevantDxs.has(code)) continue;
-          if (seen.has(code)) continue;
-          seen.add(code);
-          dxs.push(dx);
-        }
-      }
-      if (dxs.length === 0) continue;
-      foreignGroups.push({ id: `foreign__${t.id}`, label: t.label, diagnoses: dxs });
-    }
-    return [...tab.groups, ...foreignGroups];
+    return dxGroupsVisibleInTab(tab, this.tabs, this.criteriaEngine.relevance());
   }
 
   tabSelectionCount(tab: DiagnosisTab): number {
