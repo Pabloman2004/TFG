@@ -137,10 +137,10 @@
         </div>
 
         <!-- Diagnosis columns -->
-        <div class="cols-wrap" [class.cols-wrap--cols]="activeTabId() === 'otros'">
+        <div class="cols-wrap">
 
           <!-- Bucket A: del sistema -->
-          <div class="cols-flex" [class.cols-flex--cols]="activeTabId() === 'otros'">
+          <div class="cols-flex">
             @for (group of groupBuckets().ownGroups; track trackGroup($index, group)) {
               <div class="drug-col" [class.drug-col-sel]="isGroupChecked(group)">
                 <div class="drug-col-hd drug-col-hd--readonly">

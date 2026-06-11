@@ -357,11 +357,7 @@
 .cols-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
 .cols-wrap::-webkit-scrollbar-thumb { background: #cdd5e0; border-radius: 3px; }
 
-.cols-flex {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
+/* .cols-flex (rejilla) se define en styles.css (P14, compartida con meds-step) */
 
 /* ── Zona "Relevantes de otros sistemas" ─────────────────────────── */
 .bucket-foreign-zone {
@@ -406,43 +402,18 @@
   cursor: help;
 }
 
-/* Otros tab: auto-filling grid, no horizontal scroll */
-.cols-flex--cols {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(calc(170px * var(--font-scale, 1)), 1fr));
-  align-content: start;
-  flex-direction: unset;
-  width: 100%;
-}
-
 .drug-col {
-  width: 100%;
-  padding: 10px 16px 12px;
+  padding: 12px 14px;
+  border-right: 1px solid #edf1f7;
   border-bottom: 1px solid #edf1f7;
   display: flex;
   flex-direction: column;
-  gap: 4px;
   transition: background .15s;
-}
-
-/* Otros tab: grid cell — column-like appearance */
-.cols-flex--cols .drug-col {
-  width: auto;
-  border-right: 1px solid #edf1f7;
-  border-bottom: 1px solid #edf1f7;
-  padding: 12px 14px;
-  gap: 0;
 }
 
 .dx-list {
   display: flex;
-  flex-wrap: wrap;
-}
-
-/* Otros tab: diagnoses stack vertically inside each cell */
-.cols-flex--cols .dx-list {
   flex-direction: column;
-  flex-wrap: nowrap;
   flex: 1;
 }
 .drug-col.drug-col-sel { background: #f0f6ff; }
@@ -530,13 +501,6 @@
   cursor: pointer;
   user-select: none;
   transition: background 100ms;
-  flex: 0 0 calc(220px * var(--font-scale, 1));
-  min-width: 0;
-}
-/* Otros tab: rows fill the narrow column width */
-.cols-flex--cols .drug-row {
-  flex: none;
-  width: 100%;
 }
 .drug-row:hover { background: rgba(24,95,165,.05); }
 .drug-row-custom .drug-name { font-style: italic; }
@@ -583,15 +547,14 @@
 .drug-name.sel { color: var(--c-accent); font-weight: 500; }
 
 .otro-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 5px;
-  width: auto;
-  align-self: flex-start;
-  padding: 3px 8px 3px 4px;
+  width: 100%;
+  padding: 5px 0 2px;
   margin-top: 6px;
-  border: 1px dashed #e5e7eb;
-  border-radius: 5px;
+  border: none;
+  border-top: 1px dashed #e5e7eb;
   background: none;
   cursor: pointer;
   font-family: inherit;
@@ -601,18 +564,6 @@
   transition: opacity .15s;
 }
 .otro-btn:hover { opacity: .7; }
-
-/* Otros tab: restore original otro-btn that spans the column width */
-.cols-flex--cols .otro-btn {
-  display: flex;
-  width: 100%;
-  align-self: auto;
-  padding: 5px 0 2px;
-  margin-top: 6px;
-  border: none;
-  border-top: 1px dashed #e5e7eb;
-  border-radius: 0;
-}
 
 .otro-plus {
   display: inline-flex;
