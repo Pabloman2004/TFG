@@ -1,3 +1,5 @@
+// @linked docs/historial.md
+// Si cambias la lógica de carga, eliminación, navegación post-carga o el formateo de fechas, actualiza el doc enlazado.
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
