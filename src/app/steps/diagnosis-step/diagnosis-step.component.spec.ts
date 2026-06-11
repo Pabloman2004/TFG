@@ -11,8 +11,9 @@ import { CriteriaEngineService } from '../../core/services/criteria-engine.servi
 import { ReportService } from '../../core/report.service';
 import { CaseIoService } from '../../core/case-io.service';
 import { routes } from '../../app.routes';
-import { Med } from '../../core/types';
+import { Med, PatientCase } from '../../core/types';
 import { DIAGNOSIS_TABS } from '../../core/data/diagnoses-taxonomy';
+import { resolveDiagnosisLabel } from '../../core/data/diagnoses';
 
 const med = (id: string, drugClasses: string[]): Med => ({ id, drugClasses });
 
@@ -190,5 +191,74 @@ describe('DiagnosisStepComponent — UI del árbol de variantes HTA (P15 paso 4)
     );
     expect(graveRow).toBeTruthy();
     expect(graveRow!.classList.contains('dx-disabled')).toBe(true);
+  });
+});
+
+describe('P15 paso 5 — compatibilidad con JSON antiguo (dos variantes a la vez)', () => {
+  let store: CaseStoreService;
+  let caseIo: CaseIoService;
+
+  // JSON antiguo: estado clínicamente incoherente hoy posible (grave + moderada).
+  const oldCaseJson = (): string =>
+    JSON.stringify({
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      patientCase: {
+        info: null,
+        diagnoses: ['hipertension_grave', 'hipertension_moderada'],
+        // Medicación habilitante para que las dependencias no las filtren.
+        medications: [med('Furosemida', ['DIURETICO_ASA'])],
+        labs: null,
+      } as PatientCase,
+    });
+
+  const makeFile = (content: string): File =>
+    new File([content], 'caso.json', { type: 'application/json' });
+
+  beforeEach(() => {
+    localStorage.clear();
+    const engineStub = {
+      relevance: signal(null),
+      evaluate: () => [],
+      loadCriteria: () => Promise.resolve([]),
+    };
+
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub },
+        { provide: ReportService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+        // CaseStoreService y CaseIoService reales (providedIn root): flujo de import end-to-end.
+      ],
+    });
+
+    store = TestBed.inject(CaseStoreService);
+    caseIo = TestBed.inject(CaseIoService);
+  });
+
+  it('respeta ambas variantes al cargar: no se sanea silenciosamente (D15.5)', async () => {
+    await caseIo.importFile(makeFile(oldCaseJson()));
+
+    expect(store.diagnoses()).toEqual(['hipertension_grave', 'hipertension_moderada']);
+  });
+
+  it('PDF/historial pueden listar ambas: resolveDiagnosisLabel funciona para las dos', async () => {
+    await caseIo.importFile(makeFile(oldCaseJson()));
+
+    expect(store.diagnoses().map(resolveDiagnosisLabel)).toEqual(['HTA grave', 'HTA moderada']);
+  });
+
+  it('la exclusividad solo aplica desde la siguiente interacción: seleccionar una variante colapsa a una', async () => {
+    await caseIo.importFile(makeFile(oldCaseJson()));
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    fixture.detectChanges();
+
+    // Siguiente interacción: el usuario elige una tercera variante.
+    fixture.componentInstance.toggleDiagnosis('HTA no complicada');
+
+    expect(store.diagnoses()).toEqual(['hta_no_complicada']);
   });
 });
