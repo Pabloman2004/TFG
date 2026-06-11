@@ -1,3 +1,5 @@
+// @linked docs/informes-y-exportacion.md
+// Si cambias el formato CaseExport, la validación o la versión, actualiza el doc enlazado.
 import { Injectable } from '@angular/core';
 
 import { CaseStoreService } from './case-store.service';
@@ -5,10 +7,28 @@ import { CaseExport, PatientCase } from './types';
 
 const EXPORT_VERSION = '1.0';
 
+function isMed(m: unknown): boolean {
+  if (!m || typeof m !== 'object') return false;
+  const obj = m as Record<string, unknown>;
+  return typeof obj['id'] === 'string' && Array.isArray(obj['drugClasses']);
+}
+
+function isLabsValue(v: unknown): boolean {
+  return v === null || typeof v === 'number';
+}
+
+function isLabs(labs: unknown): boolean {
+  if (!labs || typeof labs !== 'object') return false;
+  return Object.values(labs as Record<string, unknown>).every(isLabsValue);
+}
+
 function isPatientCase(data: unknown): data is PatientCase {
   if (!data || typeof data !== 'object') return false;
   const d = data as Record<string, unknown>;
-  return Array.isArray(d['diagnoses']) && Array.isArray(d['medications']);
+  if (!Array.isArray(d['diagnoses']) || !Array.isArray(d['medications'])) return false;
+  if (!(d['medications'] as unknown[]).every(isMed)) return false;
+  if (d['labs'] !== null && d['labs'] !== undefined && !isLabs(d['labs'])) return false;
+  return true;
 }
 
 function isCaseExport(data: unknown): data is CaseExport {
