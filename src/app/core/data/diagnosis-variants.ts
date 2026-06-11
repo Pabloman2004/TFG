@@ -59,6 +59,18 @@ export const MUTEX_SIBLINGS: Record<string, string[]> = Object.fromEntries(
   }),
 );
 
+// Exclusividad mutua pura: dado el array de códigos seleccionados y el código
+// elegido, devuelve el array resultante con los hermanos del elegido eliminados y
+// el elegido alternado (toggle). Códigos sin familia → toggle simple (sin efecto
+// de exclusividad). No muta la entrada.
+export const applyMutex = (selected: readonly string[], chosenCode: string): string[] => {
+  const siblings = new Set(MUTEX_SIBLINGS[chosenCode] ?? []);
+  const withoutSiblings = selected.filter(code => !siblings.has(code));
+  return withoutSiblings.includes(chosenCode)
+    ? withoutSiblings.filter(code => code !== chosenCode)
+    : [...withoutSiblings, chosenCode];
+};
+
 // Guard de integridad en tiempo de carga: todo label declarado debe existir en el
 // catálogo plano, o la familia está mal escrita (typo) y la exclusividad sería inerte.
 for (const family of DIAGNOSIS_VARIANT_FAMILIES) {

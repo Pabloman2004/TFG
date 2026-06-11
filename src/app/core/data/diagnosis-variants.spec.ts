@@ -2,6 +2,7 @@ import {
   DIAGNOSIS_VARIANT_FAMILIES,
   MUTEX_SIBLINGS,
   familyMemberLabels,
+  applyMutex,
 } from './diagnosis-variants';
 import { DIAGNOSIS_MAP, normalizeDiagnosis } from './diagnoses';
 
@@ -82,5 +83,55 @@ describe('MUTEX_SIBLINGS — índice código → códigos hermanos a desmarcar',
         expect(knownCodes).withContext(`hermano "${sib}"`).toContain(sib);
       }
     }
+  });
+});
+
+describe('applyMutex — exclusividad mutua pura sobre códigos seleccionados', () => {
+  it('al elegir una variante con otra hermana activa, deja solo la elegida', () => {
+    const result = applyMutex(['hipertension_moderada'], 'hipertension_grave');
+    expect(result).toEqual(['hipertension_grave']);
+  });
+
+  it('elimina TODOS los hermanos presentes (raíz + otras variantes) y conserva la elegida', () => {
+    const result = applyMutex(
+      ['hta', 'hta_no_complicada', 'hipertension_moderada'],
+      'hipertension_grave',
+    );
+    expect(result).toEqual(['hipertension_grave']);
+  });
+
+  it('toggle-off: volver a elegir la variante ya activa la deja en "ninguna"', () => {
+    expect(applyMutex(['hipertension_grave'], 'hipertension_grave')).toEqual([]);
+  });
+
+  it('la raíz "sin especificar" también es excluyente con las variantes', () => {
+    expect(applyMutex(['hipertension_grave'], 'hta')).toEqual(['hta']);
+    expect(applyMutex(['hta'], 'hipertension_grave')).toEqual(['hipertension_grave']);
+  });
+
+  it('preserva códigos ajenos a la familia (otros diagnósticos)', () => {
+    const result = applyMutex(
+      ['bradicardia', 'hipertension_moderada', 'epoc'],
+      'hipertension_grave',
+    );
+    expect(result).toContain('bradicardia');
+    expect(result).toContain('epoc');
+    expect(result).toContain('hipertension_grave');
+    expect(result).not.toContain('hipertension_moderada');
+  });
+
+  it('un código sin familia se comporta como toggle simple (añade)', () => {
+    expect(applyMutex(['bradicardia'], 'epoc')).toEqual(['bradicardia', 'epoc']);
+  });
+
+  it('un código sin familia se comporta como toggle simple (quita)', () => {
+    expect(applyMutex(['bradicardia', 'epoc'], 'epoc')).toEqual(['bradicardia']);
+  });
+
+  it('no muta el array de entrada', () => {
+    const input = ['hipertension_moderada'];
+    const snapshot = [...input];
+    applyMutex(input, 'hipertension_grave');
+    expect(input).toEqual(snapshot);
   });
 });
