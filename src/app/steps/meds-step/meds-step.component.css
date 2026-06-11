@@ -371,11 +371,7 @@
 .cols-wrap::-webkit-scrollbar { width: 6px; }
 .cols-wrap::-webkit-scrollbar-thumb { background: #cdd5e0; border-radius: 3px; }
 
-.cols-flex {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: start;
-}
+/* .cols-flex (rejilla) se define en styles.css (P14, compartida con diagnosis-step) */
 
 /* ── Zona "Relevantes de otros sistemas" ─────────────────────────── */
 .bucket-foreign-zone {
@@ -407,8 +403,6 @@
 }
 
 .drug-col {
-  flex-shrink: 0;
-  width: calc(170px * var(--font-scale, 1));
   padding: 12px 14px;
   border-right: 1px solid #edf1f7;
   min-height: 280px;
