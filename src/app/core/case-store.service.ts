@@ -1,3 +1,6 @@
+// @linked docs/caso-clinico.md
+// Si cambias signals, claves de localStorage, reset(), loadCase() o patientCase, actualiza el doc enlazado.
+
 import { Injectable, signal, effect } from '@angular/core';
 import { Crit, PatientInfo, Labs, PatientCase, Med, SavedCase } from './types';
 

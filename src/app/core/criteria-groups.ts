@@ -1,3 +1,5 @@
+// @linked docs/flujo-pasos.md
+// Si cambias groupBySystem o critCode, actualiza el doc enlazado.
 import { Crit } from './types';
 
 export type CritGroup = { system: string; items: Crit[] };

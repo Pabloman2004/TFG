@@ -1,3 +1,5 @@
+// @linked docs/informes-y-exportacion.md
+// Si cambias el formato de salida de texto plano, actualiza el doc enlazado.
 import { Crit } from './types';
 import { groupBySystem, critCode } from './criteria-groups';
 

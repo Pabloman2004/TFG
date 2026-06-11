@@ -1,3 +1,6 @@
+// @linked docs/motor-criterios.md
+// Si cambias la estructura de criteria.json, medications.ts o diagnoses.ts, actualiza el doc enlazado.
+
 // One-shot audit script — not for production. Run with: node scripts/audit-criteria.cjs
 const fs = require('fs');
 const path = require('path');

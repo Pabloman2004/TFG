@@ -1,3 +1,6 @@
+// @linked docs/catalogo-clinico.md
+// Si añades, eliminas o cambias las clases farmacológicas (drugClasses) de un fármaco, actualiza el doc enlazado.
+
 import { Med } from '../types';
 
 export const MEDICATIONS: Med[] = [

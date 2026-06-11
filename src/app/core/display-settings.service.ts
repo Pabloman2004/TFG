@@ -1,3 +1,5 @@
+// @linked docs/accesibilidad-ui.md
+// Si cambias FONT_SCALES, loadScale(), apply() o la clave localStorage, actualiza el doc enlazado.
 import { Injectable, signal, effect } from '@angular/core';
 
 export const FONT_SCALES = [1, 1.15, 1.3] as const;

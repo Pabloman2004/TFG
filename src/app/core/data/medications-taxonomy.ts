@@ -1,3 +1,6 @@
+// @linked docs/catalogo-clinico.md
+// Si cambias DRUG_CATEGORIES, grupos, additionalCategories o resolveMedicationLabel, actualiza el doc enlazado.
+
 import { MEDICATIONS } from './medications';
 
 export interface DrugGroup {

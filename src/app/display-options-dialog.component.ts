@@ -1,3 +1,5 @@
+// @linked docs/accesibilidad-ui.md
+// Si cambias los niveles de escala o el template del diálogo, actualiza el doc enlazado.
 import { Component, ViewEncapsulation, inject } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';

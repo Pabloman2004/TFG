@@ -1,3 +1,5 @@
+// @linked docs/navegacion-y-shell.md
+// Si cambias el contenido o el flujo de la guía rápida, actualiza el doc enlazado.
 import { Component } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';

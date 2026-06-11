@@ -1,3 +1,5 @@
+// @linked docs/accesibilidad-ui.md
+// Si cambias el nombre de clase app-tooltip, la variable --arrow-x o la lógica de posicionamiento, actualiza el doc enlazado.
 import { Directive, Input, HostListener, OnDestroy, inject, DOCUMENT } from '@angular/core';
 
 @Directive({

@@ -1,3 +1,6 @@
+// @linked docs/motor-criterios.md
+// Si cambias SYSTEM_TO_TABS, buildRelevance o extractReferences, actualiza el doc enlazado.
+
 // Mapea criterios → tabs donde sus referencias (clases farmacológicas
 // y códigos de diagnóstico) son clínicamente relevantes.
 // Derivado de criteria.json: si un criterio "cardiovascular" cita BETABLOQUEANTE,

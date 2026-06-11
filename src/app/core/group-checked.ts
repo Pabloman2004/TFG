@@ -1,3 +1,5 @@
+// @linked docs/flujo-pasos.md
+// Si cambias isMedGroupChecked o isDxGroupChecked, actualiza el doc enlazado.
 import { Med } from './types';
 import { DrugGroup } from './data/medications-taxonomy';
 import { DiagnosisGroup } from './data/diagnoses-taxonomy';

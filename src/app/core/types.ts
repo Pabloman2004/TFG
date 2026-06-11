@@ -1,3 +1,6 @@
+// @linked docs/caso-clinico.md
+// Si cambias tipos de dominio (PatientInfo, Med, Labs, Crit, PatientCase, SavedCase, CaseExport), actualiza el doc enlazado.
+
 export type Sex = 'F' | 'M';
 
 export type JsonLogicRule = Record<string, unknown>;

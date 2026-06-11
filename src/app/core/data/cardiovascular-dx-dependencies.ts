@@ -1,3 +1,6 @@
+// @linked docs/catalogo-clinico.md
+// Si cambias CARDIOVASCULAR_DX_DEPS o isDiagnosisEnabled, actualiza el doc enlazado.
+
 import { Med } from '../types';
 
 export type DxTrigger = {

@@ -1,3 +1,5 @@
+// @linked docs/informes-y-exportacion.md
+// Si cambias la estructura del PDF o los métodos de construcción, actualiza el doc enlazado.
 import { Injectable } from '@angular/core';
 
 import pdfMake from 'pdfmake/build/pdfmake';

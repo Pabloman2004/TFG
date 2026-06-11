@@ -1,3 +1,5 @@
+// @linked docs/navegacion-y-shell.md
+// Si cambias el comportamiento de confirmación de reset, actualiza el doc enlazado.
 import { Component } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';

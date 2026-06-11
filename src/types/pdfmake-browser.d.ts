@@ -1,3 +1,5 @@
+// @linked docs/informes-y-exportacion.md
+// Si cambias los tipos de pdfmake (PdfDocDefinition, PdfContent, PdfFontSpec), actualiza el doc enlazado.
 type Margins = number | [number, number] | [number, number, number, number];
 
 interface PdfContent {

@@ -1,3 +1,5 @@
+// @linked docs/navegacion-y-shell.md
+// Si cambias el bootstrap o los providers globales, actualiza el doc enlazado.
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';

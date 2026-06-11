@@ -1,3 +1,5 @@
+/* @linked docs/accesibilidad-ui.md */
+/* Si cambias .app-tooltip, --arrow-x o --font-scale, actualiza el doc enlazado. */
 :root {
   --font-scale: 1;
 }

@@ -1,3 +1,5 @@
+// @linked docs/navegacion-y-shell.md
+// Si cambias las acciones globales (guardar/cargar/reset/guía) o la navegación, actualiza el doc enlazado.
 import { Component, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 

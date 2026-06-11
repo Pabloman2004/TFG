@@ -1,3 +1,6 @@
+// @linked docs/motor-criterios.md
+// Si cambias las factories de PatientCase/Med o setupEngine, actualiza el doc enlazado.
+
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
