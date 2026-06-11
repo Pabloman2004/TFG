@@ -153,7 +153,30 @@
                 </div>
 
                 <div class="dx-list">
-                  @for (dx of group.diagnoses; track trackDx($index, dx)) {
+                  @for (family of variantFamiliesIn(group); track trackFamily($index, family)) {
+                    <div class="dx-family">
+                      <div class="dx-family-hd">{{ family.rootLabel }}</div>
+                      @if (family.showRoot) {
+                        <div class="drug-row dx-radio-row"
+                             [class.dx-disabled]="!isDxEnabled(family.rootLabel)"
+                             [attr.data-tooltip]="!isDxEnabled(family.rootLabel) ? dxTooltip(family.rootLabel) : null"
+                             (click)="toggleDiagnosis(family.rootLabel)">
+                          <div class="rbx" [class.checked]="isSelected(family.rootLabel)"></div>
+                          <span class="drug-name" [class.sel]="isSelected(family.rootLabel)">{{ family.rootDisplayLabel }}</span>
+                        </div>
+                      }
+                      @for (dx of family.variants; track trackDx($index, dx)) {
+                        <div class="drug-row dx-radio-row"
+                             [class.dx-disabled]="!isDxEnabled(dx)"
+                             [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
+                             (click)="toggleDiagnosis(dx)">
+                          <div class="rbx" [class.checked]="isSelected(dx)"></div>
+                          <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                  @for (dx of plainDiagnosesIn(group); track trackDx($index, dx)) {
                     <div class="drug-row"
                          [class.dx-disabled]="!isDxEnabled(dx)"
                          [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
@@ -204,7 +227,30 @@
                     </div>
 
                     <div class="dx-list">
-                      @for (dx of group.diagnoses; track trackDx($index, dx)) {
+                      @for (family of variantFamiliesIn(group); track trackFamily($index, family)) {
+                        <div class="dx-family">
+                          <div class="dx-family-hd">{{ family.rootLabel }}</div>
+                          @if (family.showRoot) {
+                            <div class="drug-row dx-radio-row"
+                                 [class.dx-disabled]="!isDxEnabled(family.rootLabel)"
+                                 [attr.data-tooltip]="!isDxEnabled(family.rootLabel) ? dxTooltip(family.rootLabel) : null"
+                                 (click)="toggleDiagnosis(family.rootLabel)">
+                              <div class="rbx" [class.checked]="isSelected(family.rootLabel)"></div>
+                              <span class="drug-name" [class.sel]="isSelected(family.rootLabel)">{{ family.rootDisplayLabel }}</span>
+                            </div>
+                          }
+                          @for (dx of family.variants; track trackDx($index, dx)) {
+                            <div class="drug-row dx-radio-row"
+                                 [class.dx-disabled]="!isDxEnabled(dx)"
+                                 [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
+                                 (click)="toggleDiagnosis(dx)">
+                              <div class="rbx" [class.checked]="isSelected(dx)"></div>
+                              <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
+                            </div>
+                          }
+                        </div>
+                      }
+                      @for (dx of plainDiagnosesIn(group); track trackDx($index, dx)) {
                         <div class="drug-row"
                              [class.dx-disabled]="!isDxEnabled(dx)"
                              [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"

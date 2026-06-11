@@ -20,6 +20,7 @@ import { MEDICATIONS } from '../../core/data/medications';
 
 import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP } from '../../core/data/diagnoses';
 import { applyMutex } from '../../core/data/diagnosis-variants';
+import { partitionGroupDiagnoses, VariantFamilyView } from '../../core/data/diagnosis-variant-view';
 import { DIAGNOSIS_TABS, DiagnosisTab, DiagnosisGroup } from '../../core/data/diagnoses-taxonomy';
 import { CARDIOVASCULAR_DX_DEPS, isDiagnosisEnabled } from '../../core/data/cardiovascular-dx-dependencies';
 import { ROUTES } from '../../app.routes.constants';
@@ -206,6 +207,18 @@ export class DiagnosisStepComponent implements OnInit {
   isSelected(label: string): boolean {
     return this.selectedCodes().has(normalizeDiagnosis(label));
   }
+
+  // P15 — presentación de variantes: los diagnósticos del grupo se parten en
+  // árboles de familia (raíz + variantes con radio-behavior) y diagnósticos planos.
+  variantFamiliesIn(group: DiagnosisGroup): VariantFamilyView[] {
+    return partitionGroupDiagnoses(group.diagnoses).families;
+  }
+
+  plainDiagnosesIn(group: DiagnosisGroup): string[] {
+    return partitionGroupDiagnoses(group.diagnoses).plain;
+  }
+
+  trackFamily = (_: number, f: VariantFamilyView): string => f.id;
 
   toggleDiagnosis(label: string): void {
     const code = normalizeDiagnosis(label);
