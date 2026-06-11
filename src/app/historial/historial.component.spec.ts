@@ -3,6 +3,8 @@ import { provideRouter, Router } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
 
 import { HistorialComponent } from './historial.component';
 import { CaseStoreService } from '../core/case-store.service';
@@ -51,5 +53,54 @@ describe('HistorialComponent — CTA routerLink', () => {
     const linkValue = button!.getAttribute('ng-reflect-router-link') ?? button!.getAttribute('routerLink');
 
     expect(linkValue).toBe('/' + ROUTES.MEDICACIONES);
+  });
+});
+
+describe('HistorialComponent — delete() con confirmación', () => {
+  let store: jasmine.SpyObj<CaseStoreService>;
+  let dialog: jasmine.SpyObj<MatDialog>;
+
+  const setupWithDialog = (confirmed: boolean | undefined) => {
+    dialog.open.and.returnValue({ afterClosed: () => of(confirmed) } as any);
+    return TestBed.createComponent(HistorialComponent);
+  };
+
+  beforeEach(async () => {
+    store = jasmine.createSpyObj('CaseStoreService', ['loadFromHistory', 'deleteFromHistory'], {
+      history: signal([]),
+    });
+    dialog = jasmine.createSpyObj('MatDialog', ['open']);
+
+    await TestBed.configureTestingModule({
+      imports: [HistorialComponent],
+      providers: [
+        provideRouter(routes),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: CaseStoreService, useValue: store },
+      ],
+    })
+      .overrideComponent(HistorialComponent, {
+        set: { providers: [{ provide: MatDialog, useValue: dialog }] },
+      })
+      .compileComponents();
+  });
+
+  it('sin confirmar: NO llama a deleteFromHistory', () => {
+    const fixture = setupWithDialog(false);
+    fixture.componentInstance.delete('id-1');
+    expect(store.deleteFromHistory).not.toHaveBeenCalled();
+  });
+
+  it('confirmado: SÍ llama a deleteFromHistory con el id correcto', () => {
+    const fixture = setupWithDialog(true);
+    fixture.componentInstance.delete('id-1');
+    expect(store.deleteFromHistory).toHaveBeenCalledWith('id-1');
+  });
+
+  it('diálogo cerrado sin valor (undefined): NO borra', () => {
+    const fixture = setupWithDialog(undefined);
+    fixture.componentInstance.delete('id-1');
+    expect(store.deleteFromHistory).not.toHaveBeenCalled();
   });
 });
