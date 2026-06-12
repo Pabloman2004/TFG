@@ -50,7 +50,7 @@ El componente usa `ChangeDetectionStrategy.OnPush` y accede a `this.store.histor
 - **Sin estado local**: el componente no mantiene ningún estado propio; toda la persistencia vive en `CaseStoreService` (y por tanto en `localStorage`). Esto mantiene el componente delgado y facilita que otros módulos accedan al mismo historial.
 - **Navegación post-carga directa a medicaciones**: tras cargar un caso, el router navega a `ROUTES.MEDICACIONES` (no a un resumen ni al inicio del flujo). La intención implícita es que el clínico quiera revisar o modificar medicaciones del caso restaurado.
 - **Material Design para toda la UI**: no hay lógica de layout propia; toda la presentación delega en `MatCardModule`, `MatChipsModule`, `MatButtonModule` e `MatIconModule`.
-- **`formatDate` inline**: la conversión de ISO a cadena localizada (`es-ES`) se implementa directamente en el componente en lugar de usar un `Pipe` Angular. Funcional para un caso de uso único, pero no reutilizable.
+- **`formatDate` inline**: la conversión de ISO a cadena localizada (`es-ES`) se implementa directamente en el componente en lugar de usar un `Pipe` Angular. Si `savedAt` no es parseable (p. ej. datos corruptos en `localStorage`), devuelve el fallback legible `"Fecha desconocida"` en lugar de mostrar `"Invalid Date"`.
 
 ## Invariantes
 
