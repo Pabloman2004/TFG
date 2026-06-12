@@ -104,3 +104,63 @@ describe('HistorialComponent — delete() con confirmación', () => {
     expect(store.deleteFromHistory).not.toHaveBeenCalled();
   });
 });
+
+describe('HistorialComponent — formatDate', () => {
+  let store: jasmine.SpyObj<CaseStoreService>;
+
+  beforeEach(async () => {
+    store = jasmine.createSpyObj('CaseStoreService', ['loadFromHistory', 'deleteFromHistory'], {
+      history: signal([]),
+    });
+
+    await TestBed.configureTestingModule({
+      imports: [HistorialComponent],
+      providers: [
+        provideRouter(routes),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: CaseStoreService, useValue: store },
+      ],
+    }).compileComponents();
+  });
+
+  it('savedAt corrupto o no parseable muestra fallback legible, no "Invalid Date"', () => {
+    const fixture = TestBed.createComponent(HistorialComponent);
+    const component = fixture.componentInstance;
+
+    expect(component.formatDate('???')).toBe('Fecha desconocida');
+    expect(component.formatDate('')).toBe('Fecha desconocida');
+    expect(component.formatDate('not-a-date')).toBe('Fecha desconocida');
+  });
+
+  it('savedAt ISO válido se formatea en locale es-ES', () => {
+    const fixture = TestBed.createComponent(HistorialComponent);
+    const formatted = fixture.componentInstance.formatDate('2024-06-15T14:30:00.000Z');
+
+    expect(formatted).not.toContain('Invalid');
+    expect(formatted).toMatch(/\d{2}\/\d{2}\/\d{4}/);
+  });
+
+  it('en la tarjeta del historial, savedAt corrupto no muestra "Invalid Date"', () => {
+    Object.defineProperty(store, 'history', {
+      value: signal([
+        {
+          id: 'case-1',
+          savedAt: '???',
+          patientCase: {
+            info: { name: 'Ana', age: 70, sex: 'F' },
+            medications: [],
+            diagnoses: [],
+          },
+        },
+      ]),
+    });
+
+    const fixture = TestBed.createComponent(HistorialComponent);
+    fixture.detectChanges();
+
+    const subtitle: HTMLElement | null = fixture.nativeElement.querySelector('mat-card-subtitle');
+    expect(subtitle?.textContent).toContain('Fecha desconocida');
+    expect(subtitle?.textContent).not.toContain('Invalid Date');
+  });
+});
