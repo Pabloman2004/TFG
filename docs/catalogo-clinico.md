@@ -149,6 +149,88 @@ de las clases declaradas (o coincide por id). Esta función es consumida por
 
 ---
 
+## Familias de variantes excluyentes (P15)
+
+### Qué son
+
+Algunos diagnósticos del catálogo forman **familias de variantes mutuamente excluyentes**: dentro
+de una familia, seleccionar una variante desactiva automáticamente el resto (comportamiento
+radio-button). Esta capa es puramente declarativa y se apoya sobre el modelo plano existente
+(`DIAGNOSIS_MAP`); el motor de criterios no cambia.
+
+Implementado en dos ficheros complementarios:
+
+| Fichero | Rol |
+|---|---|
+| `src/app/core/data/diagnosis-variants.ts` | Modelo de datos, lógica `applyMutex`, guard de integridad |
+| `src/app/core/data/diagnosis-variant-view.ts` | Lógica de presentación: `partitionGroupDiagnoses` |
+
+### Modelo (`diagnosis-variants.ts`)
+
+**`DiagnosisVariantFamily`**: interfaz con `id` (identificador estable de familia, no es código de
+diagnóstico), `rootLabel` (encabezado del árbol / etiqueta de la raíz genérica), `rootSelectable`
+(¿la raíz genérica es ella misma una opción seleccionable del radio?), y `variants[]` (variantes en
+orden clínico, no alfabético).
+
+**`DIAGNOSIS_VARIANT_FAMILIES`**: array de familias activas. En la iteración actual (D15.1/D15.2)
+solo contiene la familia `hta`:
+- `rootLabel: 'HTA'`, `rootSelectable: true` → "HTA (sin especificar)" es una opción válida.
+- Variantes: `['HTA no complicada', 'HTA moderada', 'HTA grave']`.
+
+Otras familias candidatas (EPOC, Dolor, Bloqueo AV, Osteopenia/Osteoporosis) están comentadas
+en el fichero pendientes de **validación clínica con Raquel** — no activar sin confirmar.
+
+**`MUTEX_SIBLINGS`**: índice derivado `Record<string, string[]>` que mapea cada código interno
+de miembro a sus hermanos. Se construye una sola vez en tiempo de módulo. Permite exclusividad
+en O(1) durante el toggle de diagnósticos.
+
+**`applyMutex(selected, chosenCode)`**: función pura que implementa el toggle exclusivo:
+- Toggle-off (ya seleccionado): solo retira la elegida. No arrastra hermanos que pudieran convivir
+  por estado heredado de un JSON antiguo (D15.5: se respeta hasta que el usuario seleccione).
+- Selección: colapsa la familia retirando todos los hermanos y añadiendo `chosenCode`.
+- Diagnósticos sin familia: toggle simple sin efecto mutex.
+
+**`familyMemberLabels(family)`**: devuelve `[rootLabel, ...variants]` si `rootSelectable`, o solo
+`[...variants]` en caso contrario.
+
+**Guard de integridad**: al cargar el módulo se verifica que cada label declarado en
+`DIAGNOSIS_VARIANT_FAMILIES` existe en `DIAGNOSIS_MAP`. Si falta (typo, rename), lanza un `Error`
+en tiempo de carga, no en tiempo de ejecución tardío.
+
+### Vista (`diagnosis-variant-view.ts`)
+
+**`partitionGroupDiagnoses(diagnoses)`**: dado el array de labels del grupo, devuelve
+`GroupDiagnosisPartition`:
+- `families`: array de `VariantFamilyView` (una por familia cuyo `rootLabel` o alguna `variant`
+  está presente en el grupo). Cada vista incluye `showRoot` (raíz presente y seleccionable),
+  `rootDisplayLabel` (`"HTA (sin especificar)"`), y `variants` filtradas a las presentes.
+- `plain`: diagnósticos del grupo que no pertenecen a ninguna familia activa.
+
+El resultado se usa por `DiagnosisStepComponent` para renderizar dentro de cada grupo un árbol
+de familia con radio-behavior antes de los diagnósticos planos.
+
+### Decisiones aplicadas
+
+| Decisión | Qué establece |
+|---|---|
+| D15.1 | Solo la familia HTA se activa en la primera iteración. |
+| D15.2 | La raíz HTA es `rootSelectable: true` → "HTA sin especificar" es una opción válida del radio. |
+| D15.3 | Toggle-off no arrastra hermanos (respeta estado heredado de JSON antiguo). |
+| D15.4 | `MUTEX_SIBLINGS` indexa por código interno, no por label — mismo espacio que persiste/exporta el store. |
+| D15.5 | El guard de integridad lanza en tiempo de carga, no silencia errores de typo. |
+| D15.6 | No se renombran códigos internos del catálogo; la familia es metadato declarativo sobre el modelo plano. |
+
+### Si cambias las familias de variantes…
+
+| Cambio | También hay que tocar |
+|---|---|
+| Activar una familia comentada | Confirmar con Raquel primero; luego descomentar, verificar que todos los labels existen en `DIAGNOSIS_MAP`, y actualizar este doc. |
+| Añadir/renombrar un label de variante | `DIAGNOSIS_MAP` también debe tenerlo (la guard lanzará en caso contrario). |
+| Cambiar `rootSelectable` de una familia | Verificar `partitionGroupDiagnoses` y la plantilla de `diagnosis-step.component.html`. |
+| Cambiar `applyMutex` | Revisar `group-checked.ts`, `diagnosis-step.component.ts` y specs de integración. |
+
+---
+
 ## Si cambias esto…
 
 | Cambio | También hay que tocar |

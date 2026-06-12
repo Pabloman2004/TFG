@@ -1,7 +1,5 @@
-// @linked docs/propuesta-p15.md
-// P15 — Vista de presentación: parte los diagnósticos de un grupo en árboles de
-// familia (raíz + variantes excluyentes con radio-behavior) y diagnósticos planos.
-// Es puro y derivado de DIAGNOSIS_VARIANT_FAMILIES; no toca el estado ni los códigos.
+// @linked docs/catalogo-clinico.md
+// Si cambias partitionGroupDiagnoses o los tipos VariantFamilyView/GroupDiagnosisPartition, actualiza el doc enlazado.
 
 import { DIAGNOSIS_VARIANT_FAMILIES, DiagnosisVariantFamily } from './diagnosis-variants';
 

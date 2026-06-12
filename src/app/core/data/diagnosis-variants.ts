@@ -1,5 +1,5 @@
-// @linked docs/propuesta-p15.md
-// P15 — Familias de diagnósticos con variantes mutuamente excluyentes (radio-behavior).
+// @linked docs/catalogo-clinico.md
+// Si cambias DIAGNOSIS_VARIANT_FAMILIES, applyMutex o la guard de integridad, actualiza el doc enlazado.
 // Regla de oro (D15.6): NO se renombran códigos internos; esto es metadato declarativo
 // que se apoya sobre el modelo plano existente (DIAGNOSIS_MAP). El motor no cambia.
 

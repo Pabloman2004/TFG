@@ -26,6 +26,7 @@ En ambos pasos:
 | `src/app/steps/diagnosis-step/diagnosis-step.component.html` | Plantilla del paso de diagnósticos |
 | `src/app/core/group-checked.ts` | Helpers puros `isMedGroupChecked` / `isDxGroupChecked` |
 | `src/app/core/criteria-groups.ts` | Helpers puros `groupBySystem` / `critCode` |
+| `src/app/core/group-visibility.ts` | Lógica unificada de visibilidad de buckets (T8) |
 
 ### Flujo reactivo (ambos componentes)
 
@@ -46,6 +47,30 @@ Los efectos registrados en el constructor con `allowSignalWrites: true` hacen:
 - **Efecto de `lastCriterionId`**: detecta criterios nuevos comparando el conjunto actual con el anterior y actualiza la señal (el ID no se usa en plantilla actualmente — ver Asunciones).
 - **Efecto de limpieza de tabs revisados**: si un tab tiene selección, el flag "revisado explícito" se elimina automáticamente para evitar inconsistencias en el JSON exportado.
 - **Efecto de dependencias cardiovasculares** (solo `DiagnosisStepComponent`): cuando cambia `meds()`, filtra los diagnósticos activos y elimina los que ya no están habilitados según `isDiagnosisEnabled`.
+
+### `group-visibility.ts`: lógica unificada de buckets (T8)
+
+`src/app/core/group-visibility.ts` centraliza el cálculo de qué grupos son visibles en cada tab,
+extraído en el incremento T8 para eliminar la duplicación entre `MedsStepComponent` y
+`DiagnosisStepComponent`.
+
+Exporta cuatro funciones puras y sus tipos asociados:
+
+- **`computeMedGroupBuckets(tabId, categories, relevance, otrosTabId)`**: calcula `MedGroupBuckets`
+  (`{ ownAll, foreignRelevant }`). El tab especial `otrosTabId` agrega todos los fármacos de grupos
+  con un único medicamento. Para el resto, `ownAll` son los grupos propios con `drugs.length > 1`
+  ordenados con `Intl.Collator('es')`; `foreignRelevant` son grupos de otras categorías cuya
+  `drugClass` aparece en `relevance.classesByTab.get(tabId)` y no está ya en `ownAll`.
+- **`medGroupsVisibleInTab(tabId, categories, relevance, otrosTabId)`**: alias plano de lo anterior;
+  devuelve `[...ownAll, ...foreignRelevant]`.
+- **`computeDxGroupBuckets(tab, allTabs, relevance)`**: calcula `DxGroupBuckets`
+  (`{ ownGroups, foreignRelevant }`). Los grupos foráneos se construyen agrupando diagnósticos de
+  otros tabs que aparecen en `relevance.dxsByTab.get(tab.id)`; cada grupo foráneo lleva
+  `originTabId`/`originTabLabel` para que la plantilla los distinga visualmente.
+- **`dxGroupsVisibleInTab(tab, allTabs, relevance)`**: alias plano del anterior.
+
+Todos los cálculos usan `Intl.Collator('es', { sensitivity: 'base' })` para ordenación correcta
+de caracteres españoles (`ñ`, vocales acentuadas).
 
 ### Los dos buckets: `groupBuckets` y `groupsVisibleInTab`
 

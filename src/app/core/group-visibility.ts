@@ -1,3 +1,5 @@
+// @linked docs/flujo-pasos.md
+// Si cambias computeMedGroupBuckets, computeDxGroupBuckets o las interfaces de buckets, actualiza el doc enlazado.
 // Funciones puras para calcular qué grupos son visibles en cada tab,
 // compartidas por MedsStepComponent y DiagnosisStepComponent.
 import { DrugGroup, DrugCategory } from './data/medications-taxonomy';

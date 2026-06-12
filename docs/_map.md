@@ -35,13 +35,15 @@ persistencia/rehidratación, y el acoplamiento actual estado UI / estado dominio
 ## Doc: docs/catalogo-clinico.md
 
 **Concepto**: el catálogo estático de conocimiento clínico — diagnósticos,
-medicamentos, sus taxonomías de UI (tabs/grupos/subgrupos), y las dependencias
-de diagnósticos cardiovasculares respecto a la medicación activa.
+medicamentos, sus taxonomías de UI (tabs/grupos/subgrupos), las dependencias
+de diagnósticos cardiovasculares respecto a la medicación activa, y las
+familias de variantes de diagnóstico mutuamente excluyentes (P15).
 
 **Debe cubrir**: mapas de diagnósticos y su normalización (snake_case,
 `grupo__sufijo`), catálogo de fármacos y clases farmacológicas, construcción
 de `DIAGNOSIS_TABS` / `DRUG_CATEGORIES`, duplicación de grupos vs
-`additionalCategories`, e `isDiagnosisEnabled`.
+`additionalCategories`, `isDiagnosisEnabled`, y la sección P15 de variantes
+(`DIAGNOSIS_VARIANT_FAMILIES`, `applyMutex`, `partitionGroupDiagnoses`).
 
 ### Ficheros que enlazan
 - `src/app/core/data/diagnoses.ts`
@@ -49,6 +51,8 @@ de `DIAGNOSIS_TABS` / `DRUG_CATEGORIES`, duplicación de grupos vs
 - `src/app/core/data/medications.ts`
 - `src/app/core/data/medications-taxonomy.ts`
 - `src/app/core/data/cardiovascular-dx-dependencies.ts`
+- `src/app/core/data/diagnosis-variants.ts`
+- `src/app/core/data/diagnosis-variant-view.ts`
 
 ---
 
@@ -83,8 +87,8 @@ personalizados "Otro", y la presentación agrupada de criterios activos.
 
 **Debe cubrir**: estructura común de ambos componentes (y su duplicación),
 efectos reactivos con `allowSignalWrites`, `groupBuckets` vs
-`groupsVisibleInTab`, helpers `isMedGroupChecked`/`isDxGroupChecked`,
-agrupación `groupBySystem`/`critCode`.
+`groupsVisibleInTab`, la lógica unificada de visibilidad en `group-visibility.ts`,
+helpers `isMedGroupChecked`/`isDxGroupChecked`, agrupación `groupBySystem`/`critCode`.
 
 ### Ficheros que enlazan
 - `src/app/steps/meds-step/meds-step.component.ts`
@@ -93,6 +97,7 @@ agrupación `groupBySystem`/`critCode`.
 - `src/app/steps/diagnosis-step/diagnosis-step.component.html`
 - `src/app/core/group-checked.ts`
 - `src/app/core/criteria-groups.ts`
+- `src/app/core/group-visibility.ts`
 
 ---
 
@@ -171,33 +176,23 @@ en `styles.css`.
 
 ---
 
-## Doc: docs/propuesta-p15.md
-
-**Concepto**: propuesta P15 — variantes de diagnóstico y su vista asociada.
-Ficheros introducidos como parte del incremento P15.
-
-### Ficheros que enlazan
-- `src/app/core/data/diagnosis-variants.ts`
-- `src/app/core/data/diagnosis-variant-view.ts`
-
----
-
 ## Grafo de relaciones (doc ↔ código ↔ doc)
 
 ```
 caso-clinico ──tipos──────────────► motor-criterios, flujo-pasos, historial,
   (types.ts, case-store)             informes-y-exportacion
 catalogo-clinico ──catálogos──────► motor-criterios (MEDICATIONS, taxonomías),
-  (data/*)                           flujo-pasos (tabs, isDiagnosisEnabled)
+  (data/* + diagnosis-variants*)     flujo-pasos (tabs, isDiagnosisEnabled,
+                                     variantes excluyentes P15)
 motor-criterios ──Crit[], relevance, exclusiones──► flujo-pasos
   (engine, system-relevance)         ▲ consume criteria.json (excluido)
 flujo-pasos ──acciones de usuario──► informes-y-exportacion (PDF, JSON, copy)
+  (steps + group-visibility)
 historial ──loadFromHistory────────► caso-clinico (store) y navegacion-y-shell
                                      (ruta pendiente de registrar)
 navegacion-y-shell ──monta─────────► flujo-pasos (rutas diagnosticos/
                                      medicaciones) y diálogos
 accesibilidad-ui ──transversal─────► usado por flujo-pasos y navegacion-y-shell
-propuesta-p15 ──diagnosis-variants──► catalogo-clinico, flujo-pasos (futuro)
 ```
 
 ---
@@ -222,13 +217,13 @@ Ficheros que NO llevan `@linked`, con motivo:
 - `src/custom-theme.scss` — tema Material 3 generado, sin lógica.
 - `src/assets/logoTFG.png` — binario.
 - `public/favicon.ico` — binario.
-- `src/app/core/group-visibility.ts` — módulo auxiliar puro (helpers de
-  visibilidad de grupos); lógica derivable de `flujo-pasos.md`, sin estado
-  propio que documentar por separado.
 - `docs/uml-diagrams.md` — documento previo al patrón Linked Chunks (diagramas
   UML); no participa del patrón y no requiere `@linked` desde el código.
 - `docs/propuesta-p14.md` — propuesta de mejora textual sin ficheros de código
   asignados todavía.
+- `docs/propuesta-p15.md` — registro de decisiones del incremento P15; el
+  conocimiento implementado vive en `docs/catalogo-clinico.md` (sección
+  "Familias de variantes excluyentes").
 - `docs/STOPP_START_CRITERIOS_CONTEXTO.md` — referencia clínica estática;
   no requiere `@linked` desde código.
 - `docs/dudas-raquel-pendientes.md` — notas de revisión con el tutor; no

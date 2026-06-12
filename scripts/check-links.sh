@@ -185,6 +185,7 @@ done
 EXCLUDED_DOCS=(
   "docs/uml-diagrams.md"
   "docs/propuesta-p14.md"
+  "docs/propuesta-p15.md"
   "docs/STOPP_START_CRITERIOS_CONTEXTO.md"
   "docs/dudas-raquel-pendientes.md"
 )
