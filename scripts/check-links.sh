@@ -182,7 +182,12 @@ done
 #    patrón) sin ningún @linked que lo referencie
 # ---------------------------------------------------------------------------
 # Docs explícitamente excluidos del patrón Linked Chunks
-EXCLUDED_DOCS=("docs/uml-diagrams.md")
+EXCLUDED_DOCS=(
+  "docs/uml-diagrams.md"
+  "docs/propuesta-p14.md"
+  "docs/STOPP_START_CRITERIOS_CONTEXTO.md"
+  "docs/dudas-raquel-pendientes.md"
+)
 
 for doc_abs in "$REPO_ROOT"/docs/*.md; do
   doc_rel="docs/$(basename "$doc_abs")"

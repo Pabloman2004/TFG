@@ -62,7 +62,9 @@ stopp-criteria-report.md
 test.md
 MEMORY.md
 dudas-raquel-pendientes.md
-#Todos los ficheros markdown
+#Todos los ficheros markdown (excepto docs/ que participa en Linked Chunks)
 *.md
+!docs/*.md
+!docs/**/*.md
 
 
