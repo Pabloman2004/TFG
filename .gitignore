@@ -52,19 +52,6 @@ Thumbs.db
 verify-criteria.js
 *.mf
 
-# Notes / docs sueltos en la raíz
-CLAUDE.md
-START_CRITERIOS_CONTEXTO.md
-STOPP_START_CRITERIOS_CONTEXTO.md
-correncionesCriterios.md
-refactorizacion.md
-stopp-criteria-report.md
-test.md
-MEMORY.md
-dudas-raquel-pendientes.md
-#Todos los ficheros markdown (excepto docs/ que participa en Linked Chunks)
-*.md
-!docs/*.md
-!docs/**/*.md
+
 
 
