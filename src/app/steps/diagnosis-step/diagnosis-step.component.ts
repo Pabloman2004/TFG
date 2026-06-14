@@ -1,5 +1,5 @@
 // @linked docs/flujo-pasos.md
-// Si cambias la lógica de groupBuckets, dxGroupsVisibleInTab, tabs revisados, dependencias cardiovasculares o ítems "Otro", actualiza el doc enlazado.
+// Si cambias la lógica de groupBuckets, dxGroupsVisibleInTab, tabs revisados, dependencias de diagnósticos o ítems "Otro", actualiza el doc enlazado.
 import { Component, ChangeDetectionStrategy, OnInit, computed, signal, effect, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -22,7 +22,7 @@ import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP } from '../../core/data/diagn
 import { applyMutex } from '../../core/data/diagnosis-variants';
 import { partitionGroupDiagnoses, VariantFamilyView } from '../../core/data/diagnosis-variant-view';
 import { DIAGNOSIS_TABS, DiagnosisTab, DiagnosisGroup } from '../../core/data/diagnoses-taxonomy';
-import { CARDIOVASCULAR_DX_DEPS, isDiagnosisEnabled } from '../../core/data/cardiovascular-dx-dependencies';
+import { dxTooltip, isDiagnosisEnabled } from '../../core/data/dx-dependencies';
 import { ROUTES } from '../../app.routes.constants';
 import { buildCriteriaText } from '../../core/clipboard-text';
 import { groupBySystem, critCode, CritGroup } from '../../core/criteria-groups';
@@ -114,7 +114,7 @@ export class DiagnosisStepComponent implements OnInit {
       const filtered = diagnoses.filter(code => {
         const label = DIAGNOSIS_REVERSE_MAP[code];
         if (label === undefined) return true;
-        return isDiagnosisEnabled(label, meds);
+        return isDiagnosisEnabled(label, meds, this.criteriaEngine.dxDependencies());
       });
       if (filtered.length !== diagnoses.length) {
         this.store.diagnoses.set(filtered);
@@ -134,11 +134,11 @@ export class DiagnosisStepComponent implements OnInit {
   }
 
   isDxEnabled(label: string): boolean {
-    return isDiagnosisEnabled(label, this.store.meds());
+    return isDiagnosisEnabled(label, this.store.meds(), this.criteriaEngine.dxDependencies());
   }
 
   dxTooltip(label: string): string {
-    return CARDIOVASCULAR_DX_DEPS[label]?.tooltip ?? '';
+    return dxTooltip(label, this.criteriaEngine.dxDependencies());
   }
 
   isReviewedDisabled(tab: DiagnosisTab): boolean {

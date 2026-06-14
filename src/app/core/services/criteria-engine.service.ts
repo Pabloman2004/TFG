@@ -11,6 +11,7 @@ import { MEDICATIONS } from '../data/medications';
 import { DRUG_CATEGORIES } from '../data/medications-taxonomy';
 import { DIAGNOSIS_TABS } from '../data/diagnoses-taxonomy';
 import { Relevance, buildRelevance } from '../data/system-relevance';
+import { DxDependencies, buildDxDependencies } from '../data/dx-dependencies';
 
 interface CriteriaFile {
   criteria: Crit[];
@@ -21,8 +22,11 @@ export class CriteriaEngineService {
 
   private criteriaCache: Promise<Crit[]> | null = null;
   private readonly _relevance = signal<Relevance | null>(null);
+  private readonly _dxDependencies = signal<DxDependencies>({});
   /** Índice de relevancia por tab, calculado tras loadCriteria(). */
   readonly relevance: Signal<Relevance | null> = this._relevance.asReadonly();
+  /** Mapa diagnóstico → medicación habilitante, derivado de criteria.json. */
+  readonly dxDependencies: Signal<DxDependencies> = this._dxDependencies.asReadonly();
 
   constructor(private http: HttpClient) {
     this.registerCustomOperators();
@@ -45,6 +49,7 @@ export class CriteriaEngineService {
       ).then(file => {
         const crits = file.criteria;
         this._relevance.set(buildRelevance(crits, this.getAllTabIds()));
+        this._dxDependencies.set(buildDxDependencies(crits));
         return crits;
       }).catch(err => {
         this.criteriaCache = null;

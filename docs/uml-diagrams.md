@@ -224,72 +224,53 @@ classDiagram
 
 **Actores secundarios:** navegador (persistencia `localStorage`, descarga de archivos) y motor de criterios (evaluación automática vía JSON Logic).
 
+> Representación en `flowchart` (compatible con GitHub, VS Code y mermaid.live). La sintaxis `usecaseDiagram` de Mermaid aún no es estable en la mayoría de renderers.
+
 ```mermaid
-useCaseDiagram
-    left to right direction
+flowchart LR
+    Clinico(["Clínico / farmacéutico"])
+    Navegador[("Navegador<br/>(localStorage)")]
+    Motor[("Motor de criterios")]
 
-    actor Clinico as "Clínico / farmacéutico"
-    actor Navegador as "Navegador (localStorage)"
-    actor Motor as "Motor de criterios"
+    subgraph SYS["STOPP/START v3 — Asistente clínico"]
+        direction TB
 
-    rectangle "STOPP/START v3 — Asistente clínico" {
-        usecase UC01 as "Seleccionar medicaciones\npor sistema/tab"
-        usecase UC02 as "Marcar pestaña revisada\n(sin selección)"
-        usecase UC03 as "Navegar wizard\n(medicaciones ↔ diagnósticos)"
-        usecase UC04 as "Seleccionar diagnósticos\n(con dependencias CV)"
-        usecase UC05 as "Ver criterios STOPP/START\nen tiempo real"
-        usecase UC06 as "Ver medicaciones excluidas\npor criterio cumplido"
-        usecase UC07 as "Copiar texto de criterios\nal portapapeles"
-        usecase UC08 as "Exportar informe PDF"
-        usecase UC09 as "Exportar / importar\ncaso JSON"
-        usecase UC10 as "Reiniciar caso"
-        usecase UC11 as "Ajustar tamaño de fuente"
-        usecase UC12 as "Consultar guía rápida"
+        UC01(["UC01: Seleccionar medicaciones"])
+        UC02(["UC02: Marcar pestaña revisada"])
+        UC03(["UC03: Navegar wizard"])
+        UC04(["UC04: Seleccionar diagnósticos"])
+        UC05(["UC05: Ver criterios STOPP/START"])
+        UC06(["UC06: Ver medicaciones excluidas"])
+        UC07(["UC07: Copiar criterios"])
+        UC08(["UC08: Exportar informe PDF"])
+        UC09(["UC09: Exportar / importar JSON"])
+        UC10(["UC10: Reiniciar caso"])
+        UC11(["UC11: Ajustar tamaño de fuente"])
+        UC12(["UC12: Consultar guía rápida"])
+        UC13(["UC13: Gestionar historial"])
+        UC14(["UC14: Introducir paciente y analíticas"])
 
-        usecase UC_Eval as "Evaluar criterios\n(JSON Logic)"
-        usecase UC_Persist as "Persistir estado\ndel caso"
-        usecase UC_Load as "Cargar reglas\ncriteria.json"
+        UC_Eval(["Evaluar criterios (JSON Logic)"])
+        UC_Persist(["Persistir estado del caso"])
+        UC_Load(["Cargar reglas criteria.json"])
+    end
 
-        usecase UC13 as "Gestionar historial\nde casos"
-        usecase UC14 as "Introducir paciente\ny analíticas"
-    }
+    Clinico --> UC01 & UC02 & UC03 & UC04 & UC05 & UC06 & UC07 & UC08 & UC09 & UC10 & UC11 & UC12
 
-    Clinico --> UC01
-    Clinico --> UC02
-    Clinico --> UC03
-    Clinico --> UC04
-    Clinico --> UC05
-    Clinico --> UC06
-    Clinico --> UC07
-    Clinico --> UC08
-    Clinico --> UC09
-    Clinico --> UC10
-    Clinico --> UC11
-    Clinico --> UC12
+    UC05 -. include .-> UC_Eval
+    UC06 -. include .-> UC_Eval
+    UC08 -. include .-> UC_Eval
+    UC09 -. include .-> UC_Persist
 
-    UC05 ..> UC_Eval : «include»
-    UC06 ..> UC_Eval : «include»
-    UC08 ..> UC_Eval : «include»
-
-    UC_Eval --> Motor
-    UC_Load --> Motor
-
-    UC01 --> UC_Persist
-    UC04 --> UC_Persist
-    UC09 --> UC_Persist
+    UC01 & UC04 --> UC_Persist
     UC_Persist --> Navegador
+    UC_Eval & UC_Load --> Motor
 
-    UC09 ..> UC_Persist : «include»
+    UC13 -.- N13["HistorialComponent implementado;<br/>sin ruta activa en app.routes"]
+    UC14 -.- N14["PatientInfo y Labs en el modelo;<br/>sin paso dedicado en UI"]
 
-    note right of UC13
-        HistorialComponent implementado;
-        sin ruta activa en app.routes
-    end note
-
-    note right of UC14
-        PatientInfo y Labs en el modelo;
-        sin paso dedicado en UI
-    end note
+    style N13 fill:#fff9e6,stroke:#d97706,stroke-dasharray:4
+    style N14 fill:#fff9e6,stroke:#d97706,stroke-dasharray:4
 ```
 
 ### Resumen de casos de uso

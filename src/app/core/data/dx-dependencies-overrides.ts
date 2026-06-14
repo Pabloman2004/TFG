@@ -1,15 +1,9 @@
-// @linked docs/catalogo-clinico.md
-// Si cambias CARDIOVASCULAR_DX_DEPS o isDiagnosisEnabled, actualiza el doc enlazado.
+// Overrides clínicos del piloto cardiovascular y casos donde la derivación pura
+// desde criteria.json no reproduce el comportamiento curado manualmente.
 
-import { Med } from '../types';
+import { DxTrigger } from './dx-dependencies';
 
-export type DxTrigger = {
-  classes?: string[];
-  ids?: string[];
-  tooltip: string;
-};
-
-export const CARDIOVASCULAR_DX_DEPS: Record<string, DxTrigger> = {
+export const DX_DEPENDENCIES_OVERRIDES: Record<string, DxTrigger> = {
   'Insuficiencia cardíaca con función sistólica conservada': {
     classes: ['DIGOXINA', 'DIURETICO_ASA', 'AINE', 'CORTICOIDE_SISTEMICO'],
     tooltip: 'Disponible si se marca Digoxina, diurético de asa, AINE o corticoide sistémico',
@@ -25,7 +19,7 @@ export const CARDIOVASCULAR_DX_DEPS: Record<string, DxTrigger> = {
     tooltip:
       'Disponible si se marca antiarrítmico (Dronedarona), Verapamilo/Diltiazem, diurético de asa, AINE o corticoide sistémico',
   },
-  'Bradicardia': {
+  Bradicardia: {
     classes: ['BETABLOQUEANTE', 'CALCIOANTAGONISTA_NO_DHP', 'DIGOXINA'],
     tooltip: 'Disponible si se marca betabloqueante, Verapamilo/Diltiazem o Digoxina',
   },
@@ -38,12 +32,7 @@ export const CARDIOVASCULAR_DX_DEPS: Record<string, DxTrigger> = {
     tooltip: 'Disponible si se marca Digoxina o Verapamilo/Diltiazem',
   },
   'HTA no complicada': {
-    classes: [
-      'BETABLOQUEANTE',
-      'DIURETICO_ASA',
-      'ANTIHIPERTENSIVO_CENTRAL',
-      'ANTIARITMICO',
-    ],
+    classes: ['BETABLOQUEANTE', 'DIURETICO_ASA', 'ANTIHIPERTENSIVO_CENTRAL', 'ANTIARITMICO'],
     tooltip:
       'Disponible si se marca betabloqueante, diurético de asa, antihipertensivo central o Amiodarona',
   },
@@ -86,14 +75,4 @@ export const CARDIOVASCULAR_DX_DEPS: Record<string, DxTrigger> = {
     tooltip:
       'Disponible si se marca tricíclico, Digoxina, neuroléptico, ISRS, prolongador del QTc o antiarrítmico',
   },
-};
-
-export const isDiagnosisEnabled = (label: string, meds: readonly Med[]): boolean => {
-  const dep = CARDIOVASCULAR_DX_DEPS[label];
-  if (!dep) return true;
-  const classesSatisfied =
-    dep.classes?.some(cls => meds.some(m => m.drugClasses.includes(cls))) ?? false;
-  if (classesSatisfied) return true;
-  const idsSatisfied = dep.ids?.some(id => meds.some(m => m.id === id)) ?? false;
-  return idsSatisfied;
 };

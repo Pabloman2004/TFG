@@ -14,8 +14,18 @@ import { routes } from '../../app.routes';
 import { Med, PatientCase } from '../../core/types';
 import { DIAGNOSIS_TABS } from '../../core/data/diagnoses-taxonomy';
 import { resolveDiagnosisLabel } from '../../core/data/diagnoses';
+import { ALL_CRITERIA } from '../../core/services/criteria-test-helpers';
+import { buildDxDependencies } from '../../core/data/dx-dependencies';
 
 const med = (id: string, drugClasses: string[]): Med => ({ id, drugClasses });
+const TEST_DX_DEPS = buildDxDependencies(ALL_CRITERIA);
+
+const engineStub = () => ({
+  relevance: signal(null),
+  dxDependencies: signal(TEST_DX_DEPS),
+  evaluate: () => [],
+  loadCriteria: () => Promise.resolve([]),
+});
 
 describe('DiagnosisStepComponent.toggleDiagnosis — exclusividad de variantes HTA (P15)', () => {
   let store: CaseStoreService;
@@ -26,17 +36,11 @@ describe('DiagnosisStepComponent.toggleDiagnosis — exclusividad de variantes H
   };
 
   beforeEach(() => {
-    const engineStub = {
-      relevance: signal(null),
-      evaluate: () => [],
-      loadCriteria: () => Promise.resolve([]),
-    };
-
     TestBed.configureTestingModule({
       imports: [DiagnosisStepComponent],
       providers: [
         provideRouter(routes),
-        { provide: CriteriaEngineService, useValue: engineStub },
+        { provide: CriteriaEngineService, useValue: engineStub() },
         { provide: ReportService, useValue: {} },
         { provide: CaseIoService, useValue: {} },
         { provide: MatSnackBar, useValue: { open: () => undefined } },
@@ -111,17 +115,11 @@ describe('DiagnosisStepComponent — UI del árbol de variantes HTA (P15 paso 4)
   };
 
   beforeEach(() => {
-    const engineStub = {
-      relevance: signal(null),
-      evaluate: () => [],
-      loadCriteria: () => Promise.resolve([]),
-    };
-
     TestBed.configureTestingModule({
       imports: [DiagnosisStepComponent],
       providers: [
         provideRouter(routes),
-        { provide: CriteriaEngineService, useValue: engineStub },
+        { provide: CriteriaEngineService, useValue: engineStub() },
         { provide: ReportService, useValue: {} },
         { provide: CaseIoService, useValue: {} },
         { provide: MatSnackBar, useValue: { open: () => undefined } },
@@ -217,17 +215,11 @@ describe('P15 paso 5 — compatibilidad con JSON antiguo (dos variantes a la vez
 
   beforeEach(() => {
     localStorage.clear();
-    const engineStub = {
-      relevance: signal(null),
-      evaluate: () => [],
-      loadCriteria: () => Promise.resolve([]),
-    };
-
     TestBed.configureTestingModule({
       imports: [DiagnosisStepComponent],
       providers: [
         provideRouter(routes),
-        { provide: CriteriaEngineService, useValue: engineStub },
+        { provide: CriteriaEngineService, useValue: engineStub() },
         { provide: ReportService, useValue: {} },
         { provide: MatSnackBar, useValue: { open: () => undefined } },
         { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },

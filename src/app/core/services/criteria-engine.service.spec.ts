@@ -163,8 +163,9 @@ describe('CriteriaEngineService — Motor genérico', () => {
   });
 
   describe('signal relevance', () => {
-    it('arranca como null antes de cargar criterios', () => {
+    it('arranca vacío antes de cargar criterios', () => {
       expect(engine.relevance()).toBeNull();
+      expect(Object.keys(engine.dxDependencies()).length).toBe(0);
     });
 
     it('se rellena tras loadCriteria() con un índice de tabs derivado', async () => {
@@ -184,6 +185,7 @@ describe('CriteriaEngineService — Motor genérico', () => {
       const rel = engine.relevance();
       expect(rel).not.toBeNull();
       expect(rel!.classesByTab.get('cardiovascular')?.has('BETABLOQUEANTE')).toBeTrue();
+      expect(engine.dxDependencies()['HTA grave']?.classes).toContain('DIURETICO_ASA');
 
       httpMock.verify();
     });
