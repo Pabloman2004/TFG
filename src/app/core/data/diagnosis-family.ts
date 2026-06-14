@@ -84,25 +84,26 @@ const walkPositiveDx = (node: unknown, negated: boolean): Set<string> => {
     return walkPositiveDx(obj['!'] ?? obj['not'], true);
   }
 
-  if ('or' in obj && Array.isArray(obj.or)) {
-    const branchCodes = obj.or.flatMap(branch => [...walkPositiveDx(branch, negated)]);
+  if ('or' in obj && Array.isArray(obj['or'])) {
+    const branchCodes = obj['or'].flatMap(branch => [...walkPositiveDx(branch, negated)]);
     return collapseFamilyConflationInOr(new Set(branchCodes));
   }
 
-  if ('and' in obj && Array.isArray(obj.and)) {
-    return new Set(obj.and.flatMap(branch => [...walkPositiveDx(branch, negated)]));
+  if ('and' in obj && Array.isArray(obj['and'])) {
+    return new Set(obj['and'].flatMap(branch => [...walkPositiveDx(branch, negated)]));
   }
 
+  const inClause = obj['in'];
   if (
     'in' in obj &&
-    Array.isArray(obj.in) &&
-    typeof obj.in[0] === 'string' &&
-    obj.in[1] &&
-    typeof obj.in[1] === 'object' &&
-    (obj.in[1] as Record<string, unknown>).var === 'diagnoses' &&
+    Array.isArray(inClause) &&
+    typeof inClause[0] === 'string' &&
+    inClause[1] &&
+    typeof inClause[1] === 'object' &&
+    (inClause[1] as Record<string, unknown>)['var'] === 'diagnoses' &&
     !negated
   ) {
-    return new Set([obj.in[0]]);
+    return new Set([inClause[0]]);
   }
 
   return new Set(Object.values(obj).flatMap(value => [...walkPositiveDx(value, negated)]));

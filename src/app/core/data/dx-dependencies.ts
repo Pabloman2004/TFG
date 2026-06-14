@@ -116,13 +116,15 @@ export const isDiagnosisEnabled = (
   deps: DxDependencies,
 ): boolean => {
   const dep = deps[label];
-  if (!dep) return true;
+  if (!dep || !hasEffectiveDxTriggers(dep)) return true;
   const classesSatisfied =
     dep.classes?.some(cls => meds.some(m => m.drugClasses.includes(cls))) ?? false;
   if (classesSatisfied) return true;
-  const idsSatisfied = dep.ids?.some(id => meds.some(m => m.id === id)) ?? false;
-  return idsSatisfied;
+  return dep.ids?.some(id => meds.some(m => m.id === id)) ?? false;
 };
 
 export const dxTooltip = (label: string, deps: DxDependencies): string =>
   deps[label]?.tooltip ?? '';
+
+export const hasEffectiveDxTriggers = (dep: DxTrigger | undefined): boolean =>
+  (dep?.classes?.length ?? 0) > 0 || (dep?.ids?.length ?? 0) > 0;

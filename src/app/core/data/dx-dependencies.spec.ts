@@ -1,11 +1,13 @@
 import { Med } from '../types';
 import { ALL_CRITERIA } from '../services/criteria-test-helpers';
 import { ANCHOR_LABELS_APPLIED_FOR_GATING } from './dx-anchor-labels-candidate';
+import { DIAGNOSIS_MAP } from './diagnoses';
 import { DX_DEPENDENCIES_OVERRIDES } from './dx-dependencies-overrides';
 import {
   buildDxDependencies,
   extractDrugClasses,
   extractPositiveDxCodes,
+  hasEffectiveDxTriggers,
   isDiagnosisEnabled,
 } from './dx-dependencies';
 
@@ -192,5 +194,58 @@ describe('isDiagnosisEnabled()', () => {
   it('soporta dependencia por id de fármaco específico', () => {
     const fakeMeds = [med('Verapamilo', ['CALCIOANTAGONISTA_NO_DHP'])];
     expect(isDiagnosisEnabled('Insuficiencia cardíaca NYHA III-IV', fakeMeds, DEPS)).toBe(true);
+  });
+});
+
+const overrideKeys = () => new Set(Object.keys(DX_DEPENDENCIES_OVERRIDES));
+
+const labelsWithoutPureDxDeps = (): string[] => {
+  const pure = buildDxDependencies(ALL_CRITERIA, {});
+  return Object.keys(DIAGNOSIS_MAP).filter(
+    label =>
+      !ANCHOR_LABELS_APPLIED_FOR_GATING.has(label) &&
+      !overrideKeys().has(label) &&
+      pure[label] === undefined,
+  );
+};
+
+describe('labels sin disparadores derivados (no ancla, no override)', () => {
+  it('Insuficiencia cardíaca con FE reducida no tiene deps puras ni override', () => {
+    const pure = buildDxDependencies(ALL_CRITERIA, {});
+    expect(pure['Insuficiencia cardíaca con FE reducida']).toBeUndefined();
+    expect(overrideKeys().has('Insuficiencia cardíaca con FE reducida')).toBe(false);
+    expect(ANCHOR_LABELS_APPLIED_FOR_GATING.has('Insuficiencia cardíaca con FE reducida')).toBe(
+      false,
+    );
+  });
+
+  it('están siempre habilitados sin medicación aunque el mapa merged incluya entrada vacía', () => {
+    const orphans = labelsWithoutPureDxDeps();
+    expect(orphans).toContain('Insuficiencia cardíaca con FE reducida');
+    expect(
+      orphans.filter(label => label.startsWith('Insuficiencia cardíaca')),
+    ).toEqual(['Insuficiencia cardíaca con FE reducida']);
+
+    for (const label of orphans) {
+      expect(isDiagnosisEnabled(label, [], DEPS))
+        .withContext(`merged deps: ${label}`)
+        .toBe(true);
+    }
+  });
+
+  it('un dep en el mapa sin classes ni ids no bloquea (no-gateado)', () => {
+    const deps = {
+      ...buildDxDependencies(ALL_CRITERIA, {}),
+      'Insuficiencia cardíaca con FE reducida': { classes: [], tooltip: '' },
+    };
+    expect(hasEffectiveDxTriggers(deps['Insuficiencia cardíaca con FE reducida'])).toBe(false);
+    expect(isDiagnosisEnabled('Insuficiencia cardíaca con FE reducida', [], deps)).toBe(true);
+  });
+
+  it('el mapa merged no incluye entradas con triggers vacíos', () => {
+    const emptyTriggerLabels = Object.entries(DEPS)
+      .filter(([, dep]) => !hasEffectiveDxTriggers(dep))
+      .map(([label]) => label);
+    expect(emptyTriggerLabels).toEqual([]);
   });
 });
