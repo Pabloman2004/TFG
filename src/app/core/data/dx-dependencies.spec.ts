@@ -9,6 +9,8 @@ import {
   extractPositiveDxCodes,
   hasEffectiveDxTriggers,
   isDiagnosisEnabled,
+  isAlwaysEnabled,
+  validateOverrideLabels,
 } from './dx-dependencies';
 
 const med = (id: string, drugClasses: string[]): Med => ({ id, drugClasses });
@@ -247,5 +249,264 @@ describe('labels sin disparadores derivados (no ancla, no override)', () => {
       .filter(([, dep]) => !hasEffectiveDxTriggers(dep))
       .map(([label]) => label);
     expect(emptyTriggerLabels).toEqual([]);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAREA A — overrides infra-gateados: clases faltantes validadas contra STOPP
+// ─────────────────────────────────────────────────────────────────────────────
+// Los snapshots anteriores fijaban el comportamiento infra-gateado del piloto
+// CV. Las clases añadidas aquí están directamente respaldadas por un criterio
+// STOPP existente en criteria.json (ver ID entre paréntesis).
+
+describe('Tarea A — Bradicardia: falta INHIBIDOR_ACETILCOLINESTERASA (D17)', () => {
+  it('donepezilo (INHIBIDOR_ACETILCOLINESTERASA) habilita Bradicardia', () => {
+    const meds = [med('Donepezilo', ['INHIBIDOR_ACETILCOLINESTERASA'])];
+    expect(isDiagnosisEnabled('Bradicardia', meds, DEPS)).toBe(true);
+  });
+
+  it('Bradicardia sigue deshabilitada sin medicación relevante', () => {
+    const meds = [med('Enalapril', ['IECA'])];
+    expect(isDiagnosisEnabled('Bradicardia', meds, DEPS)).toBe(false);
+  });
+});
+
+describe('Tarea A — Bloqueo AV de segundo grado: faltan BETABLOQUEANTE (D4) e INHIBIDOR_ACETILCOLINESTERASA (D17)', () => {
+  it('betabloqueante habilita Bloqueo AV de segundo grado', () => {
+    const meds = [med('Bisoprolol', ['BETABLOQUEANTE'])];
+    expect(isDiagnosisEnabled('Bloqueo AV de segundo grado', meds, DEPS)).toBe(true);
+  });
+
+  it('IACE habilita Bloqueo AV de segundo grado', () => {
+    const meds = [med('Rivastigmina', ['INHIBIDOR_ACETILCOLINESTERASA'])];
+    expect(isDiagnosisEnabled('Bloqueo AV de segundo grado', meds, DEPS)).toBe(true);
+  });
+
+  it('Bloqueo AV de segundo grado sigue deshabilitado sin medicación relevante', () => {
+    const meds = [med('Enalapril', ['IECA'])];
+    expect(isDiagnosisEnabled('Bloqueo AV de segundo grado', meds, DEPS)).toBe(false);
+  });
+});
+
+describe('Tarea A — Bloqueo AV completo: faltan BETABLOQUEANTE (D4) e INHIBIDOR_ACETILCOLINESTERASA (D17)', () => {
+  it('betabloqueante habilita Bloqueo AV completo', () => {
+    const meds = [med('Metoprolol', ['BETABLOQUEANTE'])];
+    expect(isDiagnosisEnabled('Bloqueo AV completo', meds, DEPS)).toBe(true);
+  });
+
+  it('IACE habilita Bloqueo AV completo', () => {
+    const meds = [med('Galantamina', ['INHIBIDOR_ACETILCOLINESTERASA'])];
+    expect(isDiagnosisEnabled('Bloqueo AV completo', meds, DEPS)).toBe(true);
+  });
+});
+
+describe('Tarea A — HTA grave: clases faltantes (H2, D3, K9, C2, I6)', () => {
+  it('AINE habilita HTA grave (H2)', () => {
+    expect(isDiagnosisEnabled('HTA grave', [med('Ibuprofeno', ['AINE'])], DEPS)).toBe(true);
+  });
+
+  it('ISRN habilita HTA grave (D3)', () => {
+    expect(isDiagnosisEnabled('HTA grave', [med('Venlafaxina', ['ISRN'])], DEPS)).toBe(true);
+  });
+
+  it('alfabloqueante habilita HTA grave (K9)', () => {
+    expect(isDiagnosisEnabled('HTA grave', [med('Tamsulosina', ['ALFABLOQUEANTE'])], DEPS)).toBe(true);
+  });
+
+  it('antiagregante habilita HTA grave (C2)', () => {
+    expect(isDiagnosisEnabled('HTA grave', [med('Clopidogrel', ['ANTIAGREGANTE'])], DEPS)).toBe(true);
+  });
+
+  it('anticoagulante habilita HTA grave (C2)', () => {
+    expect(isDiagnosisEnabled('HTA grave', [med('Apixaban', ['ANTICOAGULANTE'])], DEPS)).toBe(true);
+  });
+
+  it('agonista beta3 habilita HTA grave (I6)', () => {
+    expect(isDiagnosisEnabled('HTA grave', [med('Mirabegrón', ['AGONISTA_BETA3'])], DEPS)).toBe(true);
+  });
+
+  it('HTA grave sigue deshabilitada sin medicación relevante', () => {
+    expect(isDiagnosisEnabled('HTA grave', [med('Enalapril', ['IECA'])], DEPS)).toBe(false);
+  });
+});
+
+describe('Tarea A — HTA moderada: clases faltantes (H2, K9)', () => {
+  it('AINE habilita HTA moderada (H2)', () => {
+    expect(isDiagnosisEnabled('HTA moderada', [med('Naproxeno', ['AINE'])], DEPS)).toBe(true);
+  });
+
+  it('alfabloqueante habilita HTA moderada (K9)', () => {
+    expect(isDiagnosisEnabled('HTA moderada', [med('Doxazosina', ['ALFABLOQUEANTE'])], DEPS)).toBe(true);
+  });
+
+  it('HTA moderada sigue deshabilitada sin medicación relevante', () => {
+    expect(isDiagnosisEnabled('HTA moderada', [med('Enalapril', ['IECA'])], DEPS)).toBe(false);
+  });
+});
+
+describe('Tarea A — HTA no complicada: falta ALFABLOQUEANTE (K9)', () => {
+  it('alfabloqueante habilita HTA no complicada (K9)', () => {
+    expect(isDiagnosisEnabled('HTA no complicada', [med('Tamsulosina', ['ALFABLOQUEANTE'])], DEPS)).toBe(true);
+  });
+
+  it('HTA no complicada sigue deshabilitada sin medicación relevante', () => {
+    expect(isDiagnosisEnabled('HTA no complicada', [med('Enalapril', ['IECA'])], DEPS)).toBe(false);
+  });
+});
+
+describe('Tarea A — IC con función sistólica conservada e IC NYHA III-IV: falta TIAZOLIDINDIONA (J2)', () => {
+  it('tiazolidindiona habilita IC con función sistólica conservada (J2)', () => {
+    const meds = [med('Pioglitazona', ['TIAZOLIDINDIONA'])];
+    expect(isDiagnosisEnabled('Insuficiencia cardíaca con función sistólica conservada', meds, DEPS)).toBe(true);
+  });
+
+  it('tiazolidindiona habilita IC NYHA III-IV (J2)', () => {
+    const meds = [med('Pioglitazona', ['TIAZOLIDINDIONA'])];
+    expect(isDiagnosisEnabled('Insuficiencia cardíaca NYHA III-IV', meds, DEPS)).toBe(true);
+  });
+});
+
+describe('Tarea A — E2E: paciente con único fármaco IACE puede seleccionar Bradicardia', () => {
+  it('caso completo: solo donepezilo → Bradicardia disponible (D17 puede disparar)', () => {
+    const meds = [med('Donepezilo', ['INHIBIDOR_ACETILCOLINESTERASA'])];
+    expect(isDiagnosisEnabled('Bradicardia', meds, DEPS)).toBe(true);
+    expect(isDiagnosisEnabled('Bloqueo AV de segundo grado', meds, DEPS)).toBe(true);
+    expect(isDiagnosisEnabled('Bloqueo AV completo', meds, DEPS)).toBe(true);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAREA B — excludes.drugClasses no debe inflar el gating
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Tarea B — excludes.drugClasses no cambia el mapa derivado para labels no-ancla no-override', () => {
+  it('el mapa derivado sin excludes coincide con el mapa derivado con excludes para etiquetas fuera de overrides y anchors', () => {
+    const withExcludes = buildDxDependencies(ALL_CRITERIA, {});
+    const withoutExcludes = buildDxDependencies(ALL_CRITERIA, {}, { includeExcludeClasses: false });
+
+    const overrideKeys = new Set(Object.keys(DX_DEPENDENCIES_OVERRIDES));
+
+    const labelsToCheck = Object.keys(DIAGNOSIS_MAP).filter(
+      label => !ANCHOR_LABELS_APPLIED_FOR_GATING.has(label) && !overrideKeys.has(label),
+    );
+
+    for (const label of labelsToCheck) {
+      const withCls = withExcludes[label]?.classes ?? [];
+      const withoutCls = withoutExcludes[label]?.classes ?? [];
+      expect(withoutCls.sort()).withContext(`label: ${label}`).toEqual(withCls.sort());
+    }
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAREA C — extractDrugClasses no extrae clases dentro de ramas negadas
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Tarea C — extractDrugClasses respeta negación', () => {
+  it('no extrae inDrugClass dentro de una rama negada con !', () => {
+    const logic = {
+      and: [
+        { inDrugClass: ['AINE', { var: 'medications' }] },
+        { '!': { inDrugClass: ['ESTATINA', { var: 'medications' }] } },
+      ],
+    };
+    const classes = extractDrugClasses(logic);
+    expect([...classes]).toContain('AINE');
+    expect([...classes]).not.toContain('ESTATINA');
+  });
+
+  it('no extrae inDrugClass dentro de una rama negada con not', () => {
+    const logic = {
+      not: { inDrugClass: ['BETABLOQUEANTE', { var: 'medications' }] },
+    };
+    const classes = extractDrugClasses(logic);
+    expect([...classes]).not.toContain('BETABLOQUEANTE');
+  });
+
+  it('extrae clases en ramas positivas aunque haya ramas negadas hermanas', () => {
+    const logic = {
+      and: [
+        { inDrugClass: ['DIGOXINA', { var: 'medications' }] },
+        { not: { inDrugClass: ['DIURETICO_ASA', { var: 'medications' }] } },
+      ],
+    };
+    const classes = extractDrugClasses(logic);
+    expect([...classes]).toContain('DIGOXINA');
+    expect([...classes]).not.toContain('DIURETICO_ASA');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAREA D — guard de integridad de overrides
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Tarea D — validateOverrideLabels detecta labels desconocidos', () => {
+  it('no lanza con los overrides reales (todos los labels existen en DIAGNOSIS_MAP)', () => {
+    expect(() => validateOverrideLabels(DX_DEPENDENCIES_OVERRIDES, DIAGNOSIS_MAP)).not.toThrow();
+  });
+
+  it('lanza si un override tiene un label que no está en DIAGNOSIS_MAP', () => {
+    const badOverride = { 'Label inexistente en DIAGNOSIS_MAP': { classes: ['X'], tooltip: '' } };
+    expect(() => validateOverrideLabels(badOverride, DIAGNOSIS_MAP)).toThrowError(/Label inexistente/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAREA E — isAlwaysEnabled unifica los tres caminos de "siempre habilitado"
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Tarea E — isAlwaysEnabled', () => {
+  it('ancla non-doubtful está siempre habilitada', () => {
+    expect(isAlwaysEnabled('Demencia', DEPS)).toBe(true);
+    expect(isAlwaysEnabled('FA', DEPS)).toBe(true);
+    expect(isAlwaysEnabled('Fragilidad', DEPS)).toBe(true);
+  });
+
+  it('diagnóstico puro-START (no en STOPP, no ancla) está siempre habilitado', () => {
+    expect(isAlwaysEnabled('Diabetes mellitus', DEPS)).toBe(true);
+    expect(isAlwaysEnabled('Osteoporosis', DEPS)).toBe(true);
+  });
+
+  it('diagnóstico gateado NO está siempre habilitado', () => {
+    expect(isAlwaysEnabled('Bradicardia', DEPS)).toBe(false);
+    expect(isAlwaysEnabled('Insuficiencia cardíaca con función sistólica conservada', DEPS)).toBe(false);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEGUIMIENTO TAREA B — infra-gatings destapados por el diff de excludes
+// Las clases añadidas están respaldadas por un criterio STOPP (ID entre paréntesis)
+// aunque ese criterio referencie el dx vía excludes, no vía lógica positiva directa.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Seguimiento B — Riesgo significativo de sangrado: ANTIAGREGANTE y ANTICOAGULANTE (C2)', () => {
+  it('clopidogrel (ANTIAGREGANTE) habilita Riesgo significativo de sangrado (C2-ANTIAGREGANTE)', () => {
+    const meds = [med('Clopidogrel', ['ANTIAGREGANTE'])];
+    expect(isDiagnosisEnabled('Riesgo significativo de sangrado', meds, DEPS)).toBe(true);
+  });
+
+  it('apixaban (ANTICOAGULANTE) habilita Riesgo significativo de sangrado (C2-AVK)', () => {
+    const meds = [med('Apixaban', ['ANTICOAGULANTE'])];
+    expect(isDiagnosisEnabled('Riesgo significativo de sangrado', meds, DEPS)).toBe(true);
+  });
+
+  it('Riesgo significativo de sangrado sigue deshabilitado sin medicación relevante', () => {
+    expect(isDiagnosisEnabled('Riesgo significativo de sangrado', [med('Enalapril', ['IECA'])], DEPS)).toBe(false);
+  });
+});
+
+describe('Seguimiento B — Riesgo de caídas de repetición: ANTIDEPRESIVO_TRICICLICO e ISRN (K8)', () => {
+  it('amitriptilina (ANTIDEPRESIVO_TRICICLICO) habilita Riesgo de caídas de repetición (K8)', () => {
+    const meds = [med('Amitriptilina', ['ANTIDEPRESIVO_TRICICLICO'])];
+    expect(isDiagnosisEnabled('Riesgo de caídas de repetición', meds, DEPS)).toBe(true);
+  });
+
+  it('venlafaxina (ISRN) habilita Riesgo de caídas de repetición (K8)', () => {
+    const meds = [med('Venlafaxina', ['ISRN'])];
+    expect(isDiagnosisEnabled('Riesgo de caídas de repetición', meds, DEPS)).toBe(true);
+  });
+
+  it('Riesgo de caídas de repetición sigue deshabilitado sin medicación relevante', () => {
+    expect(isDiagnosisEnabled('Riesgo de caídas de repetición', [med('Enalapril', ['IECA'])], DEPS)).toBe(false);
   });
 });

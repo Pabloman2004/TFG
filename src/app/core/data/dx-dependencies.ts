@@ -3,7 +3,7 @@
 
 import { Crit, JsonLogicRule, Med } from '../types';
 import { extractPositiveDxCodesForDependencies } from './diagnosis-family';
-import { DIAGNOSIS_REVERSE_MAP } from './diagnoses';
+import { DIAGNOSIS_MAP, DIAGNOSIS_REVERSE_MAP } from './diagnoses';
 import { ALWAYS_ENABLED_LABELS } from './dx-anchor-labels-candidate';
 import { DX_DEPENDENCIES_OVERRIDES } from './dx-dependencies-overrides';
 
@@ -17,23 +17,28 @@ export type DxTrigger = {
 
 export type DxDependencies = Readonly<Record<string, DxTrigger>>;
 
+// Tarea C: walker con flag negated para no extraer clases dentro de ramas !{}.
 export const extractDrugClasses = (logic: JsonLogicRule | undefined): Set<string> => {
   const classes = new Set<string>();
-  const walk = (node: unknown): void => {
+  const walk = (node: unknown, negated: boolean): void => {
     if (!node || typeof node !== 'object') return;
     if (Array.isArray(node)) {
-      node.forEach(walk);
+      node.forEach(n => walk(n, negated));
       return;
     }
     for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
-      if (k === 'inDrugClass' && Array.isArray(v) && typeof v[0] === 'string') {
-        classes.add(v[0]);
+      if (k === '!' || k === 'not') {
+        walk(v, true);
         continue;
       }
-      walk(v);
+      if (k === 'inDrugClass' && Array.isArray(v) && typeof v[0] === 'string') {
+        if (!negated) classes.add(v[0]);
+        continue;
+      }
+      walk(v, negated);
     }
   };
-  if (logic) walk(logic);
+  if (logic) walk(logic, false);
   return classes;
 };
 
@@ -76,10 +81,33 @@ const triggerFromClasses = (classes: Iterable<string>): DxTrigger => {
   return { classes: sorted, tooltip: tooltipForClasses(sorted) };
 };
 
+// Tarea D: guard de integridad — detecta labels de override sin entrada en DIAGNOSIS_MAP.
+export const validateOverrideLabels = (
+  overrides: Record<string, DxTrigger>,
+  diagnosisMap: Record<string, string>,
+): void => {
+  for (const label of Object.keys(overrides)) {
+    if (!(label in diagnosisMap)) {
+      throw new Error(
+        `dx-dependencies-overrides: label "${label}" no existe en DIAGNOSIS_MAP. ` +
+          `Verifica el nombre exacto o actualiza el mapa de diagnósticos.`,
+      );
+    }
+  }
+};
+
+export type BuildDxDepsOptions = {
+  /** Si false, no añade excludes.drugClasses al bucket de gating (Tarea B). Por defecto true. */
+  includeExcludeClasses?: boolean;
+};
+
 export const buildDxDependencies = (
   criteria: readonly Crit[],
   overrides: Record<string, DxTrigger> = DX_DEPENDENCIES_OVERRIDES,
+  { includeExcludeClasses = false }: BuildDxDepsOptions = {},
 ): DxDependencies => {
+  validateOverrideLabels(overrides, DIAGNOSIS_MAP);
+
   const classesByCode = new Map<string, Set<string>>();
 
   for (const c of criteria) {
@@ -89,7 +117,7 @@ export const buildDxDependencies = (
     if (dxCodes.size === 0) continue;
 
     const drugClasses = extractDrugClasses(c.logic);
-    const excludeClasses = c.excludes?.drugClasses ?? [];
+    const excludeClasses = includeExcludeClasses ? (c.excludes?.drugClasses ?? []) : [];
 
     for (const dxCode of dxCodes) {
       const bucket = classesByCode.get(dxCode) ?? new Set<string>();
@@ -122,6 +150,13 @@ export const isDiagnosisEnabled = (
   if (classesSatisfied) return true;
   return dep.ids?.some(id => meds.some(m => m.id === id)) ?? false;
 };
+
+// Tarea E: un único predicado nombrado que captura los tres caminos de "siempre habilitado":
+//   1. Label no está en deps (ancla non-doubtful o dx solo-START).
+//   2. Label en deps pero sin triggers efectivos.
+//   3. (Implícito) label no está en DIAGNOSIS_MAP → isDiagnosisEnabled devuelve true.
+export const isAlwaysEnabled = (label: string, deps: DxDependencies): boolean =>
+  isDiagnosisEnabled(label, [], deps);
 
 export const dxTooltip = (label: string, deps: DxDependencies): string =>
   deps[label]?.tooltip ?? '';
