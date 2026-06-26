@@ -143,10 +143,8 @@ export class MedsStepComponent implements OnInit {
 
   tabHasSelection(tabId: string): boolean {
     if (tabId === this.OTROS_TAB_ID) {
-      const singleDrugs = new Set(
-        this.categories.flatMap(c => c.groups.filter(g => g.drugs.length === 1).flatMap(g => g.drugs)),
-      );
-      return this.store.meds().some(m => singleDrugs.has(m.id));
+      const otrosDrugs = new Set(this.groupsVisibleInTab(this.OTROS_TAB_ID).flatMap(g => g.drugs));
+      return this.store.meds().some(m => otrosDrugs.has(m.id));
     }
     return this.groupsVisibleInTab(tabId).some(g => this.groupHasAnySelection(g));
   }
@@ -171,10 +169,8 @@ export class MedsStepComponent implements OnInit {
   tabSelectionCount(tabId: string): number {
     const meds = this.store.meds();
     if (tabId === this.OTROS_TAB_ID) {
-      const singleDrugs = new Set(
-        this.categories.flatMap(c => c.groups.filter(g => g.drugs.length === 1).flatMap(g => g.drugs)),
-      );
-      return meds.filter(m => singleDrugs.has(m.id)).length;
+      const otrosDrugs = new Set(this.groupsVisibleInTab(this.OTROS_TAB_ID).flatMap(g => g.drugs));
+      return meds.filter(m => otrosDrugs.has(m.id)).length;
     }
     const groups = this.groupsVisibleInTab(tabId);
     const counted = new Set<string>();

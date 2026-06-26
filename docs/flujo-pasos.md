@@ -57,10 +57,13 @@ extraído en el incremento T8 para eliminar la duplicación entre `MedsStepCompo
 Exporta cuatro funciones puras y sus tipos asociados:
 
 - **`computeMedGroupBuckets(tabId, categories, relevance, otrosTabId)`**: calcula `MedGroupBuckets`
-  (`{ ownAll, foreignRelevant }`). El tab especial `otrosTabId` agrega todos los fármacos de grupos
-  con un único medicamento. Para el resto, `ownAll` son los grupos propios con `drugs.length > 1`
-  ordenados con `Intl.Collator('es')`; `foreignRelevant` son grupos de otras categorías cuya
-  `drugClass` aparece en `relevance.classesByTab.get(tabId)` y no está ya en `ownAll`.
+  (`{ ownAll, foreignRelevant }`). El tab especial `otrosTabId` agrega los fármacos de grupos con un
+  único medicamento, **excepto** los unitarios cuya `drugClass` es relevante en algún tab de sistema
+  (esos afloran en su tab y dejan de ir a "Otros", evitando duplicación). Para el resto, `ownAll` son
+  los grupos propios con `drugs.length > 1` **o** los unitarios cuya `drugClass` está en
+  `relevance.classesByTab.get(tabId)`, ordenados con `Intl.Collator('es')`; `foreignRelevant` son
+  grupos de otras categorías (incluidos unitarios) cuya `drugClass` aparece en
+  `relevance.classesByTab.get(tabId)` y no está ya en `ownAll`.
 - **`medGroupsVisibleInTab(tabId, categories, relevance, otrosTabId)`**: alias plano de lo anterior;
   devuelve `[...ownAll, ...foreignRelevant]`.
 - **`computeDxGroupBuckets(tab, allTabs, relevance)`**: calcula `DxGroupBuckets`
@@ -109,7 +112,7 @@ El marcador de tab revisado se gestiona en `CaseStoreService` (`reviewedMedTabs`
 - **`ChangeDetectionStrategy.OnPush` + signals**: toda la reactividad pasa por signals y computed, sin RxJS. El motor de criterios se invoca solo cuando cambia `meds`, `diagnoses` o `labs`.
 - **Bucket de "relevantes de otros sistemas"**: evita que el clínico tenga que navegar a otro tab para seleccionar un fármaco/diagnóstico que es relevante para el sistema que está revisando en ese momento. Se calcula mediante `criteriaEngine.relevance()` que construye un índice `classesByTab` / `dxsByTab`.
 - **`Intl.Collator('es')`**: la ordenación de grupos foráneos y fármacos del tab "Otros" usa el cotejador en español para ordenación correcta de caracteres como `ñ` y vocales acentuadas.
-- **Tab "Otros" de medicamentos**: agrega todos los fármacos de grupos con un único medicamento (`drugs.length === 1`) de todas las categorías; es un tab de miscelánea para fármacos poco frecuentes.
+- **Tab "Otros" de medicamentos**: agrega los fármacos de grupos con un único medicamento (`drugs.length === 1`) de todas las categorías, salvo los unitarios cuya `drugClass` es clínicamente relevante en algún tab de sistema (esos afloran en su tab por relevancia y se excluyen de "Otros" para no duplicar); es un tab de miscelánea para fármacos poco frecuentes y no referenciados por criterios.
 - **Duplicación deliberada de los dos componentes**: `MedsStepComponent` y `DiagnosisStepComponent` replican casi toda la infraestructura. No se ha extraído a un componente base. Ver "Si cambias esto…" y "Problemas detectados" en `analysis/steps.md`.
 
 ## Invariantes
@@ -137,5 +140,5 @@ El marcador de tab revisado se gestiona en `CaseStoreService` (`reviewedMedTabs`
 - `lastCriterionId` se calcula en un efecto con `allowSignalWrites: true` en ambos componentes, pero no se referencia en ninguna plantilla. Se asume que es una funcionalidad de scroll-to-new-criterion pendiente de implementar o retirada, no un bug de compilación.
 - `MEDICATIONS` está importado en `DiagnosisStepComponent` (línea 17) pero ningún método del componente lo usa directamente. Se asume que es un import residual de una refactorización anterior.
 - La señal `criteria` en ambos componentes es local (no viene del store). Se asume que esto es deliberado para evitar compartir el array de criterios cargados entre los dos pasos, aunque en la práctica `loadCriteria()` devuelve el mismo JSON ambas veces.
-- El tab "Otros" de `DiagnosisStepComponent` delega directamente en `tab.groups` sin transformación adicional, mientras que en `MedsStepComponent` el tab "Otros" se construye dinámicamente agrupando fármacos de `drugs.length === 1`. Esta asimetría parece intencional por diferencia en la naturaleza de los catálogos.
+- El tab "Otros" de `DiagnosisStepComponent` delega directamente en `tab.groups` sin transformación adicional, mientras que en `MedsStepComponent` el tab "Otros" se construye dinámicamente agrupando fármacos de `drugs.length === 1` (excluyendo los unitarios que afloran por relevancia). El conteo y la selección del tab "Otros" en `MedsStepComponent` derivan de `groupsVisibleInTab('otros')` (fuente única de verdad), no de un recálculo manual de `drugs.length === 1`. Esta asimetría parece intencional por diferencia en la naturaleza de los catálogos.
 - Los diagnósticos foráneos en el bucket de `DiagnosisStepComponent` no tienen habilitado el botón "Otro" ni los diagnósticos custom (la plantilla no los muestra para grupos `drug-col--foreign`). Se asume que es una decisión deliberada de UX.

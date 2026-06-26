@@ -21,6 +21,23 @@ export interface MedGroupBuckets {
   readonly foreignRelevant: readonly MedForeignGroup[];
 }
 
+const surfacesByRelevance = (g: DrugGroup, relevantClasses: ReadonlySet<string>): boolean =>
+  !!g.drugClass && relevantClasses.has(g.drugClass);
+
+// Clases que afloran como grupo propio en algún tab de sistema por ser
+// clínicamente relevantes ahí. Un unitario con una de estas clases sale de "Otros".
+const medTabRelevantClasses = (
+  categories: readonly DrugCategory[],
+  relevance: Relevance | null,
+): ReadonlySet<string> => {
+  const acc = new Set<string>();
+  for (const c of categories) {
+    const classes = relevance?.classesByTab.get(c.id);
+    if (classes) for (const dc of classes) acc.add(dc);
+  }
+  return acc;
+};
+
 export function computeMedGroupBuckets(
   tabId: string,
   categories: readonly DrugCategory[],
@@ -28,8 +45,11 @@ export function computeMedGroupBuckets(
   otrosTabId: string,
 ): MedGroupBuckets {
   if (tabId === otrosTabId) {
+    const surfacingClasses = medTabRelevantClasses(categories, relevance);
     const drugs = categories.flatMap(cat =>
-      cat.groups.filter(g => g.drugs.length === 1).flatMap(g => g.drugs),
+      cat.groups
+        .filter(g => g.drugs.length === 1 && !surfacesByRelevance(g, surfacingClasses))
+        .flatMap(g => g.drugs),
     );
     if (drugs.length === 0) return { ownAll: [], foreignRelevant: [] };
     return {
@@ -42,12 +62,12 @@ export function computeMedGroupBuckets(
     };
   }
 
+  const relevantClasses = relevance?.classesByTab.get(tabId) ?? new Set<string>();
   const cat = categories.find(c => c.id === tabId);
-  const ownAll = (cat ? cat.groups.filter(g => g.drugs.length > 1) : [])
+  const ownAll = (cat ? cat.groups.filter(g => g.drugs.length > 1 || surfacesByRelevance(g, relevantClasses)) : [])
     .slice()
     .sort((a, b) => ES_COLLATOR.compare(a.label, b.label));
 
-  const relevantClasses = relevance?.classesByTab.get(tabId) ?? new Set<string>();
   const ownClasses = new Set(ownAll.map(g => g.drugClass).filter((dc): dc is string => !!dc));
   const seenForeign = new Set<string>();
   const foreignRelevant: MedForeignGroup[] = [];
@@ -55,7 +75,7 @@ export function computeMedGroupBuckets(
   for (const c of categories) {
     if (c.id === tabId) continue;
     for (const g of c.groups) {
-      if (g.drugs.length <= 1 || !g.drugClass) continue;
+      if (!g.drugClass) continue;
       if (!relevantClasses.has(g.drugClass)) continue;
       if (ownClasses.has(g.drugClass)) continue;
       if (seenForeign.has(g.drugClass)) continue;

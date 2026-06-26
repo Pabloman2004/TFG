@@ -99,6 +99,37 @@ describe('computeMedGroupBuckets', () => {
     const labels = result.ownAll.map(g => g.label);
     expect(labels).toEqual([...labels].sort());
   });
+
+  // ─── Unitarios relevantes (afloran por relevancia clínica) ─────────────────
+
+  it('(a) grupo unitario cuya clase ES relevante en el tab aparece en ownAll de ese tab', () => {
+    const rel = makeRelevance({ cardio: ['DIGOXINA'] });
+    const result = computeMedGroupBuckets('cardio', CATS, rel, 'otros');
+    expect(result.ownAll.map(g => g.id)).toContain('g_single');
+  });
+
+  it('(b) grupo unitario cuya clase NO es relevante en el tab no aparece en ese tab', () => {
+    const rel = makeRelevance({ cardio: ['ISRS'] });
+    const result = computeMedGroupBuckets('cardio', CATS, rel, 'otros');
+    expect(result.ownAll.map(g => g.id)).not.toContain('g_single');
+    expect(result.foreignRelevant.map(g => g.drugClass)).not.toContain('DIGOXINA');
+  });
+
+  it('(c) grupo unitario relevante en varios tabs aparece en todos ellos (propio y foráneo)', () => {
+    const rel = makeRelevance({ cardio: ['DIGOXINA'], neuro: ['DIGOXINA'] });
+    const cardio = computeMedGroupBuckets('cardio', CATS, rel, 'otros');
+    expect(cardio.ownAll.map(g => g.id)).toContain('g_single');
+    const neuro = computeMedGroupBuckets('neuro', CATS, rel, 'otros');
+    expect(neuro.foreignRelevant.map(g => g.drugClass)).toContain('DIGOXINA');
+    expect(neuro.foreignRelevant.find(g => g.drugClass === 'DIGOXINA')?.originTabId).toBe('cardio');
+  });
+
+  it('(d) un unitario que aflora por relevancia ya no va a "Otros"; uno no relevante sí', () => {
+    const rel = makeRelevance({ cardio: ['DIGOXINA'] });
+    const result = computeMedGroupBuckets('otros', CATS, rel, 'otros');
+    expect(result.ownAll[0].drugs).not.toContain('Digoxina');
+    expect(result.ownAll[0].drugs).toContain('Donepezilo');
+  });
 });
 
 // ─── medGroupsVisibleInTab ─────────────────────────────────────────────────────
