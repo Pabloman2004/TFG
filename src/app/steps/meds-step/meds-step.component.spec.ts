@@ -18,6 +18,7 @@ const engineStub = () => ({
   dxDependencies: signal({}),
   evaluate: () => [],
   loadCriteria: () => Promise.resolve([]),
+  getExcludedMedications: () => new Map<string, Crit>(),
 });
 
 const relevanceWith = (classesByTab: Record<string, string[]>): Relevance => ({
