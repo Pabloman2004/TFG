@@ -139,7 +139,17 @@ catálogo a uno o más tabs de la UI:
 `buildRelevance(criteria, allTabIds)` recorre cada criterio, extrae mediante
 `extractReferences` las clases farmacológicas (`inDrugClass`) y códigos de
 diagnóstico (`in [code, {var:"diagnoses"}]`) referenciados en la lógica, y los
-acumula en los mapas `classesByTab` / `dxsByTab`.
+acumula en los mapas `classesByTab` / `dxsByTab` (con la expansión transversal
+incluida).
+
+Además acumula `specificClassesByTab`: las clases referenciadas por criterios
+cuyo `system` mapea **específicamente** a un tab (los transversales NO se vuelcan
+aquí). Es un subconjunto de `classesByTab` que conserva la procedencia perdida en
+la expansión transversal. Lo consume `computeMedGroupBuckets` para decidir el
+afloramiento de grupos **unitarios**, que no debe dispararse por relevancia
+transversal/comodín (p. ej. paracetamol vía `"Analgésicos"`). El resto de la
+lógica (bucket "Relevantes de otros sistemas" de grupos multi-fármaco, gating de
+diagnósticos) sigue usando `classesByTab` completo.
 
 El signal `CriteriaEngineService.relevance` se actualiza una sola vez, tras
 la primera carga del catálogo.

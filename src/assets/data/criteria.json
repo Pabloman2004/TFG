@@ -233,36 +233,12 @@
       "excludes": {"medications":["Espironolactona","Eplerenona"],"drugClasses":["ANTAGONISTA_ALDOSTERONA"]}
     },
     {
-      "id": "STOPP-B13-ARA2-ANTAGONISTA-ALDOSTERONA",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar uso de ARA-II con antagonistas de la aldosterona (espironolactona, eplerenona) sin monitorización. Riesgo de hiperpotasemia grave (K+ > 6.0 mmol/l) si no se monitoriza al menos cada 6 meses.",
-      "logic": {"and":[{"inDrugClass":["ARA2",{"var":"medications"}]},{"inDrugClass":["ANTAGONISTA_ALDOSTERONA",{"var":"medications"}]}]},
-      "excludes": {"medications":["Valsartán","Candesartán","Losartán","Espironolactona","Eplerenona"],"drugClasses":["ARA2","ANTAGONISTA_ALDOSTERONA"]}
-    },
-    {
       "id": "STOPP-B13-ARA2-DIURETICO-AHORRADOR-POTASIO",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar uso de ARA-II con diuréticos ahorradores de potasio (amilorida, triamtereno, espironolactona, eplerenona) sin monitorización. Riesgo de hiperpotasemia grave (K+ > 6.0 mmol/l).",
       "logic": {"and":[{"inDrugClass":["ARA2",{"var":"medications"}]},{"inDrugClass":["DIURETICO_AHORRADOR_POTASIO",{"var":"medications"}]}]},
       "excludes": {"medications":["Valsartán","Candesartán","Losartán"],"drugClasses":["ARA2"]}
-    },
-    {
-      "id": "STOPP-B13-DIURETICO-AHORRADOR-POTASIO-ANTAGONISTA",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar uso de diuréticos ahorradores de potasio (amilorida, triamtereno) con antagonistas de la aldosterona (espironolactona, eplerenona) sin monitorización. Riesgo de hiperpotasemia grave (K+ > 6.0 mmol/l).",
-      "logic": {"and":[{"inDrugClass":["DIURETICO_AHORRADOR_POTASIO",{"var":"medications"}]},{"inDrugClass":["ANTAGONISTA_ALDOSTERONA",{"var":"medications"}]}]},
-      "excludes": {"medications":["Amilorida","Triamtereno"],"drugClasses":["DIURETICO_AHORRADOR_POTASIO"]}
-    },
-    {
-      "id": "STOPP-B13-IECA-ANTAGONISTA-ALDOSTERONA",
-      "type": "STOPP",
-      "system": "Sistema cardiovascular",
-      "summary": "Evitar uso de IECA con antagonistas de la aldosterona (espironolactona, eplerenona) sin monitorización. Riesgo de hiperpotasemia grave (K+ > 6.0 mmol/l) si no se monitoriza al menos cada 6 meses.",
-      "logic": {"and":[{"inDrugClass":["IECA",{"var":"medications"}]},{"inDrugClass":["ANTAGONISTA_ALDOSTERONA",{"var":"medications"}]}]},
-      "excludes": {"medications":["Enalapril","Ramipril","Espironolactona","Eplerenona"],"drugClasses":["IECA","ANTAGONISTA_ALDOSTERONA"]}
     },
     {
       "id": "STOPP-B13-IECA-DIURETICO-AHORRADOR-POTASIO",

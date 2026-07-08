@@ -1,6 +1,7 @@
 import { CriteriaEngineService } from './criteria-engine.service';
+import { critCode } from '../criteria-groups';
 import {
-  setupEngine, makeCase, makeLabs, crit, withAge, makeMed,
+  setupEngine, makeCase, makeLabs, crit, withAge, makeMed, ALL_CRITERIA,
   aine, betabloq, ieca, ara2, calcioNodhp, digoxina,
   diureticoAsa, tiazida, estatina, antihipertCentral,
   amiodarona, nitrato, pde5, aldosterona,
@@ -272,16 +273,11 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
     });
   });
 
-  describe('B13-IECA-ANTAGONISTA-ALDOSTERONA', () => {
-    const c = crit('STOPP-B13-IECA-ANTAGONISTA-ALDOSTERONA');
-
-    it('dispara con IECA + antagonista aldosterona', () => {
+  describe('B13 — sin tarjetas duplicadas', () => {
+    it('produce exactamente un resultado con código B13 al marcar IECA + antagonista de aldosterona', () => {
       const p = makeCase({ medications: [ieca(), aldosterona()] });
-      expect(engine.evaluate(p, [c]).length).toBe(1);
-    });
-
-    it('no dispara con solo IECA', () => {
-      expect(engine.evaluate(makeCase({ medications: [ieca()] }), [c])).toEqual([]);
+      const b13Results = engine.evaluate(p, ALL_CRITERIA).filter(c => critCode(c.id) === 'B13');
+      expect(b13Results.length).toBe(1);
     });
   });
 
