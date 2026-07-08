@@ -57,13 +57,18 @@ extraído en el incremento T8 para eliminar la duplicación entre `MedsStepCompo
 Exporta cuatro funciones puras y sus tipos asociados:
 
 - **`computeMedGroupBuckets(tabId, categories, relevance, otrosTabId)`**: calcula `MedGroupBuckets`
-  (`{ ownAll, foreignRelevant }`). El tab especial `otrosTabId` agrega los fármacos de grupos con un
-  único medicamento, **excepto** los unitarios cuya `drugClass` es relevante en algún tab de sistema
-  (esos afloran en su tab y dejan de ir a "Otros", evitando duplicación). Para el resto, `ownAll` son
-  los grupos propios con `drugs.length > 1` **o** los unitarios cuya `drugClass` está en
-  `relevance.classesByTab.get(tabId)`, ordenados con `Intl.Collator('es')`; `foreignRelevant` son
-  grupos de otras categorías (incluidos unitarios) cuya `drugClass` aparece en
-  `relevance.classesByTab.get(tabId)` y no está ya en `ownAll`.
+  (`{ ownAll, foreignRelevant }`). Distingue grupos multi-fármaco de unitarios:
+  - Los **multi-fármaco** (`drugs.length > 1`) usan `relevance.classesByTab` (relevancia completa,
+    transversal incluida): siempre en `ownAll` de su tab; como foráneos donde su `drugClass` sea
+    relevante.
+  - Los **unitarios** (`drugs.length === 1`) solo afloran por relevancia **específica**
+    (`relevance.specificClassesByTab`): aparecen en `ownAll`/foráneos únicamente en tabs cuyo
+    criterio mapea específicamente a ese sistema, NO por relevancia transversal (p. ej. paracetamol
+    vía "Analgésicos" no aflora).
+  - El tab especial `otrosTabId` agrega los fármacos de grupos unitarios, **excepto** los que
+    afloran por relevancia específica en algún tab de sistema (para no duplicarlos).
+  - `ownAll` se ordena con `Intl.Collator('es')`; los foráneos no se repiten si la `drugClass` ya
+    está en `ownAll`.
 - **`medGroupsVisibleInTab(tabId, categories, relevance, otrosTabId)`**: alias plano de lo anterior;
   devuelve `[...ownAll, ...foreignRelevant]`.
 - **`computeDxGroupBuckets(tab, allTabs, relevance)`**: calcula `DxGroupBuckets`
@@ -112,7 +117,7 @@ El marcador de tab revisado se gestiona en `CaseStoreService` (`reviewedMedTabs`
 - **`ChangeDetectionStrategy.OnPush` + signals**: toda la reactividad pasa por signals y computed, sin RxJS. El motor de criterios se invoca solo cuando cambia `meds`, `diagnoses` o `labs`.
 - **Bucket de "relevantes de otros sistemas"**: evita que el clínico tenga que navegar a otro tab para seleccionar un fármaco/diagnóstico que es relevante para el sistema que está revisando en ese momento. Se calcula mediante `criteriaEngine.relevance()` que construye un índice `classesByTab` / `dxsByTab`.
 - **`Intl.Collator('es')`**: la ordenación de grupos foráneos y fármacos del tab "Otros" usa el cotejador en español para ordenación correcta de caracteres como `ñ` y vocales acentuadas.
-- **Tab "Otros" de medicamentos**: agrega los fármacos de grupos con un único medicamento (`drugs.length === 1`) de todas las categorías, salvo los unitarios cuya `drugClass` es clínicamente relevante en algún tab de sistema (esos afloran en su tab por relevancia y se excluyen de "Otros" para no duplicar); es un tab de miscelánea para fármacos poco frecuentes y no referenciados por criterios.
+- **Tab "Otros" de medicamentos**: agrega los fármacos de grupos con un único medicamento (`drugs.length === 1`) de todas las categorías, salvo los unitarios cuya `drugClass` es **específicamente** relevante en algún tab de sistema (esos afloran en su tab y se excluyen de "Otros" para no duplicar; la relevancia transversal/comodín no cuenta para esto); es un tab de miscelánea para fármacos poco frecuentes y no referenciados por criterios específicos.
 - **Duplicación deliberada de los dos componentes**: `MedsStepComponent` y `DiagnosisStepComponent` replican casi toda la infraestructura. No se ha extraído a un componente base. Ver "Si cambias esto…" y "Problemas detectados" en `analysis/steps.md`.
 
 ## Invariantes

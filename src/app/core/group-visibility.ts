@@ -25,14 +25,15 @@ const surfacesByRelevance = (g: DrugGroup, relevantClasses: ReadonlySet<string>)
   !!g.drugClass && relevantClasses.has(g.drugClass);
 
 // Clases que afloran como grupo propio en algún tab de sistema por ser
-// clínicamente relevantes ahí. Un unitario con una de estas clases sale de "Otros".
-const medTabRelevantClasses = (
+// ESPECÍFICAMENTE relevantes ahí (no por relevancia transversal). Un unitario con
+// una de estas clases sale de "Otros"; uno relevante solo por vía transversal no.
+const medTabSpecificClasses = (
   categories: readonly DrugCategory[],
   relevance: Relevance | null,
 ): ReadonlySet<string> => {
   const acc = new Set<string>();
   for (const c of categories) {
-    const classes = relevance?.classesByTab.get(c.id);
+    const classes = relevance?.specificClassesByTab.get(c.id);
     if (classes) for (const dc of classes) acc.add(dc);
   }
   return acc;
@@ -45,7 +46,7 @@ export function computeMedGroupBuckets(
   otrosTabId: string,
 ): MedGroupBuckets {
   if (tabId === otrosTabId) {
-    const surfacingClasses = medTabRelevantClasses(categories, relevance);
+    const surfacingClasses = medTabSpecificClasses(categories, relevance);
     const drugs = categories.flatMap(cat =>
       cat.groups
         .filter(g => g.drugs.length === 1 && !surfacesByRelevance(g, surfacingClasses))
@@ -62,9 +63,12 @@ export function computeMedGroupBuckets(
     };
   }
 
-  const relevantClasses = relevance?.classesByTab.get(tabId) ?? new Set<string>();
+  // Grupos multi-fármaco usan la relevancia completa (transversal incluida);
+  // los unitarios solo afloran por relevancia ESPECÍFICA del tab.
+  const fullClasses = relevance?.classesByTab.get(tabId) ?? new Set<string>();
+  const specificClasses = relevance?.specificClassesByTab.get(tabId) ?? new Set<string>();
   const cat = categories.find(c => c.id === tabId);
-  const ownAll = (cat ? cat.groups.filter(g => g.drugs.length > 1 || surfacesByRelevance(g, relevantClasses)) : [])
+  const ownAll = (cat ? cat.groups.filter(g => g.drugs.length > 1 || surfacesByRelevance(g, specificClasses)) : [])
     .slice()
     .sort((a, b) => ES_COLLATOR.compare(a.label, b.label));
 
@@ -76,7 +80,8 @@ export function computeMedGroupBuckets(
     if (c.id === tabId) continue;
     for (const g of c.groups) {
       if (!g.drugClass) continue;
-      if (!relevantClasses.has(g.drugClass)) continue;
+      const allowed = g.drugs.length > 1 ? fullClasses : specificClasses;
+      if (!allowed.has(g.drugClass)) continue;
       if (ownClasses.has(g.drugClass)) continue;
       if (seenForeign.has(g.drugClass)) continue;
       seenForeign.add(g.drugClass);

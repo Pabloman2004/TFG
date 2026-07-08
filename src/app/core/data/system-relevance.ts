@@ -38,6 +38,13 @@ export const SYSTEM_TO_TABS: Record<string, readonly TabId[]> = {
 export interface Relevance {
   /** tabId → set de drugClasses referenciadas por criterios relevantes a ese tab */
   readonly classesByTab: ReadonlyMap<TabId, ReadonlySet<string>>;
+  /**
+   * tabId → set de drugClasses referenciadas por criterios cuyo `system` mapea
+   * ESPECÍFICAMENTE a ese tab (excluye la expansión transversal/comodín).
+   * Subconjunto de classesByTab. Usado para decidir el afloramiento de grupos
+   * unitarios, que no debe dispararse por relevancia transversal.
+   */
+  readonly specificClassesByTab: ReadonlyMap<TabId, ReadonlySet<string>>;
   /** tabId → set de códigos de diagnóstico referenciados por criterios relevantes a ese tab */
   readonly dxsByTab: ReadonlyMap<TabId, ReadonlySet<string>>;
 }
@@ -103,6 +110,7 @@ export const buildRelevance = (
   allTabIds: readonly TabId[] = [],
 ): Relevance => {
   const classesByTab = new Map<TabId, Set<string>>();
+  const specificClassesByTab = new Map<TabId, Set<string>>();
   const dxsByTab = new Map<TabId, Set<string>>();
 
   for (const c of criteria) {
@@ -119,7 +127,13 @@ export const buildRelevance = (
       refs.classes.forEach(cls => addTo(classesByTab, tab, cls));
       refs.dxs.forEach(dx => addTo(dxsByTab, tab, dx));
     }
+
+    if (!isTransversal) {
+      for (const tab of targets) {
+        refs.classes.forEach(cls => addTo(specificClassesByTab, tab, cls));
+      }
+    }
   }
 
-  return { classesByTab, dxsByTab };
+  return { classesByTab, specificClassesByTab, dxsByTab };
 };

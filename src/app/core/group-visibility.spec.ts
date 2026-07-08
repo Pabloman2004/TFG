@@ -25,8 +25,15 @@ const CATS: DrugCategory[] = [
   },
 ];
 
-const makeRelevance = (classesByTab: Record<string, string[]>): Relevance => ({
-  classesByTab: new Map(Object.entries(classesByTab).map(([k, v]) => [k, new Set(v)])),
+const toClassMap = (record: Record<string, string[]>) =>
+  new Map(Object.entries(record).map(([k, v]) => [k, new Set(v)]));
+
+const makeRelevance = (
+  classesByTab: Record<string, string[]>,
+  specificClassesByTab: Record<string, string[]> = classesByTab,
+): Relevance => ({
+  classesByTab: toClassMap(classesByTab),
+  specificClassesByTab: toClassMap(specificClassesByTab),
   dxsByTab: new Map(),
 });
 
@@ -50,6 +57,7 @@ const TABS: DiagnosisTab[] = [
 
 const makeDxRelevance = (dxsByTab: Record<string, string[]>): Relevance => ({
   classesByTab: new Map(),
+  specificClassesByTab: new Map(),
   dxsByTab: new Map(Object.entries(dxsByTab).map(([k, v]) => [k, new Set(v)])),
 });
 
@@ -129,6 +137,29 @@ describe('computeMedGroupBuckets', () => {
     const result = computeMedGroupBuckets('otros', CATS, rel, 'otros');
     expect(result.ownAll[0].drugs).not.toContain('Digoxina');
     expect(result.ownAll[0].drugs).toContain('Donepezilo');
+  });
+
+  it('(e) un unitario relevante SOLO por vía transversal no aflora en ningún tab y sigue en "Otros"', () => {
+    const catsParacetamol: DrugCategory[] = [
+      {
+        id: 'cardio',
+        label: 'Cardiovascular',
+        groups: [
+          { id: 'g1', label: 'Betabloqueantes', drugs: ['Bisoprolol', 'Atenolol'], drugClass: 'BETABLOQUEANTE' },
+          { id: 'g_para', label: 'Analgésicos simples', drugs: ['Paracetamol'], drugClass: 'ANALGESICO_SIMPLE' },
+        ],
+      },
+    ];
+    // Procedencia transversal: ANALGESICO_SIMPLE está en classesByTab (full, expandida
+    // a todos los tabs por el comodín "Analgésicos") pero NO en specificClassesByTab.
+    const rel = makeRelevance({ cardio: ['ANALGESICO_SIMPLE'] }, {});
+
+    const cardio = computeMedGroupBuckets('cardio', catsParacetamol, rel, 'otros');
+    expect(cardio.ownAll.map(g => g.id)).not.toContain('g_para');
+    expect(cardio.foreignRelevant.map(g => g.drugClass)).not.toContain('ANALGESICO_SIMPLE');
+
+    const otros = computeMedGroupBuckets('otros', catsParacetamol, rel, 'otros');
+    expect(otros.ownAll[0].drugs).toContain('Paracetamol');
   });
 });
 

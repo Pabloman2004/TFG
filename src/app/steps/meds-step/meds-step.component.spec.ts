@@ -21,8 +21,12 @@ const engineStub = () => ({
   getExcludedMedications: () => new Map<string, Crit>(),
 });
 
-const relevanceWith = (classesByTab: Record<string, string[]>): Relevance => ({
+const relevanceWith = (
+  classesByTab: Record<string, string[]>,
+  specificClassesByTab: Record<string, string[]> = classesByTab,
+): Relevance => ({
   classesByTab: new Map(Object.entries(classesByTab).map(([k, v]) => [k, new Set(v)])),
+  specificClassesByTab: new Map(Object.entries(specificClassesByTab).map(([k, v]) => [k, new Set(v)])),
   dxsByTab: new Map(),
 });
 

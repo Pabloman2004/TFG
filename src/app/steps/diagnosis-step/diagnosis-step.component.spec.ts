@@ -254,3 +254,40 @@ describe('P15 paso 5 — compatibilidad con JSON antiguo (dos variantes a la vez
     expect(store.diagnoses()).toEqual(['hta_no_complicada']);
   });
 });
+
+describe('DiagnosisStepComponent — badges de cabecera de criterios activados', () => {
+  const render = () => {
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    fixture.detectChanges();
+    return fixture;
+  };
+
+  const badgeLabel = (host: HTMLElement, selector: string): string =>
+    (host.querySelector(selector)?.textContent ?? '').replace(/\d+/g, '').trim();
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+  });
+
+  it('el badge START se rotula "START"', () => {
+    const host: HTMLElement = render().nativeElement;
+
+    expect(badgeLabel(host, '.start-badge-corner')).toBe('START');
+  });
+
+  it('el badge STOPP se rotula "STOPP"', () => {
+    const host: HTMLElement = render().nativeElement;
+
+    expect(badgeLabel(host, '.stopp-badge-corner')).toBe('STOPP');
+  });
+});
