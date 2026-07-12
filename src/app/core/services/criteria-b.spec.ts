@@ -211,32 +211,31 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
   describe('B11-ANTIHIPERTENSIVO-CENTRAL-ANCIANOS', () => {
     const c = crit('STOPP-B11-ANTIHIPERTENSIVO-CENTRAL-ANCIANOS');
 
-    it('dispara con edad ≥65 + HTA + antihipertensivo central', () => {
-      const p = makeCase({ info: withAge(70), diagnoses: ['hta'], medications: [antihipertCentral()] });
+    it('dispara con HTA + antihipertensivo central sin requerir edad', () => {
+      const p = makeCase({ diagnoses: ['hta'], medications: [antihipertCentral()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
     it('dispara con HTA grave en lugar de HTA', () => {
-      const p = makeCase({ info: withAge(70), diagnoses: ['hipertension_grave'], medications: [antihipertCentral()] });
+      const p = makeCase({ diagnoses: ['hipertension_grave'], medications: [antihipertCentral()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
     it('no dispara si tiene intolerancia a otros antihipertensivos (excepción)', () => {
       const p = makeCase({
-        info: withAge(70),
         diagnoses: ['hta', 'intolerancia_otros_antihipertensivos'],
         medications: [antihipertCentral()],
       });
       expect(engine.evaluate(p, [c])).toEqual([]);
     });
 
-    it('no dispara si edad < 65', () => {
+    it('dispara aunque la edad sea inferior a 65', () => {
       const p = makeCase({ info: withAge(60), diagnoses: ['hta'], medications: [antihipertCentral()] });
-      expect(engine.evaluate(p, [c])).toEqual([]);
+      expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
     it('no dispara sin diagnóstico de HTA', () => {
-      const p = makeCase({ info: withAge(70), medications: [antihipertCentral()] });
+      const p = makeCase({ medications: [antihipertCentral()] });
       expect(engine.evaluate(p, [c])).toEqual([]);
     });
   });

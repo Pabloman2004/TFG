@@ -245,23 +245,14 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
   describe('D8-BENZODIACEPINA-USO-PROLONGADO', () => {
     const c = crit('STOPP-D8-BENZODIACEPINA-USO-PROLONGADO');
 
-    it('dispara con edad ≥65 + benzodiacepina', () => {
-      const p = makeCase({ info: withAge(65), medications: [benzo()] });
+    it('dispara con benzodiacepina sin requerir edad', () => {
+      const p = makeCase({ medications: [benzo()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('dispara con edad > 65 + benzodiacepina', () => {
-      const p = makeCase({ info: withAge(80), medications: [benzo()] });
-      expect(engine.evaluate(p, [c]).length).toBe(1);
-    });
-
-    it('no dispara con edad < 65', () => {
+    it('dispara aunque la edad sea inferior a 65', () => {
       const p = makeCase({ info: withAge(64), medications: [benzo()] });
-      expect(engine.evaluate(p, [c])).toEqual([]);
-    });
-
-    it('no dispara sin edad informada', () => {
-      expect(engine.evaluate(makeCase({ medications: [benzo()] }), [c])).toEqual([]);
+      expect(engine.evaluate(p, [c]).length).toBe(1);
     });
   });
 

@@ -1,4 +1,14 @@
-import { resolveMedicationLabel } from './medications-taxonomy';
+import { DRUG_CATEGORIES, resolveMedicationLabel } from './medications-taxonomy';
+
+describe('DRUG_CATEGORIES — cobertura del catálogo', () => {
+  const groupedDrugs = new Set(
+    DRUG_CATEGORIES.flatMap(cat => cat.groups.flatMap(g => g.drugs)),
+  );
+
+  it('Lidocaína parche es seleccionable en algún grupo (STOPP-L4 la requiere)', () => {
+    expect(groupedDrugs.has('Lidocaína parche')).toBe(true);
+  });
+});
 
 describe('resolveMedicationLabel', () => {
   it('devuelve el id tal cual para un medicamento normal del catálogo', () => {

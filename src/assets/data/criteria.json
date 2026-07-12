@@ -205,7 +205,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar antihipertensivos de acción central (metildopa, clonidina, moxonidina, rilmenidina, guanfacina) en uso general en pacientes ancianos. Generalmente son peor tolerados por los mayores que por los jóvenes, con mayor riesgo de efectos adversos centrales.",
-      "logic": {"and":[{"and":[{"!=":[{"var":"info.age"},null]},{">=":[{"var":"info.age"},65]}]},{"and":[{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]}]},{"!":{"in":["intolerancia_otros_antihipertensivos",{"var":"diagnoses"}]}}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]}]},{"!":{"in":["intolerancia_otros_antihipertensivos",{"var":"diagnoses"}]}}]},
       "excludes": {"medications":["Metildopa","Clonidina","Moxonidina","Rilmenidina","Guanfacina"],"drugClasses":["ANTIHIPERTENSIVO_CENTRAL"]}
     },
     {
@@ -341,7 +341,7 @@
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Revisar AAS en tratamiento crónico: si se toma a dosis superiores a 100 mg/día hay mayor riesgo de sangrado sin evidencia de mayor eficacia. (Alerta de revisión de dosis.)",
-      "logic": {"and":[{"and":[{"!=":[{"var":"info.age"},null]},{">=":[{"var":"info.age"},65]}]},{"inDrugClass":["AAS",{"var":"medications"}]}]},
+      "logic": {"inDrugClass":["AAS",{"var":"medications"}]},
       "excludes": {"drugClasses":["AAS"]}
     },
     {
@@ -413,7 +413,7 @@
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar ticlopidina en cualquier circunstancia. El clopidogrel y el prasugrel tienen una eficacia similar, evidencia más sólida y menos efectos secundarios.",
-      "logic": {"and":[{"and":[{"!=":[{"var":"info.age"},null]},{">=":[{"var":"info.age"},65]}]},{"inDrugClass":["TICLOPIDINA",{"var":"medications"}]}]},
+      "logic": {"inDrugClass":["TICLOPIDINA",{"var":"medications"}]},
       "excludes": {"medications":["Ticlopidina"],"drugClasses":[]}
     },
     {
@@ -613,7 +613,7 @@
       "type": "STOPP",
       "system": "Sistema nervioso central",
       "summary": "Benzodiacepinas durante ≥ 4 semanas no están indicadas. Riesgo de sedación, confusión, pérdida de equilibrio, caídas y accidentes. (Alerta de revisión: valorar retirada gradual si el tratamiento supera las 2 semanas.)",
-      "logic": {"and":[{"and":[{"!=":[{"var":"info.age"},null]},{">=":[{"var":"info.age"},65]}]},{"inDrugClass":["BENZODIACEPINA",{"var":"medications"}]}]},
+      "logic": {"inDrugClass":["BENZODIACEPINA",{"var":"medications"}]},
       "excludes": {"drugClasses":["BENZODIACEPINA"]}
     },
     {
@@ -853,7 +853,7 @@
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
       "summary": "IBP a dosis terapéuticas plenas durante más de 8 semanas sin revisión. Valorar reducción de dosis, retirada o mantenimiento con antagonistas H2. (Alerta de revisión de duración e indicación.)",
-      "logic": {"and":[{"and":[{"!=":[{"var":"info.age"},null]},{">=":[{"var":"info.age"},65]}]},{"inDrugClass":["IBP",{"var":"medications"}]}]},
+      "logic": {"inDrugClass":["IBP",{"var":"medications"}]},
       "excludes": {"drugClasses":["IBP"]}
     },
     {
@@ -877,7 +877,7 @@
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
       "summary": "Revisar hierro oral: dosis elementales superiores a 200 mg/día no aportan mayor absorción. (Alerta de revisión de dosis.)",
-      "logic": {"and":[{"and":[{"!=":[{"var":"info.age"},null]},{">=":[{"var":"info.age"},65]}]},{"inDrugClass":["HIERRO_ORAL",{"var":"medications"}]}]},
+      "logic": {"inDrugClass":["HIERRO_ORAL",{"var":"medications"}]},
       "excludes": {"drugClasses":["HIERRO_ORAL"]}
     },
     {
@@ -933,7 +933,7 @@
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
       "summary": "Evitar acetato de megestrol como orexígeno. Aumento del riesgo de trombosis y mortalidad sin eficacia demostrada.",
-      "logic": {"and":[{"and":[{"!=":[{"var":"info.age"},null]},{">=":[{"var":"info.age"},65]}]},{"inDrugClass":["OREXICO",{"var":"medications"}]}]},
+      "logic": {"inDrugClass":["OREXICO",{"var":"medications"}]},
       "excludes": {"medications":["Acetato de megestrol"],"drugClasses":["OREXICO"]}
     },
     {
@@ -1100,7 +1100,7 @@
       "type": "STOPP",
       "system": "Sistema endocrino",
       "summary": "Evitar sulfonilureas de vida media larga (glibenclamida, clorpropamida, glimepirida) en diabetes mellitus tipo 2. Riesgo elevado de hipoglucemia prolongada en personas mayores.",
-      "logic": {"and":[{"and":[{"!=":[{"var":"info.age"},null]},{">=":[{"var":"info.age"},65]}]},{"inDrugClass":["SULFONILUREA",{"var":"medications"}]}]},
+      "logic": {"inDrugClass":["SULFONILUREA",{"var":"medications"}]},
       "excludes": {"drugClasses":["SULFONILUREA"]}
     },
     {
@@ -1308,7 +1308,7 @@
       "type": "STOPP",
       "system": "Analgésicos",
       "summary": "Evitar opioides en uso habitual sin asociar laxantes de forma concomitante. Riesgo de estreñimiento grave.",
-      "logic": {"and":[{"and":[{"!=":[{"var":"info.age"},null]},{">=":[{"var":"info.age"},65]}]},{"and":[{"inDrugClass":["OPIOIDE",{"var":"medications"}]},{"!":{"inDrugClass":["LAXANTE",{"var":"medications"}]}}]}]},
+      "logic": {"and":[{"inDrugClass":["OPIOIDE",{"var":"medications"}]},{"!":{"inDrugClass":["LAXANTE",{"var":"medications"}]}}]},
       "excludes": {"drugClasses":["OPIOIDE"]}
     },
     {
@@ -1332,7 +1332,7 @@
       "type": "STOPP",
       "system": "Analgésicos",
       "summary": "Evitar gabapentinoides (gabapentina, pregabalina) para el tratamiento del dolor no neuropático. Sin evidencia de eficacia para dolor no neuropático.",
-      "logic": {"and":[{"and":[{"!=":[{"var":"info.age"},null]},{">=":[{"var":"info.age"},65]}]},{"and":[{"inDrugClass":["GABAPENTINOIDE",{"var":"medications"}]},{"!":{"in":["dolor_neuropatico",{"var":"diagnoses"}]}}]}]},
+      "logic": {"and":[{"inDrugClass":["GABAPENTINOIDE",{"var":"medications"}]},{"!":{"in":["dolor_neuropatico",{"var":"diagnoses"}]}}]},
       "excludes": {"drugClasses":["GABAPENTINOIDE"]}
     },
     {

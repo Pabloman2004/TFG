@@ -199,6 +199,15 @@ describe('isDiagnosisEnabled()', () => {
   });
 });
 
+describe('tooltip derivado usa ejemplos de fármacos, no tokens de clase crudos', () => {
+  it('Dolor moderado-grave (derivado de L3/OPIOIDE_LP): muestra nombres de fármacos + elipsis', () => {
+    const tip = DEPS['Dolor moderado-grave']?.tooltip ?? '';
+    expect(tip).not.toContain('OPIOIDE_LP');
+    expect(tip).toContain('Morfina LP');
+    expect(tip).toContain('…');
+  });
+});
+
 const overrideKeys = () => new Set(Object.keys(DX_DEPENDENCIES_OVERRIDES));
 
 const labelsWithoutPureDxDeps = (): string[] => {

@@ -13,14 +13,14 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
   describe('C1-AAS-DOSIS-ALTA', () => {
     const c = crit('STOPP-C1-AAS-DOSIS-ALTA');
 
-    it('dispara con edad ≥65 + AAS', () => {
-      const p = makeCase({ info: withAge(65), medications: [aas()] });
+    it('dispara con AAS sin requerir edad', () => {
+      const p = makeCase({ medications: [aas()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('no dispara con edad < 65', () => {
+    it('dispara aunque la edad sea inferior a 65', () => {
       const p = makeCase({ info: withAge(64), medications: [aas()] });
-      expect(engine.evaluate(p, [c])).toEqual([]);
+      expect(engine.evaluate(p, [c]).length).toBe(1);
     });
   });
 
@@ -129,14 +129,14 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
   describe('C6-TICLOPIDINA-OBSOLETA', () => {
     const c = crit('STOPP-C6-TICLOPIDINA-OBSOLETA');
 
-    it('dispara con edad ≥65 + Ticlopidina', () => {
-      const p = makeCase({ info: withAge(65), medications: [antiagTico()] });
+    it('dispara con Ticlopidina sin requerir edad', () => {
+      const p = makeCase({ medications: [antiagTico()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('no dispara con edad < 65', () => {
+    it('dispara aunque la edad sea inferior a 65', () => {
       const p = makeCase({ info: withAge(64), medications: [antiagTico()] });
-      expect(engine.evaluate(p, [c])).toEqual([]);
+      expect(engine.evaluate(p, [c]).length).toBe(1);
     });
   });
 

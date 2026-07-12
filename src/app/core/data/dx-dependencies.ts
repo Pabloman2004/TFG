@@ -4,6 +4,7 @@
 import { Crit, JsonLogicRule, Med } from '../types';
 import { extractPositiveDxCodesForDependencies } from './diagnosis-family';
 import { DIAGNOSIS_MAP, DIAGNOSIS_REVERSE_MAP } from './diagnoses';
+import { MEDICATIONS } from './medications';
 import { ALWAYS_ENABLED_LABELS } from './dx-anchor-labels-candidate';
 import { DX_DEPENDENCIES_OVERRIDES } from './dx-dependencies-overrides';
 
@@ -73,8 +74,25 @@ export const extractPositiveDxCodes = (logic: JsonLogicRule | undefined): Set<st
   return dxs;
 };
 
-const tooltipForClasses = (classes: readonly string[]): string =>
-  `Disponible si se marca medicación de las clases: ${classes.join(', ')}`;
+const ES_COLLATOR = new Intl.Collator('es', { sensitivity: 'base' });
+const TOOLTIP_EXAMPLE_LIMIT = 3;
+
+const exampleDrugsForClasses = (classes: readonly string[]): string[] => {
+  const wanted = new Set(classes);
+  return MEDICATIONS.filter(m => m.drugClasses.some(dc => wanted.has(dc)))
+    .map(m => m.id)
+    .sort((a, b) => ES_COLLATOR.compare(a, b));
+};
+
+const tooltipForClasses = (classes: readonly string[]): string => {
+  const drugs = exampleDrugsForClasses(classes);
+  if (drugs.length === 0) {
+    return `Disponible si se marca medicación de las clases: ${classes.join(', ')}`;
+  }
+  const shown = drugs.slice(0, TOOLTIP_EXAMPLE_LIMIT);
+  const ellipsis = drugs.length > shown.length ? '…' : '';
+  return `Disponible si se marca, p. ej.: ${shown.join(', ')}${ellipsis}`;
+};
 
 const triggerFromClasses = (classes: Iterable<string>): DxTrigger => {
   const sorted = [...new Set(classes)].sort();

@@ -163,6 +163,7 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
       { id: 'opioides', label: 'Opioides', drugs: byClass('OPIOIDE'), drugClass: 'OPIOIDE' },
       { id: 'gabap', label: 'Gabapentinoides', fullName: 'Gabapentinoides (gabapentina, pregabalina)', drugs: byClass('GABAPENTINOIDE'), drugClass: 'GABAPENTINOIDE' },
       { id: 'tricicl', label: 'Tricíclicos', fullName: 'Antidepresivos tricíclicos (amitriptilina, nortriptilina…)', drugs: byClass('ANTIDEPRESIVO_TRICICLICO'), drugClass: 'ANTIDEPRESIVO_TRICICLICO' },
+      { id: 'anest_top', label: 'Anestésicos tópicos', fullName: 'Anestésicos tópicos (lidocaína parche 5%)', drugs: byClass('ANESTESICO_TOPICO'), drugClass: 'ANESTESICO_TOPICO' },
     ],
   },
   {
