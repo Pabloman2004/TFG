@@ -132,6 +132,8 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
       { id: 'corticoide_sist', label: 'Corticoides sistémicos', drugs: byClass('CORTICOIDE_SISTEMICO'), drugClass: 'CORTICOIDE_SISTEMICO' },
       { id: 'acido_folico', label: 'Ácido fólico', drugs: byClass('ACIDO_FOLICO'), drugClass: 'ACIDO_FOLICO' },
       { id: 'isglt2', label: 'iSGLT2', fullName: 'Inhibidores del cotransportador sodio-glucosa tipo 2', drugs: byClass('ISGLT2'), drugClass: 'ISGLT2' },
+      { id: 'estrogenos_sist', label: 'Estrógenos sistémicos', fullName: 'Estrógenos sistémicos (estrógenos conjugados, estradiol). Relevantes en antecedente de tromboembolismo venoso o de enfermedad coronaria/vascular.', drugs: byClass('ESTROGENO'), drugClass: 'ESTROGENO', additionalCategories: ['anticoagulantes'] },
+      { id: 'androgenos', label: 'Andrógenos', fullName: 'Andrógenos sistémicos (testosterona). Relevantes en antecedente de tromboembolismo venoso o de enfermedad coronaria/vascular.', drugs: byClass('ANDROGENO'), drugClass: 'ANDROGENO', additionalCategories: ['anticoagulantes'] },
     ],
   },
   {

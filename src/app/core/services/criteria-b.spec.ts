@@ -4,7 +4,7 @@ import {
   setupEngine, makeCase, makeLabs, crit, withAge, makeMed, ALL_CRITERIA,
   aine, betabloq, ieca, ara2, calcioNodhp, digoxina,
   diureticoAsa, tiazida, estatina, antihipertCentral,
-  amiodarona, nitrato, pde5, aldosterona,
+  amiodarona, nitrato, pde5, aldosterona, neuroleptico,
 } from './criteria-test-helpers';
 
 describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
@@ -360,8 +360,31 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
+    it('dispara con el antecedente combinado (enfermedad coronaria/cerebrovascular/periférica) + AINE', () => {
+      const p = makeCase({ diagnoses: ['enfermedad_coronaria_vascular'], medications: [aine()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
     it('no dispara con AINE sin enfermedad vascular', () => {
       expect(engine.evaluate(makeCase({ medications: [aine()] }), [c])).toEqual([]);
+    });
+  });
+
+  describe('B18-NEUROLEPTICO-ENFERMEDAD-VASCULAR', () => {
+    const c = crit('STOPP-B18-NEUROLEPTICO-ENFERMEDAD-VASCULAR');
+
+    it('dispara con enfermedad vascular periférica + neuroléptico', () => {
+      const p = makeCase({ diagnoses: ['enfermedad_vascular_periferica'], medications: [neuroleptico()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con el antecedente combinado (enfermedad coronaria/cerebrovascular/periférica) + neuroléptico', () => {
+      const p = makeCase({ diagnoses: ['enfermedad_coronaria_vascular'], medications: [neuroleptico()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('no dispara con neuroléptico sin enfermedad vascular', () => {
+      expect(engine.evaluate(makeCase({ medications: [neuroleptico()] }), [c])).toEqual([]);
     });
   });
 

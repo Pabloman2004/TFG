@@ -268,7 +268,7 @@
       "id": "STOPP-B15-PROLONGADOR-QTC-INTERVALO-PROLONGADO",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
-      "summary": "Evitar fármacos que prolongan el intervalo QTc (quinolonas, macrólidos, ondansetrón) en presencia de intervalo QTc prolongado previo (≥450 ms). Riesgo de arritmias ventriculares potencialmente mortales (Torsades de Pointes).",
+      "summary": "Evitar fármacos que prolongan el intervalo QTc (quinolonas, macrólidos, ondansetrón, antipsicóticos, antidepresivos tricíclicos…) en presencia de un intervalo QTc prolongado previo (≥450 ms). Riesgo de arritmias ventriculares potencialmente mortales (Torsades de Pointes).",
       "logic": {"and":[{"inDrugClass":["PROLONGADOR_QTC",{"var":"medications"}]},{"or":[{"in":["intervalo_qtc_prolongado",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.qtc_ms"},null]},{">=":[{"var":"labs.qtc_ms"},450]}]}]}]},
       "excludes": {"medications":["Ciprofloxacino","Levofloxacino","Moxifloxacino","Azitromicina","Claritromicina","Eritromicina","Ondansetrón"],"drugClasses":["PROLONGADOR_QTC"]}
     },
@@ -285,7 +285,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar AINEs en pacientes con enfermedad vascular (coronaria, cerebral, periférica). Uso a largo plazo aumenta el riesgo de eventos cardiovasculares.",
-      "logic": {"and":[{"inDrugClass":["AINE",{"var":"medications"}]},{"or":[{"in":["enfermedad_vascular_coronaria",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_cerebral",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_periferica",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["AINE",{"var":"medications"}]},{"or":[{"in":["enfermedad_vascular_coronaria",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_cerebral",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_periferica",{"var":"diagnoses"}]},{"in":["enfermedad_coronaria_vascular",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib"],"drugClasses":["AINE"]}
     },
     {
@@ -293,7 +293,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar neurolépticos en pacientes con enfermedad vascular coronaria, cerebral o periférica. Mayor riesgo de trombosis a largo plazo.",
-      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"in":["enfermedad_vascular_coronaria",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_cerebral",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_periferica",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"in":["enfermedad_vascular_coronaria",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_cerebral",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_periferica",{"var":"diagnoses"}]},{"in":["enfermedad_coronaria_vascular",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Risperidona","Olanzapina","Quetiapina","Aripiprazol","Clozapina"],"drugClasses":["NEUROLEPTICO"]}
     },
     {
@@ -345,27 +345,19 @@
       "excludes": {"drugClasses":["AAS"]}
     },
     {
-      "id": "STOPP-C2-AAS-RIESGO-SANGRADO",
-      "type": "STOPP",
-      "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar antiagregantes y anticoagulantes en pacientes con riesgo significativo de sangrado (ej. HTA grave no controlada, diátesis hemorrágica). Alto riesgo de hemorragia.",
-      "logic": {"and":[{"inDrugClass":["AAS",{"var":"medications"}]},{"in":["riesgo_significativo_sangrado",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Ácido acetilsalicílico","Clopidogrel","Warfarina"],"drugClasses":["ANTIAGREGANTE","ANTICOAGULANTE"]}
-    },
-    {
       "id": "STOPP-C2-ANTIAGREGANTE-RIESGO-SANGRADO",
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar antiagregantes plaquetarios en pacientes con riesgo significativo de sangrado. Alto riesgo de hemorragia en presencia de HTA grave no controlada o diátesis hemorrágica.",
-      "logic": {"and":[{"inDrugClass":["ANTIAGREGANTE",{"var":"medications"}]},{"or":[{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["diatesis_hemorragica",{"var":"diagnoses"}]}]}]},
+      "summary": "Evitar antiagregantes plaquetarios en pacientes con riesgo significativo de sangrado. Alto riesgo de hemorragia en presencia de riesgo significativo de sangrado (p. ej. HTA grave no controlada o diátesis hemorrágica).",
+      "logic": {"and":[{"inDrugClass":["ANTIAGREGANTE",{"var":"medications"}]},{"or":[{"in":["riesgo_significativo_sangrado",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["diatesis_hemorragica",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Ácido acetilsalicílico","Clopidogrel","Prasugrel","Ticagrelor","Ticlopidina"],"drugClasses":["ANTIAGREGANTE"]}
     },
     {
       "id": "STOPP-C2-AVK-RIESGO-SANGRADO",
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar antagonistas de vitamina K en pacientes con riesgo significativo de sangrado. Alto riesgo de hemorragia en presencia de HTA grave no controlada o diátesis hemorrágica.",
-      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"or":[{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["diatesis_hemorragica",{"var":"diagnoses"}]}]}]},
+      "summary": "Evitar anticoagulantes en pacientes con riesgo significativo de sangrado. Alto riesgo de hemorragia en presencia de riesgo significativo de sangrado (p. ej. HTA grave no controlada o diátesis hemorrágica).",
+      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"or":[{"in":["riesgo_significativo_sangrado",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["diatesis_hemorragica",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Warfarina","Acenocumarol","Dabigatrán","Apixaban","Edoxaban","Rivaroxaban"],"drugClasses":["ANTICOAGULANTE"]}
     },
     {
@@ -478,23 +470,7 @@
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar inhibidores de la glucoproteína P (azitromicina, claritromicina, eritromicina, amiodarona, verapamilo, etc.) en pacientes con anticoagulantes directos. Aumentan los niveles plasmáticos del anticoagulante, elevando el riesgo de sangrado.",
       "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE_DIRECTO",{"var":"medications"}]},{"inDrugClass":["INHIBIDOR_GLUCOPROTEINA_P",{"var":"medications"}]}]},
-      "excludes": {"medications":[],"drugClasses":["INHIBIDOR_GLUCOPROTEINA_P"]}
-    },
-    {
-      "id": "STOPP-C14-AMIODARONA-AOD",
-      "type": "STOPP",
-      "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar uso conjunto de amiodarona con anticoagulantes orales directos (Apixaban, Dabigatrán, Edoxaban o Rivaroxaban). Aumenta la concentración del anticoagulante, mayor riesgo de sangrado.",
-      "logic": {"and":[{"inDrugClass":["ANTIARITMICO",{"var":"medications"}]},{"inDrugClass":["ANTICOAGULANTE_DIRECTO",{"var":"medications"}]}]},
-      "excludes": {"medications":["Amiodarona"],"drugClasses":["ANTIARITMICO"]}
-    },
-    {
-      "id": "STOPP-C14-VERAPAMILO-INHIBIDORES-GLUCOPROTEINA-P",
-      "type": "STOPP",
-      "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar uso concomitante de verapamilo/diltiazem con inhibidores de la glucoproteína P (amiodarona, dronedarona). Aumento del riesgo de sangrado.",
-      "logic": {"and":[{"inDrugClass":["CALCIOANTAGONISTA_NO_DHP",{"var":"medications"}]},{"inDrugClass":["ANTICOAGULANTE_DIRECTO",{"var":"medications"}]}]},
-      "excludes": {"medications":["Verapamilo","Diltiazem","Apixaban","Dabigatrán","Edoxaban","Rivaroxaban"],"drugClasses":["CALCIOANTAGONISTA_NO_DHP","ANTICOAGULANTE_DIRECTO"]}
+      "excludes": {"medications":[],"drugClasses":["INHIBIDOR_GLUCOPROTEINA_P","ANTICOAGULANTE_DIRECTO"]}
     },
     {
       "id": "STOPP-C15-ANDROGENOS-TROMBOEMBOLISMO-VENOSO",
@@ -1358,22 +1334,6 @@
       "summary": "Evitar uso concomitante de neurolépticos anticolinérgicos con otros fármacos anticolinérgicos. Riesgo de aumento de toxicidad acumulada.",
       "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"multipleANTICOLINERGICOS":[{"var":"medications"}]}]},
       "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Olanzapina","Quetiapina","Clozapina"]}
-    },
-    {
-      "id": "STOPP-C10F3-AINE-ISRS",
-      "type": "STOPP",
-      "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar AINEs con ISRS. Riesgo incrementado de sangrado gastrointestinal.",
-      "logic": {"and":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"inDrugClass":["AINE",{"var":"medications"}]}]},
-      "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib"],"drugClasses":["AINE"]}
-    },
-    {
-      "id": "STOPP-C10F3-ANTICOAGULANTE-ISRS",
-      "type": "STOPP",
-      "system": "Anticoagulantes/Antiagregantes",
-      "summary": "Evitar anticoagulantes con ISRS. Riesgo incrementado de sangrado gastrointestinal.",
-      "logic": {"and":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]}]},
-      "excludes": {"medications":[],"drugClasses":["ANTICOAGULANTE"]}
     },
     {
       "id": "STOPP-H3B-AINE-DOLOR-LEVE",

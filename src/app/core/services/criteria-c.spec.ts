@@ -1,6 +1,6 @@
 import { CriteriaEngineService } from './criteria-engine.service';
 import {
-  setupEngine, makeCase, crit, withAge,
+  setupEngine, makeCase, makeMed, crit, withAge, ALL_CRITERIA,
   aine, anticoag, anticoagAvk, anticoagDir, dabigatran,
   antiag, aas, calcioNodhp, isrs, antiagTico, amiodarona,
 } from './criteria-test-helpers';
@@ -34,6 +34,16 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
 
     it('dispara con diátesis hemorrágica + antiagregante', () => {
       const p = makeCase({ diagnoses: ['diatesis_hemorragica'], medications: [antiag()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con "riesgo significativo de sangrado" + antiagregante', () => {
+      const p = makeCase({ diagnoses: ['riesgo_significativo_sangrado'], medications: [antiag()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con AAS + riesgo significativo de sangrado (AAS es antiagregante)', () => {
+      const p = makeCase({ diagnoses: ['riesgo_significativo_sangrado'], medications: [aas()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
@@ -307,56 +317,54 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
     });
   });
 
-  describe('C14-AMIODARONA-AOD', () => {
-    const c = crit('STOPP-C14-AMIODARONA-AOD');
+  // C14 unificado: un único criterio general (ACOD + inhibidor de la glucoproteína P)
+  // cubre amiodarona, dronedarona, verapamilo y diltiazem, que ya portan la clase
+  // INHIBIDOR_GLUCOPROTEINA_P. Las antiguas subreglas específicas (C14-AMIODARONA-AOD,
+  // C14-VERAPAMILO-INHIBIDORES-GLUCOPROTEINA-P) se eliminaron por subsunción para
+  // evitar el doble disparo.
+  describe('C14-ACOD-INHIBIDORES-GLUCOPROTEINA-P', () => {
+    const c = crit('STOPP-C14-ACOD-INHIBIDORES-GLUCOPROTEINA-P');
+    const amiodaronaReal = () =>
+      makeMed('Amiodarona', ['ANTIARITMICO', 'PROLONGADOR_QTC', 'INHIBIDOR_GLUCOPROTEINA_P']);
+    const verapamiloReal = () =>
+      makeMed('Verapamilo', ['CALCIOANTAGONISTA_NO_DHP', 'INHIBIDOR_GLUCOPROTEINA_P']);
+    const diltiazemReal = () =>
+      makeMed('Diltiazem', ['CALCIOANTAGONISTA_NO_DHP', 'INHIBIDOR_GLUCOPROTEINA_P']);
 
     it('dispara con Amiodarona + anticoagulante directo', () => {
-      const p = makeCase({ medications: [amiodarona(), anticoagDir()] });
+      const p = makeCase({ medications: [amiodaronaReal(), anticoagDir()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('no dispara con Amiodarona sin anticoagulante directo', () => {
-      expect(engine.evaluate(makeCase({ medications: [amiodarona()] }), [c])).toEqual([]);
-    });
-  });
-
-  describe('C14-VERAPAMILO-INHIBIDORES-GLUCOPROTEINA-P', () => {
-    const c = crit('STOPP-C14-VERAPAMILO-INHIBIDORES-GLUCOPROTEINA-P');
-
     it('dispara con Verapamilo + anticoagulante directo', () => {
-      const p = makeCase({ medications: [calcioNodhp(), anticoagDir()] });
+      const p = makeCase({ medications: [verapamiloReal(), anticoagDir()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
     it('dispara con Diltiazem + anticoagulante directo', () => {
-      const p = makeCase({ medications: [calcioNodhp('Diltiazem'), anticoagDir()] });
+      const p = makeCase({ medications: [diltiazemReal(), anticoagDir()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('no dispara con Verapamilo + AVK (no es anticoagulante directo)', () => {
-      const p = makeCase({ medications: [calcioNodhp(), anticoagAvk()] });
+    it('no dispara con inhibidor P-gp + AVK (no es anticoagulante directo)', () => {
+      const p = makeCase({ medications: [verapamiloReal(), anticoagAvk()] });
       expect(engine.evaluate(p, [c])).toEqual([]);
     });
 
-    it('no dispara con solo Verapamilo', () => {
-      expect(engine.evaluate(makeCase({ medications: [calcioNodhp()] }), [c])).toEqual([]);
+    it('no dispara con solo el inhibidor P-gp', () => {
+      expect(engine.evaluate(makeCase({ medications: [amiodaronaReal()] }), [c])).toEqual([]);
     });
 
-    it('bloquea anticoagulantes directos cuando hay Verapamilo', () => {
-      const excluded = engine.getExcludedMedications(makeCase({ medications: [calcioNodhp()] }), [c]);
-      expect(excluded.has('apixaban')).toBeTrue();
-      expect(excluded.has('rivaroxaban')).toBeTrue();
-      expect(excluded.has('edoxaban')).toBeTrue();
+    it('no produce doble disparo de C14 con Amiodarona + ACOD en el set completo', () => {
+      const p = makeCase({ medications: [amiodaronaReal(), anticoagDir()] });
+      const firedC14 = engine.evaluate(p, ALL_CRITERIA).filter(x => x.id.startsWith('STOPP-C14-'));
+      expect(firedC14.map(x => x.id)).toEqual(['STOPP-C14-ACOD-INHIBIDORES-GLUCOPROTEINA-P']);
     });
 
-    it('bloquea Verapamilo cuando hay anticoagulante directo', () => {
-      const excluded = engine.getExcludedMedications(makeCase({ medications: [anticoagDir()] }), [c]);
-      expect(excluded.has('verapamilo')).toBeTrue();
-    });
-
-    it('no bloquea anticoagulante directo sin Verapamilo', () => {
-      const excluded = engine.getExcludedMedications(makeCase(), [c]);
-      expect(excluded.has('apixaban')).toBeFalse();
+    it('no produce doble disparo de C14 con Verapamilo + ACOD en el set completo', () => {
+      const p = makeCase({ medications: [verapamiloReal(), anticoagDir()] });
+      const firedC14 = engine.evaluate(p, ALL_CRITERIA).filter(x => x.id.startsWith('STOPP-C14-'));
+      expect(firedC14.map(x => x.id)).toEqual(['STOPP-C14-ACOD-INHIBIDORES-GLUCOPROTEINA-P']);
     });
   });
 });

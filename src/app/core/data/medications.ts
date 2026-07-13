@@ -290,7 +290,7 @@ export const MEDICATIONS: Med[] = [
   { id: "Prasugrel", drugClasses: ["ANTIAGREGANTE"] },
   { id: "Ticagrelor", drugClasses: ["ANTIAGREGANTE", "INHIBIDOR_GLUCOPROTEINA_P"] },
   { id: "Verapamilo", drugClasses: ["CALCIOANTAGONISTA_NO_DHP", "INHIBIDOR_GLUCOPROTEINA_P"] },
-  { id: "Diltiazem", drugClasses: ["CALCIOANTAGONISTA_NO_DHP"] },
+  { id: "Diltiazem", drugClasses: ["CALCIOANTAGONISTA_NO_DHP", "INHIBIDOR_GLUCOPROTEINA_P"] },
   { id: "Dronedarona", drugClasses: ["ANTIARITMICO", "INHIBIDOR_GLUCOPROTEINA_P", "PROLONGADOR_QTC"] },
   { id: "Ciclosporina", drugClasses: ["INMUNOSUPRESOR", "INHIBIDOR_GLUCOPROTEINA_P"] },
   { id: "Itraconazol", drugClasses: ["ANTIFUNGICO", "INHIBIDOR_GLUCOPROTEINA_P"] },
