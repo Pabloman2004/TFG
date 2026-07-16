@@ -6,6 +6,7 @@ import { DrugGroup, DrugCategory } from './data/medications-taxonomy';
 import { DiagnosisGroup, DiagnosisTab } from './data/diagnoses-taxonomy';
 import { Relevance } from './data/system-relevance';
 import { normalizeDiagnosis } from './data/diagnoses';
+import { Med } from './types';
 
 const ES_COLLATOR = new Intl.Collator('es', { sensitivity: 'base' });
 
@@ -21,8 +22,38 @@ export interface MedGroupBuckets {
   readonly foreignRelevant: readonly MedForeignGroup[];
 }
 
-const surfacesByRelevance = (g: DrugGroup, relevantClasses: ReadonlySet<string>): boolean =>
-  !!g.drugClass && relevantClasses.has(g.drugClass);
+const normalizedClasses = (classes: ReadonlySet<string>): ReadonlySet<string> =>
+  new Set([...classes].map(drugClass => drugClass.toUpperCase()));
+
+const medicationClassesById = (
+  medications: readonly Med[],
+): ReadonlyMap<string, ReadonlySet<string>> =>
+  new Map(medications.map(medication => [
+    medication.id,
+    new Set(medication.drugClasses.map(drugClass => drugClass.toUpperCase())),
+  ]));
+
+const drugSurfacesByRelevance = (
+  drugId: string,
+  group: DrugGroup,
+  relevantClasses: ReadonlySet<string>,
+  classesByDrug: ReadonlyMap<string, ReadonlySet<string>>,
+): boolean => {
+  const medicationClasses = classesByDrug.get(drugId);
+  if (medicationClasses) {
+    return [...medicationClasses].some(drugClass => relevantClasses.has(drugClass));
+  }
+  return !!group.drugClass && relevantClasses.has(group.drugClass.toUpperCase());
+};
+
+const relevantDrugs = (
+  group: DrugGroup,
+  relevantClasses: ReadonlySet<string>,
+  classesByDrug: ReadonlyMap<string, ReadonlySet<string>>,
+): readonly string[] =>
+  group.drugs.filter(drugId =>
+    drugSurfacesByRelevance(drugId, group, relevantClasses, classesByDrug)
+  );
 
 // Clases que afloran como grupo propio en algún tab de sistema por ser
 // ESPECÍFICAMENTE relevantes ahí (no por relevancia transversal). Un unitario con
@@ -44,14 +75,22 @@ export function computeMedGroupBuckets(
   categories: readonly DrugCategory[],
   relevance: Relevance | null,
   otrosTabId: string,
+  medications: readonly Med[] = [],
 ): MedGroupBuckets {
+  const classesByDrug = medicationClassesById(medications);
+  const globallySpecificClasses = normalizedClasses(
+    medTabSpecificClasses(categories, relevance),
+  );
+
   if (tabId === otrosTabId) {
-    const surfacingClasses = medTabSpecificClasses(categories, relevance);
-    const drugs = categories.flatMap(cat =>
+    const drugs = [...new Set(categories.flatMap(cat =>
       cat.groups
-        .filter(g => g.drugs.length === 1 && !surfacesByRelevance(g, surfacingClasses))
-        .flatMap(g => g.drugs),
-    );
+        .filter(group =>
+          group.drugs.length === 1 &&
+          relevantDrugs(group, globallySpecificClasses, classesByDrug).length === 0
+        )
+        .flatMap(group => group.drugs),
+    ))];
     if (drugs.length === 0) return { ownAll: [], foreignRelevant: [] };
     return {
       ownAll: [{
@@ -65,28 +104,52 @@ export function computeMedGroupBuckets(
 
   // Grupos multi-fármaco usan la relevancia completa (transversal incluida);
   // los unitarios solo afloran por relevancia ESPECÍFICA del tab.
-  const fullClasses = relevance?.classesByTab.get(tabId) ?? new Set<string>();
-  const specificClasses = relevance?.specificClassesByTab.get(tabId) ?? new Set<string>();
+  const fullClasses = normalizedClasses(
+    relevance?.classesByTab.get(tabId) ?? new Set<string>(),
+  );
+  const specificClasses = normalizedClasses(
+    relevance?.specificClassesByTab.get(tabId) ?? new Set<string>(),
+  );
   const cat = categories.find(c => c.id === tabId);
-  const ownAll = (cat ? cat.groups.filter(g => g.drugs.length > 1 || surfacesByRelevance(g, specificClasses)) : [])
+  const ownAll = (cat ? cat.groups.filter(group =>
+    group.drugs.length > 1 ||
+    relevantDrugs(group, globallySpecificClasses, classesByDrug).length > 0
+  ) : [])
     .slice()
     .sort((a, b) => ES_COLLATOR.compare(a.label, b.label));
 
-  const ownClasses = new Set(ownAll.map(g => g.drugClass).filter((dc): dc is string => !!dc));
-  const seenForeign = new Set<string>();
+  const ownDrugIds = new Set(ownAll.flatMap(group => group.drugs));
+  const seenForeignDrugIds = new Set<string>();
   const foreignRelevant: MedForeignGroup[] = [];
 
-  for (const c of categories) {
-    if (c.id === tabId) continue;
-    for (const g of c.groups) {
-      if (!g.drugClass) continue;
-      const allowed = g.drugs.length > 1 ? fullClasses : specificClasses;
-      if (!allowed.has(g.drugClass)) continue;
-      if (ownClasses.has(g.drugClass)) continue;
-      if (seenForeign.has(g.drugClass)) continue;
-      seenForeign.add(g.drugClass);
-      foreignRelevant.push({ ...g, originTabId: c.id, originTabLabel: c.label });
-    }
+  const candidates = categories
+    .filter(category => category.id !== tabId)
+    .flatMap(category => category.groups.map(group => {
+      const allowed = group.drugs.length > 1 ? fullClasses : specificClasses;
+      return {
+        category,
+        group,
+        allowed,
+        direct: !!group.drugClass && allowed.has(group.drugClass.toUpperCase()),
+      };
+    }));
+  const prioritizedCandidates = [
+    ...candidates.filter(candidate => candidate.direct),
+    ...candidates.filter(candidate => !candidate.direct),
+  ];
+
+  for (const { category, group, allowed } of prioritizedCandidates) {
+    const drugs = relevantDrugs(group, allowed, classesByDrug)
+      .filter(drugId => !ownDrugIds.has(drugId))
+      .filter(drugId => !seenForeignDrugIds.has(drugId));
+    if (drugs.length === 0) continue;
+    drugs.forEach(drugId => seenForeignDrugIds.add(drugId));
+    foreignRelevant.push({
+      ...group,
+      drugs,
+      originTabId: category.id,
+      originTabLabel: category.label,
+    });
   }
   foreignRelevant.sort((a, b) => ES_COLLATOR.compare(a.label, b.label));
 
@@ -98,8 +161,15 @@ export function medGroupsVisibleInTab(
   categories: readonly DrugCategory[],
   relevance: Relevance | null,
   otrosTabId: string,
+  medications: readonly Med[] = [],
 ): readonly DrugGroup[] {
-  const { ownAll, foreignRelevant } = computeMedGroupBuckets(tabId, categories, relevance, otrosTabId);
+  const { ownAll, foreignRelevant } = computeMedGroupBuckets(
+    tabId,
+    categories,
+    relevance,
+    otrosTabId,
+    medications,
+  );
   return [...ownAll, ...foreignRelevant];
 }
 

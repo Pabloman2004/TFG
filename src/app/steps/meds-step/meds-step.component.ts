@@ -15,7 +15,7 @@ import { CaseStoreService } from '../../core/case-store.service';
 import { CriteriaEngineService } from '../../core/services/criteria-engine.service';
 import { ReportService } from '../../core/report.service';
 import { CaseIoService } from '../../core/case-io.service';
-import { Med, Crit } from '../../core/types';
+import { Med, Crit, Labs } from '../../core/types';
 import { MEDICATIONS } from '../../core/data/medications';
 import { DRUG_CATEGORIES, DrugCategory, DrugGroup } from '../../core/data/medications-taxonomy';
 import { ROUTES } from '../../app.routes.constants';
@@ -24,6 +24,25 @@ import { groupBySystem, critCode, CritGroup } from '../../core/criteria-groups';
 import { isMedGroupChecked } from '../../core/group-checked';
 import { computeMedGroupBuckets, medGroupsVisibleInTab, MedGroupBuckets, MedForeignGroup } from '../../core/group-visibility';
 import { TooltipDirective } from '../../shared/tooltip.directive';
+
+const emptyLabs = (): Labs => ({
+  glucosa_mg_dl: null,
+  colesterol_total_mg_dl: null,
+  trigliceridos_mg_dl: null,
+  hdl_mg_dl: null,
+  ldl_mg_dl: null,
+  creatinina_mg_dl: null,
+  egfr_ml_min_173: null,
+  inr: null,
+  tsh_uUl: null,
+  fc_lpm: null,
+  qtc_ms: null,
+  potasio_mmol_l: null,
+  sodio_mmol_l: null,
+  calcio_corregido_mmol_l: null,
+  pas_mmhg: null,
+  pad_mmhg: null,
+});
 
 @Component({
   selector: 'app-meds-step',
@@ -96,6 +115,7 @@ export class MedsStepComponent implements OnInit {
       this.categories,
       this.criteriaEngine.relevance(),
       this.OTROS_TAB_ID,
+      MEDICATIONS,
     ),
   );
 
@@ -138,7 +158,13 @@ export class MedsStepComponent implements OnInit {
   }
 
   private groupsVisibleInTab(tabId: string): readonly DrugGroup[] {
-    return medGroupsVisibleInTab(tabId, this.categories, this.criteriaEngine.relevance(), this.OTROS_TAB_ID);
+    return medGroupsVisibleInTab(
+      tabId,
+      this.categories,
+      this.criteriaEngine.relevance(),
+      this.OTROS_TAB_ID,
+      MEDICATIONS,
+    );
   }
 
   tabHasSelection(tabId: string): boolean {
@@ -228,6 +254,49 @@ export class MedsStepComponent implements OnInit {
     const found = MEDICATIONS.find(m => m.id === name);
     const med: Med = found ?? { id: name, drugClasses: [] };
     this.store.meds.set([...current, med]);
+  }
+
+  medicationById(id: string): Med | undefined {
+    return this.store.meds().find(medication => medication.id === id);
+  }
+
+  medicationsByClass(drugClass: string): Med[] {
+    return this.store.meds().filter(medication => medication.drugClasses.includes(drugClass));
+  }
+
+  updateMedicationNumber(
+    id: string,
+    field: 'doseMcgDay' | 'doseMgDay' | 'durationDays',
+    rawValue: string,
+  ): void {
+    const value = this.optionalNonNegativeNumber(rawValue);
+    this.store.meds.update(medications => medications.map(medication => {
+      if (medication.id !== id) return medication;
+      if (field === 'doseMcgDay') {
+        const { doseMcgDay: _, ...withoutValue } = medication;
+        return value === null ? withoutValue : { ...withoutValue, doseMcgDay: value };
+      }
+      if (field === 'doseMgDay') {
+        const { doseMgDay: _, ...withoutValue } = medication;
+        return value === null ? withoutValue : { ...withoutValue, doseMgDay: value };
+      }
+      const { durationDays: _, ...withoutValue } = medication;
+      return value === null ? withoutValue : { ...withoutValue, durationDays: value };
+    }));
+  }
+
+  updateEgfr(rawValue: string): void {
+    const value = this.optionalNonNegativeNumber(rawValue);
+    this.store.labs.update(labs => ({
+      ...(labs ?? emptyLabs()),
+      egfr_ml_min_173: value,
+    }));
+  }
+
+  private optionalNonNegativeNumber(rawValue: string): number | null {
+    if (rawValue.trim() === '') return null;
+    const value = Number(rawValue);
+    return Number.isFinite(value) && value >= 0 ? value : null;
   }
 
   customDrugsFor(group: DrugGroup): Med[] {

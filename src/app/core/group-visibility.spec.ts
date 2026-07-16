@@ -1,7 +1,10 @@
 import { computeMedGroupBuckets, computeDxGroupBuckets, medGroupsVisibleInTab, dxGroupsVisibleInTab } from './group-visibility';
-import { DrugCategory } from './data/medications-taxonomy';
+import { DRUG_CATEGORIES, DrugCategory } from './data/medications-taxonomy';
 import { DiagnosisTab } from './data/diagnoses-taxonomy';
-import { Relevance } from './data/system-relevance';
+import { buildRelevance, Relevance } from './data/system-relevance';
+import { Med } from './types';
+import { MEDICATIONS } from './data/medications';
+import { ALL_CRITERIA } from './services/criteria-test-helpers';
 
 // ─── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -96,6 +99,141 @@ describe('computeMedGroupBuckets', () => {
     expect(result.foreignRelevant[0].originTabId).toBe('neuro');
   });
 
+  it('filtra un grupo foráneo por todas las clases de cada medicamento', () => {
+    const categories: DrugCategory[] = [
+      {
+        id: 'anticoagulantes',
+        label: 'Anticoagulantes',
+        groups: [{
+          id: 'aod',
+          label: 'AOD',
+          drugs: ['Apixabán', 'Dabigatrán'],
+          drugClass: 'ANTICOAGULANTE_DIRECTO',
+        }],
+      },
+      { id: 'renal', label: 'Renal', groups: [] },
+    ];
+    const medications: Med[] = [
+      {
+        id: 'Apixabán',
+        drugClasses: ['ANTICOAGULANTE_DIRECTO', 'INHIBIDOR_FACTOR_XA'],
+      },
+      {
+        id: 'Dabigatrán',
+        drugClasses: ['ANTICOAGULANTE_DIRECTO', 'INHIBIDOR_DIRECTO_TROMBINA'],
+      },
+    ];
+    const rel = makeRelevance({ renal: ['INHIBIDOR_FACTOR_XA'] });
+
+    const result = computeMedGroupBuckets('renal', categories, rel, 'otros', medications);
+
+    expect(result.foreignRelevant.length).toBe(1);
+    expect(result.foreignRelevant[0].drugs).toEqual(['Apixabán']);
+  });
+
+  it('muestra un medicamento multiclase en cada tab donde comparte alguna clase', () => {
+    const categories: DrugCategory[] = [
+      {
+        id: 'anticoagulantes',
+        label: 'Anticoagulantes',
+        groups: [{
+          id: 'aod',
+          label: 'AOD',
+          drugs: ['Apixabán'],
+          drugClass: 'ANTICOAGULANTE_DIRECTO',
+        }],
+      },
+      { id: 'renal', label: 'Renal', groups: [] },
+      { id: 'cardiovascular', label: 'Cardiovascular', groups: [] },
+    ];
+    const medications: Med[] = [{
+      id: 'Apixabán',
+      drugClasses: ['ANTICOAGULANTE_DIRECTO', 'INHIBIDOR_FACTOR_XA'],
+    }];
+    const rel = makeRelevance({
+      renal: ['INHIBIDOR_FACTOR_XA'],
+      cardiovascular: ['ANTICOAGULANTE_DIRECTO'],
+    });
+
+    const renal = computeMedGroupBuckets('renal', categories, rel, 'otros', medications);
+    const cardiovascular = computeMedGroupBuckets(
+      'cardiovascular',
+      categories,
+      rel,
+      'otros',
+      medications,
+    );
+
+    expect(renal.foreignRelevant.flatMap(group => group.drugs)).toEqual(['Apixabán']);
+    expect(cardiovascular.foreignRelevant.flatMap(group => group.drugs)).toEqual(['Apixabán']);
+  });
+
+  it('hace aflorar grupos sin drugClass a partir de las clases de sus medicamentos', () => {
+    const categories: DrugCategory[] = [
+      {
+        id: 'antibioticos',
+        label: 'Antibióticos',
+        groups: [{
+          id: 'generales',
+          label: 'Antibióticos generales',
+          drugs: ['Amoxicilina', 'Doxiciclina'],
+        }],
+      },
+      { id: 'gastrointestinal', label: 'Gastrointestinal', groups: [] },
+    ];
+    const medications: Med[] = [
+      { id: 'Amoxicilina', drugClasses: ['ANTIBIOTICO'] },
+      { id: 'Doxiciclina', drugClasses: ['ANTIBIOTICO'] },
+    ];
+    const rel = makeRelevance({ gastrointestinal: ['ANTIBIOTICO'] });
+
+    const result = computeMedGroupBuckets(
+      'gastrointestinal',
+      categories,
+      rel,
+      'otros',
+      medications,
+    );
+
+    expect(result.foreignRelevant.flatMap(group => group.drugs)).toEqual([
+      'Amoxicilina',
+      'Doxiciclina',
+    ]);
+  });
+
+  it('no duplica un medicamento dentro del mismo tab si pertenece a varios grupos', () => {
+    const categories: DrugCategory[] = [
+      {
+        id: 'anticoagulantes',
+        label: 'Anticoagulantes',
+        groups: [
+          {
+            id: 'aod',
+            label: 'AOD',
+            drugs: ['Apixabán'],
+            drugClass: 'ANTICOAGULANTE_DIRECTO',
+          },
+          {
+            id: 'factor_xa',
+            label: 'Factor Xa',
+            drugs: ['Apixabán'],
+            drugClass: 'INHIBIDOR_FACTOR_XA',
+          },
+        ],
+      },
+      { id: 'renal', label: 'Renal', groups: [] },
+    ];
+    const medications: Med[] = [{
+      id: 'Apixabán',
+      drugClasses: ['ANTICOAGULANTE_DIRECTO', 'INHIBIDOR_FACTOR_XA'],
+    }];
+    const rel = makeRelevance({ renal: ['INHIBIDOR_FACTOR_XA'] });
+
+    const result = computeMedGroupBuckets('renal', categories, rel, 'otros', medications);
+
+    expect(result.foreignRelevant.flatMap(group => group.drugs)).toEqual(['Apixabán']);
+  });
+
   it('no incluye foreign si la clase ya está en ownAll', () => {
     const rel = makeRelevance({ cardio: ['BETABLOQUEANTE'] });
     const result = computeMedGroupBuckets('cardio', CATS, rel, 'otros');
@@ -130,6 +268,18 @@ describe('computeMedGroupBuckets', () => {
     const neuro = computeMedGroupBuckets('neuro', CATS, rel, 'otros');
     expect(neuro.foreignRelevant.map(g => g.drugClass)).toContain('DIGOXINA');
     expect(neuro.foreignRelevant.find(g => g.drugClass === 'DIGOXINA')?.originTabId).toBe('cardio');
+  });
+
+  it('un unitario que aflora en otro tab también permanece visible en su tab principal', () => {
+    const rel = makeRelevance({ neuro: ['DIGOXINA'] }, { neuro: ['DIGOXINA'] });
+
+    const cardio = computeMedGroupBuckets('cardio', CATS, rel, 'otros');
+    const neuro = computeMedGroupBuckets('neuro', CATS, rel, 'otros');
+    const otros = computeMedGroupBuckets('otros', CATS, rel, 'otros');
+
+    expect(cardio.ownAll.map(group => group.id)).toContain('g_single');
+    expect(neuro.foreignRelevant.flatMap(group => group.drugs)).toContain('Digoxina');
+    expect(otros.ownAll.flatMap(group => group.drugs)).not.toContain('Digoxina');
   });
 
   it('(d) un unitario que aflora por relevancia ya no va a "Otros"; uno no relevante sí', () => {
@@ -173,6 +323,87 @@ describe('medGroupsVisibleInTab', () => {
     expect(ids).toContain('g1');
     expect(ids).toContain('g2');
     expect(ids).toContain('g3');
+  });
+});
+
+describe('visibilidad farmacológica con datos clínicos reales', () => {
+  const relevance = buildRelevance(ALL_CRITERIA);
+
+  const foreignDrugsIn = (tabId: string): readonly string[] =>
+    computeMedGroupBuckets(
+      tabId,
+      DRUG_CATEGORIES,
+      relevance,
+      'otros',
+      MEDICATIONS,
+    ).foreignRelevant.flatMap(group => group.drugs);
+
+  it('hace visibles en Renal los medicamentos citados mediante clases específicas', () => {
+    const renalDrugs = foreignDrugsIn('renal');
+
+    expect(renalDrugs).toContain('Digoxina');
+    expect(renalDrugs).toContain('Apixaban');
+    expect(renalDrugs).toContain('Dabigatrán');
+    expect(renalDrugs).toContain('Edoxaban');
+    expect(renalDrugs).toContain('Rivaroxaban');
+    expect(renalDrugs).toContain('Nitrofurantoína');
+    expect(renalDrugs).toContain('Metotrexato');
+  });
+
+  it('asigna cada medicamento renal al grupo con coincidencia de clase directa', () => {
+    const renal = computeMedGroupBuckets(
+      'renal',
+      DRUG_CATEGORIES,
+      relevance,
+      'otros',
+      MEDICATIONS,
+    );
+
+    expect(renal.foreignRelevant.find(group => group.id === 'biguan')?.drugs)
+      .toEqual(['Metformina']);
+    expect(renal.foreignRelevant.find(group => group.id === 'bifosf')?.drugs)
+      .toEqual(['Alendronato', 'Ibandronato', 'Risedronato', 'Zoledronato']);
+    expect(renal.foreignRelevant.find(group => group.id === 'antirres')?.drugs ?? [])
+      .not.toContain('Alendronato');
+  });
+
+  it('mantiene visibles en su tab principal los unitarios que afloran en otros sistemas', () => {
+    const principalCases = [
+      { tabId: 'snc', groupId: 'estab_anim', drugId: 'Litio' },
+      { tabId: 'gastrointestinal', groupId: 'antiemet', drugId: 'Ondansetrón' },
+      { tabId: 'endocrino', groupId: 'biguan', drugId: 'Metformina' },
+      { tabId: 'endocrino', groupId: 'acido_folico', drugId: 'Ácido fólico' },
+      { tabId: 'endocrino', groupId: 'antineoplasicos', drugId: 'Tamoxifeno' },
+      { tabId: 'osteo', groupId: 'relaj_musc', drugId: 'Tizanidina' },
+      { tabId: 'antibioticos', groupId: 'atb_urin', drugId: 'Nitrofurantoína' },
+      { tabId: 'antibioticos', groupId: 'antipaludicos', drugId: 'Quinina' },
+    ];
+
+    for (const { tabId, groupId, drugId } of principalCases) {
+      const buckets = computeMedGroupBuckets(
+        tabId,
+        DRUG_CATEGORIES,
+        relevance,
+        'otros',
+        MEDICATIONS,
+      );
+      expect(
+        buckets.ownAll.find(group => group.id === groupId)?.drugs,
+      ).withContext(`${drugId} ausente de ${tabId}/${groupId}`).toContain(drugId);
+    }
+  });
+
+  it('hace visible el hierro oral en Gastrointestinal por relevancia explícita', () => {
+    const gastrointestinalDrugs = foreignDrugsIn('gastrointestinal');
+
+    expect(gastrointestinalDrugs).toContain('Sulfato ferroso');
+    expect(gastrointestinalDrugs).toContain('Fumarato ferroso');
+    expect(gastrointestinalDrugs).toContain('Gluconato ferroso');
+  });
+
+  it('hace visibles antibióticos de otros sistemas donde se referencia la clase agregada', () => {
+    expect(foreignDrugsIn('gastrointestinal')).toContain('Amoxicilina');
+    expect(foreignDrugsIn('urologico')).toContain('Amoxicilina');
   });
 });
 

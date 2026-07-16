@@ -50,6 +50,9 @@ const allSystems = new Map(); // system -> count
 for (const c of criteria) {
   const acc = { classes: new Set(), diagnoses: new Set(), medRefs: new Set() };
   walk(c.logic, acc);
+  for (const drugClass of c.relevance?.medicationClasses ?? []) {
+    acc.classes.add(drugClass);
+  }
   const entry = { id: c.id, system: c.system, classes: [...acc.classes], diagnoses: [...acc.diagnoses], medRefs: [...acc.medRefs] };
   perCrit.push(entry);
   if (!c.system) noSystem.push(c.id);

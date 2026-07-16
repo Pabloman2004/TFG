@@ -20,6 +20,7 @@ export interface Med {
   id: string;            // "Ibuprofeno"
   drugClasses: string[]; // ["AINE"]
   doseMcgDay?: number;   // Dosis diaria en microgramos (ej: 125 para Digoxina)
+  doseMgDay?: number;    // Dosis diaria en miligramos
   durationDays?: number; // Duración del tratamiento en días (ej: 90+)
 }
 
@@ -29,6 +30,9 @@ export interface Crit {
   system: string;
   summary: string;
   logic?: JsonLogicRule; // opcional (para pruebas o mocks)
+  relevance?: {
+    medicationClasses?: string[];
+  };
   excludes?: {           // 🆕 Qué medicaciones descartar cuando se cumple este criterio
     medications?: string[];   // Medicaciones específicas: ["Digoxina"]
     drugClasses?: string[];   // O clases enteras: ["DIGOXINA"]

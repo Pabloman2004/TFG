@@ -188,6 +188,10 @@ EXCLUDED_DOCS=(
   "docs/propuesta-p15.md"
   "docs/STOPP_START_CRITERIOS_CONTEXTO.md"
   "docs/dudas-raquel-pendientes.md"
+  "docs/revision-criterios-d-h.md"
+  "docs/plan-visibilidad-medicamentos-multiclase.md"
+  "docs/revision-visibilidad-clinica-por-sistema.md"
+  "docs/revision-prueba-manual-visibilidad-multiclase.md"
 )
 
 for doc_abs in "$REPO_ROOT"/docs/*.md; do

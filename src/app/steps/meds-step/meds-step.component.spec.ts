@@ -102,4 +102,77 @@ describe('MedsStepComponent — conteo de "Otros" con unitarios que afloran por 
     expect(component.tabSelectionCount('otros')).toBe(0);
     expect(component.tabSelectionCount('cardiovascular')).toBe(1);
   });
+
+  it('comparte una selección multiclase entre su tab principal y otro relevante', () => {
+    const component = setup(relevanceWith({
+      anticoagulantes: ['ANTICOAGULANTE_DIRECTO'],
+      renal: ['INHIBIDOR_FACTOR_XA'],
+    }));
+    component.store.meds.set([{
+      id: 'Apixaban',
+      drugClasses: ['ANTICOAGULANTE', 'ANTICOAGULANTE_DIRECTO', 'INHIBIDOR_FACTOR_XA'],
+    }]);
+
+    expect(component.tabSelectionCount('anticoagulantes')).toBe(1);
+    expect(component.tabSelectionCount('renal')).toBe(1);
+    expect(component.store.meds().length).toBe(1);
+  });
+});
+
+describe('MedsStepComponent — datos necesarios para criterios renales', () => {
+  const setup = (): MedsStepComponent => {
+    TestBed.configureTestingModule({
+      imports: [MedsStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    return TestBed.createComponent(MedsStepComponent).componentInstance;
+  };
+
+  beforeEach(() => localStorage.clear());
+
+  it('guarda dosis y duración de Digoxina sin mutar el medicamento previo', () => {
+    const component = setup();
+    component.toggleDrug('Digoxina');
+    const original = component.store.meds()[0];
+
+    component.updateMedicationNumber('Digoxina', 'doseMcgDay', '125');
+    component.updateMedicationNumber('Digoxina', 'durationDays', '91');
+
+    expect(component.store.meds()[0]).not.toBe(original);
+    expect(component.store.meds()[0]).toEqual({
+      id: 'Digoxina',
+      drugClasses: ['DIGOXINA'],
+      doseMcgDay: 125,
+      durationDays: 91,
+    });
+  });
+
+  it('guarda TFGe numérica y permite limpiarla', () => {
+    const component = setup();
+
+    component.updateEgfr('29');
+    expect(component.store.labs()?.egfr_ml_min_173).toBe(29);
+
+    component.updateEgfr('');
+    expect(component.store.labs()?.egfr_ml_min_173).toBeNull();
+  });
+
+  it('guarda dosis de hierro en mg y duración de IBP', () => {
+    const component = setup();
+    component.toggleDrug('Sulfato ferroso');
+    component.toggleDrug('Omeprazol');
+
+    component.updateMedicationNumber('Sulfato ferroso', 'doseMgDay', '201');
+    component.updateMedicationNumber('Omeprazol', 'durationDays', '57');
+
+    expect(component.medicationById('Sulfato ferroso')?.doseMgDay).toBe(201);
+    expect(component.medicationById('Omeprazol')?.durationDays).toBe(57);
+  });
 });

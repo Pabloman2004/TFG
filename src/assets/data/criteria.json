@@ -561,10 +561,18 @@
       "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Risperidona","Olanzapina","Quetiapina","Clozapina"]}
     },
     {
-      "id": "STOPP-D5-D15-NEUROLEPTICO-SINTOMAS-DEMENCIA",
+      "id": "STOPP-D5-NEUROLEPTICO-SINTOMAS-DEMENCIA",
       "type": "STOPP",
       "system": "Sistema nervioso central",
-      "summary": "Evitar neurolépticos para síntomas conductuales de la demencia. Riesgo de empeoramiento cognitivo y eventos adversos.",
+      "summary": "Evitar neurolépticos para síntomas conductuales de la demencia sin revisión o ajuste periódico. Riesgo de empeoramiento cognitivo y eventos adversos.",
+      "logic": {"and":[{"in":["sintomas_conductuales_demencia",{"var":"diagnoses"}]},{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]}]},
+      "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Risperidona","Olanzapina","Quetiapina","Aripiprazol","Clozapina"],"drugClasses":["NEUROLEPTICO"]}
+    },
+    {
+      "id": "STOPP-D15-ANTIPSICOTICO-SCPD",
+      "type": "STOPP",
+      "system": "Sistema nervioso central",
+      "summary": "Revisar antipsicóticos usados para síntomas conductuales y psicológicos de la demencia durante más de 12 semanas. Mantenerlos solo ante síntomas graves y tras fracaso de alternativas no farmacológicas.",
       "logic": {"and":[{"in":["sintomas_conductuales_demencia",{"var":"diagnoses"}]},{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]}]},
       "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Risperidona","Olanzapina","Quetiapina","Aripiprazol","Clozapina"],"drugClasses":["NEUROLEPTICO"]}
     },
@@ -717,7 +725,7 @@
       "type": "STOPP",
       "system": "Sistema nervioso central",
       "summary": "Evitar levodopa o agonistas dopaminérgicos para tratar los efectos secundarios extrapiramidales de los neurolépticos o el parkinsonismo por fármacos. Evitar la cascada de prescripción.",
-      "logic": {"and":[{"in":["parkinsonismo_inducido_por_farmacos",{"var":"diagnoses"}]},{"or":[{"inDrugClass":["DOPAMINERGICO",{"var":"medications"}]},{"inDrugClass":["AGONISTA_DOPAMINERGICO",{"var":"medications"}]}]}]},
+      "logic": {"and":[{"or":[{"in":["parkinsonismo_inducido_por_farmacos",{"var":"diagnoses"}]},{"in":["efectos_extrapiramidales_neurolepticos",{"var":"diagnoses"}]}]},{"or":[{"inDrugClass":["DOPAMINERGICO",{"var":"medications"}]},{"inDrugClass":["AGONISTA_DOPAMINERGICO",{"var":"medications"}]}]}]},
       "excludes": {"drugClasses":["DOPAMINERGICO","AGONISTA_DOPAMINERGICO"]}
     },
     {
@@ -742,6 +750,7 @@
       "system": "Sistema renal",
       "summary": "Digoxina en tratamiento a largo plazo (> 90 días) a dosis mantenidas ≥ 125 μg/día con TFGe < 30 ml/min/1,73 m². Riesgo de intoxicación digitálica si no se monitorizan los niveles plasmáticos.",
       "logic": {"and":[{"egfrBelow":[30,{"var":""}]},{"digoxinaDosisAlta":[{"var":"medications"}]}]},
+      "relevance": {"medicationClasses":["DIGOXINA"]},
       "excludes": {"medications":["Digoxina"],"drugClasses":["DIGOXINA"]}
     },
     {
@@ -749,7 +758,7 @@
       "type": "STOPP",
       "system": "Sistema renal",
       "summary": "Evitar dabigatrán con TFGe < 30 ml/min/1,73 m². Riesgo muy elevado de hemorragia grave debido a la eliminación mayoritariamente renal del fármaco.",
-      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"egfrBelow":[30,{"var":""}]}]},
+      "logic": {"and":[{"inDrugClass":["INHIBIDOR_DIRECTO_TROMBINA",{"var":"medications"}]},{"egfrBelow":[30,{"var":""}]}]},
       "excludes": {"medications":["Dabigatrán"],"drugClasses":["INHIBIDOR_DIRECTO_TROMBINA"]}
     },
     {
@@ -757,8 +766,8 @@
       "type": "STOPP",
       "system": "Sistema renal",
       "summary": "Evitar inhibidores del Factor Xa con TFGe < 15 ml/min. Riesgo elevado de sangrado debido a la acumulación del fármaco por insuficiencia renal.",
-      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"egfrBelow":[15,{"var":""}]}]},
-      "excludes": {"medications":["Apixaban","Edoxaban","Rivaroxaban"],"drugClasses":["ANTICOAGULANTE_DIRECTO"]}
+      "logic": {"and":[{"inDrugClass":["INHIBIDOR_FACTOR_XA",{"var":"medications"}]},{"egfrBelow":[15,{"var":""}]}]},
+      "excludes": {"medications":["Apixaban","Edoxaban","Rivaroxaban"],"drugClasses":["INHIBIDOR_FACTOR_XA"]}
     },
     {
       "id": "STOPP-E4-AINE-INSUFICIENCIA-RENAL",
@@ -829,7 +838,8 @@
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
       "summary": "IBP a dosis terapéuticas plenas durante más de 8 semanas sin revisión. Valorar reducción de dosis, retirada o mantenimiento con antagonistas H2. (Alerta de revisión de duración e indicación.)",
-      "logic": {"inDrugClass":["IBP",{"var":"medications"}]},
+      "logic": {"medicationClassDurationAbove":["IBP",56,{"var":"medications"}]},
+      "relevance": {"medicationClasses":["IBP"]},
       "excludes": {"drugClasses":["IBP"]}
     },
     {
@@ -853,7 +863,8 @@
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
       "summary": "Revisar hierro oral: dosis elementales superiores a 200 mg/día no aportan mayor absorción. (Alerta de revisión de dosis.)",
-      "logic": {"inDrugClass":["HIERRO_ORAL",{"var":"medications"}]},
+      "logic": {"medicationClassDoseMgAbove":["HIERRO_ORAL",200,{"var":"medications"}]},
+      "relevance": {"medicationClasses":["HIERRO_ORAL"]},
       "excludes": {"drugClasses":["HIERRO_ORAL"]}
     },
     {
@@ -861,16 +872,8 @@
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
       "summary": "Evitar corticosteroides con antecedentes de enfermedad ulcerosa péptica o esofagitis erosiva sin uso simultáneo de un IBP. Riesgo de reaparición de la enfermedad ulcerosa.",
-      "logic": {"and":[{"in":["antecedentes_ulcera_peptica",{"var":"diagnoses"}]},{"!":{"inDrugClass":["IBP",{"var":"medications"}]}}]},
+      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"or":[{"in":["antecedentes_ulcera_peptica",{"var":"diagnoses"}]},{"in":["esofagitis_erosiva",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["IBP",{"var":"medications"}]}}]},
       "excludes": {"drugClasses":["CORTICOIDE_SISTEMICO"]}
-    },
-    {
-      "id": "STOPP-F6-AAS-EVAG",
-      "type": "STOPP",
-      "system": "Sistema gastrointestinal",
-      "summary": "Evitar antiagregantes y anticoagulantes en pacientes con antecedentes de EVAG (ectasia vascular antral gástrica / estómago en sandía). Riesgo elevado de sangrado digestivo grave.",
-      "logic": {"and":[{"inDrugClass":["AAS",{"var":"medications"}]},{"in":["antecedentes_evag",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Ácido acetilsalicílico","Clopidogrel","Warfarina"],"drugClasses":["ANTIAGREGANTE","ANTICOAGULANTE"]}
     },
     {
       "id": "STOPP-F6-ANTIAGREGANTE-EVAG",
@@ -885,16 +888,8 @@
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
       "summary": "Evitar antagonistas de vitamina K en pacientes con antecedentes de EVAG (estómago en sandía). Riesgo elevado de sangrado digestivo grave.",
-      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"in":["antecedentes_evag",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Warfarina","Acenocumarol","Dabigatrán","Apixaban","Edoxaban","Rivaroxaban"],"drugClasses":["ANTICOAGULANTE"]}
-    },
-    {
-      "id": "STOPP-F6-TICLOPIDINA-EVAG",
-      "type": "STOPP",
-      "system": "Sistema gastrointestinal",
-      "summary": "Evitar ticlopidina en pacientes con antecedentes de EVAG (estómago en sandía). Riesgo elevado de sangrado digestivo grave.",
-      "logic": {"and":[{"inDrugClass":["ANTIAGREGANTE",{"var":"medications"}]},{"in":["antecedentes_evag",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Ticlopidina"]}
+      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE_AVK",{"var":"medications"}]},{"in":["antecedentes_evag",{"var":"diagnoses"}]}]},
+      "excludes": {"medications":["Warfarina","Acenocumarol"],"drugClasses":["ANTICOAGULANTE_AVK"]}
     },
     {
       "id": "STOPP-F7-NEUROLEPTICO-DISFAGIA",
@@ -985,12 +980,12 @@
       "excludes": {"drugClasses":["CORTICOIDE_SISTEMICO"]}
     },
     {
-      "id": "STOPP-H6-AINE-GOTA-ACTIVA",
+      "id": "STOPP-H6-AINE-COLCHICINA-GOTA-CRONICA",
       "type": "STOPP",
       "system": "Sistema musculoesquelético",
-      "summary": "Evitar AINEs en pacientes con gota activa. Uso crónico puede exacerbar la enfermedad renal crónica.",
-      "logic": {"and":[{"inDrugClass":["AINE",{"var":"medications"}]},{"in":["gota_activa",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib"],"drugClasses":["AINE"]}
+      "summary": "Revisar AINEs o colchicina usados de forma prolongada en la gota crónica o recurrente cuando sea posible emplear un inhibidor de la xantina-oxidasa.",
+      "logic": {"and":[{"or":[{"inDrugClass":["AINE",{"var":"medications"}]},{"inDrugClass":["COLCHICINA",{"var":"medications"}]}]},{"or":[{"in":["gota_activa",{"var":"diagnoses"}]},{"in":["gota_recurrente",{"var":"diagnoses"}]}]}]},
+      "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib","Colchicina"],"drugClasses":["AINE","COLCHICINA"]}
     },
     {
       "id": "STOPP-H7-AINE-CORTICOIDES",
@@ -1069,7 +1064,7 @@
       "system": "Sistema urogenital",
       "summary": "Evitar antibióticos para el tratamiento de la bacteriuria asintomática. No está indicado su tratamiento en personas mayores sin síntomas.",
       "logic": {"and":[{"inDrugClass":["ANTIBIOTICO",{"var":"medications"}]},{"in":["bacteriuria_asintomatica",{"var":"diagnoses"}]}]},
-      "excludes": {"drugClasses":["ANTIBIOTICO_URINARIO"]}
+      "excludes": {"drugClasses":["ANTIBIOTICO"]}
     },
     {
       "id": "STOPP-J1-SULFONILUREA-VIDA-MEDIA-LARGA",

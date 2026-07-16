@@ -50,7 +50,7 @@ de `DIAGNOSIS_TABS` / `DRUG_CATEGORIES`, duplicación de grupos vs
 - `src/app/core/data/diagnoses-taxonomy.ts`
 - `src/app/core/data/medications.ts`
 - `src/app/core/data/medications-taxonomy.ts`
-- `src/app/core/data/cardiovascular-dx-dependencies.ts`
+- `src/app/core/data/dx-dependencies.ts`
 - `src/app/core/data/diagnosis-variants.ts`
 - `src/app/core/data/diagnosis-variant-view.ts`
 
@@ -65,7 +65,7 @@ medicamentos, y el índice de relevancia por tab que alimenta la UI.
 **Debe cubrir**: flujo `loadCriteria()` → `evaluate()` →
 `getExcludedMedications()`, operadores custom (`inDrugClass`, `egfrBelow`,
 `digoxinaDosisAlta`, `multipleNSAIDs`…), normalización case-insensitive,
-estructura de `criteria.json` (225 criterios, 13 sistemas; ver Excluidos),
+estructura de `criteria.json` (216 criterios, 13 sistemas; ver Excluidos),
 `buildRelevance` / `SYSTEM_TO_TABS`, los helpers de test compartidos y el
 script de auditoría de consistencia del catálogo.
 
@@ -224,6 +224,14 @@ Ficheros que NO llevan `@linked`, con motivo:
 - `docs/propuesta-p15.md` — registro de decisiones del incremento P15; el
   conocimiento implementado vive en `docs/catalogo-clinico.md` (sección
   "Familias de variantes excluyentes").
+- `docs/plan-visibilidad-medicamentos-multiclase.md` — plan e informe de
+  ejecución del incremento; el comportamiento vigente se documenta en
+  `motor-criterios.md`, `flujo-pasos.md` y `catalogo-clinico.md`.
+- `docs/revision-visibilidad-clinica-por-sistema.md` — auditoría histórica y
+  registro de pendientes; no es la fuente de verdad del comportamiento.
+- `docs/revision-prueba-manual-visibilidad-multiclase.md` — informe de la ronda
+  de prueba manual; las reglas vigentes se consolidan en los documentos de
+  motor, catálogo y flujo.
 - `docs/STOPP_START_CRITERIOS_CONTEXTO.md` — referencia clínica estática;
   no requiere `@linked` desde código.
 - `docs/dudas-raquel-pendientes.md` — notas de revisión con el tutor; no

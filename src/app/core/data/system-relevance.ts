@@ -118,6 +118,7 @@ export const buildRelevance = (
     if (targets.length === 0) continue;
 
     const refs = extractReferences(c.logic);
+    c.relevance?.medicationClasses?.forEach(drugClass => refs.classes.add(drugClass));
     if (refs.classes.size === 0 && refs.dxs.size === 0) continue;
 
     const isTransversal = targets.includes(TRANSVERSAL);

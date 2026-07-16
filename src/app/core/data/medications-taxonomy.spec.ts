@@ -1,4 +1,7 @@
 import { DRUG_CATEGORIES, resolveMedicationLabel } from './medications-taxonomy';
+import { MEDICATIONS } from './medications';
+import { extractReferences } from './system-relevance';
+import { ALL_CRITERIA } from '../services/criteria-test-helpers';
 
 describe('DRUG_CATEGORIES — cobertura del catálogo', () => {
   const groupedDrugs = new Set(
@@ -7,6 +10,55 @@ describe('DRUG_CATEGORIES — cobertura del catálogo', () => {
 
   it('Lidocaína parche es seleccionable en algún grupo (STOPP-L4 la requiere)', () => {
     expect(groupedDrugs.has('Lidocaína parche')).toBe(true);
+  });
+
+  it('todos los productos nootrópicos reportados son seleccionables para STOPP-D20', () => {
+    const expected = [
+      'Ginkgo biloba',
+      'Piracetam',
+      'Pramiracetam',
+      'Fenilpiracetam',
+      'Aniracetam',
+      'Fosfatidilserina',
+      'Modafinilo',
+      'L-teanina',
+      'Ácidos grasos omega-3',
+      'Panax ginseng',
+      'Rodiola',
+      'Creatina',
+    ];
+
+    expect(
+      expected.filter(id => !MEDICATIONS.some(medication => medication.id === id)),
+    ).toEqual([]);
+    expect(expected.filter(id => !groupedDrugs.has(id))).toEqual([]);
+  });
+
+  it('Acetato de megestrol es seleccionable para STOPP-F8', () => {
+    expect(groupedDrugs.has('Acetato de megestrol')).toBe(true);
+  });
+
+  it('los análogos de vasopresina son seleccionables para STOPP-J10', () => {
+    expect(groupedDrugs.has('Desmopresina')).toBe(true);
+    expect(groupedDrugs.has('Vasopresina')).toBe(true);
+  });
+
+  it('todos los medicamentos de clases referenciadas son seleccionables', () => {
+    const relevantClasses = new Set(
+      ALL_CRITERIA.flatMap(criterion => [
+        ...extractReferences(criterion.logic).classes,
+        ...(criterion.relevance?.medicationClasses ?? []),
+      ]),
+    );
+    const relevantMedicationIds = MEDICATIONS
+      .filter(medication =>
+        medication.drugClasses.some(drugClass => relevantClasses.has(drugClass))
+      )
+      .map(medication => medication.id);
+
+    expect(
+      relevantMedicationIds.filter(medicationId => !groupedDrugs.has(medicationId)),
+    ).toEqual([]);
   });
 });
 

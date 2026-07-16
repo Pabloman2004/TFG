@@ -55,6 +55,7 @@ export const aine          = (id = 'Ibuprofeno')         => makeMed(id, ['AINE']
 export const anticoag      = (id = 'Apixaban')           => makeMed(id, ['ANTICOAGULANTE', 'ANTICOAGULANTE_DIRECTO']);
 export const anticoagAvk   = (id = 'Warfarina')          => makeMed(id, ['ANTICOAGULANTE', 'ANTICOAGULANTE_AVK']);
 export const anticoagDir   = (id = 'Apixaban')           => makeMed(id, ['ANTICOAGULANTE', 'ANTICOAGULANTE_DIRECTO']);
+export const inhibidorFactorXa = (id = 'Apixaban')       => makeMed(id, ['ANTICOAGULANTE', 'ANTICOAGULANTE_DIRECTO', 'INHIBIDOR_FACTOR_XA']);
 export const dabigatran    = ()                          => makeMed('Dabigatrán', ['ANTICOAGULANTE', 'ANTICOAGULANTE_DIRECTO', 'INHIBIDOR_DIRECTO_TROMBINA']);
 export const antiag        = (id = 'Clopidogrel')        => makeMed(id, ['ANTIAGREGANTE']);
 export const aas           = ()                          => makeMed('Ácido acetilsalicílico', ['ANTIAGREGANTE', 'AAS']);

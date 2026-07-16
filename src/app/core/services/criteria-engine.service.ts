@@ -219,6 +219,32 @@ export class CriteriaEngineService {
       );
     });
 
+    jsonLogic.add_operation('medicationClassDurationAbove', (
+      drugClass: unknown,
+      days: unknown,
+      meds: unknown,
+    ) => {
+      if (typeof drugClass !== 'string' || typeof days !== 'number' || !Array.isArray(meds)) return false;
+      return (meds as Med[]).some(medication =>
+        hasDrugClass(medication, drugClass.toLowerCase()) &&
+        medication.durationDays != null &&
+        medication.durationDays > days
+      );
+    });
+
+    jsonLogic.add_operation('medicationClassDoseMgAbove', (
+      drugClass: unknown,
+      doseMg: unknown,
+      meds: unknown,
+    ) => {
+      if (typeof drugClass !== 'string' || typeof doseMg !== 'number' || !Array.isArray(meds)) return false;
+      return (meds as Med[]).some(medication =>
+        hasDrugClass(medication, drugClass.toLowerCase()) &&
+        medication.doseMgDay != null &&
+        medication.doseMgDay > doseMg
+      );
+    });
+
     // ¿La función renal del paciente está por debajo del umbral?
     // Equivalencias clínicas para cuando el usuario no introduce valor numérico:
     //   - "enfermedad_renal_grave"          ≡ TFGe < 30

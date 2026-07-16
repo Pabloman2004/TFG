@@ -7,8 +7,8 @@ es tomar un `PatientCase` (datos del paciente: diagnósticos, medicaciones activ
 y analítica) y el catálogo de criterios STOPP/START (`criteria.json`), y
 determinar:
 
-1. **Qué criterios se cumplen** (`evaluate()`): filtra los 225 criterios del
-   catálogo (176 STOPP + 49 START) y devuelve solo los que la lógica declarativa
+1. **Qué criterios se cumplen** (`evaluate()`): filtra los criterios del
+   catálogo y devuelve solo los que la lógica declarativa
    del criterio confirma para ese paciente.
 2. **Qué medicamentos están contraindicados** (`getExcludedMedications()`):
    para cada criterio con campo `excludes`, simula proactivamente añadir cada
@@ -35,7 +35,7 @@ registrados en el constructor del servicio.
 | `src/app/core/services/criteria-test-helpers.ts` | Librería compartida de utilidades de test: `ALL_CRITERIA`, `crit()`, `setupEngine()`, factories de `PatientCase`/`Med` |
 | `src/types/json-logic-js.d.ts` | Declaración de tipos ambient para `json-logic-js` (`apply`, `add_operation`) |
 | `scripts/audit-criteria.cjs` | Script Node.js one-shot de auditoría de consistencia entre `criteria.json`, `medications.ts` y `diagnoses.ts` |
-| `src/assets/data/criteria.json` | Catálogo de 225 criterios (excluido del patrón @linked: JSON no admite comentarios) |
+| `src/assets/data/criteria.json` | Catálogo de 216 criterios (excluido del patrón @linked: JSON no admite comentarios) |
 
 ### Flujo principal
 
@@ -68,6 +68,9 @@ Cada entrada del array `criteria` tiene:
   "system":  "Sistema cardiovascular",
   "summary": "Texto explicativo del criterio...",
   "logic":   { "<operador>": [...] },
+  "relevance": {
+    "medicationClasses": ["DIGOXINA"]
+  },
   "excludes": {
     "medications": ["Digoxina"],
     "drugClasses": ["DIGOXINA"]
@@ -79,8 +82,15 @@ Cada entrada del array `criteria` tiene:
 - `system`: uno de los 13 sistemas fisiológicos (ver `SYSTEM_TO_TABS`).
 - `logic`: árbol json-logic ejecutable, puede usar operadores estándar y los
   personalizados registrados en `registerCustomOperators()`.
+- `relevance.medicationClasses` (opcional): clases farmacológicas que deben
+  participar en la visibilidad cuando la semántica está encapsulada en un
+  operador especial y no puede extraerse de un `inDrugClass`. No sustituye la
+  lógica ni se deriva de `excludes`.
 - `excludes` (opcional): lista de nombres de medicamento y/o clases
   farmacológicas que ese criterio contraindica cuando se cumple.
+  Debe usar el mismo alcance farmacológico que la lógica: por ejemplo,
+  STOPP-I8 evalúa y excluye la clase agregada `ANTIBIOTICO`, no solo
+  `ANTIBIOTICO_URINARIO`.
 
 Los 13 sistemas del catálogo son:
 
@@ -100,6 +110,8 @@ veces no rompe el comportamiento.
 |---|---|
 | `inDrugClass` | `(drugClass, medications[])` → ¿algún med tiene esa clase? |
 | `digoxinaDosisAlta` | `(medications[])` → ¿hay Digoxina con dosis ≥ 125 mcg/día y duración > 90 días? |
+| `medicationClassDurationAbove` | `(drugClass, days, medications[])` → ¿algún fármaco de la clase supera esa duración? |
+| `medicationClassDoseMgAbove` | `(drugClass, doseMg, medications[])` → ¿algún fármaco de la clase supera esa dosis diaria en mg? |
 | `egfrBelow` | `(threshold, patient)` → ¿TFGe < threshold? Unifica analítica numérica con diagnósticos textuales (`enfermedad_renal_grave` ≡ TFGe < 30, `insuficiencia_renal_terminal` ≡ TFGe < 15) |
 | `multipleNSAIDs` | ¿2+ AINEs presentes? |
 | `multipleLoopDiuretics` | ¿2+ diuréticos de asa? |
@@ -138,9 +150,11 @@ catálogo a uno o más tabs de la UI:
 
 `buildRelevance(criteria, allTabIds)` recorre cada criterio, extrae mediante
 `extractReferences` las clases farmacológicas (`inDrugClass`) y códigos de
-diagnóstico (`in [code, {var:"diagnoses"}]`) referenciados en la lógica, y los
-acumula en los mapas `classesByTab` / `dxsByTab` (con la expansión transversal
-incluida).
+diagnóstico (`in [code, {var:"diagnoses"}]`) referenciados en la lógica, une las
+clases declaradas en `relevance.medicationClasses`, y acumula el resultado en
+los mapas `classesByTab` / `dxsByTab` (con la expansión transversal incluida).
+E1, F2 y F4 usan este metadato para Digoxina, IBP y hierro oral respectivamente.
+`excludes` no se consulta para construir el índice.
 
 Además acumula `specificClassesByTab`: las clases referenciadas por criterios
 cuyo `system` mapea **específicamente** a un tab (los transversales NO se vuelcan
@@ -187,7 +201,7 @@ cinco secciones:
   dato puro (JSON), sin código compilado por criterio. El árbol es serializable,
   auditable con herramientas externas y reemplazable sin recompilar la app.
 - **Operadores custom en lugar de lógica embebida**: `inDrugClass`, `egfrBelow`,
-  `digoxinaDosisAlta` y los `multiple*` encapsulan semántica clínica que json-logic
+  `digoxinaDosisAlta`, los operadores de dosis/duración y los `multiple*` encapsulan semántica clínica que json-logic
   estándar no puede expresar de forma compacta, manteniendo el JSON de criterios
   legible.
 - **Normalización en el servicio, no en los datos**: los criterios y el caso
@@ -252,9 +266,9 @@ cinco secciones:
 
 ## Asunciones
 
-- No se ha verificado si las secciones F en adelante de STOPP (más allá de E)
-  y todos los criterios START están completos en `criteria.json`; los specs solo
-  cubren explícitamente A–E de STOPP.
+- Las secciones STOPP A–H tienen specs explícitos de comportamiento. Las
+  secciones posteriores y todos los criterios START aún no tienen la misma
+  cobertura exhaustiva por sección.
 - `egfrBelow` con umbrales distintos de 15 y 30 (p. ej. 45, 60) depende
   únicamente del valor numérico de `labs.egfr_ml_min_173`; no hay diagnóstico
   textual equivalente para esos rangos intermedios. Si los datos analíticos no

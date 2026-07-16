@@ -177,21 +177,25 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
 
   // ─── D5 ───────────────────────────────────────────────────────────────────
 
-  describe('D5-D15-NEUROLEPTICO-SINTOMAS-DEMENCIA', () => {
-    const c = crit('STOPP-D5-D15-NEUROLEPTICO-SINTOMAS-DEMENCIA');
+  describe('D5 y D15 — alertas independientes para SCPD', () => {
+    const d5 = crit('STOPP-D5-NEUROLEPTICO-SINTOMAS-DEMENCIA');
+    const d15 = crit('STOPP-D15-ANTIPSICOTICO-SCPD');
 
-    it('dispara con síntomas conductuales demencia + Haloperidol', () => {
+    it('genera las dos alertas con síntomas conductuales de demencia + Haloperidol', () => {
       const p = makeCase({ diagnoses: ['sintomas_conductuales_demencia'], medications: [neuroleptico()] });
-      expect(engine.evaluate(p, [c]).length).toBe(1);
+      expect(engine.evaluate(p, [d5, d15]).map(result => result.id)).toEqual([
+        'STOPP-D5-NEUROLEPTICO-SINTOMAS-DEMENCIA',
+        'STOPP-D15-ANTIPSICOTICO-SCPD',
+      ]);
     });
 
-    it('dispara con síntomas conductuales demencia + Risperidona', () => {
+    it('genera las dos alertas con síntomas conductuales de demencia + Risperidona', () => {
       const p = makeCase({ diagnoses: ['sintomas_conductuales_demencia'], medications: [neuroleptico('Risperidona')] });
-      expect(engine.evaluate(p, [c]).length).toBe(1);
+      expect(engine.evaluate(p, [d5, d15]).length).toBe(2);
     });
 
     it('no dispara sin diagnóstico de demencia conductual', () => {
-      expect(engine.evaluate(makeCase({ medications: [neuroleptico()] }), [c])).toEqual([]);
+      expect(engine.evaluate(makeCase({ medications: [neuroleptico()] }), [d5, d15])).toEqual([]);
     });
   });
 
@@ -624,6 +628,14 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
 
     it('dispara con parkinsonismo inducido por fármacos + Pramipexol', () => {
       const p = makeCase({ diagnoses: ['parkinsonismo_inducido_por_farmacos'], medications: [agonistaDopa()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con efectos extrapiramidales por neurolépticos + Levodopa', () => {
+      const p = makeCase({
+        diagnoses: ['efectos_extrapiramidales_neurolepticos'],
+        medications: [dopaminergico()],
+      });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 

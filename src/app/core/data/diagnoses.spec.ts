@@ -55,4 +55,8 @@ describe('normalizeDiagnosis', () => {
   it('[T9] otro acento: "Fibrilación" → "fibrilacion"', () => {
     expect(normalizeDiagnosis('Fibrilación no mapeada')).toBe('fibrilacion_no_mapeada');
   });
+
+  it('incluye esofagitis erosiva como diagnóstico seleccionable para STOPP-F5', () => {
+    expect(DIAGNOSIS_MAP['Esofagitis erosiva']).toBe('esofagitis_erosiva');
+  });
 });

@@ -1,7 +1,7 @@
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CriteriaEngineService } from './criteria-engine.service';
-import { makeCase, makeLabs, makeMed, setupEngine } from './criteria-test-helpers';
+import { crit, makeCase, makeLabs, makeMed, setupEngine } from './criteria-test-helpers';
 
 describe('CriteriaEngineService — Motor genérico', () => {
   let engine: CriteriaEngineService;
@@ -159,6 +159,19 @@ describe('CriteriaEngineService — Motor genérico', () => {
           excludes: { medications: ['Digoxina'] } },
       ]);
       expect(result.size).toBe(0);
+    });
+
+    it('STOPP-I8 excluye preventivamente todos los antibióticos', () => {
+      const patient = makeCase({ diagnoses: ['bacteriuria_asintomatica'] });
+
+      const result = engine.getExcludedMedications(
+        patient,
+        [crit('STOPP-I8-ANTIBIOTICO-BACTERIURIA-ASINTOMATICA')],
+      );
+
+      expect(result.has('amoxicilina')).toBeTrue();
+      expect(result.has('ciprofloxacino')).toBeTrue();
+      expect(result.has('nitrofurantoína')).toBeTrue();
     });
   });
 

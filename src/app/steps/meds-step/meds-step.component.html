@@ -137,6 +137,62 @@
           </label>
         </div>
 
+        @if (activeCategoryId() === 'renal') {
+          <section class="clinical-data-panel" aria-label="Datos para criterios renales">
+            <label class="clinical-field">
+              <span>TFGe (ml/min/1,73 m²)</span>
+              <input type="number"
+                     min="0"
+                     step="0.1"
+                     [value]="store.labs()?.egfr_ml_min_173 ?? ''"
+                     (input)="updateEgfr($any($event.target).value)">
+            </label>
+            @if (medicationById('Digoxina'); as digoxina) {
+              <label class="clinical-field">
+                <span>Digoxina (µg/día)</span>
+                <input type="number"
+                       min="0"
+                       step="0.1"
+                       [value]="digoxina.doseMcgDay ?? ''"
+                       (input)="updateMedicationNumber('Digoxina', 'doseMcgDay', $any($event.target).value)">
+              </label>
+              <label class="clinical-field">
+                <span>Duración (días)</span>
+                <input type="number"
+                       min="0"
+                       step="1"
+                       [value]="digoxina.durationDays ?? ''"
+                       (input)="updateMedicationNumber('Digoxina', 'durationDays', $any($event.target).value)">
+              </label>
+            }
+            @for (iron of medicationsByClass('HIERRO_ORAL'); track iron.id) {
+              <label class="clinical-field">
+                <span>{{ iron.id }} (mg/día)</span>
+                <input type="number"
+                       min="0"
+                       step="0.1"
+                       [value]="iron.doseMgDay ?? ''"
+                       (input)="updateMedicationNumber(iron.id, 'doseMgDay', $any($event.target).value)">
+              </label>
+            }
+          </section>
+        }
+
+        @if (activeCategoryId() === 'gastrointestinal' && medicationsByClass('IBP').length > 0) {
+          <section class="clinical-data-panel" aria-label="Duración de tratamientos gastrointestinales">
+            @for (ibp of medicationsByClass('IBP'); track ibp.id) {
+              <label class="clinical-field">
+                <span>{{ ibp.id }} (días)</span>
+                <input type="number"
+                       min="0"
+                       step="1"
+                       [value]="ibp.durationDays ?? ''"
+                       (input)="updateMedicationNumber(ibp.id, 'durationDays', $any($event.target).value)">
+              </label>
+            }
+          </section>
+        }
+
         <!-- Drug columns -->
         <div class="cols-wrap">
 

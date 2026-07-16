@@ -308,33 +308,29 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ## Sistema gastrointestinal
 
-*(STOPP: 12 | START: 7)*
+*(STOPP: 10 | START: 7)*
 
 ### STOPP
 
 1. STOPP-F1-PROCINETICO-PARKINSONISMO — Evitar proclorperazina o metoclopramida en presencia de parkinsonismo. Riesgo de e… — Para que salte: marcar **Proclorperazina** [tab Cardiovascular + Gastrointestinal + SNC] (clase PROCINETICO) + dx **Parkinsonismo** [tab Neurológico]
 
-2. STOPP-F2-IBP-TRATAMIENTO-PROLONGADO — IBP a dosis terapéuticas plenas durante más de 8 semanas sin revisión. Valorar red… — Para que salte: edad ≥ 65 (campo paciente — sin pantalla UI) + marcar **Omeprazol** [tab Gastrointestinal] (clase IBP)
+2. STOPP-F2-IBP-TRATAMIENTO-PROLONGADO — IBP a dosis terapéuticas plenas durante más de 8 semanas sin revisión. Valorar red… — Para que salte: marcar **Omeprazol** [tab Gastrointestinal] (clase IBP) + duración ≥ 57 días
 
 3. STOPP-F3-ANTICOLINERGICO-ESTRENIMIENTO — Evitar fármacos antimuscarínicos en estreñimiento crónico. Riesgo de empeoramiento… — Para que salte: marcar **Amitriptilina** [tab Cardiovascular + Osteo/Músculo-esq. + SNC] (clase ANTICOLINERGICO) + dx **Estreñimiento crónico** [tab Gastrointestinal]
 
 4. STOPP-F3-FARMACOS-ESTRENIMIENTO — Evitar fármacos que suelen causar estreñimiento (antimuscarínicos/anticolinérgicos… — Para que salte: (marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP) | marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE) | marcar **Sulfato ferroso** [tab Renal] (clase HIERRO_ORAL)) + dx **Estreñimiento crónico** [tab Gastrointestinal]
 
-5. STOPP-F4-HIERRO-ORAL-DOSIS-ALTA — Revisar hierro oral: dosis elementales superiores a 200 mg/día no aportan mayor ab… — Para que salte: edad ≥ 65 (campo paciente — sin pantalla UI) + marcar **Sulfato ferroso** [tab Renal] (clase HIERRO_ORAL)
+5. STOPP-F4-HIERRO-ORAL-DOSIS-ALTA — Revisar hierro oral: dosis elementales superiores a 200 mg/día no aportan mayor ab… — Para que salte: marcar **Sulfato ferroso** [tab Renal] (clase HIERRO_ORAL) + dosis ≥ 201 mg/día
 
-6. STOPP-F5-CORTICOIDE-ULCERA-PEPTICA — Evitar corticosteroides con antecedentes de enfermedad ulcerosa péptica o esofagit… — Para que salte: dx **Antecedentes de úlcera péptica** [tab Gastrointestinal] [y NO marcar **Omeprazol** [tab Gastrointestinal] (clase IBP)]
+6. STOPP-F5-CORTICOIDE-ULCERA-PEPTICA — Evitar corticosteroides con antecedentes de enfermedad ulcerosa péptica o esofagit… — Para que salte: marcar **Prednisona** (clase CORTICOIDE_SISTEMICO) + (dx **Antecedentes de úlcera péptica** | dx **Esofagitis erosiva**) [y NO marcar **Omeprazol** (clase IBP)]
 
-7. STOPP-F6-AAS-EVAG — Evitar antiagregantes y anticoagulantes en pacientes con antecedentes de EVAG (ect… — Para que salte: marcar **Ácido acetilsalicílico** [tab Anticoagulantes] (clase AAS) + dx **Antecedentes de EVAG** [tab Gastrointestinal]
+7. STOPP-F6-ANTIAGREGANTE-EVAG — Evitar antiagregantes plaquetarios en pacientes con antecedentes de EVAG (estómago… — Para que salte: marcar cualquier antiagregante [tab Anticoagulantes] (clase ANTIAGREGANTE) + dx **Antecedentes de EVAG** [tab Gastrointestinal]
 
-8. STOPP-F6-ANTIAGREGANTE-EVAG — Evitar antiagregantes plaquetarios en pacientes con antecedentes de EVAG (estómago… — Para que salte: marcar **Ácido acetilsalicílico** [tab Anticoagulantes] (clase ANTIAGREGANTE) + dx **Antecedentes de EVAG** [tab Gastrointestinal]
+8. STOPP-F6-AVK-EVAG — Evitar antagonistas de vitamina K en pacientes con antecedentes de EVAG (estómago … — Para que salte: marcar **Warfarina** [tab Anticoagulantes] (clase ANTICOAGULANTE_AVK) + dx **Antecedentes de EVAG** [tab Gastrointestinal]
 
-9. STOPP-F6-AVK-EVAG — Evitar antagonistas de vitamina K en pacientes con antecedentes de EVAG (estómago … — Para que salte: marcar **Warfarina** [tab Anticoagulantes] (clase ANTICOAGULANTE) + dx **Antecedentes de EVAG** [tab Gastrointestinal]
+9. STOPP-F7-NEUROLEPTICO-DISFAGIA — Evitar neurolépticos en pacientes con disfagia. Aumento del riesgo de neumonía asp… — Para que salte: marcar **Haloperidol** [tab Cardiovascular + SNC] (clase NEUROLEPTICO) + dx **Disfagia** [tab Gastrointestinal]
 
-10. STOPP-F6-TICLOPIDINA-EVAG — Evitar ticlopidina en pacientes con antecedentes de EVAG (estómago en sandía). Rie… — Para que salte: marcar **Ácido acetilsalicílico** [tab Anticoagulantes] (clase ANTIAGREGANTE) + dx **Antecedentes de EVAG** [tab Gastrointestinal]
-
-11. STOPP-F7-NEUROLEPTICO-DISFAGIA — Evitar neurolépticos en pacientes con disfagia. Aumento del riesgo de neumonía asp… — Para que salte: marcar **Haloperidol** [tab Cardiovascular + SNC] (clase NEUROLEPTICO) + dx **Disfagia** [tab Gastrointestinal]
-
-12. STOPP-F8-MEGESTROL-OREXIGENO — Evitar acetato de megestrol como orexígeno. Aumento del riesgo de trombosis y mort… — Para que salte: edad ≥ 65 (campo paciente — sin pantalla UI) + marcar **Acetato de megestrol** [tab Otros] (clase OREXICO)
+10. STOPP-F8-MEGESTROL-OREXIGENO — Evitar acetato de megestrol como orexígeno. Aumento del riesgo de trombosis y mort… — Para que salte: marcar **Acetato de megestrol** [tab Gastrointestinal] (clase OREXICO)
 
 ### START
 
@@ -372,7 +368,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 6. STOPP-H5-CORTICOIDE-ARTROSIS — Evitar corticosteroides sistémicos para la artrosis (salvo inyecciones intraarticu… — Para que salte: marcar **Prednisona** [tab Cardiovascular + Endocrino/Metabólico + Respiratorio] (clase CORTICOIDE_SISTEMICO) + dx **Artrosis** [tab Reumatológico]
 
-7. STOPP-H6-AINE-GOTA-ACTIVA — Evitar AINEs en pacientes con gota activa. Uso crónico puede exacerbar la enfermed… — Para que salte: marcar **Ibuprofeno** [tab Cardiovascular + Osteo/Músculo-esq.] (clase AINE) + dx **Gota activa** [tab Reumatológico]
+7. STOPP-H6-AINE-COLCHICINA-GOTA-CRONICA — Revisar AINEs o colchicina usados de forma prolongada en gota crónica o recurrente… — Para que salte: (marcar **Ibuprofeno** (clase AINE) | marcar **Colchicina** (clase COLCHICINA)) + (dx **Gota activa** | dx **Gota recurrente**)
 
 8. STOPP-H7-AINE-CORTICOIDES — Evitar AINEs en combinación con corticosteroides para el tratamiento de artritis/e… — Para que salte: marcar **Ibuprofeno** [tab Cardiovascular + Osteo/Músculo-esq.] (clase AINE) + marcar **Prednisona** [tab Cardiovascular + Endocrino/Metabólico + Respiratorio] (clase CORTICOIDE_SISTEMICO) + (dx **Artritis** [tab Reumatológico] | dx **Artritis reumatoide** [tab Reumatológico] | dx **Artritis reumatoide activa incapacitante** [tab Reumatológico] | dx **Artrosis** [tab Reumatológico] | dx **Gota activa** [tab Reumatológico] | dx **Gota recurrente** [tab Reumatológico])
 
@@ -400,7 +396,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ## Sistema nervioso central
 
-*(STOPP: 31 | START: 7)*
+*(STOPP: 32 | START: 7)*
 
 ### STOPP
 
@@ -444,7 +440,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 20. STOPP-D22-DOPAMINERGICO-TEMBLOR-ESENCIAL — Evitar levodopa o agonistas dopaminérgicos para el temblor esencial benigno. Sin e… — Para que salte: (marcar **Levodopa/Carbidopa** [tab SNC] (clase DOPAMINERGICO) | marcar **Pramipexol** [tab SNC] (clase AGONISTA_DOPAMINERGICO)) + dx **Temblor esencial benigno** [tab Neurológico]
 
-21. STOPP-D23-DOPAMINERGICO-PARKINSONISMO-FARMACOLOGICO — Evitar levodopa o agonistas dopaminérgicos para tratar los efectos secundarios ext… — Para que salte: dx **Parkinsonismo inducido por fármacos** [tab Neurológico] + (marcar **Levodopa/Carbidopa** [tab SNC] (clase DOPAMINERGICO) | marcar **Pramipexol** [tab SNC] (clase AGONISTA_DOPAMINERGICO))
+21. STOPP-D23-DOPAMINERGICO-PARKINSONISMO-FARMACOLOGICO — Evitar levodopa o agonistas dopaminérgicos para tratar los efectos secundarios ext… — Para que salte: (dx **Parkinsonismo inducido por fármacos** | dx **Efectos extrapiramidales por neurolépticos**) [tab Neurológico] + (marcar **Levodopa/Carbidopa** [tab SNC] (clase DOPAMINERGICO) | marcar **Pramipexol** [tab SNC] (clase AGONISTA_DOPAMINERGICO))
 
 22. STOPP-D24-ANTIHISTAMINICO-1GEN-ALERGIA — Evitar antihistamínicos de primera generación como tratamiento de primera línea de… — Para que salte: marcar **Astemizol** [tab Respiratorio] (clase ANTIHISTAMINICO_1GEN) + (dx **Alergia** [tab Otros (Inmunológico)] | dx **Prurito** [tab Otros (Dermatológico)])
 
@@ -456,15 +452,17 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 26. STOPP-D4-NEUROLEPTICO-PROSTATISMO — Evitar neurolépticos antimuscariínicos en pacientes con prostatismo o retención ur… — Para que salte: marcar **Haloperidol** [tab Cardiovascular + SNC] (clase NEUROLEPTICO) + (dx **Prostatismo** [tab Urológico] | dx **Retención urinaria** [tab Urológico])
 
-27. STOPP-D5-D15-NEUROLEPTICO-SINTOMAS-DEMENCIA — Evitar neurolépticos para síntomas conductuales de la demencia. Riesgo de empeoram… — Para que salte: dx **Síntomas conductuales de la demencia** [tab Neurológico] + marcar **Haloperidol** [tab Cardiovascular + SNC] (clase NEUROLEPTICO)
+27. STOPP-D5-NEUROLEPTICO-SINTOMAS-DEMENCIA — Evitar neurolépticos para síntomas conductuales de la demencia sin revisión o ajuste… — Para que salte: dx **Síntomas conductuales de la demencia** [tab Neurológico] + marcar **Haloperidol** [tab Cardiovascular + SNC] (clase NEUROLEPTICO)
 
-28. STOPP-D6-ISRS-HIPONATREMIA — Evitar ISRS en pacientes con hiponatremia significativa (Na+ < 130 mmol/L). Riesgo… — Para que salte: marcar **Sertralina** [tab Cardiovascular + SNC] (clase ISRS) + ((dx **Hiponatremia significativa (Na+ < 130 mmol/L)** [tab Metabólico] | dx **Hiponatremia** [tab Metabólico]) | Na+=null (lab — sin pantalla UI) + Na+=129.9 (lab — sin pantalla UI))
+28. STOPP-D15-ANTIPSICOTICO-SCPD — Revisar antipsicóticos usados para síntomas conductuales y psicológicos de la demencia… — Para que salte: dx **Síntomas conductuales de la demencia** [tab Neurológico] + marcar **Haloperidol** [tab Cardiovascular + SNC] (clase NEUROLEPTICO)
 
-29. STOPP-D7-ISRS-SANGRADO — Evitar ISRS en pacientes con presencia de sangrado significativo concurrente actua… — Para que salte: marcar **Sertralina** [tab Cardiovascular + SNC] (clase ISRS) + dx **Riesgo significativo de sangrado** [tab Hematológico]
+29. STOPP-D6-ISRS-HIPONATREMIA — Evitar ISRS en pacientes con hiponatremia significativa (Na+ < 130 mmol/L). Riesgo… — Para que salte: marcar **Sertralina** [tab Cardiovascular + SNC] (clase ISRS) + ((dx **Hiponatremia significativa (Na+ < 130 mmol/L)** [tab Metabólico] | dx **Hiponatremia** [tab Metabólico]) | Na+=null (lab — sin pantalla UI) + Na+=129.9 (lab — sin pantalla UI))
 
-30. STOPP-D8-BENZODIACEPINA-USO-PROLONGADO — Benzodiacepinas durante ≥ 4 semanas no están indicadas. Riesgo de sedación, confus… — Para que salte: edad ≥ 65 (campo paciente — sin pantalla UI) + marcar **Diazepam** [tab SNC] (clase BENZODIACEPINA)
+30. STOPP-D7-ISRS-SANGRADO — Evitar ISRS en pacientes con presencia de sangrado significativo concurrente actua… — Para que salte: marcar **Sertralina** [tab Cardiovascular + SNC] (clase ISRS) + dx **Riesgo significativo de sangrado** [tab Hematológico]
 
-31. STOPP-D9-BENZODIACEPINA-DEMENCIA-AGITACION — Evitar benzodiacepinas para la agitación o síntomas psicóticos de la demencia. Sin… — Para que salte: marcar **Diazepam** [tab SNC] (clase BENZODIACEPINA) + (dx **Demencia** [tab Neurológico] | dx **Síntomas conductuales de la demencia** [tab Neurológico])
+31. STOPP-D8-BENZODIACEPINA-USO-PROLONGADO — Benzodiacepinas durante ≥ 4 semanas no están indicadas. Riesgo de sedación, confus… — Para que salte: edad ≥ 65 (campo paciente — sin pantalla UI) + marcar **Diazepam** [tab SNC] (clase BENZODIACEPINA)
+
+32. STOPP-D9-BENZODIACEPINA-DEMENCIA-AGITACION — Evitar benzodiacepinas para la agitación o síntomas psicóticos de la demencia. Sin… — Para que salte: marcar **Diazepam** [tab SNC] (clase BENZODIACEPINA) + (dx **Demencia** [tab Neurológico] | dx **Síntomas conductuales de la demencia** [tab Neurológico])
 
 ### START
 
@@ -582,9 +580,9 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 | Tipo | Cantidad |
 |------|----------|
-| STOPP | 173 |
+| STOPP | 167 |
 | START | 49 |
-| **Total** | **222** |
+| **Total** | **216** |
 
 ## Índice rápido — tabs de medicamentos
 

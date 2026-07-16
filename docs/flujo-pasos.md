@@ -6,6 +6,11 @@ La aplicación STOPP/START guía al clínico en dos pasos secuenciales:
 
 1. **Paso 1 — Medicamentos** (`/medicaciones`, `MedsStepComponent`): el clínico selecciona los fármacos activos del paciente organizados por categoría terapéutica (tabs: cardiovascular, neurológico, etc.). En tiempo real se evalúan los criterios STOPP/START y se muestran en una columna derecha agrupados por sistema orgánico.
 
+   Los tabs Renal y Gastrointestinal muestran campos clínicos contextuales cuando
+   son necesarios: TFGe, dosis y duración de digoxina, dosis diaria de hierro
+   oral y duración de los IBP. Los cambios actualizan inmutablemente `Med[]` o
+   `Labs` y se persisten junto con el caso.
+
 2. **Paso 2 — Diagnósticos** (`/diagnosticos`, `DiagnosisStepComponent`): el clínico selecciona los diagnósticos activos organizados por sistema orgánico. La columna derecha sigue mostrando los criterios activados actualizados.
 
 En ambos pasos:
@@ -56,21 +61,31 @@ extraído en el incremento T8 para eliminar la duplicación entre `MedsStepCompo
 
 Exporta cuatro funciones puras y sus tipos asociados:
 
-- **`computeMedGroupBuckets(tabId, categories, relevance, otrosTabId)`**: calcula `MedGroupBuckets`
-  (`{ ownAll, foreignRelevant }`). Distingue grupos multi-fármaco de unitarios:
+- **`computeMedGroupBuckets(tabId, categories, relevance, otrosTabId, medications)`**: calcula
+  `MedGroupBuckets` (`{ ownAll, foreignRelevant }`). Recibe el catálogo para comparar todas las
+  `drugClasses` de cada medicamento con las clases relevantes del tab:
   - Los **multi-fármaco** (`drugs.length > 1`) usan `relevance.classesByTab` (relevancia completa,
-    transversal incluida): siempre en `ownAll` de su tab; como foráneos donde su `drugClass` sea
-    relevante.
+    transversal incluida): siempre en `ownAll` de su tab; como foráneos solo con los medicamentos
+    cuya intersección de clases sea no vacía.
   - Los **unitarios** (`drugs.length === 1`) solo afloran por relevancia **específica**
-    (`relevance.specificClassesByTab`): aparecen en `ownAll`/foráneos únicamente en tabs cuyo
-    criterio mapea específicamente a ese sistema, NO por relevancia transversal (p. ej. paracetamol
-    vía "Analgésicos" no aflora).
+    (`relevance.specificClassesByTab`): como foráneos aparecen únicamente en el tab cuyo criterio
+    referencia alguna de sus clases; si afloran en cualquier tab específico, permanecen visibles
+    también en su categoría principal. La relevancia transversal no basta para hacerlos aflorar
+    (p. ej. Paracetamol vía "Analgésicos" permanece en Otros).
+  - La coincidencia se calcula por medicamento, no por `DrugGroup.drugClass`. Esto permite que un
+    AOD aflore por `INHIBIDOR_FACTOR_XA`, aunque el grupo visual se denomine
+    `ANTICOAGULANTE_DIRECTO`, y que grupos sin `drugClass` afloren por sus miembros.
+  - Dentro de un tab los medicamentos foráneos se deduplican por ID, priorizando el grupo cuya
+    `drugClass` coincide directamente con la clase relevante antes de recurrir a la coincidencia
+    multiclase. El mismo ID puede aparecer en tabs distintos y conserva una única selección
+    compartida en el store.
   - El tab especial `otrosTabId` agrega los fármacos de grupos unitarios, **excepto** los que
-    afloran por relevancia específica en algún tab de sistema (para no duplicarlos).
+    afloran por relevancia específica en algún tab de sistema (para no duplicarlos), usando
+    también todas las clases del medicamento.
   - `ownAll` se ordena con `Intl.Collator('es')`; los foráneos no se repiten si la `drugClass` ya
     está en `ownAll`.
-- **`medGroupsVisibleInTab(tabId, categories, relevance, otrosTabId)`**: alias plano de lo anterior;
-  devuelve `[...ownAll, ...foreignRelevant]`.
+- **`medGroupsVisibleInTab(tabId, categories, relevance, otrosTabId, medications)`**: alias plano
+  de lo anterior; devuelve `[...ownAll, ...foreignRelevant]`.
 - **`computeDxGroupBuckets(tab, allTabs, relevance)`**: calcula `DxGroupBuckets`
   (`{ ownGroups, foreignRelevant }`). Los grupos foráneos se construyen agrupando diagnósticos de
   otros tabs que aparecen en `relevance.dxsByTab.get(tab.id)`; cada grupo foráneo lleva
@@ -115,7 +130,10 @@ El marcador de tab revisado se gestiona en `CaseStoreService` (`reviewedMedTabs`
 ## Decisiones de diseño
 
 - **`ChangeDetectionStrategy.OnPush` + signals**: toda la reactividad pasa por signals y computed, sin RxJS. El motor de criterios se invoca solo cuando cambia `meds`, `diagnoses` o `labs`.
-- **Bucket de "relevantes de otros sistemas"**: evita que el clínico tenga que navegar a otro tab para seleccionar un fármaco/diagnóstico que es relevante para el sistema que está revisando en ese momento. Se calcula mediante `criteriaEngine.relevance()` que construye un índice `classesByTab` / `dxsByTab`.
+- **Bucket de "relevantes de otros sistemas"**: evita que el clínico tenga que navegar a otro tab
+  para seleccionar un fármaco/diagnóstico relevante. Para medicamentos, el índice de clases se
+  cruza con todas las clases de cada entrada de `MEDICATIONS` y el grupo foráneo se filtra al
+  subconjunto coincidente; la taxonomía decide la presentación, no la relevancia clínica.
 - **`Intl.Collator('es')`**: la ordenación de grupos foráneos y fármacos del tab "Otros" usa el cotejador en español para ordenación correcta de caracteres como `ñ` y vocales acentuadas.
 - **Tab "Otros" de medicamentos**: agrega los fármacos de grupos con un único medicamento (`drugs.length === 1`) de todas las categorías, salvo los unitarios cuya `drugClass` es **específicamente** relevante en algún tab de sistema (esos afloran en su tab y se excluyen de "Otros" para no duplicar; la relevancia transversal/comodín no cuenta para esto); es un tab de miscelánea para fármacos poco frecuentes y no referenciados por criterios específicos.
 - **Duplicación deliberada de los dos componentes**: `MedsStepComponent` y `DiagnosisStepComponent` replican casi toda la infraestructura. No se ha extraído a un componente base. Ver "Si cambias esto…" y "Problemas detectados" en `analysis/steps.md`.

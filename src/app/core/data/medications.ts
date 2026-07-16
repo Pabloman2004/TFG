@@ -131,10 +131,10 @@ export const MEDICATIONS: Med[] = [
   { id: "Acenocumarol", drugClasses: ["ANTICOAGULANTE", "ANTICOAGULANTE_AVK"] },
 
   // Anticoagulantes Orales Directos (AODs/DOACs)
-  { id: "Apixaban", drugClasses: ["ANTICOAGULANTE", "ANTICOAGULANTE_DIRECTO"] },
+  { id: "Apixaban", drugClasses: ["ANTICOAGULANTE", "ANTICOAGULANTE_DIRECTO", "INHIBIDOR_FACTOR_XA"] },
   { id: "Dabigatrán", drugClasses: ["ANTICOAGULANTE", "ANTICOAGULANTE_DIRECTO", "INHIBIDOR_DIRECTO_TROMBINA"] },
-  { id: "Edoxaban", drugClasses: ["ANTICOAGULANTE", "ANTICOAGULANTE_DIRECTO"] },
-  { id: "Rivaroxaban", drugClasses: ["ANTICOAGULANTE", "ANTICOAGULANTE_DIRECTO"] },
+  { id: "Edoxaban", drugClasses: ["ANTICOAGULANTE", "ANTICOAGULANTE_DIRECTO", "INHIBIDOR_FACTOR_XA"] },
+  { id: "Rivaroxaban", drugClasses: ["ANTICOAGULANTE", "ANTICOAGULANTE_DIRECTO", "INHIBIDOR_FACTOR_XA"] },
 
   // -------- OPIOIDES --------
   { id: "Morfina", drugClasses: ["OPIOIDE", "OPIOIDE_RAPIDO"] },
@@ -278,6 +278,16 @@ export const MEDICATIONS: Med[] = [
   { id: "Ginkgo biloba", drugClasses: ["NOOTROPICO"] },
   { id: "Piracetam", drugClasses: ["NOOTROPICO"] },
   { id: "Citicolina", drugClasses: ["NOOTROPICO"] },
+  { id: "Pramiracetam", drugClasses: ["NOOTROPICO"] },
+  { id: "Fenilpiracetam", drugClasses: ["NOOTROPICO"] },
+  { id: "Aniracetam", drugClasses: ["NOOTROPICO"] },
+  { id: "Fosfatidilserina", drugClasses: ["NOOTROPICO"] },
+  { id: "Modafinilo", drugClasses: ["NOOTROPICO"] },
+  { id: "L-teanina", drugClasses: ["NOOTROPICO"] },
+  { id: "Ácidos grasos omega-3", drugClasses: ["NOOTROPICO"] },
+  { id: "Panax ginseng", drugClasses: ["NOOTROPICO"] },
+  { id: "Rodiola", drugClasses: ["NOOTROPICO"] },
+  { id: "Creatina", drugClasses: ["NOOTROPICO"] },
 
   // -------- ANESTÉSICO TÓPICO --------
   { id: "Lidocaína parche", drugClasses: ["ANESTESICO_TOPICO"] },

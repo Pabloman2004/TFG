@@ -133,6 +133,26 @@ describe('buildRelevance', () => {
     }
   });
 
+  it('expande también los diagnósticos transversales a todos los tabs provistos', () => {
+    const allTabs = ['cardiovascular', 'renal', 'neurologico'];
+    const rel = buildRelevance(
+      [
+        crit({
+          system: 'Analgésicos',
+          logic: { in: ['dolor_neuropatico', { var: 'diagnoses' }] },
+        }),
+      ],
+      allTabs,
+    );
+
+    for (const tabId of allTabs) {
+      expect(rel.dxsByTab.get(tabId)?.has('dolor_neuropatico'))
+        .withContext(`falta en ${tabId}`)
+        .toBe(true);
+    }
+    expect(rel.specificClassesByTab.size).toBe(0);
+  });
+
   it('ignora criterios transversales si no se pasa allTabIds', () => {
     const rel = buildRelevance([
       crit({
@@ -170,6 +190,33 @@ describe('buildRelevance', () => {
     expect(cardio.has('BETABLOQUEANTE')).toBe(true);
     expect(cardio.has('IECA')).toBe(true);
     expect(cardio.size).toBe(2);
+  });
+
+  it('añade relevancia farmacológica explícita de operadores especiales', () => {
+    const rel = buildRelevance([
+      crit({
+        system: 'Sistema renal',
+        logic: { digoxinaDosisAlta: [{ var: 'medications' }] },
+        relevance: { medicationClasses: ['DIGOXINA'] },
+      }),
+    ]);
+
+    expect(rel.classesByTab.get('renal')?.has('DIGOXINA')).toBe(true);
+    expect(rel.specificClassesByTab.get('renal')?.has('DIGOXINA')).toBe(true);
+  });
+
+  it('une las clases explícitas con las extraídas de la lógica', () => {
+    const rel = buildRelevance([
+      crit({
+        system: 'Sistema gastrointestinal',
+        logic: { inDrugClass: ['IBP', { var: 'medications' }] },
+        relevance: { medicationClasses: ['HIERRO_ORAL'] },
+      }),
+    ]);
+
+    expect(rel.classesByTab.get('gastrointestinal')).toEqual(
+      new Set(['IBP', 'HIERRO_ORAL']),
+    );
   });
 
   it('ignora criterios con system desconocido', () => {

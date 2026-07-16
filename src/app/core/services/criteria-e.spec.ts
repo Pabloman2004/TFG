@@ -1,7 +1,7 @@
 import { CriteriaEngineService } from './criteria-engine.service';
 import {
   setupEngine, makeCase, makeLabs, makeMed, crit,
-  aine, anticoagDir, dabigatran, digoxina, aldosterona,
+  aine, dabigatran, digoxina, aldosterona, inhibidorFactorXa,
 } from './criteria-test-helpers';
 
 // Factories locales para medicamentos del sistema renal que aún no están en helpers
@@ -113,6 +113,16 @@ describe('Criterios STOPP — Sección E (Sistema renal)', () => {
       });
       expect(engine.evaluate(p, [c])).toEqual([]);
     });
+
+    it('no dispara con Warfarina ni con inhibidores del factor Xa', () => {
+      const renalCase = (medication: ReturnType<typeof makeMed>) => makeCase({
+        diagnoses: ['enfermedad_renal_grave'],
+        medications: [medication],
+      });
+
+      expect(engine.evaluate(renalCase(makeMed('Warfarina', ['ANTICOAGULANTE', 'ANTICOAGULANTE_AVK'])), [c])).toEqual([]);
+      expect(engine.evaluate(renalCase(inhibidorFactorXa('Apixaban')), [c])).toEqual([]);
+    });
   });
 
   // ─── E3 ────────────────────────────────────────────────────────────────────
@@ -122,7 +132,7 @@ describe('Criterios STOPP — Sección E (Sistema renal)', () => {
 
     it('dispara con TFGe < 15 + anticoagulante directo', () => {
       const p = makeCase({
-        medications: [anticoagDir('Apixaban')],
+        medications: [inhibidorFactorXa('Apixaban')],
         labs: makeLabs({ egfr_ml_min_173: 10 }),
       });
       expect(engine.evaluate(p, [c]).length).toBe(1);
@@ -131,7 +141,7 @@ describe('Criterios STOPP — Sección E (Sistema renal)', () => {
     it('dispara con diagnóstico insuficiencia_renal_terminal + anticoagulante', () => {
       const p = makeCase({
         diagnoses: ['insuficiencia_renal_terminal'],
-        medications: [anticoagDir('Rivaroxaban')],
+        medications: [inhibidorFactorXa('Rivaroxaban')],
       });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
@@ -139,17 +149,27 @@ describe('Criterios STOPP — Sección E (Sistema renal)', () => {
     it('NO dispara solo con enfermedad_renal_grave (grave ≡ < 30, umbral E3 es < 15)', () => {
       const p = makeCase({
         diagnoses: ['enfermedad_renal_grave'],
-        medications: [anticoagDir('Apixaban')],
+        medications: [inhibidorFactorXa('Apixaban')],
       });
       expect(engine.evaluate(p, [c])).toEqual([]);
     });
 
     it('no dispara con TFGe ≥ 15 y sin diagnóstico terminal', () => {
       const p = makeCase({
-        medications: [anticoagDir('Apixaban')],
+        medications: [inhibidorFactorXa('Apixaban')],
         labs: makeLabs({ egfr_ml_min_173: 20 }),
       });
       expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('no dispara con Warfarina ni Dabigatrán', () => {
+      const terminalCase = (medication: ReturnType<typeof makeMed>) => makeCase({
+        diagnoses: ['insuficiencia_renal_terminal'],
+        medications: [medication],
+      });
+
+      expect(engine.evaluate(terminalCase(makeMed('Warfarina', ['ANTICOAGULANTE', 'ANTICOAGULANTE_AVK'])), [c])).toEqual([]);
+      expect(engine.evaluate(terminalCase(dabigatran()), [c])).toEqual([]);
     });
   });
 

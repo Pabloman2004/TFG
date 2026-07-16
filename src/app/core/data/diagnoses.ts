@@ -69,6 +69,7 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   // --- Neurolépticos/Antipsicóticos ---
   "Parkinsonismo": "Neurológico",
   "Parkinsonismo inducido por fármacos": "Neurológico",
+  "Efectos extrapiramidales por neurolépticos": "Neurológico",
   "Demencia por cuerpos de Lewy": "Neurológico",
   "Disfagia": "Gastrointestinal",
   "Síntomas conductuales de la demencia": "Neurológico",
@@ -83,6 +84,7 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "HTA grave": "Cardiovascular",
   "HTA moderada": "Cardiovascular",
   "Antecedentes de úlcera péptica": "Gastrointestinal",
+  "Esofagitis erosiva": "Gastrointestinal",
   "Antecedentes de hemorragia HC": "Gastrointestinal",
   "Gota activa": "Reumatológico",
   "Antecedentes de gota": "Reumatológico",
@@ -294,6 +296,7 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   // --- Neurolépticos/Antipsicóticos ---
   "Parkinsonismo": "parkinsonismo",
   "Parkinsonismo inducido por fármacos": "parkinsonismo_inducido_por_farmacos",
+  "Efectos extrapiramidales por neurolépticos": "efectos_extrapiramidales_neurolepticos",
   "Demencia por cuerpos de Lewy": "demencia_cuerpos_lewy",
   "Disfagia": "disfagia",
   "Síntomas conductuales de la demencia": "sintomas_conductuales_demencia",
@@ -308,6 +311,7 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "HTA grave": "hipertension_grave",
   "HTA moderada": "hipertension_moderada",
   "Antecedentes de úlcera péptica": "antecedentes_ulcera_peptica",
+  "Esofagitis erosiva": "esofagitis_erosiva",
   "Antecedentes de hemorragia HC": "antecedentes_hemorragia_hc",
   "Gota activa": "gota_activa",
   "Antecedentes de gota": "antecedentes_gota",
@@ -496,6 +500,9 @@ export const DIAGNOSIS_SUBGROUPS: Record<string, string> = {
   "Insuficiencia cardíaca con función sistólica conservada": "Insuficiencia cardíaca",
   "Insuficiencia cardíaca grave": "Insuficiencia cardíaca",
   "Insuficiencia cardíaca NYHA III-IV": "Insuficiencia cardíaca",
+  // --- Neurológico ---
+  "Demencia": "Demencia y SCPD",
+  "Síntomas conductuales de la demencia": "Demencia y SCPD",
 };
 
 export const DIAGNOSIS_REVERSE_MAP: Record<string, string> =

@@ -13,8 +13,11 @@ Un "caso clínico" es el agregado evaluable por el motor de criterios: datos del
 Declara todas las interfaces del dominio clínico:
 
 - `PatientInfo` — datos demográficos: nombre, edad, sexo (`'F' | 'M'`), MRN, peso, altura, notas.
-- `Med` — medicación normalizada: `id` (nombre del fármaco), `drugClasses` (clases farmacológicas), `doseMcgDay` (dosis en microgramos/día), `durationDays` (duración del tratamiento en días).
-- `Crit` — criterio STOPP/START evaluado: tipo (`'STOPP'` | `'START'`), sistema orgánico, resumen textual, regla JsonLogic y lista `excludes` de medicaciones/clases que descartar cuando el criterio se cumple.
+- `Med` — medicación normalizada: `id` (nombre del fármaco), `drugClasses` (clases farmacológicas), `doseMcgDay` (dosis en microgramos/día), `doseMgDay` (dosis en miligramos/día) y `durationDays` (duración del tratamiento en días).
+- `Crit` — criterio STOPP/START evaluado: tipo (`'STOPP'` | `'START'`), sistema orgánico, resumen
+  textual, regla JsonLogic, metadato opcional `relevance.medicationClasses` para operadores cuya
+  relevancia no puede derivarse de `inDrugClass`, y lista `excludes` de medicaciones/clases que
+  descartar cuando el criterio se cumple.
 - `Labs` — parámetros bioquímicos y vitales: glucosa, colesterol, triglicéridos, HDL, LDL, creatinina, eGFR, INR, TSH, frecuencia cardíaca, QTc, electrolitos (K⁺, Na⁺, Ca²⁺ corregido), presión arterial sistólica y diastólica.
 - `PatientCase` — agregado evaluable: `info`, `diagnoses`, `medications`, `labs`, más los arrays opcionales `reviewedMedTabs` y `reviewedDxTabs` (IDs de tabs revisados).
 - `SavedCase` — entrada del historial local: UUID generado con `crypto.randomUUID()`, timestamp ISO y el `PatientCase` completo.
