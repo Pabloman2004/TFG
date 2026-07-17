@@ -192,6 +192,9 @@ EXCLUDED_DOCS=(
   "docs/plan-visibilidad-medicamentos-multiclase.md"
   "docs/revision-visibilidad-clinica-por-sistema.md"
   "docs/revision-prueba-manual-visibilidad-multiclase.md"
+  "docs/revision-pendientes-relevancia.md"
+  "docs/revision-pendientes-relevancia-resultado.md"
+  "docs/revision-dosis-duracion-medicacion.md"
 )
 
 for doc_abs in "$REPO_ROOT"/docs/*.md; do

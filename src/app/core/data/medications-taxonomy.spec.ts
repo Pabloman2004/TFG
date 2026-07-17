@@ -8,6 +8,18 @@ describe('DRUG_CATEGORIES — cobertura del catálogo', () => {
     DRUG_CATEGORIES.flatMap(cat => cat.groups.flatMap(g => g.drugs)),
   );
 
+  it('el tab antibioticos se rotula Antiinfecciosos', () => {
+    const tab = DRUG_CATEGORIES.find(cat => cat.id === 'antibioticos');
+    expect(tab?.label).toBe('Antiinfecciosos');
+  });
+
+  it('ningún grupo declara additionalCategories', () => {
+    const withExtra = DRUG_CATEGORIES.flatMap(cat =>
+      cat.groups.filter(group => 'additionalCategories' in group),
+    );
+    expect(withExtra).toEqual([]);
+  });
+
   it('Lidocaína parche es seleccionable en algún grupo (STOPP-L4 la requiere)', () => {
     expect(groupedDrugs.has('Lidocaína parche')).toBe(true);
   });

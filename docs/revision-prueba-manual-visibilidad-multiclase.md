@@ -76,8 +76,8 @@ corregir los BUG confirmados mediante TDD.
   `ANTIBIOTICO_URINARIO`; ahora usa `ANTIBIOTICO`, igual que su lógica.
 - **Antipalúdicos — BUG corregido:** Quinina existía, pero el grupo unitario
   quedaba oculto en su tab principal.
-- **DUDA pendiente:** decidir si el tab Antibióticos debe renombrarse a
-  Antiinfecciosos. No se modifica en esta ronda.
+- **Renombrado resuelto en ronda posterior:** el tab `antibioticos` se rotula
+  «Antiinfecciosos».
 
 ### 3. Tamoxifeno y unitarios
 

@@ -28,6 +28,7 @@ const relevanceWith = (
   classesByTab: new Map(Object.entries(classesByTab).map(([k, v]) => [k, new Set(v)])),
   specificClassesByTab: new Map(Object.entries(specificClassesByTab).map(([k, v]) => [k, new Set(v)])),
   dxsByTab: new Map(),
+  specificDxsByTab: new Map(),
 });
 
 const engineStubWithRelevance = (relevance: Relevance) => ({

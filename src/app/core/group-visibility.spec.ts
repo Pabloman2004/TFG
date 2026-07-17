@@ -38,6 +38,7 @@ const makeRelevance = (
   classesByTab: toClassMap(classesByTab),
   specificClassesByTab: toClassMap(specificClassesByTab),
   dxsByTab: new Map(),
+  specificDxsByTab: new Map(),
 });
 
 const TABS: DiagnosisTab[] = [
@@ -62,6 +63,7 @@ const makeDxRelevance = (dxsByTab: Record<string, string[]>): Relevance => ({
   classesByTab: new Map(),
   specificClassesByTab: new Map(),
   dxsByTab: new Map(Object.entries(dxsByTab).map(([k, v]) => [k, new Set(v)])),
+  specificDxsByTab: new Map(Object.entries(dxsByTab).map(([k, v]) => [k, new Set(v)])),
 });
 
 // ─── computeMedGroupBuckets ────────────────────────────────────────────────────
@@ -172,7 +174,7 @@ describe('computeMedGroupBuckets', () => {
     const categories: DrugCategory[] = [
       {
         id: 'antibioticos',
-        label: 'Antibióticos',
+        label: 'Antiinfecciosos',
         groups: [{
           id: 'generales',
           label: 'Antibióticos generales',
@@ -433,6 +435,17 @@ describe('computeDxGroupBuckets', () => {
 
   it('no incluye diagnósticos ya presentes en ownGroups', () => {
     const rel = makeDxRelevance({ cardio: ['hipertension_arterial'] });
+    const result = computeDxGroupBuckets(TABS[0], TABS, rel);
+    expect(result.foreignRelevant.length).toBe(0);
+  });
+
+  it('no muestra como foráneos diagnósticos solo presentes en dxsByTab (vía transversal)', () => {
+    const rel: Relevance = {
+      classesByTab: new Map(),
+      specificClassesByTab: new Map(),
+      dxsByTab: new Map([['cardio', new Set(['demencia'])]]),
+      specificDxsByTab: new Map(),
+    };
     const result = computeDxGroupBuckets(TABS[0], TABS, rel);
     expect(result.foreignRelevant.length).toBe(0);
   });
