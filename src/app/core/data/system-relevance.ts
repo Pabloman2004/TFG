@@ -7,6 +7,7 @@
 // esa clase es relevante para el tab "cardiovascular" aunque pertenezca a otro tab.
 
 import { Crit, JsonLogicRule } from '../types';
+import { DIAGNOSIS_GROUPS, DIAGNOSIS_MAP, slug } from './diagnoses';
 
 export const TRANSVERSAL = '*';
 
@@ -47,6 +48,12 @@ export interface Relevance {
   readonly specificClassesByTab: ReadonlyMap<TabId, ReadonlySet<string>>;
   /** tabId → set de códigos de diagnóstico referenciados por criterios relevantes a ese tab */
   readonly dxsByTab: ReadonlyMap<TabId, ReadonlySet<string>>;
+  /**
+   * tabId → set de códigos de diagnóstico referenciados por criterios cuyo `system`
+   * mapea ESPECÍFICAMENTE a ese tab (excluye la expansión transversal/comodín).
+   * Usado para el bloque «Relevantes de otros sistemas» en diagnósticos.
+   */
+  readonly specificDxsByTab: ReadonlyMap<TabId, ReadonlySet<string>>;
 }
 
 export const resolveTabsForSystem = (system: string | undefined): readonly TabId[] =>
@@ -56,6 +63,11 @@ interface Refs {
   readonly classes: Set<string>;
   readonly dxs: Set<string>;
 }
+
+const addEgfrBelowDiagnoses = (threshold: number, acc: Refs): void => {
+  if (threshold >= 30) acc.dxs.add('enfermedad_renal_grave');
+  if (threshold >= 15) acc.dxs.add('insuficiencia_renal_terminal');
+};
 
 const walk = (node: unknown, acc: Refs): void => {
   if (!node || typeof node !== 'object') return;
@@ -78,6 +90,10 @@ const walk = (node: unknown, acc: Refs): void => {
       acc.dxs.add(v[0]);
       continue;
     }
+    if (k === 'egfrBelow' && Array.isArray(v) && typeof v[0] === 'number') {
+      addEgfrBelowDiagnoses(v[0], acc);
+      continue;
+    }
     walk(v, acc);
   }
 };
@@ -97,6 +113,26 @@ const addTo = <K, V>(m: Map<K, Set<V>>, key: K, value: V): void => {
   bucket.add(value);
 };
 
+const DX_HOME_TAB_BY_CODE: ReadonlyMap<string, TabId> = (() => {
+  const map = new Map<string, TabId>();
+  for (const [label, system] of Object.entries(DIAGNOSIS_GROUPS)) {
+    const code = DIAGNOSIS_MAP[label] ?? slug(label);
+    map.set(code, slug(system));
+  }
+  return map;
+})();
+
+const tabsForDiagnosis = (
+  dxCode: string,
+  targets: readonly TabId[],
+  effectiveTabs: readonly TabId[],
+): readonly TabId[] => {
+  if (targets.length <= 1) return effectiveTabs;
+  const home = DX_HOME_TAB_BY_CODE.get(dxCode);
+  if (home && targets.includes(home)) return [home];
+  return effectiveTabs;
+};
+
 /**
  * Construye el índice de relevancia a partir de los criterios.
  * @param criteria  Criterios cargados de criteria.json.
@@ -112,6 +148,7 @@ export const buildRelevance = (
   const classesByTab = new Map<TabId, Set<string>>();
   const specificClassesByTab = new Map<TabId, Set<string>>();
   const dxsByTab = new Map<TabId, Set<string>>();
+  const specificDxsByTab = new Map<TabId, Set<string>>();
 
   for (const c of criteria) {
     const targets = resolveTabsForSystem(c.system);
@@ -126,15 +163,23 @@ export const buildRelevance = (
 
     for (const tab of effectiveTabs) {
       refs.classes.forEach(cls => addTo(classesByTab, tab, cls));
-      refs.dxs.forEach(dx => addTo(dxsByTab, tab, dx));
+    }
+
+    for (const dx of refs.dxs) {
+      const dxTabs = tabsForDiagnosis(dx, targets, effectiveTabs);
+      dxTabs.forEach(tab => addTo(dxsByTab, tab, dx));
     }
 
     if (!isTransversal) {
       for (const tab of targets) {
         refs.classes.forEach(cls => addTo(specificClassesByTab, tab, cls));
       }
+      for (const dx of refs.dxs) {
+        const dxTabs = tabsForDiagnosis(dx, targets, targets);
+        dxTabs.forEach(tab => addTo(specificDxsByTab, tab, dx));
+      }
     }
   }
 
-  return { classesByTab, specificClassesByTab, dxsByTab };
+  return { classesByTab, specificClassesByTab, dxsByTab, specificDxsByTab };
 };

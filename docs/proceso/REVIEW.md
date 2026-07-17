@@ -80,11 +80,8 @@ Este fichero solo reporta: no se ha corregido nada de lo listado.
 
 11. **Duplicación de grupos en `medications-taxonomy.ts` sin estrategia
     uniforme.** Grupos repetidos a mano en varias categorías (`diur_asa`,
-    `antag_aldo`, `isglt2`, `opioides`…) conviven con el mecanismo
-    `additionalCategories`, que además **se declara y asigna pero no tiene
-    consumidor visible** en la construcción de `DRUG_CATEGORIES`. Editar un
-    grupo en una categoría y olvidar su copia produce desincronías.
-    *(analysis/core-data.md)*
+    `antag_aldo`, `isglt2`, `opioides`…). Editar un grupo en una categoría y
+    olvidar su copia produce desincronías. *(analysis/core-data.md)*
 
 12. **Componente raíz duplicado: `App` (stub) vs `AppComponent` (real).**
     `main.ts` arranca `AppComponent`; `src/app/app.ts`, `app.html`, `app.css`

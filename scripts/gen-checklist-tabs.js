@@ -18,7 +18,9 @@ for (const m of medsSrc.matchAll(/\{\s*id:\s*"([^"]+)",\s*drugClasses:\s*\[([^\]
 }
 const byClass = (dc) => MED_BY_CLASS[dc] || [];
 
-// Estructura espejo de medications-taxonomy.ts (solo drugClass + additionalCategories)
+// Estructura espejo de medications-taxonomy.ts (solo drugClass; el tab primario
+// es el único que anota aquí — la visibilidad cruzada real la calcula
+// group-visibility.ts por intersección de clases, no un campo estático).
 const RAW_DRUG_CATEGORIES = [
   { id: 'cardiovascular', label: 'Cardiovascular', groups: [
     { drugs: byClass('BETABLOQUEANTE') }, { drugs: byClass('IECA') }, { drugs: byClass('ARA2') },
@@ -34,79 +36,74 @@ const RAW_DRUG_CATEGORIES = [
     { drugs: byClass('ANTIAGREGANTE') },
   ]},
   { id: 'snc', label: 'SNC', groups: [
-    { drugs: byClass('ISRS'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('ISRS') },
     { drugs: byClass('ISRN') },
-    { drugs: byClass('ANTIDEPRESIVO_TRICICLICO'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('ANTIDEPRESIVO_TRICICLICO') },
     { drugs: byClass('BENZODIACEPINA') }, { drugs: byClass('HIPNOTICO_Z') },
-    { drugs: byClass('NEUROLEPTICO'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('NEUROLEPTICO') },
     { drugs: byClass('ANTIEPILÉPTICO') }, { drugs: byClass('GABAPENTINOIDE') },
     { drugs: byClass('INHIBIDOR_ACETILCOLINESTERASA') }, { drugs: byClass('ANTIDEMENCIA') },
-    { drugs: byClass('ESTABILIZADOR_ANIMO'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('ESTABILIZADOR_ANIMO') },
     { drugs: [...byClass('DOPAMINERGICO'), ...byClass('AGONISTA_DOPAMINERGICO')] },
     { drugs: byClass('ANTIPARKINSONIAN_ANTICOLINERGICO') }, { drugs: byClass('OPIOIDE') },
   ]},
   { id: 'renal', label: 'Renal', groups: [
     { drugs: byClass('EPO') }, { drugs: byClass('QUELANTE_FOSFORO') }, { drugs: byClass('VITAMINA_D') },
     { drugs: byClass('CALCIO') }, { drugs: byClass('HIERRO_ORAL') },
-    { drugs: byClass('HIERRO_IV'), additionalCategories: ['cardiovascular'] },
-    { drugs: byClass('DIURETICO_AHORRADOR_POTASIO'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('HIERRO_IV') },
+    { drugs: byClass('DIURETICO_AHORRADOR_POTASIO') },
     { drugs: byClass('DIURETICO_ASA') }, { drugs: byClass('ANTAGONISTA_ALDOSTERONA') },
     { drugs: byClass('IECA') }, { drugs: byClass('ARA2') }, { drugs: byClass('ISGLT2') },
   ]},
   { id: 'gastrointestinal', label: 'Gastrointestinal', groups: [
     { drugs: byClass('IBP') }, { drugs: byClass('LAXANTE') }, { drugs: byClass('PROCINETICO') },
-    { drugs: byClass('ANTIEMETICO_5HT3'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('ANTIEMETICO_5HT3') },
     { drugs: byClass('PROBIOTICO') }, { drugs: byClass('FIBRA') }, { drugs: byClass('ANTIESPASMÓDICO') },
   ]},
   { id: 'respiratorio', label: 'Respiratorio', groups: [
     { drugs: byClass('LAMA') }, { drugs: byClass('LABA') }, { drugs: byClass('CORTICOIDE_INHALADO') },
     { drugs: byClass('METILXANTINA') }, { drugs: byClass('ANTIHISTAMINICO_1GEN') },
-    { drugs: byClass('CORTICOIDE_SISTEMICO'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('CORTICOIDE_SISTEMICO') },
   ]},
   { id: 'endocrino', label: 'Endocrino/Metabólico', groups: [
     { drugs: byClass('SULFONILUREA') }, { drugs: byClass('TIAZOLIDINDIONA') }, { drugs: byClass('BIGUANIDA') },
     { drugs: byClass('HORMONA_TIROIDEA') },
-    { drugs: byClass('ESTATINA'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('ESTATINA') },
     { drugs: byClass('INHIBIDOR_XANTINA_OXIDASA') }, { drugs: byClass('CORTICOIDE_SISTEMICO') },
     { drugs: byClass('ACIDO_FOLICO') }, { drugs: byClass('ISGLT2') },
   ]},
   { id: 'urologico', label: 'Urológico', groups: [
     { drugs: byClass('ALFABLOQUEANTE') }, { drugs: byClass('ALFABLOQUEANTE_PROSTATICO') },
     { drugs: byClass('INHIBIDOR_5ALFA_REDUCTASA') }, { drugs: byClass('ANTIESPASMÓDICO_URINARIO') },
-    { drugs: byClass('AGONISTA_BETA3'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('AGONISTA_BETA3') },
     { drugs: byClass('ESTROGENO_TOPICO') },
-    { drugs: byClass('INHIBIDOR_PDE5'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('INHIBIDOR_PDE5') },
   ]},
   { id: 'osteo', label: 'Osteo/Músculo-esq.', groups: [
     { drugs: byClass('BIFOSFONATO') }, { drugs: byClass('ANTIRRESORTIVO') }, { drugs: byClass('ANABOLIZANTE_OSEO') },
     { drugs: byClass('COLCHICINA') }, { drugs: byClass('FAME') },
-    { drugs: byClass('RELAJANTE_MUSCULAR'), additionalCategories: ['cardiovascular'] },
-    { drugs: byClass('AINE'), additionalCategories: ['cardiovascular'] },
+    { drugs: byClass('RELAJANTE_MUSCULAR') },
+    { drugs: byClass('AINE') },
     { drugs: byClass('ANALGESICO_SIMPLE') }, { drugs: byClass('OPIOIDE') }, { drugs: byClass('GABAPENTINOIDE') },
     { drugs: byClass('ANTIDEPRESIVO_TRICICLICO') },
   ]},
-  { id: 'antibioticos', label: 'Antibióticos', groups: [
-    { drugs: byClass('QUINOLONA'), additionalCategories: ['cardiovascular'] },
-    { drugs: byClass('MACROLIDO'), additionalCategories: ['cardiovascular'] },
+  { id: 'antibioticos', label: 'Antiinfecciosos', groups: [
+    { drugs: byClass('QUINOLONA') },
+    { drugs: byClass('MACROLIDO') },
     { drugs: byClass('ANTIBIOTICO_URINARIO') },
     { drugs: { list: ['Amoxicilina', 'Amoxicilina/Clavulánico', 'Cefalexina', 'Doxiciclina', 'Trimetoprim/Sulfametoxazol'] } },
   ]},
 ];
 
-const CAT_LABEL = Object.fromEntries(RAW_DRUG_CATEGORIES.map(c => [c.id, c.label]));
 const MED_TABS = new Map();
 const MED_GROUP_SIZE = new Map();
 
 for (const cat of RAW_DRUG_CATEGORIES) {
   for (const g of cat.groups) {
     const drugs = g.drugs?.list ?? g.drugs ?? [];
-    const tabLabels = new Set([cat.label]);
-    for (const addId of g.additionalCategories || []) {
-      if (CAT_LABEL[addId]) tabLabels.add(CAT_LABEL[addId]);
-    }
     for (const drug of drugs) {
       if (!MED_TABS.has(drug)) MED_TABS.set(drug, new Set());
-      for (const t of tabLabels) MED_TABS.get(drug).add(t);
+      MED_TABS.get(drug).add(cat.label);
       MED_GROUP_SIZE.set(drug, drugs.length);
     }
   }
@@ -275,8 +272,8 @@ function buildMarkdown(filterSystem = null) {
     md += `## Índice rápido — tabs de medicamentos\n\n| Tab | Contenido principal |\n|-----|---------------------|\n`;
     md += `| Cardiovascular | Betabloqueantes, IECA, ARA-II, diuréticos, antiarrítmicos, digoxina, iSGLT2… |\n`;
     md += `| Anticoagulantes | AVK, AODs, antiagregantes |\n`;
-    md += `| SNC | ISRS, tricíclicos, BZD, neurolépticos, opioides… (+ Cardiovascular si additionalCategories) |\n`;
-    md += `| Renal, GI, Respiratorio, Endocrino/Metabólico, Urológico, Osteo/Músculo-esq., Antibióticos | Ver taxonomy |\n`;
+    md += `| SNC | ISRS, tricíclicos, BZD, neurolépticos, opioides… |\n`;
+    md += `| Renal, GI, Respiratorio, Endocrino/Metabólico, Urológico, Osteo/Músculo-esq., Antiinfecciosos | Ver taxonomy |\n`;
     md += `| Otros | Fármacos huérfanos o grupos unitarios no aflorados |\n\n`;
     md += `## Índice rápido — tabs de diagnósticos\n\n`;
     md += `Tabs propios: Cardiovascular, Neurológico, Psiquiátrico, Renal, Metabólico, Endocrino, Gastrointestinal, Respiratorio, Urológico, Ginecológico, Reumatológico, Hematológico.\n\n`;

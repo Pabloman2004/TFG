@@ -73,7 +73,8 @@ Reglas para el agente:
 
 - #8 REVIEW: unificar MedsStepComponent/DiagnosisStepComponent (~800 líneas CSS duplicadas) — refactor grande, planificar aparte con su propio workflow.
 - #10: los tres effect() encadenados con allowSignalWrites — revisar diseño reactivo aparte; tocarlo a ciegas es arriesgado.
-- #11: estrategia de duplicación en medications-taxonomy y el additionalCategories sin consumidor — requiere decisión de diseño del autor.
+- #11a (resuelto): `additionalCategories` sin consumidor — eliminado del taxonomy, del espejo en `scripts/gen-checklist-tabs.js` y cubierto por test de regresión en `medications-taxonomy.spec.ts`. La visibilidad cruzada sigue siendo por intersección de clases (`group-visibility.ts`).
+- #11b: estrategia de duplicación física de grupos en medications-taxonomy (`diur_asa`, `antag_aldo`, `isglt2`…) — sigue pendiente, requiere decisión de diseño del autor.
 - #16: separar estado UI/dominio en CaseStoreService — refactor estructural.
 - #26: sexo binario hardcodeado — decisión de producto/datos.
 - #28: ancho fijo 590px — decisión de diseño visual.

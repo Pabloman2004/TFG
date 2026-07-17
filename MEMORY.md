@@ -56,7 +56,7 @@ Sustituido el mapa manual `cardiovascular-dx-dependencies.ts` por derivación de
 - **Relevancia automática**: derivada al cargar `criteria.json` en `CriteriaEngineService` vía `buildRelevance(criteria, allTabIds)` (módulo nuevo `src/app/core/data/system-relevance.ts`). NO se mantiene a mano.
 - **Mapping `SYSTEM_TO_TABS` con arrays** (opción B): un mismo sistema clínico puede mapear a varios tabs (cubre tanto el espacio de medicaciones como el de diagnósticos).
 - **Sistemas transversales** (`Analgésicos`, `Riesgo de caídas`, `Carga antimuscarínica/anticolinérgica`, `Indicación de la medicación`) expanden a `allTabIds`.
-- **Eliminado** el concepto `additionalCategories` (campo manual obsoleto). Pendiente borrarlo del taxonomy si quedan rastros.
+- **Eliminado** el concepto `additionalCategories` (campo manual obsoleto), incluidos los rastros en `medications-taxonomy.ts` y en el espejo de `scripts/gen-checklist-tabs.js`.
 - **Deduplicación en buckets**: la taxonomía duplica grupos en varias categorías (p.ej. `isglt2` en cardiovascular/renal/endocrino). El `groupBuckets()` computed mantiene Sets `ownClasses` y `seenForeign` para no repetir clases.
 - **Divisor visual entre buckets**: estilo fieldset-legend con `::before/::after` y `<span class="bucket-divider-label">`. Aplicado en meds-step y diagnosis-step.
 - **Mismo patrón en ambos steps**: lo que aplica a `meds-step` aplica a `diagnosis-step` (foreign dxs van con id `foreign__${tabId}` para que la lógica de "Otro" y `customDx` los ignore).

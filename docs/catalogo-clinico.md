@@ -89,11 +89,9 @@ exporta `DRUG_CATEGORIES` (ordenado alfabéticamente dentro de cada categoría c
 Los grupos usan `byClass(dc)` para derivar su lista de fármacos desde `MEDICATIONS`, garantizando
 que el catálogo y la taxonomía estén siempre en sincronía para las clases declaradas.
 
-El campo `additionalCategories?: string[]` en `DrugGroup` anota en qué otras categorías podría
-mostrarse un grupo (p.ej. ISRS en `cardiovascular`), pero **el código de construcción de
-`DRUG_CATEGORIES` no lo procesa**: queda como metadato. La visibilidad clínica cruzada se calcula
-en `group-visibility.ts` comparando todas las `drugClasses` de cada medicamento con las clases
-relevantes del tab y filtrando el grupo foráneo al subconjunto coincidente.
+La visibilidad clínica cruzada se calcula en `group-visibility.ts` comparando todas las
+`drugClasses` de cada medicamento con las clases relevantes del tab y filtrando el grupo
+foráneo al subconjunto coincidente. No existe un campo manual de categorías adicionales.
 
 ### Dependencias de diagnósticos (`dx-dependencies.ts`)
 
@@ -123,7 +121,6 @@ de las clases declaradas (o coincide por id). Esta función es consumida por
   tiene que coincidir con la clase específica usada por un criterio. Algunos grupos se duplican
   físicamente como grupos propios (p.ej. `diur_asa` en Cardiovascular y Renal), mientras que los
   grupos foráneos se derivan por la intersección de clases de sus medicamentos.
-  `additionalCategories` continúa como documentación de intención y no gobierna la visibilidad.
 
 - **`DIAGNOSIS_SUBGROUPS` es transversal**: `buildGroupsForSystem` admite subgrupos en cualquier
   sistema. Se usa extensamente en Cardiovascular y de forma dirigida en Neurológico para mantener
@@ -246,7 +243,7 @@ de familia con radio-behavior antes de los diagnósticos planos.
 |---|---|
 | Añadir/renombrar un diagnóstico | `DIAGNOSIS_GROUPS`, `DIAGNOSIS_MAP`, y opcionalmente `DIAGNOSIS_SUBGROUPS`. Si el diagnóstico aparece en `criteria.json`, la clave debe coincidir. Actualizar este doc. |
 | Añadir un nuevo fármaco | `MEDICATIONS` (con sus `drugClasses`). Verificar que las clases declaradas ya existen en `medications-taxonomy.ts`; si no, añadir un nuevo grupo o categoría allí también. |
-| Añadir/cambiar un grupo en `DRUG_CATEGORIES` | Comprobar si el grupo debe aparecer en varias categorías y decidir la estrategia (duplicado físico o `additionalCategories`). Si se usa la segunda estrategia, actualizar el consumidor si lo hay. |
+| Añadir/cambiar un grupo en `DRUG_CATEGORIES` | Si debe aparecer en varias categorías, duplicarlo físicamente o confiar en la intersección de clases de `group-visibility.ts`. |
 | Añadir una excepción de dependencia nueva | `DX_DEPENDENCIES_OVERRIDES` + spec `dx-dependencies.spec.ts`. Verificar que la clase o id declarado existe en `MEDICATIONS`. |
 | Cambiar el orden de tabs o añadir un sistema nuevo al orden prioritario | `TAB_ORDER` en `diagnoses-taxonomy.ts`. |
 | Mover un sistema de `OTROS_SYSTEMS` a tab propio (o viceversa) | `OTROS_SYSTEMS` y `OTROS_GROUP_ORDER` en `diagnoses-taxonomy.ts`. |
@@ -264,8 +261,6 @@ Tests relacionados:
 
 ## Asunciones
 
-- `additionalCategories` en `DrugGroup` se conserva como documentación histórica de intención. La
-  visibilidad cruzada efectiva se deriva del catálogo multiclase y del índice de relevancia.
 - No se ha confirmado si la ausencia de `DIAGNOSIS_SUBGROUPS` fuera de Cardiovascular es una
   limitación pendiente o una decisión de diseño definitiva.
 - El script `scripts/audit-criteria.cjs` se asume que valida la consistencia entre los catálogos

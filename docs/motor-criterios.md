@@ -149,21 +149,23 @@ catálogo a uno o más tabs de la UI:
   usan el marcador `TRANSVERSAL = '*'` y se expanden a todos los tabs conocidos.
 
 `buildRelevance(criteria, allTabIds)` recorre cada criterio, extrae mediante
-`extractReferences` las clases farmacológicas (`inDrugClass`) y códigos de
-diagnóstico (`in [code, {var:"diagnoses"}]`) referenciados en la lógica, une las
-clases declaradas en `relevance.medicationClasses`, y acumula el resultado en
-los mapas `classesByTab` / `dxsByTab` (con la expansión transversal incluida).
-E1, F2 y F4 usan este metadato para Digoxina, IBP y hierro oral respectivamente.
-`excludes` no se consulta para construir el índice.
+`extractReferences` las clases farmacológicas (`inDrugClass`), códigos de
+diagnóstico (`in [code, {var:"diagnoses"}]`) y los sustitutos diagnósticos de
+`egfrBelow` (umbrales ≥30 → `enfermedad_renal_grave`; ≥15 →
+`insuficiencia_renal_terminal`), une las clases declaradas en
+`relevance.medicationClasses`, y acumula el resultado en los mapas
+`classesByTab` / `dxsByTab` (con la expansión transversal incluida para clases
+y, para diagnósticos, acotada al tab de origen cuando el sistema mapea a varios
+tabs y el diagnóstico pertenece a uno de ellos). E1, F2 y F4 usan el metadato
+explícito para Digoxina, IBP y hierro oral respectivamente. `excludes` no se
+consulta para construir el índice.
 
-Además acumula `specificClassesByTab`: las clases referenciadas por criterios
-cuyo `system` mapea **específicamente** a un tab (los transversales NO se vuelcan
-aquí). Es un subconjunto de `classesByTab` que conserva la procedencia perdida en
-la expansión transversal. Lo consume `computeMedGroupBuckets` para decidir el
-afloramiento de grupos **unitarios**, que no debe dispararse por relevancia
-transversal/comodín (p. ej. paracetamol vía `"Analgésicos"`). El resto de la
-lógica (bucket "Relevantes de otros sistemas" de grupos multi-fármaco, gating de
-diagnósticos) sigue usando `classesByTab` completo.
+Además acumula `specificClassesByTab` y `specificDxsByTab`: referencias de
+criterios cuyo `system` mapea **específicamente** a un tab (los transversales NO
+se vuelcan aquí). `computeMedGroupBuckets` usa `specificClassesByTab` para el
+afloramiento de grupos **unitarios**; `computeDxGroupBuckets` usa
+`specificDxsByTab` para el bloque «Relevantes de otros sistemas» de diagnósticos.
+El bucket foráneo de grupos multi-fármaco sigue usando `classesByTab` completo.
 
 El signal `CriteriaEngineService.relevance` se actualiza una sola vez, tras
 la primera carga del catálogo.

@@ -197,7 +197,7 @@ export function computeDxGroupBuckets(
     for (const dx of g.diagnoses) ownDxCodes.add(normalizeDiagnosis(dx));
   }
 
-  const relevantDxs = relevance?.dxsByTab.get(tab.id) ?? new Set<string>();
+  const relevantDxs = relevance?.specificDxsByTab.get(tab.id) ?? new Set<string>();
   if (relevantDxs.size === 0) return { ownGroups: tab.groups, foreignRelevant: [] };
 
   const seen = new Set<string>(ownDxCodes);

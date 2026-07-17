@@ -41,8 +41,8 @@ familias de variantes de diagnóstico mutuamente excluyentes (P15).
 
 **Debe cubrir**: mapas de diagnósticos y su normalización (snake_case,
 `grupo__sufijo`), catálogo de fármacos y clases farmacológicas, construcción
-de `DIAGNOSIS_TABS` / `DRUG_CATEGORIES`, duplicación de grupos vs
-`additionalCategories`, `isDiagnosisEnabled`, y la sección P15 de variantes
+de `DIAGNOSIS_TABS` / `DRUG_CATEGORIES`, duplicación física de grupos cuando
+hace falta, `isDiagnosisEnabled`, y la sección P15 de variantes
 (`DIAGNOSIS_VARIANT_FAMILIES`, `applyMutex`, `partitionGroupDiagnoses`).
 
 ### Ficheros que enlazan
@@ -232,6 +232,13 @@ Ficheros que NO llevan `@linked`, con motivo:
 - `docs/revision-prueba-manual-visibilidad-multiclase.md` — informe de la ronda
   de prueba manual; las reglas vigentes se consolidan en los documentos de
   motor, catálogo y flujo.
+- `docs/revision-pendientes-relevancia.md` — manifiesto de la ronda de
+  relevancia diagnóstica y taxonomía; el comportamiento queda en
+  `motor-criterios.md` y `catalogo-clinico.md`.
+- `docs/revision-pendientes-relevancia-resultado.md` — informe de cierre de
+  esa ronda.
+- `docs/revision-dosis-duracion-medicacion.md` — manifiesto de revisión sobre
+  captura de dosis/duración; no es fuente de verdad del motor.
 - `docs/STOPP_START_CRITERIOS_CONTEXTO.md` — referencia clínica estática;
   no requiere `@linked` desde código.
 - `docs/dudas-raquel-pendientes.md` — notas de revisión con el tutor; no

@@ -61,6 +61,19 @@ describe('extractReferences', () => {
     expect(refs.classes.size).toBe(0);
   });
 
+  it('extrae diagnósticos sustitutos de egfrBelow según umbral', () => {
+    const at30 = extractReferences({ egfrBelow: [30, { var: '' }] });
+    expect(at30.dxs.has('enfermedad_renal_grave')).toBe(true);
+    expect(at30.dxs.has('insuficiencia_renal_terminal')).toBe(true);
+
+    const at20 = extractReferences({ egfrBelow: [20, { var: '' }] });
+    expect(at20.dxs.has('enfermedad_renal_grave')).toBe(false);
+    expect(at20.dxs.has('insuficiencia_renal_terminal')).toBe(true);
+
+    const at10 = extractReferences({ egfrBelow: [10, { var: '' }] });
+    expect(at10.dxs.size).toBe(0);
+  });
+
   it('ignora in[code, {var: medications}] (referencias a meds individuales)', () => {
     const refs = extractReferences({ in: ['Digoxina', { var: 'medications' }] });
     expect(refs.classes.size).toBe(0);
@@ -151,6 +164,80 @@ describe('buildRelevance', () => {
         .toBe(true);
     }
     expect(rel.specificClassesByTab.size).toBe(0);
+    expect(rel.specificDxsByTab.size).toBe(0);
+  });
+
+  it('no incluye diagnósticos transversales en specificDxsByTab', () => {
+    const allTabs = ['cardiovascular', 'renal'];
+    const rel = buildRelevance(
+      [
+        crit({
+          system: 'Analgésicos',
+          logic: { in: ['dolor_neuropatico', { var: 'diagnoses' }] },
+        }),
+        crit({
+          system: 'Sistema renal',
+          logic: { in: ['insuficiencia_renal', { var: 'diagnoses' }] },
+        }),
+      ],
+      allTabs,
+    );
+
+    expect(rel.specificDxsByTab.get('renal')?.has('insuficiencia_renal')).toBe(true);
+    expect(rel.specificDxsByTab.get('renal')?.has('dolor_neuropatico')).toBeFalsy();
+  });
+
+  it('indexa psicosis solo en psiquiátrico, no en neurológico', () => {
+    const rel = buildRelevance([
+      crit({
+        system: 'Sistema nervioso central',
+        logic: { in: ['psicosis', { var: 'diagnoses' }] },
+      }),
+    ]);
+
+    expect(rel.dxsByTab.get('psiquiatrico')?.has('psicosis')).toBe(true);
+    expect(rel.specificDxsByTab.get('psiquiatrico')?.has('psicosis')).toBe(true);
+    expect(rel.dxsByTab.get('neurologico')?.has('psicosis')).toBeFalsy();
+    expect(rel.specificDxsByTab.get('neurologico')?.has('psicosis')).toBeFalsy();
+  });
+
+  it('indexa vaginitis atrófica solo en ginecológico, no en urológico', () => {
+    const rel = buildRelevance([
+      crit({
+        system: 'Sistema urogenital',
+        logic: { in: ['vaginitis_atrofica', { var: 'diagnoses' }] },
+      }),
+    ]);
+
+    expect(rel.dxsByTab.get('ginecologico')?.has('vaginitis_atrofica')).toBe(true);
+    expect(rel.specificDxsByTab.get('ginecologico')?.has('vaginitis_atrofica')).toBe(true);
+    expect(rel.dxsByTab.get('urologico')?.has('vaginitis_atrofica')).toBeFalsy();
+    expect(rel.specificDxsByTab.get('urologico')?.has('vaginitis_atrofica')).toBeFalsy();
+  });
+
+  it('sigue expandiendo a todos los tabs un dx cuyo origen no está en el mapeo multi-tab', () => {
+    const rel = buildRelevance([
+      crit({
+        system: 'Sistema nervioso central',
+        logic: { in: ['insuficiencia_renal', { var: 'diagnoses' }] },
+      }),
+    ]);
+
+    expect(rel.dxsByTab.get('neurologico')?.has('insuficiencia_renal')).toBe(true);
+    expect(rel.dxsByTab.get('psiquiatrico')?.has('insuficiencia_renal')).toBe(true);
+    expect(rel.dxsByTab.get('snc')?.has('insuficiencia_renal')).toBe(true);
+  });
+
+  it('indexa en renal los diagnósticos sustitutos de egfrBelow', () => {
+    const rel = buildRelevance([
+      crit({
+        system: 'Sistema renal',
+        logic: { egfrBelow: [30, { var: '' }] },
+      }),
+    ]);
+
+    expect(rel.specificDxsByTab.get('renal')?.has('enfermedad_renal_grave')).toBe(true);
+    expect(rel.specificDxsByTab.get('renal')?.has('insuficiencia_renal_terminal')).toBe(true);
   });
 
   it('ignora criterios transversales si no se pasa allTabIds', () => {

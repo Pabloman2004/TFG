@@ -1,5 +1,5 @@
 // @linked docs/catalogo-clinico.md
-// Si cambias DRUG_CATEGORIES, grupos, additionalCategories o resolveMedicationLabel, actualiza el doc enlazado.
+// Si cambias DRUG_CATEGORIES, grupos o resolveMedicationLabel, actualiza el doc enlazado.
 
 import { MEDICATIONS } from './medications';
 
@@ -9,8 +9,6 @@ export interface DrugGroup {
   fullName?: string;
   drugs: string[];
   drugClass?: string;
-  /** Tabs adicionales (además del primario) donde debe mostrarse este grupo */
-  additionalCategories?: string[];
 }
 
 export interface DrugCategory {
@@ -61,17 +59,17 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
     label: 'SNC',
     fullName: 'Sistema nervioso central',
     groups: [
-      { id: 'isrs', label: 'ISRS', fullName: 'Inhibidores selectivos de la recaptación de serotonina', drugs: byClass('ISRS'), drugClass: 'ISRS', additionalCategories: ['cardiovascular'] },
+      { id: 'isrs', label: 'ISRS', fullName: 'Inhibidores selectivos de la recaptación de serotonina', drugs: byClass('ISRS'), drugClass: 'ISRS' },
       { id: 'isrn', label: 'IRSN', fullName: 'Inhibidores de la recaptación de serotonina y noradrenalina', drugs: byClass('ISRN'), drugClass: 'ISRN' },
-      { id: 'tricicl', label: 'Tricíclicos', fullName: 'Antidepresivos tricíclicos (amitriptilina, nortriptilina, imipramina…)', drugs: byClass('ANTIDEPRESIVO_TRICICLICO'), drugClass: 'ANTIDEPRESIVO_TRICICLICO', additionalCategories: ['cardiovascular'] },
+      { id: 'tricicl', label: 'Tricíclicos', fullName: 'Antidepresivos tricíclicos (amitriptilina, nortriptilina, imipramina…)', drugs: byClass('ANTIDEPRESIVO_TRICICLICO'), drugClass: 'ANTIDEPRESIVO_TRICICLICO' },
       { id: 'bzd', label: 'Benzodiacepinas', drugs: byClass('BENZODIACEPINA'), drugClass: 'BENZODIACEPINA' },
       { id: 'hipn_z', label: 'Hipnóticos Z', fullName: 'Hipnóticos no benzodiacepínicos (zolpidem, zopiclona, zaleplon)', drugs: byClass('HIPNOTICO_Z'), drugClass: 'HIPNOTICO_Z' },
-      { id: 'neurolep', label: 'Neurolépticos', drugs: byClass('NEUROLEPTICO'), drugClass: 'NEUROLEPTICO', additionalCategories: ['cardiovascular'] },
+      { id: 'neurolep', label: 'Neurolépticos', drugs: byClass('NEUROLEPTICO'), drugClass: 'NEUROLEPTICO' },
       { id: 'antiepilep', label: 'Antiepilépticos', drugs: byClass('ANTIEPILÉPTICO'), drugClass: 'ANTIEPILÉPTICO' },
       { id: 'gabap', label: 'Gabapentinoides', fullName: 'Gabapentinoides (gabapentina, pregabalina)', drugs: byClass('GABAPENTINOIDE'), drugClass: 'GABAPENTINOIDE' },
       { id: 'iache', label: 'Inh. acetilcolinesterasa', fullName: 'Inhibidores de la acetilcolinesterasa (donepezilo, rivastigmina, galantamina)', drugs: byClass('INHIBIDOR_ACETILCOLINESTERASA'), drugClass: 'INHIBIDOR_ACETILCOLINESTERASA' },
       { id: 'antidem', label: 'Antidemencia', fullName: 'Antidemencia / antagonistas NMDA (memantina)', drugs: byClass('ANTIDEMENCIA'), drugClass: 'ANTIDEMENCIA' },
-      { id: 'estab_anim', label: 'Estab. del ánimo', fullName: 'Estabilizadores del estado de ánimo (litio)', drugs: byClass('ESTABILIZADOR_ANIMO'), drugClass: 'ESTABILIZADOR_ANIMO', additionalCategories: ['cardiovascular'] },
+      { id: 'estab_anim', label: 'Estab. del ánimo', fullName: 'Estabilizadores del estado de ánimo (litio)', drugs: byClass('ESTABILIZADOR_ANIMO'), drugClass: 'ESTABILIZADOR_ANIMO' },
       { id: 'dopa', label: 'Dopaminérgicos', drugs: [...byClass('DOPAMINERGICO'), ...byClass('AGONISTA_DOPAMINERGICO')], drugClass: 'DOPAMINERGICO' },
       { id: 'antipark_ach', label: 'Antipark. anticolin.', fullName: 'Antiparkinsonianos anticolinérgicos (biperideno, trihexifenidilo…)', drugs: byClass('ANTIPARKINSONIAN_ANTICOLINERGICO'), drugClass: 'ANTIPARKINSONIAN_ANTICOLINERGICO' },
       { id: 'atropina', label: 'Atropina', drugs: ['Atropina'], drugClass: 'ANTICOLINERGICO' },
@@ -88,8 +86,8 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
       { id: 'vit_d', label: 'Vitamina D', drugs: byClass('VITAMINA_D'), drugClass: 'VITAMINA_D' },
       { id: 'calcio', label: 'Calcio', drugs: byClass('CALCIO'), drugClass: 'CALCIO' },
       { id: 'hierro_oral', label: 'Hierro oral', drugs: byClass('HIERRO_ORAL'), drugClass: 'HIERRO_ORAL' },
-      { id: 'hierro_iv', label: 'Hierro IV', fullName: 'Hierro intravenoso (hierro carboximaltosa, hierro sacarosa)', drugs: byClass('HIERRO_IV'), drugClass: 'HIERRO_IV', additionalCategories: ['cardiovascular'] },
-      { id: 'diur_ahorr', label: 'Diurét. ahorr. K', fullName: 'Diuréticos ahorradores de potasio (amilorida, triamtereno)', drugs: byClass('DIURETICO_AHORRADOR_POTASIO'), drugClass: 'DIURETICO_AHORRADOR_POTASIO', additionalCategories: ['cardiovascular'] },
+      { id: 'hierro_iv', label: 'Hierro IV', fullName: 'Hierro intravenoso (hierro carboximaltosa, hierro sacarosa)', drugs: byClass('HIERRO_IV'), drugClass: 'HIERRO_IV' },
+      { id: 'diur_ahorr', label: 'Diurét. ahorr. K', fullName: 'Diuréticos ahorradores de potasio (amilorida, triamtereno)', drugs: byClass('DIURETICO_AHORRADOR_POTASIO'), drugClass: 'DIURETICO_AHORRADOR_POTASIO' },
       { id: 'diur_asa', label: 'Diurét. de asa', fullName: 'Diuréticos de asa (furosemida, torasemida)', drugs: byClass('DIURETICO_ASA'), drugClass: 'DIURETICO_ASA' },
       { id: 'antag_aldo', label: 'Antag. aldosterona', fullName: 'Antagonistas de la aldosterona (espironolactona, eplerenona)', drugs: byClass('ANTAGONISTA_ALDOSTERONA'), drugClass: 'ANTAGONISTA_ALDOSTERONA' },
       { id: 'ieca', label: 'IECA', fullName: 'Inhibidores de la enzima convertidora de angiotensina', drugs: byClass('IECA'), drugClass: 'IECA' },
@@ -104,7 +102,7 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
       { id: 'ibp', label: 'IBP', fullName: 'Inhibidores de la bomba de protones (omeprazol, pantoprazol…)', drugs: byClass('IBP'), drugClass: 'IBP' },
       { id: 'laxantes', label: 'Laxantes', drugs: byClass('LAXANTE'), drugClass: 'LAXANTE' },
       { id: 'procineticos', label: 'Procinéticos', fullName: 'Procinéticos (metoclopramida)', drugs: byClass('PROCINETICO'), drugClass: 'PROCINETICO' },
-      { id: 'antiemet', label: 'Antieméticos', fullName: 'Antieméticos antagonistas 5-HT3 (ondansetrón)', drugs: byClass('ANTIEMETICO_5HT3'), drugClass: 'ANTIEMETICO_5HT3', additionalCategories: ['cardiovascular'] },
+      { id: 'antiemet', label: 'Antieméticos', fullName: 'Antieméticos antagonistas 5-HT3 (ondansetrón)', drugs: byClass('ANTIEMETICO_5HT3'), drugClass: 'ANTIEMETICO_5HT3' },
       { id: 'probioticos', label: 'Probióticos', drugs: byClass('PROBIOTICO'), drugClass: 'PROBIOTICO' },
       { id: 'fibra', label: 'Fibra', fullName: 'Suplementos de fibra dietética (plantago ovata, metilcelulosa)', drugs: byClass('FIBRA'), drugClass: 'FIBRA' },
       { id: 'antiesp', label: 'Antiespasmódicos', drugs: byClass('ANTIESPASMÓDICO'), drugClass: 'ANTIESPASMÓDICO' },
@@ -120,7 +118,7 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
       { id: 'ci_inh', label: 'Corticoides inhalados', drugs: byClass('CORTICOIDE_INHALADO'), drugClass: 'CORTICOIDE_INHALADO' },
       { id: 'metilxant', label: 'Metilxantinas', fullName: 'Metilxantinas (teofilina)', drugs: byClass('METILXANTINA'), drugClass: 'METILXANTINA' },
       { id: 'antihist1g', label: 'Antihist. 1ª gen.', fullName: 'Antihistamínicos de primera generación (difenhidramina, clorfeniramina…)', drugs: byClass('ANTIHISTAMINICO_1GEN'), drugClass: 'ANTIHISTAMINICO_1GEN' },
-      { id: 'corticoide_sist', label: 'Corticoides sistémicos', drugs: byClass('CORTICOIDE_SISTEMICO'), drugClass: 'CORTICOIDE_SISTEMICO', additionalCategories: ['cardiovascular'] },
+      { id: 'corticoide_sist', label: 'Corticoides sistémicos', drugs: byClass('CORTICOIDE_SISTEMICO'), drugClass: 'CORTICOIDE_SISTEMICO' },
     ],
   },
   {
@@ -131,15 +129,15 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
       { id: 'tzd', label: 'Tiazolidindionas', fullName: 'Tiazolidindionas (rosiglitazona, pioglitazona)', drugs: byClass('TIAZOLIDINDIONA'), drugClass: 'TIAZOLIDINDIONA' },
       { id: 'biguan', label: 'Biguanidas', fullName: 'Biguanidas (metformina)', drugs: byClass('BIGUANIDA'), drugClass: 'BIGUANIDA' },
       { id: 'tiroid', label: 'Hormona tiroidea', fullName: 'Hormona tiroidea (levotiroxina)', drugs: byClass('HORMONA_TIROIDEA'), drugClass: 'HORMONA_TIROIDEA' },
-      { id: 'estat', label: 'Estatinas', drugs: byClass('ESTATINA'), drugClass: 'ESTATINA', additionalCategories: ['cardiovascular'] },
+      { id: 'estat', label: 'Estatinas', drugs: byClass('ESTATINA'), drugClass: 'ESTATINA' },
       { id: 'ixo', label: 'Inh. xantina oxidasa', fullName: 'Inhibidores de la xantina oxidasa (alopurinol, febuxostat)', drugs: byClass('INHIBIDOR_XANTINA_OXIDASA'), drugClass: 'INHIBIDOR_XANTINA_OXIDASA' },
       { id: 'corticoide_sist', label: 'Corticoides sistémicos', drugs: byClass('CORTICOIDE_SISTEMICO'), drugClass: 'CORTICOIDE_SISTEMICO' },
       { id: 'acido_folico', label: 'Ácido fólico', drugs: byClass('ACIDO_FOLICO'), drugClass: 'ACIDO_FOLICO' },
       { id: 'isglt2', label: 'iSGLT2', fullName: 'Inhibidores del cotransportador sodio-glucosa tipo 2', drugs: byClass('ISGLT2'), drugClass: 'ISGLT2' },
       { id: 'analogo_vasopresina', label: 'Análogos de vasopresina', fullName: 'Análogos de la vasopresina (desmopresina, vasopresina)', drugs: byClass('ANALOGO_VASOPRESINA'), drugClass: 'ANALOGO_VASOPRESINA' },
       { id: 'antineoplasicos', label: 'Antineoplásicos', fullName: 'Tratamientos antineoplásicos hormonales (tamoxifeno)', drugs: byClass('ANTINEOPLASICO'), drugClass: 'ANTINEOPLASICO' },
-      { id: 'estrogenos_sist', label: 'Estrógenos sistémicos', fullName: 'Estrógenos sistémicos (estrógenos conjugados, estradiol). Relevantes en antecedente de tromboembolismo venoso o de enfermedad coronaria/vascular.', drugs: byClass('ESTROGENO'), drugClass: 'ESTROGENO', additionalCategories: ['anticoagulantes'] },
-      { id: 'androgenos', label: 'Andrógenos', fullName: 'Andrógenos sistémicos (testosterona). Relevantes en antecedente de tromboembolismo venoso o de enfermedad coronaria/vascular.', drugs: byClass('ANDROGENO'), drugClass: 'ANDROGENO', additionalCategories: ['anticoagulantes'] },
+      { id: 'estrogenos_sist', label: 'Estrógenos sistémicos', fullName: 'Estrógenos sistémicos (estrógenos conjugados, estradiol). Relevantes en antecedente de tromboembolismo venoso o de enfermedad coronaria/vascular.', drugs: byClass('ESTROGENO'), drugClass: 'ESTROGENO' },
+      { id: 'androgenos', label: 'Andrógenos', fullName: 'Andrógenos sistémicos (testosterona). Relevantes en antecedente de tromboembolismo venoso o de enfermedad coronaria/vascular.', drugs: byClass('ANDROGENO'), drugClass: 'ANDROGENO' },
     ],
   },
   {
@@ -150,9 +148,9 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
       { id: 'alfa_prost', label: 'Alfabloq. prostático', fullName: 'Alfabloqueante prostático selectivo (silodosina)', drugs: byClass('ALFABLOQUEANTE_PROSTATICO'), drugClass: 'ALFABLOQUEANTE_PROSTATICO' },
       { id: 'i5ar', label: 'Inh. 5-α reductasa', fullName: 'Inhibidores de la 5-alfa reductasa (finasterida, dutasterida)', drugs: byClass('INHIBIDOR_5ALFA_REDUCTASA'), drugClass: 'INHIBIDOR_5ALFA_REDUCTASA' },
       { id: 'anti_ve', label: 'Antiesp. urinarios', fullName: 'Antiespasmodicos urinarios / antimuscarínicos urinarios (oxibutinina, tolterodina, solifenacina)', drugs: byClass('ANTIESPASMÓDICO_URINARIO'), drugClass: 'ANTIESPASMÓDICO_URINARIO' },
-      { id: 'b3', label: 'Agonista β3', fullName: 'Agonistas beta-3 adrenérgicos (mirabegrón)', drugs: byClass('AGONISTA_BETA3'), drugClass: 'AGONISTA_BETA3', additionalCategories: ['cardiovascular'] },
+      { id: 'b3', label: 'Agonista β3', fullName: 'Agonistas beta-3 adrenérgicos (mirabegrón)', drugs: byClass('AGONISTA_BETA3'), drugClass: 'AGONISTA_BETA3' },
       { id: 'est_top', label: 'Estrógenos tópicos', fullName: 'Estrógenos tópicos vaginales (estriol, promestrieno)', drugs: byClass('ESTROGENO_TOPICO'), drugClass: 'ESTROGENO_TOPICO' },
-      { id: 'pde5', label: 'Inh. PDE5', fullName: 'Inhibidores de la fosfodiesterasa 5 (sildenafilo, tadalafilo, vardenafilo)', drugs: byClass('INHIBIDOR_PDE5'), drugClass: 'INHIBIDOR_PDE5', additionalCategories: ['cardiovascular'] },
+      { id: 'pde5', label: 'Inh. PDE5', fullName: 'Inhibidores de la fosfodiesterasa 5 (sildenafilo, tadalafilo, vardenafilo)', drugs: byClass('INHIBIDOR_PDE5'), drugClass: 'INHIBIDOR_PDE5' },
     ],
   },
   {
@@ -166,8 +164,8 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
       { id: 'colchi', label: 'Colchicina', drugs: byClass('COLCHICINA'), drugClass: 'COLCHICINA' },
       { id: 'fame', label: 'FAMEs', fullName: 'Fármacos antirreumáticos modificadores de la enfermedad (metotrexato, leflunomida…)', drugs: byClass('FAME'), drugClass: 'FAME' },
       { id: 'inmunosupresores', label: 'Inmunosupresores', fullName: 'Inmunosupresores sistémicos (ciclosporina, metotrexato)', drugs: byClass('INMUNOSUPRESOR'), drugClass: 'INMUNOSUPRESOR' },
-      { id: 'relaj_musc', label: 'Relaj. musculares', fullName: 'Relajantes musculares (tizanidina)', drugs: byClass('RELAJANTE_MUSCULAR'), drugClass: 'RELAJANTE_MUSCULAR', additionalCategories: ['cardiovascular'] },
-      { id: 'aine', label: 'AINEs', fullName: 'Antiinflamatorios no esteroideos (ibuprofeno, naproxeno, diclofenaco…)', drugs: byClass('AINE'), drugClass: 'AINE', additionalCategories: ['cardiovascular'] },
+      { id: 'relaj_musc', label: 'Relaj. musculares', fullName: 'Relajantes musculares (tizanidina)', drugs: byClass('RELAJANTE_MUSCULAR'), drugClass: 'RELAJANTE_MUSCULAR' },
+      { id: 'aine', label: 'AINEs', fullName: 'Antiinflamatorios no esteroideos (ibuprofeno, naproxeno, diclofenaco…)', drugs: byClass('AINE'), drugClass: 'AINE' },
       { id: 'paracetamol', label: 'Analgésicos simples', fullName: 'Analgésicos simples / no opioides (paracetamol)', drugs: byClass('ANALGESICO_SIMPLE'), drugClass: 'ANALGESICO_SIMPLE' },
       { id: 'opioides', label: 'Opioides', drugs: byClass('OPIOIDE'), drugClass: 'OPIOIDE' },
       { id: 'gabap', label: 'Gabapentinoides', fullName: 'Gabapentinoides (gabapentina, pregabalina)', drugs: byClass('GABAPENTINOIDE'), drugClass: 'GABAPENTINOIDE' },
@@ -177,10 +175,10 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
   },
   {
     id: 'antibioticos',
-    label: 'Antibióticos',
+    label: 'Antiinfecciosos',
     groups: [
-      { id: 'quinol', label: 'Quinolonas', fullName: 'Quinolonas / fluoroquinolonas (ciprofloxacino, levofloxacino, moxifloxacino)', drugs: byClass('QUINOLONA'), drugClass: 'QUINOLONA', additionalCategories: ['cardiovascular'] },
-      { id: 'macrol', label: 'Macrólidos', fullName: 'Macrólidos (azitromicina, claritromicina, eritromicina)', drugs: byClass('MACROLIDO'), drugClass: 'MACROLIDO', additionalCategories: ['cardiovascular'] },
+      { id: 'quinol', label: 'Quinolonas', fullName: 'Quinolonas / fluoroquinolonas (ciprofloxacino, levofloxacino, moxifloxacino)', drugs: byClass('QUINOLONA'), drugClass: 'QUINOLONA' },
+      { id: 'macrol', label: 'Macrólidos', fullName: 'Macrólidos (azitromicina, claritromicina, eritromicina)', drugs: byClass('MACROLIDO'), drugClass: 'MACROLIDO' },
       { id: 'atb_urin', label: 'Antibióticos urinarios', fullName: 'Antibióticos urinarios (nitrofurantoína)', drugs: byClass('ANTIBIOTICO_URINARIO'), drugClass: 'ANTIBIOTICO_URINARIO' },
       { id: 'antifungicos', label: 'Antifúngicos', fullName: 'Antifúngicos sistémicos (itraconazol, ketoconazol)', drugs: byClass('ANTIFUNGICO'), drugClass: 'ANTIFUNGICO' },
       { id: 'antipaludicos', label: 'Antipalúdicos', fullName: 'Antipalúdicos (quinina)', drugs: byClass('ANTIPALUDICO'), drugClass: 'ANTIPALUDICO' },
