@@ -21,11 +21,19 @@ describe('Criterios STOPP — Sección H (Sistema musculoesquelético)', () => {
     expectActive('STOPP-H2-AINE-HIPERTENSION-GRAVE', ['hipertension_grave'], [aine()]);
     expectActive('STOPP-H3-AINE-ARTRITIS-ARTROSIS', ['artrosis'], [aine()]);
     expectActive('STOPP-H4-CORTICOIDE-ARTRITIS-REUMATOIDE', ['artritis_reumatoide'], [
-      makeMed('Prednisona', ['CORTICOIDE_SISTEMICO']),
+      makeMed('Prednisona', ['CORTICOIDE_SISTEMICO'], { durationDays: 91 }),
     ]);
     expectActive('STOPP-H5-CORTICOIDE-ARTROSIS', ['artrosis'], [
       makeMed('Prednisona', ['CORTICOIDE_SISTEMICO']),
     ]);
+  });
+
+  it('H4 no dispara con corticoide ≤ 3 meses en AR', () => {
+    const c = crit('STOPP-H4-CORTICOIDE-ARTRITIS-REUMATOIDE');
+    expect(engine.evaluate(makeCase({
+      diagnoses: ['artritis_reumatoide'],
+      medications: [makeMed('Prednisona', ['CORTICOIDE_SISTEMICO'], { durationDays: 90 })],
+    }), [c])).toEqual([]);
   });
 
   it('H6 dispara con AINE o colchicina y gota recurrente', () => {

@@ -176,4 +176,20 @@ describe('MedsStepComponent — datos necesarios para criterios renales', () => 
     expect(component.medicationById('Sulfato ferroso')?.doseMgDay).toBe(201);
     expect(component.medicationById('Omeprazol')?.durationDays).toBe(57);
   });
+
+  it('guarda dosis de AAS, duración de SNC y dosis de paracetamol', () => {
+    const component = setup();
+    component.toggleDrug('Ácido acetilsalicílico');
+    component.toggleDrug('Lorazepam');
+    component.toggleDrug('Paracetamol');
+
+    component.updateMedicationNumber('Ácido acetilsalicílico', 'doseMgDay', '150');
+    component.updateMedicationNumber('Lorazepam', 'durationDays', '28');
+    component.updateMedicationNumber('Paracetamol', 'doseMgDay', '3000');
+
+    expect(component.medicationById('Ácido acetilsalicílico')?.doseMgDay).toBe(150);
+    expect(component.medicationById('Lorazepam')?.durationDays).toBe(28);
+    expect(component.medicationById('Paracetamol')?.doseMgDay).toBe(3000);
+    expect(component.durationCaptureMeds().map(m => m.id)).toContain('Lorazepam');
+  });
 });

@@ -264,6 +264,13 @@ export class MedsStepComponent implements OnInit {
     return this.store.meds().filter(medication => medication.drugClasses.includes(drugClass));
   }
 
+  durationCaptureMeds(): Med[] {
+    const classes = ['BENZODIACEPINA', 'HIPNOTICO_Z', 'NEUROLEPTICO'] as const;
+    return this.store.meds().filter(medication =>
+      classes.some(drugClass => medication.drugClasses.includes(drugClass)),
+    );
+  }
+
   updateMedicationNumber(
     id: string,
     field: 'doseMcgDay' | 'doseMgDay' | 'durationDays',

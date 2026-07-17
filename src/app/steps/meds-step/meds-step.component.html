@@ -193,6 +193,61 @@
           </section>
         }
 
+        @if (activeCategoryId() === 'anticoagulantes' && medicationsByClass('AAS').length > 0) {
+          <section class="clinical-data-panel" aria-label="Dosis de antiagregantes">
+            @for (aas of medicationsByClass('AAS'); track aas.id) {
+              <label class="clinical-field">
+                <span>{{ aas.id }} (mg/día)</span>
+                <input type="number"
+                       min="0"
+                       step="1"
+                       [value]="aas.doseMgDay ?? ''"
+                       (input)="updateMedicationNumber(aas.id, 'doseMgDay', $any($event.target).value)">
+              </label>
+            }
+          </section>
+        }
+
+        @if (activeCategoryId() === 'snc' && durationCaptureMeds().length > 0) {
+          <section class="clinical-data-panel" aria-label="Duración de tratamientos del SNC">
+            @for (med of durationCaptureMeds(); track med.id) {
+              <label class="clinical-field">
+                <span>{{ med.id }} (días)</span>
+                <input type="number"
+                       min="0"
+                       step="1"
+                       [value]="med.durationDays ?? ''"
+                       (input)="updateMedicationNumber(med.id, 'durationDays', $any($event.target).value)">
+              </label>
+            }
+          </section>
+        }
+
+        @if (activeCategoryId() === 'osteo' && (medicationsByClass('CORTICOIDE_SISTEMICO').length > 0 || medicationsByClass('ANALGESICO_SIMPLE').length > 0)) {
+          <section class="clinical-data-panel" aria-label="Dosis y duración osteomusculares">
+            @for (steroid of medicationsByClass('CORTICOIDE_SISTEMICO'); track steroid.id) {
+              <label class="clinical-field">
+                <span>{{ steroid.id }} (días)</span>
+                <input type="number"
+                       min="0"
+                       step="1"
+                       [value]="steroid.durationDays ?? ''"
+                       (input)="updateMedicationNumber(steroid.id, 'durationDays', $any($event.target).value)">
+              </label>
+            }
+            @for (analgesic of medicationsByClass('ANALGESICO_SIMPLE'); track analgesic.id) {
+              <label class="clinical-field">
+                <span>{{ analgesic.id }} (mg/día)</span>
+                <input type="number"
+                       min="0"
+                       step="1"
+                       [value]="analgesic.doseMgDay ?? ''"
+                       (input)="updateMedicationNumber(analgesic.id, 'doseMgDay', $any($event.target).value)">
+              </label>
+            }
+          </section>
+        }
+
         <!-- Drug columns -->
         <div class="cols-wrap">
 
