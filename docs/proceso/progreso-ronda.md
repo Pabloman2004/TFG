@@ -271,3 +271,31 @@
 ## 22:10 Â· resolutor-rapido Â· A15
 - estado: commiteado
 - detalle: refactor A15 commiteado; suite 692 SUCCESS; sin push.
+
+## 22:50 Â· orquestador-seccion Â· A â€” Motor de criterios
+- estado: agregando
+- detalle: A15 CORREGIDO por rÃ¡pido (d2ac74b). Suite 692 SUCCESS. Bloque rÃ¡pido cerrado (A13/A3/A6/A8/A15). Inicio profundo.
+
+## 22:50 Â· orquestador-seccion Â· A â€” Motor de criterios
+- estado: esperando-resolutor
+- detalle: A7+A14 â†’ resolutor-profundo (hereda Grok 4.5 del orquestador; slug high-fast no en allowlist Task)
+
+## 22:19 · resolutor-profundo · A7+A14
+- estado: investigando
+- detalle: Mapeando STOPP-B6/I7 y patrón de match por fármaco concreto en criteria.json/engine.
+
+## 22:22 · resolutor-profundo · A7+A14
+- estado: causa
+- detalle: Clase amplia (ANTIARITMICO/ISRN). Fix: inDrugClass(ANTIARITMICO_CLASE_III) + clase singleton DULOXETINA (patrón DIGOXINA); sin operador nuevo.
+
+## 22:25 · resolutor-profundo · A7+A14
+- estado: RED
+- detalle: 3 specs fallan (flecainida B6; venlafaxina I7; excludes I7). Positivos amiodarona/duloxetina ya verdes.
+
+## 22:28 · resolutor-profundo · A7+A14
+- estado: GREEN
+- detalle: B/I 80 SUCCESS. Lanzando suite completa.
+
+## 22:33 · resolutor-profundo · A7+A14
+- estado: listo
+- detalle: Suite 697 SUCCESS. Commits A7+A14 separados. Sin push.

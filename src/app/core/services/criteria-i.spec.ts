@@ -1,10 +1,47 @@
 import { CriteriaEngineService } from './criteria-engine.service';
 import {
   crit,
+  isrn,
   makeCase,
   makeMed,
   setupEngine,
 } from './criteria-test-helpers';
+
+describe('Criterios STOPP — Sección I (Sistema urogenital)', () => {
+  let engine: CriteriaEngineService;
+
+  beforeEach(() => { engine = setupEngine(); });
+
+  describe('I7-DULOXETINA-INCONTINENCIA-URGENCIA', () => {
+    const c = crit('STOPP-I7-DULOXETINA-INCONTINENCIA-URGENCIA');
+    const duloxetina = () => makeMed('Duloxetina', ['ISRN', 'DULOXETINA']);
+
+    it('no dispara con venlafaxina + incontinencia urinaria de urgencia', () => {
+      const p = makeCase({
+        diagnoses: ['incontinencia_urinaria_urgencia'],
+        medications: [isrn('Venlafaxina')],
+      });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('dispara con duloxetina + incontinencia urinaria de urgencia', () => {
+      const p = makeCase({
+        diagnoses: ['incontinencia_urinaria_urgencia'],
+        medications: [duloxetina()],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('excluye Duloxetina del greying cuando dispara', () => {
+      const p = makeCase({
+        diagnoses: ['incontinencia_urinaria_urgencia'],
+        medications: [duloxetina()],
+      });
+      const excluded = engine.getExcludedMedications(p, [c]);
+      expect(excluded.has('duloxetina')).toBe(true);
+    });
+  });
+});
 
 describe('Criterios START — Sección I (Sistema urogenital)', () => {
   let engine: CriteriaEngineService;

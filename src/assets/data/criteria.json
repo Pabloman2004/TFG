@@ -1056,7 +1056,8 @@
       "type": "STOPP",
       "system": "Sistema urogenital",
       "summary": "Evitar duloxetina en presencia de urgencia urinaria o incontinencia urinaria por urgencia. Está indicada en la incontinencia urinaria de esfuerzo, no en la urgencia urinaria.",
-      "logic": {"and":[{"inDrugClass":["ISRN",{"var":"medications"}]},{"in":["incontinencia_urinaria_urgencia",{"var":"diagnoses"}]}]}
+      "logic": {"and":[{"inDrugClass":["DULOXETINA",{"var":"medications"}]},{"in":["incontinencia_urinaria_urgencia",{"var":"diagnoses"}]}]},
+      "excludes": {"medications":["Duloxetina"]}
     },
     {
       "id": "STOPP-I8-ANTIBIOTICO-BACTERIURIA-ASINTOMATICA",
