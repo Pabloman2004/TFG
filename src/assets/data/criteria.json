@@ -453,7 +453,7 @@
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar ISRS en pacientes con antecedentes de hemorragia grave que utilizan anticoagulantes (AVK o ACOD). Mayor riesgo de sangrado debido a los efectos antiagregantes de los ISRS.",
-      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"in":["antecedentes_sangrado_grave",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"inDrugClass":["ISRS",{"var":"medications"}]},{"in":["antecedentes_sangrado_grave",{"var":"diagnoses"}]}]},
       "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina","Paroxetina","Fluvoxamina"],"drugClasses":["ISRS"]}
     },
     {

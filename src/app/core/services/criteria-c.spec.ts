@@ -290,6 +290,11 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
     it('no dispara con ISRS + anticoagulante sin antecedentes de sangrado', () => {
       expect(engine.evaluate(makeCase({ medications: [isrs(), anticoag()] }), [c])).toEqual([]);
     });
+
+    it('no dispara con anticoagulante + antecedentes de sangrado sin ISRS', () => {
+      const p = makeCase({ diagnoses: ['antecedentes_sangrado_grave'], medications: [anticoag()] });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
   });
 
   describe('C13-VERAPAMILO-INHIBIDORES-TROMBINA', () => {
