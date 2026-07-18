@@ -51,3 +51,27 @@
 ## 21:09 · resolutor-rapido · A2
 - estado: listo
 - detalle: suite completa 676 SUCCESS; fix A2 commiteado; sin push.
+
+## 20:58 · orquestador-seccion · A — Motor de criterios
+- estado: agregando
+- detalle: A2 CORREGIDO por rápido (97a1318). Suite 676. criteria-i.spec.ts creado (A16 lo ampliará). Siguiente A5.
+
+## 21:12 · resolutor-rapido · A5
+- estado: investigando
+- detalle: STOPP-C16 dispara con ictus_previo + AAS; faltan cardiopatia_isquemica e ictus_previo en negaciones.
+
+## 21:16 · resolutor-rapido · A5
+- estado: causa
+- detalle: negaciones incompletas en STOPP-C16; faltan cardiopatia_isquemica e ictus_previo en el and.
+
+## 21:16 · resolutor-rapido · A5
+- estado: RED
+- detalle: 2 tests C16 fallan (ictus_previo y cardiopatia_isquemica + AAS disparan indebidamente).
+
+## 21:17 · resolutor-rapido · A5
+- estado: GREEN
+- detalle: añadidas negaciones cardiopatia_isquemica e ictus_previo en STOPP-C16; suite 679 SUCCESS.
+
+## 21:17 · resolutor-rapido · A5
+- estado: listo
+- detalle: fix A5 commiteado en fix/seccion-a-motor-criterios; sin push.

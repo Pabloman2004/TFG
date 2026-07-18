@@ -379,4 +379,22 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
       expect(firedC14.map(x => x.id)).toEqual(['STOPP-C14-ACOD-INHIBIDORES-GLUCOPROTEINA-P']);
     });
   });
+
+  describe('C16-AAS-PREVENCION-PRIMARIA', () => {
+    const c = crit('STOPP-C16-AAS-PREVENCION-PRIMARIA');
+
+    it('dispara con AAS sin enfermedad cardiovascular establecida', () => {
+      expect(engine.evaluate(makeCase({ medications: [aas()] }), [c]).length).toBe(1);
+    });
+
+    it('no dispara con ictus previo + AAS (prevención secundaria)', () => {
+      const p = makeCase({ diagnoses: ['ictus_previo'], medications: [aas()] });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('no dispara con cardiopatía isquémica + AAS (prevención secundaria)', () => {
+      const p = makeCase({ diagnoses: ['cardiopatia_isquemica'], medications: [aas()] });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+  });
 });

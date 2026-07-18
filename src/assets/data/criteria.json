@@ -485,7 +485,7 @@
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar AAS en prevención primaria cardiovascular (sin enfermedad cardiovascular establecida). No hay evidencia de reducción de mortalidad y aumenta el riesgo de sangrado.",
-      "logic": {"and":[{"inDrugClass":["AAS",{"var":"medications"}]},{"!":{"in":["enfermedad_cardiovascular",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_coronaria",{"var":"diagnoses"}]}},{"!":{"in":["angina",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_cerebral",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_periferica",{"var":"diagnoses"}]}}]},
+      "logic": {"and":[{"inDrugClass":["AAS",{"var":"medications"}]},{"!":{"in":["enfermedad_cardiovascular",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_coronaria",{"var":"diagnoses"}]}},{"!":{"in":["cardiopatia_isquemica",{"var":"diagnoses"}]}},{"!":{"in":["angina",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_cerebral",{"var":"diagnoses"}]}},{"!":{"in":["ictus_previo",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_periferica",{"var":"diagnoses"}]}}]},
       "excludes": {"medications":["Ácido acetilsalicílico"],"drugClasses":["AAS"]}
     },
     {
