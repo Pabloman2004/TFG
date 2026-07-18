@@ -418,3 +418,7 @@
 ## 23:28 · resolutor-profundo · A12+A20
 - estado: listo
 - detalle: Suite 717 SUCCESS (+5 integrity). Sin push. Commiteando A12+A20.
+
+## 23:30 · resolutor-profundo · A12+A20
+- estado: listo
+- detalle: CORREGIDO 98b82bf. Suite 717 SUCCESS. Sin push. Whitelist dx solo aneurisma_aortico (renales vía egfrBelow).
