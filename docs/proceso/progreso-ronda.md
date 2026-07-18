@@ -422,3 +422,27 @@
 ## 23:30 · resolutor-profundo · A12+A20
 - estado: listo
 - detalle: CORREGIDO 98b82bf. Suite 717 SUCCESS. Sin push. Whitelist dx solo aneurisma_aortico (renales vía egfrBelow).
+
+## 00:30 · orquestador-seccion · A — Motor de criterios
+- estado: agregando
+- detalle: A12+A20 CORREGIDOS por profundo (98b82bf, b8e3e4f). Suite 717 SUCCESS. Siguiente A16 (última).
+
+## 00:30 · orquestador-seccion · A — Motor de criterios
+- estado: esperando-resolutor
+- detalle: A16 → resolutor-profundo (Grok 4.5 heredado)
+
+## 23:37 · resolutor-profundo · A16
+- estado: investigando
+- detalle: Cobertura specs I/J/K/M; inventario 12I+12J+17K+2M; ampliar i/j/k y crear criteria-m.spec.ts
+
+## 23:40 · resolutor-profundo · A16
+- estado: causa
+- detalle: Gaps: I 9/12, J 11/12, K 14/17 STOPP+3 START, M 2/2 sin spec; patrón fire/no-fire + umbrales J9/START-J1
+
+## 23:44 · resolutor-profundo · A16
+- estado: GREEN
+- detalle: criteria-i/j/k/m 107 SUCCESS (fire/no-fire + umbrales). Suite completa en marcha.
+
+## 23:45 · resolutor-profundo · A16
+- estado: listo
+- detalle: Specs I/J/K/M completas. Suite 805 SUCCESS (+88). Sin push. Commiteando test(A16).
