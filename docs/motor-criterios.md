@@ -206,6 +206,15 @@ cinco secciones:
   `digoxinaDosisAlta`, los operadores de dosis/duración y los `multiple*` encapsulan semántica clínica que json-logic
   estándar no puede expresar de forma compacta, manteniendo el JSON de criterios
   legible.
+- **Excepción por id de fármaco (STOPP-D12)**: cuando STOPP v3 exime fármacos
+  concretos dentro de una clase (quetiapina/clozapina en neurolépticos), la
+  lógica combina `inDrugClass(NEUROLEPTICO)` —para que `extractReferences` siga
+  indexando la clase— con `some` de json-logic sobre `medications` que exige un
+  neuroléptico cuyo `id` no sea `quetiapina` ni `clozapina` (tras
+  `normalizeCase`). Así quetiapina/clozapina solas no disparan, pero sí lo hace
+  cualquier otro neuroléptico o la combinación con uno no exento. Los
+  `excludes.medications` listan el resto de neurolépticos del catálogo y omiten
+  a propósito las dos excepciones (no greyan).
 - **Normalización en el servicio, no en los datos**: los criterios y el caso
   del paciente se normalizan en tiempo de evaluación; el catálogo y el estado
   de sesión se almacenan con capitalización original.

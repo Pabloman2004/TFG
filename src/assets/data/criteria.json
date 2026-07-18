@@ -628,9 +628,9 @@
       "id": "STOPP-D12-F1-NEUROLEPTICO-PARKINSON-LEWY",
       "type": "STOPP",
       "system": "Sistema nervioso central",
-      "summary": "Evitar neurolépticos (bajo olanzapina y quetiapina) en pacientes con parkinsonismo o demencia por cuerpos de Lewy. Riesgo de efectos extrapiramidales graves.",
-      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"in":["parkinsonismo",{"var":"diagnoses"}]},{"in":["demencia_cuerpos_lewy",{"var":"diagnoses"}]}]}]},
-      "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Tioridazina","Risperidona","Aripiprazol","Olanzapina"]}
+      "summary": "Evitar neurolépticos (salvo clozapina y quetiapina) en pacientes con parkinsonismo o demencia por cuerpos de Lewy. Riesgo de efectos extrapiramidales graves.",
+      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"some":[{"var":"medications"},{"and":[{"in":["neuroleptico",{"var":"drugClasses"}]},{"!":{"in":[{"var":"id"},["quetiapina","clozapina"]]}}]}]},{"or":[{"in":["parkinsonismo",{"var":"diagnoses"}]},{"in":["demencia_cuerpos_lewy",{"var":"diagnoses"}]}]}]},
+      "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Tioridazina","Proclorperazina","Risperidona","Aripiprazol","Olanzapina"]}
     },
     {
       "id": "STOPP-D13-ANTIPARKINSONIAN-ANTICOLINERGICO-NEUROLEPTICO",
