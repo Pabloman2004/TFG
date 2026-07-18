@@ -1160,7 +1160,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar benzodiacepinas en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y deteriorar el equilibrio.",
-      "logic": {"and":[{"inDrugClass":["BENZODIACEPINA",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["BENZODIACEPINA",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["BENZODIACEPINA"]}
     },
     {
@@ -1168,7 +1168,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar neurolépticos en pacientes con caídas de repetición. Pueden causar parkinsonismo inducido por fármacos.",
-      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Risperidona","Olanzapina","Quetiapina","Aripiprazol","Clozapina"],"drugClasses":["NEUROLEPTICO"]}
     },
     {
@@ -1176,7 +1176,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar vasodilatadores (nitratos, alfabloqueantes, inhibidores PDE5) en pacientes con caídas de repetición e hipotensión postural persistente. Riesgo de síncopes y caídas.",
-      "logic": {"and":[{"or":[{"inDrugClass":["NITRATO",{"var":"medications"}]},{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"inDrugClass":["INHIBIDOR_PDE5",{"var":"medications"}]}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["hipotension_ortostatica",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"or":[{"inDrugClass":["NITRATO",{"var":"medications"}]},{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"inDrugClass":["INHIBIDOR_PDE5",{"var":"medications"}]}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},{"in":["hipotension_ortostatica",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["NITRATO","ALFABLOQUEANTE","INHIBIDOR_PDE5"]}
     },
     {
@@ -1184,7 +1184,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antidepresivos tricíclicos en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y el equilibrio.",
-      "logic": {"and":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Amitriptilina","Imipramina","Nortriptilina","Clomipramina","Doxepina"],"drugClasses":["ANTIDEPRESIVO_TRICICLICO"]}
     },
     {
@@ -1192,7 +1192,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar hipnóticos-Z (zopiclona, zolpidem, zaleplon) en pacientes con caídas de repetición. Pueden causar sedación diurna prolongada y ataxia.",
-      "logic": {"and":[{"inDrugClass":["HIPNOTICO_Z",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["HIPNOTICO_Z",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["HIPNOTICO_Z"]}
     },
     {
@@ -1200,7 +1200,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antiepilépticos en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y deteriorar la función del cerebelo.",
-      "logic": {"and":[{"inDrugClass":["ANTIEPILÉPTICO",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIEPILÉPTICO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["ANTIEPILÉPTICO"]}
     },
     {
@@ -1208,7 +1208,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antihistamínicos de primera generación en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y causar sedación.",
-      "logic": {"and":[{"inDrugClass":["ANTIHISTAMINICO_1GEN",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIHISTAMINICO_1GEN",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["ANTIHISTAMINICO_1GEN"]}
     },
     {
@@ -1216,7 +1216,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar opioides en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y aumentar el riesgo de caídas.",
-      "logic": {"and":[{"inDrugClass":["OPIOIDE",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["OPIOIDE",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["OPIOIDE"]}
     },
     {
@@ -1224,7 +1224,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar ISRS e ISRN en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y deteriorar el equilibrio.",
-      "logic": {"and":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Sertralina","Fluoxetina","Citalopram","Escitalopram","Venlafaxina","Duloxetina"],"drugClasses":["ISRS","ISRN"]}
     },
     {
@@ -1232,7 +1232,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar psicotrópicos (antidepresivos, litio) en presencia de caídas de repetición. Los psicotrópicos pueden reducir el nivel de conciencia y aumentar el riesgo de caídas.",
-      "logic": {"and":[{"inDrugClass":["PSICOTROPICO",{"var":"medications"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["PSICOTROPICO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Amitriptilina","Nortriptilina","Imipramina","Clomipramina","Doxepina","Litio","Venlafaxina","Duloxetina"],"drugClasses":["ANTIDEPRESIVO_TRICICLICO","PSICOTROPICO","ISRN"]}
     },
     {
@@ -1240,7 +1240,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar bloqueantes alfa-1-adrenérgicos como antihipertensivos en pacientes con caídas de repetición. Pueden causar hipotensión ortostática y nuevas caídas.",
-      "logic": {"and":[{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["ALFABLOQUEANTE"]}
     },
     {
@@ -1248,7 +1248,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar bloqueantes alfa-1-adrenérgicos (exceptuando silodosina) para síntomas prostáticos obstructivos en pacientes con caídas de repetición. Pueden causar hipotensión ortostática.",
-      "logic": {"and":[{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["hiperplasia_benigna_prostata",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},{"in":["hiperplasia_benigna_prostata",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["ALFABLOQUEANTE"]}
     },
     {
@@ -1256,7 +1256,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antihipertensivos de acción central en pacientes con riesgo de caídas de repetición. Pueden reducir el nivel de conciencia y causar hipotensión ortostática.",
-      "logic": {"and":[{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Metildopa","Clonidina","Moxonidina","Rilmenidina","Guanfacina"],"drugClasses":["ANTIHIPERTENSIVO_CENTRAL"]}
     },
     {
@@ -1264,7 +1264,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antimuscarínicos para la vejiga hiperactiva o incontinencia urinaria de urgencia en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia.",
-      "logic": {"and":[{"inDrugClass":["ANTIESPASMÓDICO_URINARIO",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIESPASMÓDICO_URINARIO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["ANTIESPASMÓDICO_URINARIO"]}
     },
     {

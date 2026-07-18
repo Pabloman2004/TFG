@@ -330,3 +330,31 @@
 ## 22:44 Â· resolutor-profundo Â· A4
 - estado: listo
 - detalle: Suite 700 SUCCESS. Commit fix(A4) pendiente de hash. Sin push.
+
+## 22:45 Â· resolutor-profundo Â· A4
+- estado: listo
+- detalle: CORREGIDO b569b87. Suite 700 SUCCESS. Mecanismo some+id documentado en motor-criterios.md. Sin push.
+
+## 23:30 Â· orquestador-seccion Â· A â€” Motor de criterios
+- estado: agregando
+- detalle: A4 CORREGIDO por profundo (b569b87). Suite 700 SUCCESS. Siguiente A9.
+
+## 23:30 Â· orquestador-seccion Â· A â€” Motor de criterios
+- estado: esperando-resolutor
+- detalle: A9 â†’ resolutor-profundo (Grok 4.5 heredado)
+
+## 22:48 · resolutor-profundo · A9
+- estado: investigando
+- detalle: K8-PSICOTROPICO y K11 usan riesgo_caidas_repeticion; K1?K7/K4b/K8-ISRS/K9/K10/K12 usan caidas_repeticion (14 criterios).
+
+## 22:48 · resolutor-profundo · A9
+- estado: causa
+- detalle: Dos códigos de dx solapados sin or uniforme; casos con un solo código fallan en el subconjunto que usa el otro. Decisión: or de ambos, sin unificar ids.
+
+## 22:49 · resolutor-profundo · A9
+- estado: RED
+- detalle: criteria-k.spec.ts ? test de datos + casos K1/K8-PSICOTROPICO/K11 con el código alterno (4 FAILED).
+
+## 22:51 · resolutor-profundo · A9
+- estado: GREEN
+- detalle: or uniforme caidas_repeticion|riesgo_caidas_repeticion en los 14 STOPP-K. criteria-k 7 SUCCESS. Suite 707 SUCCESS.
