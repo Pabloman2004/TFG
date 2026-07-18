@@ -231,3 +231,43 @@
 ## 22:06 � resolutor-rapido � A8
 - estado: listo
 - detalle: suite 692 SUCCESS; fix A8 pendiente de commit; sin push.
+
+## 22:06 � resolutor-rapido � A8
+- estado: commiteado
+- detalle: 8f9a2b5 fix(A8): conectar prostatismo_retencion_urinaria a criterios D1 y D4; suite 692 SUCCESS; sin push.
+
+## 22:35 · orquestador-seccion · A — Motor de criterios
+- estado: agregando
+- detalle: A8 CORREGIDO por rápido (8f9a2b5). Suite 692 SUCCESS. Siguiente A15.
+
+## 22:35 · orquestador-seccion · A — Motor de criterios
+- estado: esperando-resolutor
+- detalle: A15 → resolutor-rapido (composer-2.5-fast)
+
+## 22:35 · orquestador-seccion · A — Motor de criterios
+- estado: agregando
+- detalle: A8 CORREGIDO por rápido (8f9a2b5). Suite 692 SUCCESS. Siguiente A15.
+
+## 22:35 · orquestador-seccion · A — Motor de criterios
+- estado: esperando-resolutor
+- detalle: A15 → resolutor-rapido (composer-2.5-fast)
+
+## 22:08 · resolutor-rapido · A15
+- estado: investigando
+- detalle: normalizeCriterion/normalizeLogic deep-clonan 216 criterios; claves drug_class/diagnosis ausentes en criteria.json.
+
+## 22:08 · resolutor-rapido · A15
+- estado: causa
+- detalle: codigo muerto sin efecto observable; sin RED razonable — suite existente como red de seguridad.
+
+## 22:09 · resolutor-rapido · A15
+- estado: GREEN
+- detalle: eliminados normalizeCriterion/normalizeLogic y llamadas; suite 692 SUCCESS.
+
+## 22:09 · resolutor-rapido · A15
+- estado: listo
+- detalle: refactor A15 pendiente de commit; sin push.
+
+## 22:10 · resolutor-rapido · A15
+- estado: commiteado
+- detalle: refactor A15 commiteado; suite 692 SUCCESS; sin push.
