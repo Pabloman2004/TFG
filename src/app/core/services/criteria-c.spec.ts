@@ -90,6 +90,12 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
       const p = makeCase({ diagnoses: ['fibrilacion_auricular'], medications: [antiag()] });
       expect(engine.evaluate(p, [c])).toEqual([]);
     });
+
+    it('no bloquea anticoagulante con FA + antiagregante sin anticoagulante', () => {
+      const p = makeCase({ diagnoses: ['fibrilacion_auricular'], medications: [antiag()] });
+      const excluded = engine.getExcludedMedications(p, [c]);
+      expect(excluded.has('apixaban')).toBeFalse();
+    });
   });
 
   describe('C5-ANTIAGREGANTE-ANTICOAGULANTE-VASCULAR-ESTABLE', () => {

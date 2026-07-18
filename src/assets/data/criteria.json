@@ -374,7 +374,7 @@
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar añadir anticoagulantes con antiagregantes plaquetarios en FA crónica. La combinación no aporta beneficio adicional en FA, salvo stent coronario o estenosis de alto grado (>50%).",
       "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"inDrugClass":["ANTIAGREGANTE",{"var":"medications"}]},{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]}]},
-      "excludes": {"medications":[],"drugClasses":["ANTICOAGULANTE"]}
+      "excludes": {"medications":[],"drugClasses":["ANTIAGREGANTE"]}
     },
     {
       "id": "STOPP-C5-ANTIAGREGANTE-ANTICOAGULANTE-VASCULAR-ESTABLE",
