@@ -1582,7 +1582,7 @@
       "type": "START",
       "system": "Sistema musculoesquelético",
       "summary": "Considerar añadir bisfosfonato y vitamina D (con calcio) para prevención de osteoporosis inducida por corticosteroides. El paciente recibe corticosteroides orales a largo plazo sin protección ósea.",
-      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"or":[{"!":{"inDrugClass":["BIFOSFONATO",{"var":"medications"}]}},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}]}
+      "logic": {"and":[{"medicationClassDurationAbove":["CORTICOIDE_SISTEMICO",90,{"var":"medications"}]},{"or":[{"!":{"inDrugClass":["BIFOSFONATO",{"var":"medications"}]}},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}]}
     },
     {
       "id": "START-H3-VITAMINA-D-OSTEOPOROSIS",
