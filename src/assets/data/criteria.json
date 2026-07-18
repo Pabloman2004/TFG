@@ -141,7 +141,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar amiodarona como primera línea en taquiarritmias supraventriculares. Mayor riesgo de efectos secundarios graves que los betabloqueantes, digoxina, verapamilo o diltiazem.",
-      "logic": {"and":[{"inDrugClass":["ANTIARITMICO",{"var":"medications"}]},{"in":["taquiarritmias_supraventriculares",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIARITMICO_CLASE_III",{"var":"medications"}]},{"in":["taquiarritmias_supraventriculares",{"var":"diagnoses"}]}]},
       "excludes": {"medications":["Amiodarona"],"drugClasses":["ANTIARITMICO"]}
     },
     {

@@ -99,6 +99,29 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
     });
   });
 
+  describe('B6-AMIODARONA-TAQUIARRITMIA-PRIMERA-LINEA', () => {
+    const c = crit('STOPP-B6-AMIODARONA-TAQUIARRITMIA-PRIMERA-LINEA');
+    const flecainida = () => makeMed('Flecainida', ['ANTIARITMICO', 'ANTIARITMICO_CLASE_IC']);
+    const amiodaronaClaseIii = () =>
+      makeMed('Amiodarona', ['ANTIARITMICO', 'ANTIARITMICO_CLASE_III', 'PROLONGADOR_QTC']);
+
+    it('no dispara con flecainida + taquiarritmias supraventriculares', () => {
+      const p = makeCase({
+        diagnoses: ['taquiarritmias_supraventriculares'],
+        medications: [flecainida()],
+      });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('dispara con amiodarona + taquiarritmias supraventriculares', () => {
+      const p = makeCase({
+        diagnoses: ['taquiarritmias_supraventriculares'],
+        medications: [amiodaronaClaseIii()],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+  });
+
   describe('B7-DIURETICO-ASA-PRIMERA-LINEA-HTA', () => {
     const c = crit('STOPP-B7-DIURETICO-ASA-PRIMERA-LINEA-HTA');
 
