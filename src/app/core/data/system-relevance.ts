@@ -69,6 +69,26 @@ const addEgfrBelowDiagnoses = (threshold: number, acc: Refs): void => {
   if (threshold >= 15) acc.dxs.add('insuficiencia_renal_terminal');
 };
 
+const CLASS_ARG_OPERATORS = new Set([
+  'inDrugClass',
+  'medicationClassDurationAbove',
+  'medicationClassDoseMgAbove',
+]);
+
+const OPERATOR_TO_CLASS: Readonly<Record<string, string>> = {
+  digoxinaDosisAlta: 'DIGOXINA',
+  multipleNSAIDs: 'AINE',
+  multipleLoopDiuretics: 'DIURETICO_ASA',
+  multipleThiazideDiuretics: 'DIURETICO_TIAZIDICO',
+  multipleIECA: 'IECA',
+  multipleARAII: 'ARA2',
+  multipleAldosteroneAntagonists: 'ANTAGONISTA_ALDOSTERONA',
+  multipleDiureticosAhorradoresPotasio: 'DIURETICO_AHORRADOR_POTASIO',
+  multipleISRS: 'ISRS',
+  multipleANTIAGREGANTES: 'ANTIAGREGANTE',
+  multipleANTICOLINERGICOS: 'ANTICOLINERGICO',
+};
+
 const walk = (node: unknown, acc: Refs): void => {
   if (!node || typeof node !== 'object') return;
   if (Array.isArray(node)) {
@@ -76,8 +96,13 @@ const walk = (node: unknown, acc: Refs): void => {
     return;
   }
   for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
-    if (k === 'inDrugClass' && Array.isArray(v) && typeof v[0] === 'string') {
+    if (CLASS_ARG_OPERATORS.has(k) && Array.isArray(v) && typeof v[0] === 'string') {
       acc.classes.add(v[0]);
+      continue;
+    }
+    const impliedClass = OPERATOR_TO_CLASS[k];
+    if (impliedClass) {
+      acc.classes.add(impliedClass);
       continue;
     }
     if (

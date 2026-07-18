@@ -358,3 +358,35 @@
 ## 22:51 · resolutor-profundo · A9
 - estado: GREEN
 - detalle: or uniforme caidas_repeticion|riesgo_caidas_repeticion en los 14 STOPP-K. criteria-k 7 SUCCESS. Suite 707 SUCCESS.
+
+## 22:54 · resolutor-profundo · A9
+- estado: listo
+- detalle: CORREGIDO bd8b39b. Suite 707 SUCCESS. Sin push. Códigos no unificados.
+
+## 23:50 · orquestador-seccion · A ? Motor de criterios
+- estado: agregando
+- detalle: A9 CORREGIDO por profundo (bd8b39b). Suite 707 SUCCESS. criteria-k.spec.ts creado. Siguiente A11.
+
+## 23:50 · orquestador-seccion · A ? Motor de criterios
+- estado: esperando-resolutor
+- detalle: A11 ? resolutor-profundo (Grok 4.5 heredado)
+
+## 22:59 · resolutor-profundo · A11
+- estado: investigando
+- detalle: extractReferences/walk solo ve inDrugClass; medicationClass*, multiple* y digoxinaDosisAlta invisibles. Parches relevance en E1/F2/F4/L6.
+
+## 23:02 · resolutor-profundo · A11
+- estado: causa
+- detalle: walk ignora medicationClassDurationAbove/DoseMgAbove, multiple* y digoxinaDosisAlta; solo inDrugClass aporta clases.
+
+## 23:02 · resolutor-profundo · A11
+- estado: RED
+- detalle: 4 tests nuevos en system-relevance.spec.ts fallan (duration/dose/digoxina/multiple*).
+
+## 23:06 · resolutor-profundo · A11
+- estado: GREEN
+- detalle: extractReferences ve medicationClass*/multiple*/digoxinaDosisAlta; parches E1/F2/F4/L6 eliminados. Specs relevancia 77 SUCCESS.
+
+## 23:08 · resolutor-profundo · A11
+- estado: listo
+- detalle: CORREGIDO 1ffad4f. Suite 712 SUCCESS. Sin push. Parches relevance retirados.

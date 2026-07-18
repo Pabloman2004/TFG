@@ -99,6 +99,36 @@ describe('extractReferences', () => {
     expect(refs.classes.size).toBe(0);
     expect(refs.dxs.size).toBe(0);
   });
+
+  it('extrae la clase de medicationClassDurationAbove (D8/D10/F2)', () => {
+    const refs = extractReferences({
+      medicationClassDurationAbove: ['BENZODIACEPINA', 27, { var: 'medications' }],
+    });
+    expect([...refs.classes]).toEqual(['BENZODIACEPINA']);
+  });
+
+  it('extrae la clase de medicationClassDoseMgAbove (C1/F4/L6)', () => {
+    const refs = extractReferences({
+      medicationClassDoseMgAbove: ['ANALGESICO_SIMPLE', 2999, { var: 'medications' }],
+    });
+    expect([...refs.classes]).toEqual(['ANALGESICO_SIMPLE']);
+  });
+
+  it('extrae DIGOXINA de digoxinaDosisAlta (E1)', () => {
+    const refs = extractReferences({ digoxinaDosisAlta: [{ var: 'medications' }] });
+    expect([...refs.classes]).toEqual(['DIGOXINA']);
+  });
+
+  it('extrae la clase de operadores multiple* (A3/C3/M1)', () => {
+    expect([...extractReferences({ multipleNSAIDs: [{ var: 'medications' }] }).classes])
+      .toEqual(['AINE']);
+    expect([...extractReferences({ multipleANTIAGREGANTES: [{ var: 'medications' }] }).classes])
+      .toEqual(['ANTIAGREGANTE']);
+    expect([...extractReferences({ multipleANTICOLINERGICOS: [{ var: 'medications' }] }).classes])
+      .toEqual(['ANTICOLINERGICO']);
+    expect([...extractReferences({ multipleARAII: [{ var: 'medications' }] }).classes])
+      .toEqual(['ARA2']);
+  });
 });
 
 describe('buildRelevance', () => {
@@ -279,17 +309,32 @@ describe('buildRelevance', () => {
     expect(cardio.size).toBe(2);
   });
 
-  it('añade relevancia farmacológica explícita de operadores especiales', () => {
+  it('indexa DIGOXINA desde digoxinaDosisAlta sin parche relevance', () => {
     const rel = buildRelevance([
       crit({
         system: 'Sistema renal',
         logic: { digoxinaDosisAlta: [{ var: 'medications' }] },
-        relevance: { medicationClasses: ['DIGOXINA'] },
       }),
     ]);
 
     expect(rel.classesByTab.get('renal')?.has('DIGOXINA')).toBe(true);
     expect(rel.specificClassesByTab.get('renal')?.has('DIGOXINA')).toBe(true);
+  });
+
+  it('indexa ANALGESICO_SIMPLE desde medicationClassDoseMgAbove (L6)', () => {
+    const rel = buildRelevance([
+      crit({
+        system: 'Sistema musculoesquelético',
+        logic: {
+          and: [
+            { medicationClassDoseMgAbove: ['ANALGESICO_SIMPLE', 2999, { var: 'medications' }] },
+            { in: ['hepatopatia_cronica', { var: 'diagnoses' }] },
+          ],
+        },
+      }),
+    ]);
+
+    expect(rel.specificClassesByTab.get('osteo')?.has('ANALGESICO_SIMPLE')).toBe(true);
   });
 
   it('une las clases explícitas con las extraídas de la lógica', () => {

@@ -82,10 +82,9 @@ Cada entrada del array `criteria` tiene:
 - `system`: uno de los 13 sistemas fisiológicos (ver `SYSTEM_TO_TABS`).
 - `logic`: árbol json-logic ejecutable, puede usar operadores estándar y los
   personalizados registrados en `registerCustomOperators()`.
-- `relevance.medicationClasses` (opcional): clases farmacológicas que deben
-  participar en la visibilidad cuando la semántica está encapsulada en un
-  operador especial y no puede extraerse de un `inDrugClass`. No sustituye la
-  lógica ni se deriva de `excludes`.
+- `relevance.medicationClasses` (opcional): escape hatch para clases que aún
+  no pueda inferir `extractReferences`. Los operadores custom del motor ya
+  aportan su clase; no sustituye la lógica ni se deriva de `excludes`.
 - `excludes` (opcional): lista de nombres de medicamento y/o clases
   farmacológicas que ese criterio contraindica cuando se cumple.
   Debe usar el mismo alcance farmacológico que la lógica: por ejemplo,
@@ -149,16 +148,17 @@ catálogo a uno o más tabs de la UI:
   usan el marcador `TRANSVERSAL = '*'` y se expanden a todos los tabs conocidos.
 
 `buildRelevance(criteria, allTabIds)` recorre cada criterio, extrae mediante
-`extractReferences` las clases farmacológicas (`inDrugClass`), códigos de
+`extractReferences` las clases farmacológicas (`inDrugClass`,
+`medicationClassDurationAbove`, `medicationClassDoseMgAbove`, mapa
+operador→clase para `digoxinaDosisAlta` y los `multiple*`), códigos de
 diagnóstico (`in [code, {var:"diagnoses"}]`) y los sustitutos diagnósticos de
 `egfrBelow` (umbrales ≥30 → `enfermedad_renal_grave`; ≥15 →
-`insuficiencia_renal_terminal`), une las clases declaradas en
-`relevance.medicationClasses`, y acumula el resultado en los mapas
-`classesByTab` / `dxsByTab` (con la expansión transversal incluida para clases
-y, para diagnósticos, acotada al tab de origen cuando el sistema mapea a varios
-tabs y el diagnóstico pertenece a uno de ellos). E1, F2 y F4 usan el metadato
-explícito para Digoxina, IBP y hierro oral respectivamente. `excludes` no se
-consulta para construir el índice.
+`insuficiencia_renal_terminal`), une opcionalmente las clases declaradas en
+`relevance.medicationClasses` (escape hatch; ya no necesario para E1/F2/F4/L6),
+y acumula el resultado en los mapas `classesByTab` / `dxsByTab` (con la
+expansión transversal incluida para clases y, para diagnósticos, acotada al tab
+de origen cuando el sistema mapea a varios tabs y el diagnóstico pertenece a
+uno de ellos). `excludes` no se consulta para construir el índice.
 
 Además acumula `specificClassesByTab` y `specificDxsByTab`: referencias de
 criterios cuyo `system` mapea **específicamente** a un tab (los transversales NO
@@ -246,9 +246,11 @@ cinco secciones:
   silenciosamente.
 - Los operadores custom se registran en el constructor, antes de cualquier
   llamada a `evaluate` o `getExcludedMedications`.
-- `extractReferences` solo reconoce `inDrugClass` y el patrón
-  `in [string, {var:"diagnoses"}]`; otras formas de referenciar datos en la
-  lógica no se indexan en `Relevance`.
+- `extractReferences` reconoce clases en `inDrugClass`,
+  `medicationClassDurationAbove`, `medicationClassDoseMgAbove`, el mapa
+  operador→clase de `digoxinaDosisAlta`/`multiple*`, diagnósticos en
+  `in [string, {var:"diagnoses"}]` y sustitutos de `egfrBelow`; otras formas
+  de referenciar datos en la lógica no se indexan en `Relevance`.
 
 ---
 

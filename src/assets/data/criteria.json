@@ -750,7 +750,6 @@
       "system": "Sistema renal",
       "summary": "Digoxina en tratamiento a largo plazo (> 90 días) a dosis mantenidas ≥ 125 μg/día con TFGe < 30 ml/min/1,73 m². Riesgo de intoxicación digitálica si no se monitorizan los niveles plasmáticos.",
       "logic": {"and":[{"egfrBelow":[30,{"var":""}]},{"digoxinaDosisAlta":[{"var":"medications"}]}]},
-      "relevance": {"medicationClasses":["DIGOXINA"]},
       "excludes": {"medications":["Digoxina"],"drugClasses":["DIGOXINA"]}
     },
     {
@@ -839,7 +838,6 @@
       "system": "Sistema gastrointestinal",
       "summary": "IBP a dosis terapéuticas plenas durante más de 8 semanas sin revisión. Valorar reducción de dosis, retirada o mantenimiento con antagonistas H2. (Alerta de revisión de duración e indicación.)",
       "logic": {"medicationClassDurationAbove":["IBP",56,{"var":"medications"}]},
-      "relevance": {"medicationClasses":["IBP"]},
       "excludes": {"drugClasses":["IBP"]}
     },
     {
@@ -864,7 +862,6 @@
       "system": "Sistema gastrointestinal",
       "summary": "Revisar hierro oral: dosis elementales superiores a 200 mg/día no aportan mayor absorción. (Alerta de revisión de dosis.)",
       "logic": {"medicationClassDoseMgAbove":["HIERRO_ORAL",200,{"var":"medications"}]},
-      "relevance": {"medicationClasses":["HIERRO_ORAL"]},
       "excludes": {"drugClasses":["HIERRO_ORAL"]}
     },
     {
@@ -1313,7 +1310,6 @@
       "system": "Sistema musculoesquelético",
       "summary": "Revisar paracetamol en pacientes malnutridos (IMC < 18) o con hepatopatía crónica: dosis ≥ 3 g/día conllevan riesgo de hepatotoxicidad. (Alerta de revisión de dosis.)",
       "logic": {"and":[{"medicationClassDoseMgAbove":["ANALGESICO_SIMPLE",2999,{"var":"medications"}]},{"or":[{"in":["hepatopatia_cronica",{"var":"diagnoses"}]},{"in":["malnutricion",{"var":"diagnoses"}]}]}]},
-      "relevance": {"medicationClasses":["ANALGESICO_SIMPLE"]},
       "excludes": {"medications":["Paracetamol"],"drugClasses":["ANALGESICO_SIMPLE"]}
     },
     {
