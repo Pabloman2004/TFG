@@ -88,6 +88,7 @@ personalizados "Otro", y la presentación agrupada de criterios activos.
 **Debe cubrir**: estructura común de ambos componentes (y su duplicación),
 efectos reactivos con `allowSignalWrites`, `groupBuckets` vs
 `groupsVisibleInTab`, la lógica unificada de visibilidad en `group-visibility.ts`,
+captura de dosis/duración por tab visible en `clinical-capture.ts`,
 helpers `isMedGroupChecked`/`isDxGroupChecked`, agrupación `groupBySystem`/`critCode`.
 
 ### Ficheros que enlazan
@@ -98,6 +99,7 @@ helpers `isMedGroupChecked`/`isDxGroupChecked`, agrupación `groupBySystem`/`cri
 - `src/app/core/group-checked.ts`
 - `src/app/core/criteria-groups.ts`
 - `src/app/core/group-visibility.ts`
+- `src/app/core/clinical-capture.ts`
 
 ---
 

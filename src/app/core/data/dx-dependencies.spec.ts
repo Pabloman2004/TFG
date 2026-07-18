@@ -40,6 +40,48 @@ describe('extractDrugClasses', () => {
     });
     expect([...classes].sort()).toEqual(['AINE', 'DIURETICO_ASA']);
   });
+
+  it('extrae la clase de medicationClassDurationAbove (D10/D11)', () => {
+    const classes = extractDrugClasses({
+      and: [
+        { medicationClassDurationAbove: ['BENZODIACEPINA', 13, { var: 'medications' }] },
+        { in: ['insomnio', { var: 'diagnoses' }] },
+      ],
+    });
+    expect([...classes]).toEqual(['BENZODIACEPINA']);
+  });
+
+  it('extrae HIPNOTICO_Z de medicationClassDurationAbove', () => {
+    const classes = extractDrugClasses({
+      and: [
+        { medicationClassDurationAbove: ['HIPNOTICO_Z', 13, { var: 'medications' }] },
+        { in: ['insomnio', { var: 'diagnoses' }] },
+      ],
+    });
+    expect([...classes]).toEqual(['HIPNOTICO_Z']);
+  });
+});
+
+describe('A1+A2 — Insomnio habilitado con benzodiacepina o hipnótico-Z (D10/D11)', () => {
+  it('Insomnio incluye BENZODIACEPINA e HIPNOTICO_Z en deps derivadas', () => {
+    expect(DEPS['Insomnio']?.classes).toContain('BENZODIACEPINA');
+    expect(DEPS['Insomnio']?.classes).toContain('HIPNOTICO_Z');
+  });
+
+  it('benzodiacepina habilita Insomnio (STOPP-D10)', () => {
+    const meds = [med('Lorazepam', ['BENZODIACEPINA'])];
+    expect(isDiagnosisEnabled('Insomnio', meds, DEPS)).toBe(true);
+  });
+
+  it('hipnótico-Z habilita Insomnio (STOPP-D11)', () => {
+    const meds = [med('Zolpidem', ['HIPNOTICO_Z'])];
+    expect(isDiagnosisEnabled('Insomnio', meds, DEPS)).toBe(true);
+  });
+
+  it('Insomnio sigue deshabilitado sin medicación relevante', () => {
+    expect(isDiagnosisEnabled('Insomnio', [], DEPS)).toBe(false);
+    expect(isDiagnosisEnabled('Insomnio', [med('Enalapril', ['IECA'])], DEPS)).toBe(false);
+  });
 });
 
 describe('buildDxDependencies — snapshot piloto cardiovascular', () => {

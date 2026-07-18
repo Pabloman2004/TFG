@@ -10,8 +10,9 @@ import { CriteriaEngineService } from '../../core/services/criteria-engine.servi
 import { ReportService } from '../../core/report.service';
 import { CaseIoService } from '../../core/case-io.service';
 import { routes } from '../../app.routes';
-import { Relevance } from '../../core/data/system-relevance';
+import { Relevance, buildRelevance } from '../../core/data/system-relevance';
 import { Crit } from '../../core/types';
+import { ALL_CRITERIA } from '../../core/services/criteria-test-helpers';
 
 const engineStub = () => ({
   relevance: signal(null),
@@ -191,5 +192,75 @@ describe('MedsStepComponent — datos necesarios para criterios renales', () => 
     expect(component.medicationById('Lorazepam')?.durationDays).toBe(28);
     expect(component.medicationById('Paracetamol')?.doseMgDay).toBe(3000);
     expect(component.durationCaptureMeds().map(m => m.id)).toContain('Lorazepam');
+  });
+});
+
+describe('MedsStepComponent — campos numéricos en el tab donde está el medicamento', () => {
+  const realRelevance = buildRelevance(ALL_CRITERIA);
+
+  const renderOnTab = (tabId: string) => {
+    TestBed.configureTestingModule({
+      imports: [MedsStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStubWithRelevance(realRelevance) },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(MedsStepComponent);
+    const component = fixture.componentInstance;
+    component.setCategory(tabId);
+    fixture.detectChanges();
+    return { fixture, component, host: fixture.nativeElement as HTMLElement };
+  };
+
+  const clinicalLabels = (host: HTMLElement): string[] =>
+    [...host.querySelectorAll('.clinical-data-panel .clinical-field span')]
+      .map(el => el.textContent?.trim() ?? '');
+
+  beforeEach(() => localStorage.clear());
+
+  it('muestra dosis de Digoxina en Cardiovascular, no solo en Renal', () => {
+    const { fixture, component, host } = renderOnTab('cardiovascular');
+    component.toggleDrug('Digoxina');
+    fixture.detectChanges();
+
+    expect(clinicalLabels(host)).toContain('Digoxina (µg/día)');
+    expect(clinicalLabels(host)).toContain('Duración (días)');
+  });
+
+  it('muestra duración de corticoide en Respiratorio cuando se marca ahí (C2)', () => {
+    const { fixture, component, host } = renderOnTab('respiratorio');
+    component.toggleDrug('Prednisona');
+    fixture.detectChanges();
+
+    expect(clinicalLabels(host)).toContain('Prednisona (días)');
+  });
+
+  it('muestra duración de corticoide en Endocrino cuando se marca ahí', () => {
+    const { fixture, component, host } = renderOnTab('endocrino');
+    component.toggleDrug('Prednisona');
+    fixture.detectChanges();
+
+    expect(clinicalLabels(host)).toContain('Prednisona (días)');
+  });
+
+  it('muestra paracetamol mg/día en Osteo', () => {
+    const { fixture, component, host } = renderOnTab('osteo');
+    component.toggleDrug('Paracetamol');
+    fixture.detectChanges();
+
+    expect(clinicalLabels(host)).toContain('Paracetamol (mg/día)');
+  });
+
+  it('muestra duración de benzo en SNC', () => {
+    const { fixture, component, host } = renderOnTab('snc');
+    component.toggleDrug('Lorazepam');
+    fixture.detectChanges();
+
+    expect(clinicalLabels(host)).toContain('Lorazepam (días)');
   });
 });

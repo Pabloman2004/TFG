@@ -1309,9 +1309,10 @@
     {
       "id": "STOPP-L6-PARACETAMOL-DOSIS-ALTA-HEPATOPATIA",
       "type": "STOPP",
-      "system": "Analgésicos",
+      "system": "Sistema musculoesquelético",
       "summary": "Revisar paracetamol en pacientes malnutridos (IMC < 18) o con hepatopatía crónica: dosis ≥ 3 g/día conllevan riesgo de hepatotoxicidad. (Alerta de revisión de dosis.)",
       "logic": {"and":[{"medicationClassDoseMgAbove":["ANALGESICO_SIMPLE",2999,{"var":"medications"}]},{"or":[{"in":["hepatopatia_cronica",{"var":"diagnoses"}]},{"in":["malnutricion",{"var":"diagnoses"}]}]}]},
+      "relevance": {"medicationClasses":["ANALGESICO_SIMPLE"]},
       "excludes": {"medications":["Paracetamol"],"drugClasses":["ANALGESICO_SIMPLE"]}
     },
     {

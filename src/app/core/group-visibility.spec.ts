@@ -377,6 +377,7 @@ describe('visibilidad farmacológica con datos clínicos reales', () => {
       { tabId: 'endocrino', groupId: 'acido_folico', drugId: 'Ácido fólico' },
       { tabId: 'endocrino', groupId: 'antineoplasicos', drugId: 'Tamoxifeno' },
       { tabId: 'osteo', groupId: 'relaj_musc', drugId: 'Tizanidina' },
+      { tabId: 'osteo', groupId: 'paracetamol', drugId: 'Paracetamol' },
       { tabId: 'antibioticos', groupId: 'atb_urin', drugId: 'Nitrofurantoína' },
       { tabId: 'antibioticos', groupId: 'antipaludicos', drugId: 'Quinina' },
     ];
@@ -406,6 +407,17 @@ describe('visibilidad farmacológica con datos clínicos reales', () => {
   it('hace visibles antibióticos de otros sistemas donde se referencia la clase agregada', () => {
     expect(foreignDrugsIn('gastrointestinal')).toContain('Amoxicilina');
     expect(foreignDrugsIn('urologico')).toContain('Amoxicilina');
+  });
+
+  it('no relega Paracetamol al tab Otros (STOPP-L6 vía Osteo)', () => {
+    const otros = computeMedGroupBuckets(
+      'otros',
+      DRUG_CATEGORIES,
+      relevance,
+      'otros',
+      MEDICATIONS,
+    );
+    expect(otros.ownAll.flatMap(group => group.drugs)).not.toContain('Paracetamol');
   });
 });
 

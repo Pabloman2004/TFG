@@ -13,6 +13,14 @@ describe('DRUG_CATEGORIES — cobertura del catálogo', () => {
     expect(tab?.label).toBe('Antiinfecciosos');
   });
 
+  it('expone Paracetamol en Osteo bajo Analgésicos simples (STOPP-L6)', () => {
+    const osteo = DRUG_CATEGORIES.find(cat => cat.id === 'osteo');
+    const group = osteo?.groups.find(g => g.id === 'paracetamol');
+    expect(group?.label).toBe('Analgésicos simples');
+    expect(group?.drugClass).toBe('ANALGESICO_SIMPLE');
+    expect(group?.drugs).toContain('Paracetamol');
+  });
+
   it('ningún grupo declara additionalCategories', () => {
     const withExtra = DRUG_CATEGORIES.flatMap(cat =>
       cat.groups.filter(group => 'additionalCategories' in group),

@@ -6,10 +6,11 @@ La aplicación STOPP/START guía al clínico en dos pasos secuenciales:
 
 1. **Paso 1 — Medicamentos** (`/medicaciones`, `MedsStepComponent`): el clínico selecciona los fármacos activos del paciente organizados por categoría terapéutica (tabs: cardiovascular, neurológico, etc.). En tiempo real se evalúan los criterios STOPP/START y se muestran en una columna derecha agrupados por sistema orgánico.
 
-   Los tabs Renal y Gastrointestinal muestran campos clínicos contextuales cuando
-   son necesarios: TFGe, dosis y duración de digoxina, dosis diaria de hierro
-   oral y duración de los IBP. Los cambios actualizan inmutablemente `Med[]` o
-   `Labs` y se persisten junto con el caso.
+   Cada tab muestra campos clínicos contextuales cuando hay medicamentos
+   seleccionados **visibles en ese tab** (propios o foráneos): dosis/duración
+   según la clase del fármaco (Digoxina, IBP, hierro, benzos/Z, corticoides,
+   paracetamol, AAS…). El tab Renal además captura TFGe. Los cambios
+   actualizan inmutablemente `Med[]` o `Labs` y se persisten junto con el caso.
 
 2. **Paso 2 — Diagnósticos** (`/diagnosticos`, `DiagnosisStepComponent`): el clínico selecciona los diagnósticos activos organizados por sistema orgánico. La columna derecha sigue mostrando los criterios activados actualizados.
 
@@ -32,6 +33,7 @@ En ambos pasos:
 | `src/app/core/group-checked.ts` | Helpers puros `isMedGroupChecked` / `isDxGroupChecked` |
 | `src/app/core/criteria-groups.ts` | Helpers puros `groupBySystem` / `critCode` |
 | `src/app/core/group-visibility.ts` | Lógica unificada de visibilidad de buckets (T8) |
+| `src/app/core/clinical-capture.ts` | Campos de dosis/duración visibles por tab y clase de fármaco |
 
 ### Flujo reactivo (ambos componentes)
 

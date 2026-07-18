@@ -147,102 +147,19 @@
                      [value]="store.labs()?.egfr_ml_min_173 ?? ''"
                      (input)="updateEgfr($any($event.target).value)">
             </label>
-            @if (medicationById('Digoxina'); as digoxina) {
-              <label class="clinical-field">
-                <span>Digoxina (µg/día)</span>
-                <input type="number"
-                       min="0"
-                       step="0.1"
-                       [value]="digoxina.doseMcgDay ?? ''"
-                       (input)="updateMedicationNumber('Digoxina', 'doseMcgDay', $any($event.target).value)">
-              </label>
-              <label class="clinical-field">
-                <span>Duración (días)</span>
-                <input type="number"
-                       min="0"
-                       step="1"
-                       [value]="digoxina.durationDays ?? ''"
-                       (input)="updateMedicationNumber('Digoxina', 'durationDays', $any($event.target).value)">
-              </label>
-            }
-            @for (iron of medicationsByClass('HIERRO_ORAL'); track iron.id) {
-              <label class="clinical-field">
-                <span>{{ iron.id }} (mg/día)</span>
-                <input type="number"
-                       min="0"
-                       step="0.1"
-                       [value]="iron.doseMgDay ?? ''"
-                       (input)="updateMedicationNumber(iron.id, 'doseMgDay', $any($event.target).value)">
-              </label>
-            }
           </section>
         }
 
-        @if (activeCategoryId() === 'gastrointestinal' && medicationsByClass('IBP').length > 0) {
-          <section class="clinical-data-panel" aria-label="Duración de tratamientos gastrointestinales">
-            @for (ibp of medicationsByClass('IBP'); track ibp.id) {
+        @if (clinicalCaptureFields().length > 0) {
+          <section class="clinical-data-panel" aria-label="Dosis y duración de medicamentos">
+            @for (field of clinicalCaptureFields(); track field.trackKey) {
               <label class="clinical-field">
-                <span>{{ ibp.id }} (días)</span>
+                <span>{{ field.label }}</span>
                 <input type="number"
-                       min="0"
-                       step="1"
-                       [value]="ibp.durationDays ?? ''"
-                       (input)="updateMedicationNumber(ibp.id, 'durationDays', $any($event.target).value)">
-              </label>
-            }
-          </section>
-        }
-
-        @if (activeCategoryId() === 'anticoagulantes' && medicationsByClass('AAS').length > 0) {
-          <section class="clinical-data-panel" aria-label="Dosis de antiagregantes">
-            @for (aas of medicationsByClass('AAS'); track aas.id) {
-              <label class="clinical-field">
-                <span>{{ aas.id }} (mg/día)</span>
-                <input type="number"
-                       min="0"
-                       step="1"
-                       [value]="aas.doseMgDay ?? ''"
-                       (input)="updateMedicationNumber(aas.id, 'doseMgDay', $any($event.target).value)">
-              </label>
-            }
-          </section>
-        }
-
-        @if (activeCategoryId() === 'snc' && durationCaptureMeds().length > 0) {
-          <section class="clinical-data-panel" aria-label="Duración de tratamientos del SNC">
-            @for (med of durationCaptureMeds(); track med.id) {
-              <label class="clinical-field">
-                <span>{{ med.id }} (días)</span>
-                <input type="number"
-                       min="0"
-                       step="1"
-                       [value]="med.durationDays ?? ''"
-                       (input)="updateMedicationNumber(med.id, 'durationDays', $any($event.target).value)">
-              </label>
-            }
-          </section>
-        }
-
-        @if (activeCategoryId() === 'osteo' && (medicationsByClass('CORTICOIDE_SISTEMICO').length > 0 || medicationsByClass('ANALGESICO_SIMPLE').length > 0)) {
-          <section class="clinical-data-panel" aria-label="Dosis y duración osteomusculares">
-            @for (steroid of medicationsByClass('CORTICOIDE_SISTEMICO'); track steroid.id) {
-              <label class="clinical-field">
-                <span>{{ steroid.id }} (días)</span>
-                <input type="number"
-                       min="0"
-                       step="1"
-                       [value]="steroid.durationDays ?? ''"
-                       (input)="updateMedicationNumber(steroid.id, 'durationDays', $any($event.target).value)">
-              </label>
-            }
-            @for (analgesic of medicationsByClass('ANALGESICO_SIMPLE'); track analgesic.id) {
-              <label class="clinical-field">
-                <span>{{ analgesic.id }} (mg/día)</span>
-                <input type="number"
-                       min="0"
-                       step="1"
-                       [value]="analgesic.doseMgDay ?? ''"
-                       (input)="updateMedicationNumber(analgesic.id, 'doseMgDay', $any($event.target).value)">
+                       [min]="field.min"
+                       [step]="field.step"
+                       [value]="field.value ?? ''"
+                       (input)="updateMedicationNumber(field.medId, field.field, $any($event.target).value)">
               </label>
             }
           </section>

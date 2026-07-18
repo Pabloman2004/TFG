@@ -23,6 +23,7 @@ import { buildCriteriaText } from '../../core/clipboard-text';
 import { groupBySystem, critCode, CritGroup } from '../../core/criteria-groups';
 import { isMedGroupChecked } from '../../core/group-checked';
 import { computeMedGroupBuckets, medGroupsVisibleInTab, MedGroupBuckets, MedForeignGroup } from '../../core/group-visibility';
+import { clinicalCaptureFields, medsVisibleInTabGroups } from '../../core/clinical-capture';
 import { TooltipDirective } from '../../shared/tooltip.directive';
 
 const emptyLabs = (): Labs => ({
@@ -118,6 +119,14 @@ export class MedsStepComponent implements OnInit {
       MEDICATIONS,
     ),
   );
+
+  readonly clinicalCaptureFields = computed(() => {
+    this.store.meds();
+    const buckets = this.groupBuckets();
+    const groups = [...buckets.ownAll, ...buckets.foreignRelevant];
+    const visible = medsVisibleInTabGroups(this.store.meds(), groups);
+    return clinicalCaptureFields(visible);
+  });
 
   constructor(
     private router: Router,
