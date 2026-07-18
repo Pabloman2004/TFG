@@ -179,3 +179,27 @@
 ## 21:54 · resolutor-rapido · A3
 - estado: listo
 - detalle: suite 687 SUCCESS; fix A3 commiteado; sin push.
+
+## 22:05 Â· orquestador-seccion Â· A â€” Motor de criterios
+- estado: agregando
+- detalle: A3 CORREGIDO por rÃ¡pido (fcd06d7). Suite 687 SUCCESS. Siguiente A6.
+
+## 22:05 Â· orquestador-seccion Â· A â€” Motor de criterios
+- estado: esperando-resolutor
+- detalle: A6 â†’ resolutor-rapido (composer-2.5-fast)
+
+## 22:06 · resolutor-rapido · A6
+- estado: investigando
+- detalle: STOPP-J3 lógica usa BETABLOQUEANTE; bisoprolol dispara indebidamente; excludes ya solo Carvedilol/Propranolol.
+
+## 22:06 · resolutor-rapido · A6
+- estado: causa
+- detalle: lógica debe usar BETABLOQUEANTE_NO_CARDIOSELECTIVO (Carvedilol, Propranolol en medications.ts:327-328).
+
+## 22:07 · resolutor-rapido · A6
+- estado: RED
+- detalle: criteria-j.spec.ts J3 bisoprolol falla (1 resultado esperado 0).
+
+## 22:08 · resolutor-rapido · A6
+- estado: GREEN
+- detalle: inDrugClass BETABLOQUEANTE_NO_CARDIOSELECTIVO en STOPP-J3; criteria-j.spec.ts verde.

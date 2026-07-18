@@ -1087,7 +1087,7 @@
       "type": "STOPP",
       "system": "Sistema endocrino",
       "summary": "Evitar betabloqueantes no cardioselectivos en pacientes con diabetes con episodios frecuentes de hipoglucemia. Riesgo de enmascaramiento de los síntomas de hipoglucemia (especialmente los no cardioselectivos).",
-      "logic": {"and":[{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]},{"in":["diabetes_hipoglucemias_frecuentes",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["BETABLOQUEANTE_NO_CARDIOSELECTIVO",{"var":"medications"}]},{"in":["diabetes_hipoglucemias_frecuentes",{"var":"diagnoses"}]}]},
       "excludes": {"medications":["Carvedilol","Propranolol"]}
     },
     {
