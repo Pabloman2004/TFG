@@ -66,6 +66,15 @@ export class CriteriaEngineService {
     return {
       ...input,
 
+      info: input.info
+        ? {
+            ...input.info,
+            sex: input.info.sex === null
+              ? null
+              : (input.info.sex.toLowerCase() as typeof input.info.sex),
+          }
+        : input.info,
+
       diagnoses: input.diagnoses.map(d => d.toLowerCase()),
 
       medications: input.medications.map(m => ({

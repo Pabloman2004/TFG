@@ -27,3 +27,27 @@
 ## 20:53 · resolutor-rapido · A1
 - estado: listo
 - detalle: fix A1 commiteado en fix/seccion-a-motor-criterios; sin push.
+
+## 20:52 · orquestador-seccion · A — Motor de criterios
+- estado: agregando
+- detalle: A1 CORREGIDO por rápido (0690750). Suite 670 SUCCESS. Siguiente A2.
+
+## 20:56 · resolutor-rapido · A2
+- estado: investigando
+- detalle: START-I3/I4 comparan info.sex con "f" pero el tipo almacena 'F'|'M'; normalizeCase no normaliza info.
+
+## 21:00 · resolutor-rapido · A2
+- estado: causa
+- detalle: normalizeCase normaliza diagnoses/medications pero no info.sex; json-logic compara con "f" literal.
+
+## 21:00 · resolutor-rapido · A2
+- estado: RED
+- detalle: criteria-i.spec.ts ? I3/I4 no disparan con sex:'F' (2 fallos).
+
+## 21:08 · resolutor-rapido · A2
+- estado: GREEN
+- detalle: normalizeCase pasa info.sex a minúsculas; criteria-i.spec.ts 6 SUCCESS.
+
+## 21:09 · resolutor-rapido · A2
+- estado: listo
+- detalle: suite completa 676 SUCCESS; fix A2 commiteado; sin push.
