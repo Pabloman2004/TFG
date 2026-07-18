@@ -317,7 +317,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar antihipertensivos (diuréticos, antihipertensivos centrales, alfabloqueantes) en estenosis aórtica grave sintomática. Riesgo de hipotensión grave y síncopes.",
-      "logic": {"and":[{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]},{"in":["estenosis_aortica_grave_sintomatica",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"or":[{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]},{"inDrugClass":["DIURETICO_TIAZIDICO",{"var":"medications"}]},{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]},{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]}]},{"in":["estenosis_aortica_grave_sintomatica",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["DIURETICO_ASA","DIURETICO_TIAZIDICO","ANTIHIPERTENSIVO_CENTRAL","ALFABLOQUEANTE"]}
     },
     {

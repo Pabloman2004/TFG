@@ -1,8 +1,8 @@
-# Progreso de ronda â€” CorrecciÃ³n SecciÃ³n A motor de criterios (2026-07-18)
+# Progreso de ronda â Corrección Sección A motor de criterios (2026-07-18)
 
 ## 20:43 Â· orquestador-revision Â· arranque
 - estado: routing
-- detalle: Manifiesto en docs/revision-seccion-a-motor-criterios.md (17 Ã­tems BUG, 1 secciÃ³n). Lanzo orquestador-seccion A con modelo Cursor Grok 4.5. Resolutores: rÃ¡pido=composer-2.5-fast, profundo=cursor-grok-4.5-high-fast (sin Sonnet).
+- detalle: Manifiesto en docs/revision-seccion-a-motor-criterios.md (17 ítems BUG, 1 sección). Lanzo orquestador-seccion A con modelo Cursor Grok 4.5. Resolutores: rápido=composer-2.5-fast, profundo=cursor-grok-4.5-high-fast (sin Sonnet).
 
 ## 20:46 · orquestador-seccion · A — Motor de criterios
 - estado: routing
@@ -124,13 +124,13 @@
 - estado: routing
 - detalle: Relanzo desde A13. Hechos A1/A2/A5/A10 (suite 680). Sin cambios a medias de código. Grok 4.5; sin Sonnet.
 
-## 21:38 Â· orquestador-seccion Â· A â€” Motor de criterios
+## 21:38 Â· orquestador-seccion Â· A â Motor de criterios
 - estado: routing
-- detalle: RETOMA #2. Hechos A1/A2/A5/A10. Pendientes rÃ¡pido A13â†’A3â†’A6â†’A8â†’A15; profundo A7+A14â†’A4â†’A9â†’A11â†’A12+A20â†’A16. Suite ~680. Sin cÃ³digo a medias.
+- detalle: RETOMA #2. Hechos A1/A2/A5/A10. Pendientes rápido A13?A3?A6?A8?A15; profundo A7+A14?A4?A9?A11?A12+A20?A16. Suite ~680. Sin código a medias.
 
-## 21:38 Â· orquestador-seccion Â· A â€” Motor de criterios
+## 21:38 Â· orquestador-seccion Â· A â Motor de criterios
 - estado: esperando-resolutor
-- detalle: A13 â†’ resolutor-rapido (composer-2.5-fast)
+- detalle: A13 ? resolutor-rapido (composer-2.5-fast)
 
 ## 21:40 · resolutor-rapido · A13
 - estado: investigando
@@ -143,3 +143,39 @@
 ## 21:43 · resolutor-rapido · A13
 - estado: RED
 - detalle: criteria-h.spec.ts START-H2 corto plazo falla (1 resultado esperado 0).
+
+## 21:44 · resolutor-rapido · A13
+- estado: GREEN
+- detalle: medicationClassDurationAbove >90d en START-H2; criteria-h.spec.ts verde.
+
+## 21:44 · resolutor-rapido · A13
+- estado: listo
+- detalle: suite 682 SUCCESS; fix A13 commiteado (d90febe); sin push.
+
+## 21:50 Â· orquestador-seccion Â· A â Motor de criterios
+- estado: agregando
+- detalle: A13 CORREGIDO por rápido (d90febe). Suite 682 SUCCESS. Siguiente A3.
+
+## 21:50 Â· orquestador-seccion Â· A â Motor de criterios
+- estado: esperando-resolutor
+- detalle: A3 ? resolutor-rapido (composer-2.5-fast)
+
+## 21:52 · resolutor-rapido · A3
+- estado: investigando
+- detalle: STOPP-B20-ANTIHIPERTENSIVO lógica solo ANTIHIPERTENSIVO_CENTRAL; excludes/summary prometen 4 clases.
+
+## 21:52 · resolutor-rapido · A3
+- estado: causa
+- detalle: falta or sobre DIURETICO_ASA, DIURETICO_TIAZIDICO, ANTIHIPERTENSIVO_CENTRAL, ALFABLOQUEANTE (patrón K3).
+
+## 21:52 · resolutor-rapido · A3
+- estado: RED
+- detalle: 4 tests B20 en criteria-b.spec.ts fallan (evaluate y getExcludedMedications).
+
+## 21:53 · resolutor-rapido · A3
+- estado: GREEN
+- detalle: lógica or 4 clases en STOPP-B20-ANTIHIPERTENSIVO; criteria-b.spec.ts verde.
+
+## 21:54 · resolutor-rapido · A3
+- estado: listo
+- detalle: suite 687 SUCCESS; fix A3 commiteado; sin push.
