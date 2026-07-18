@@ -389,4 +389,32 @@
 
 ## 23:08 � resolutor-profundo � A11
 - estado: listo
-- detalle: CORREGIDO 1ffad4f. Suite 712 SUCCESS. Sin push. Parches relevance retirados.
+- detalle: CORREGIDO cd52822. Suite 712 SUCCESS. Sin push. Parches relevance retirados.
+
+## 00:10 · orquestador-seccion · A — Motor de criterios
+- estado: agregando
+- detalle: A11 CORREGIDO por profundo (cd52822). Suite 712 SUCCESS. Siguiente A12+A20.
+
+## 00:10 · orquestador-seccion · A — Motor de criterios
+- estado: esperando-resolutor
+- detalle: A12+A20 → resolutor-profundo (Grok 4.5 heredado)
+
+## 23:19 · resolutor-profundo · A12+A20
+- estado: investigando
+- detalle: excludes huérfanos Paroxetina/Fluvoxamina en A3/C12/D7; aneurisma_aortico sin criterio; enfermedad_renal_* sí vía egfrBelow; clases decorativas DHP/CALCIO/etc.
+
+## 23:20 · resolutor-profundo · A12+A20
+- estado: causa
+- detalle: excludes.medications cita Paroxetina/Fluvoxamina fuera de MEDICATIONS; falta guard integrity + política HTA documentada/assertada.
+
+## 23:22 · resolutor-profundo · A12+A20
+- estado: RED
+- detalle: criteria-data-integrity.spec.ts (a) falla por Paroxetina/Fluvoxamina en A3/C12/D7 (6 entradas); (b)(c)(d)+A20 ya verdes.
+
+## 23:23 · resolutor-profundo · A12+A20
+- estado: GREEN
+- detalle: Paroxetina/Fluvoxamina eliminadas de excludes A3/C12/D7; docs HTA + guard en motor-criterios.md; whitelists aneurisma_aortico y clases decorativas.
+
+## 23:28 · resolutor-profundo · A12+A20
+- estado: listo
+- detalle: Suite 717 SUCCESS (+5 integrity). Sin push. Commiteando A12+A20.

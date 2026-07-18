@@ -54,7 +54,7 @@
       "system": "Indicación de la medicación",
       "summary": "Evitar el uso simultáneo de dos fármacos de la clase ISRS (ej. Sertralina + Fluoxetina). Debe optimizarse la monoterapia con un único fármaco antes de considerar uno nuevo.",
       "logic": {"multipleISRS":[{"var":"medications"}]},
-      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina","Paroxetina","Fluvoxamina"],"drugClasses":["ISRS"]}
+      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina"],"drugClasses":["ISRS"]}
     },
     {
       "id": "STOPP-A3-TIAZIDA-USO-CONCOMITANTE",
@@ -454,7 +454,7 @@
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar ISRS en pacientes con antecedentes de hemorragia grave que utilizan anticoagulantes (AVK o ACOD). Mayor riesgo de sangrado debido a los efectos antiagregantes de los ISRS.",
       "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"inDrugClass":["ISRS",{"var":"medications"}]},{"in":["antecedentes_sangrado_grave",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina","Paroxetina","Fluvoxamina"],"drugClasses":["ISRS"]}
+      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina"],"drugClasses":["ISRS"]}
     },
     {
       "id": "STOPP-C13-VERAPAMILO-INHIBIDORES-TROMBINA",
@@ -590,7 +590,7 @@
       "system": "Sistema nervioso central",
       "summary": "Evitar ISRS en pacientes con presencia de sangrado significativo concurrente actual. Riesgo de exacerbar hemorragias.",
       "logic": {"and":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"in":["riesgo_significativo_sangrado",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina","Paroxetina","Fluvoxamina"],"drugClasses":["ISRS"]}
+      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina"],"drugClasses":["ISRS"]}
     },
     {
       "id": "STOPP-D8-BENZODIACEPINA-USO-PROLONGADO",

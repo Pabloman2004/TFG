@@ -35,6 +35,7 @@ registrados en el constructor del servicio.
 | `src/app/core/services/criteria-test-helpers.ts` | Librería compartida de utilidades de test: `ALL_CRITERIA`, `crit()`, `setupEngine()`, factories de `PatientCase`/`Med` |
 | `src/types/json-logic-js.d.ts` | Declaración de tipos ambient para `json-logic-js` (`apply`, `add_operation`) |
 | `scripts/audit-criteria.cjs` | Script Node.js one-shot de auditoría de consistencia entre `criteria.json`, `medications.ts` y `diagnoses.ts` |
+| `src/app/core/data/criteria-data-integrity.spec.ts` | Guard de suite: excludes↔catálogo, clases con miembros, whitelists dx/clases y política HTA (A12/A20) |
 | `src/assets/data/criteria.json` | Catálogo de 216 criterios (excluido del patrón @linked: JSON no admite comentarios) |
 
 ### Flujo principal
@@ -199,6 +200,17 @@ cinco secciones:
 
 ## Decisiones de diseño
 
+- **Política de variantes HTA**: la familia mutex
+  `{hta, hta_no_complicada, hipertension_moderada, hipertension_grave}` permite
+  marcar una sola variante en la UI. Los **criterios generales de HTA** aceptan
+  las 4 variantes; **B5**, específico de HTA no complicada, acepta solo `hta` y
+  `hta_no_complicada`. Los criterios acotados a gravedad (p. ej. solo
+  `hipertension_grave`) quedan fuera de esa regla. Lo refuerza
+  `criteria-data-integrity.spec.ts` (A20).
+- **Guard catálogo↔criterios**: `criteria-data-integrity.spec.ts` exige que
+  `excludes.medications` existan en `MEDICATIONS`, que las clases usadas tengan
+  miembros, y que códigos/clases sin criterio estén en listas blancas comentadas
+  (informativos / decorativos).
 - **json-logic para las reglas**: permite expresar cada criterio clínico como
   dato puro (JSON), sin código compilado por criterio. El árbol es serializable,
   auditable con herramientas externas y reemplazable sin recompilar la app.
@@ -271,6 +283,9 @@ cinco secciones:
   usar `drugClasses` consistentes con `MEDICATIONS` en `medications.ts`
   (propietario: `docs/catalogo-clinico.md`); correr `audit-criteria.cjs` para
   verificar consistencia.
+- **Añadir/quitar fármacos, clases o códigos de diagnóstico** en catálogo o
+  `criteria.json`: mantener verde `criteria-data-integrity.spec.ts` (actualizar
+  listas blancas solo si el omitido es deliberado e informativo/decorativo).
 - **Cualquier cambio en el motor**: actualizar los tests de criterios
   (`criteria-engine.service.spec.ts`, `criteria-a.spec.ts` …
   `criteria-e.spec.ts`) y este documento.
