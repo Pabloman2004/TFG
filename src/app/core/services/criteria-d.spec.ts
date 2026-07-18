@@ -57,6 +57,11 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
+    it('dispara con prostatismo/retención urinaria combinado + ADT', () => {
+      const p = makeCase({ diagnoses: ['prostatismo_retencion_urinaria'], medications: [adt()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
     it('no dispara sin diagnóstico', () => {
       expect(engine.evaluate(makeCase({ medications: [adt()] }), [c])).toEqual([]);
     });
@@ -167,6 +172,11 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
 
     it('dispara con retención urinaria + Risperidona', () => {
       const p = makeCase({ diagnoses: ['retencion_urinaria'], medications: [neuroleptico('Risperidona')] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con prostatismo/retención urinaria combinado + neuroléptico', () => {
+      const p = makeCase({ diagnoses: ['prostatismo_retencion_urinaria'], medications: [neuroleptico()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 

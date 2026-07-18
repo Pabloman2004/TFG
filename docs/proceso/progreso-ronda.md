@@ -203,3 +203,31 @@
 ## 22:08 · resolutor-rapido · A6
 - estado: GREEN
 - detalle: inDrugClass BETABLOQUEANTE_NO_CARDIOSELECTIVO en STOPP-J3; criteria-j.spec.ts verde.
+
+## 22:09 · resolutor-rapido · A6
+- estado: listo
+- detalle: suite 690 SUCCESS; fix A6 commiteado (9c5c41a); sin push.
+
+## 22:20 Â· orquestador-seccion Â· A â€” Motor de criterios
+- estado: agregando
+- detalle: A6 CORREGIDO por rÃ¡pido (9c5c41a). Suite 690 SUCCESS. criteria-j.spec.ts creado. Siguiente A8.
+
+## 22:20 Â· orquestador-seccion Â· A â€” Motor de criterios
+- estado: esperando-resolutor
+- detalle: A8 â†’ resolutor-rapido (composer-2.5-fast)
+
+## 22:01 · resolutor-rapido · A8
+- estado: investigando
+- detalle: checkbox combinado prostatismo_retencion_urinaria no conectado a D1/D4; criteria.json:512,560 solo evalúan prostatismo y retencion_urinaria por separado.
+
+## 22:01 · resolutor-rapido · A8
+- estado: RED
+- detalle: 2 tests fallan en criteria-d.spec.ts (D1 y D4 con prostatismo_retencion_urinaria).
+
+## 22:05 · resolutor-rapido · A8
+- estado: GREEN
+- detalle: añadido prostatismo_retencion_urinaria al or de STOPP-D1-ADT-PROSTATISMO y STOPP-D4-NEUROLEPTICO-PROSTATISMO; criteria-d.spec.ts verde.
+
+## 22:06 · resolutor-rapido · A8
+- estado: listo
+- detalle: suite 692 SUCCESS; fix A8 pendiente de commit; sin push.

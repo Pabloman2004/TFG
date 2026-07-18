@@ -509,7 +509,7 @@
       "type": "STOPP",
       "system": "Sistema nervioso central",
       "summary": "Evitar antidepresivos tricíclicos en pacientes con prostatismo o retención urinaria. Alto riesgo de retención urinaria aguda.",
-      "logic": {"and":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"or":[{"in":["prostatismo",{"var":"diagnoses"}]},{"in":["retencion_urinaria",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"or":[{"in":["prostatismo",{"var":"diagnoses"}]},{"in":["retencion_urinaria",{"var":"diagnoses"}]},{"in":["prostatismo_retencion_urinaria",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Amitriptilina","Imipramina","Nortriptilina","Clomipramina","Doxepina"],"drugClasses":["ANTIDEPRESIVO_TRICICLICO"]}
     },
     {
@@ -557,7 +557,7 @@
       "type": "STOPP",
       "system": "Sistema nervioso central",
       "summary": "Evitar neurolépticos antimuscariínicos en pacientes con prostatismo o retención urinaria. Alto riesgo de retención urinaria aguda.",
-      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"in":["prostatismo",{"var":"diagnoses"}]},{"in":["retencion_urinaria",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"in":["prostatismo",{"var":"diagnoses"}]},{"in":["retencion_urinaria",{"var":"diagnoses"}]},{"in":["prostatismo_retencion_urinaria",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Risperidona","Olanzapina","Quetiapina","Clozapina"]}
     },
     {
