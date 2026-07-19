@@ -1,6 +1,6 @@
 # Informe de revisión — Sección A: Motor de criterios y datos clínicos
 
-- **Ronda:** Revisión general 2026-07-17 (manifiesto: `docs/proceso/manifiesto-revision-general-2026-07-17.md`)
+- **Ronda:** Revisión general 2026-07-17 (manifiesto: `docs/revisiones/manifiesto-revision-general-2026-07-17.md`)
 - **Fecha del informe:** 2026-07-18
 - **Modo:** solo análisis; no se ha cambiado código ni movido/borrado ningún fichero.
 
@@ -170,7 +170,7 @@ Solo existen specs por sección para A–H y L; las secciones I, J, K y M de cri
 
 ## Adenda (2026-07-18) — tras la ronda d10-d11-h4-l6-campos-multitab
 
-La ronda correctiva `docs/revision-d10-d11-h4-l6-campos-multitab-resultado.md`
+La ronda correctiva `docs/revisiones/revision-d10-d11-h4-l6-campos-multitab-resultado.md`
 (verificada por el orquestador: diff revisado + suite completa **669 SUCCESS**)
 tocó el alcance de esta sección. Impacto sobre los hallazgos:
 

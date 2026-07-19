@@ -1,7 +1,7 @@
 # Informe de sección: A — Motor de criterios
 
 **Rama:** `fix/seccion-a-motor-criterios`  
-**Ronda:** corrección A1–A20 (manifiesto `docs/revision-seccion-a-motor-criterios.md`)  
+**Ronda:** corrección A1–A20 (manifiesto `docs/revisiones/revision-seccion-a-motor-criterios.md`)  
 **Orquestador:** `orquestador-seccion` (retomas #1 y #2)  
 **Resolutores:** `resolutor-rapido` (composer-2.5-fast) · `resolutor-profundo` (Grok 4.5 heredado del orquestador; slug `cursor-grok-4.5-high-fast` no disponible en allowlist Task)  
 **Push:** no  
@@ -99,4 +99,4 @@ Comando: `npx ng test --watch=false --browsers=ChromeHeadless`
 
 - Informe de sección: este fichero.
 - Heartbeats: `docs/proceso/progreso-ronda.md`.
-- **No** se ha escrito el resultado consolidado de ronda (`docs/revision-seccion-a-motor-criterios-resultado.md`); eso corresponde a `orquestador-revision` al cerrar.
+- **No** se ha escrito el resultado consolidado de ronda (`docs/revisiones/revision-seccion-a-motor-criterios-resultado.md`); eso corresponde a `orquestador-revision` al cerrar.

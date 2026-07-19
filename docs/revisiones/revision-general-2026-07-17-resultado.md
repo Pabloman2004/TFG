@@ -1,11 +1,11 @@
 # Revisión general del proyecto — Resultado consolidado (ronda 2026-07-17)
 
-- **Manifiesto:** `docs/proceso/manifiesto-revision-general-2026-07-17.md`
+- **Manifiesto:** `docs/revisiones/manifiesto-revision-general-2026-07-17.md`
 - **Informes de sección** (todos revisados y aprobados por el orquestador):
-  - A — Motor de criterios y datos clínicos: `docs/proceso/informe-revision-general-seccion-a.md`
-  - B — Servicios de aplicación y UI: `docs/proceso/informe-revision-general-seccion-b.md`
-  - C — Coherencia documental: `docs/proceso/informe-revision-general-seccion-c.md`
-  - D — Inventario y reorganización de `.md`: `docs/proceso/informe-revision-general-seccion-d.md`
+  - A — Motor de criterios y datos clínicos: `docs/revisiones/informe-revision-general-seccion-a.md`
+  - B — Servicios de aplicación y UI: `docs/revisiones/informe-revision-general-seccion-b.md`
+  - C — Coherencia documental: `docs/revisiones/informe-revision-general-seccion-c.md`
+  - D — Inventario y reorganización de `.md`: `docs/revisiones/informe-revision-general-seccion-d.md`
 - **Modo de la ronda:** solo análisis. No se ha cambiado código ni movido/borrado
   ningún fichero. Todo lo de abajo es propuesta pendiente de decisión.
 - **Verificación del orquestador:** hallazgos de severidad alta re-comprobados
@@ -27,7 +27,7 @@ información/decisiones erróneas).
 | A3 | STOPP-B20-ANTIHIPERTENSIVO solo evalúa la clase ANTIHIPERTENSIVO_CENTRAL aunque summary/excludes prometen también diuréticos y alfabloqueantes | `criteria.json:316-322` |
 | B1 | El historial es una feature inaccesible: nada llama a `saveToHistory()` y ningún template enlaza `/historial` | `case-store.service.ts:114` |
 | C1 | `TASKS.md` marca T7 (borrar `app.ts`/`app.config.ts`…) como hecha pero nunca se ejecutó; los 5 ficheros siguen ahí | `TASKS.md:36` |
-| C2 | La copia canónica `docs/dudas-raquel-pendientes.md` está atrasada: las §9–§10 (anclas dx, overrides CV) solo existen en la copia de raíz; borrar la raíz sin fusionar pierde las preguntas para Raquel | hashes `f961252` vs `3fea4fc` |
+| C2 | La copia canónica `docs/clinico/dudas-raquel-pendientes.md` está atrasada: las §9–§10 (anclas dx, overrides CV) solo existen en la copia de raíz; borrar la raíz sin fusionar pierde las preguntas para Raquel | hashes `f961252` vs `3fea4fc` |
 
 ## 2. Bugs de severidad MEDIA (resumen; detalle en los informes)
 
@@ -120,18 +120,18 @@ bug primero).
 
 Inventario completo (55 ficheros, veredicto uno a uno, estructura de carpetas y
 bloque de comandos `git mv`/`git rm` listo para ejecutar) en
-`docs/proceso/informe-revision-general-seccion-d.md`. Resumen ejecutivo:
+`docs/revisiones/informe-revision-general-seccion-d.md`. Resumen ejecutivo:
 
 ### Borrar (4 — duplicados de raíz; los canónicos quedan en `docs/`)
 | Fichero | Motivo |
 |---------|--------|
 | `RALPH.md` | Idéntico byte a byte a `docs/proceso/RALPH.md` |
 | `VERIFICATION.md` | Idéntico a `docs/proceso/VERIFICATION.md` |
-| `STOPP_START_CRITERIOS_CONTEXTO.md` | Idéntico a `docs/STOPP_START_CRITERIOS_CONTEXTO.md` (la de docs/ es la referenciada por `check-links.sh`) |
+| `STOPP_START_CRITERIOS_CONTEXTO.md` | Idéntico a `docs/clinico/STOPP_START_CRITERIOS_CONTEXTO.md` (la de docs/ es la referenciada por `check-links.sh`) |
 | `REVIEW.md` | Copia atrasada (describe `additionalCategories`, ya eliminado); la viva es `docs/proceso/REVIEW.md` |
 
 ### Fusionar (4)
-- `dudas-raquel-pendientes.md` (raíz) → volcar sobre `docs/dudas-raquel-pendientes.md` y borrar la raíz. **La raíz es la versión nueva** (§9–§10); no borrar sin fusionar (C2).
+- `dudas-raquel-pendientes.md` (raíz) → volcar sobre `docs/clinico/dudas-raquel-pendientes.md` y borrar la raíz. **La raíz es la versión nueva** (§9–§10); no borrar sin fusionar (C2).
 - `docs/revision-dosis-duracion-seccion-{inventario,lagunas}.md` → subsumidos por el `-resultado`; borrar solo tras confirmación de que no aportan nada extra.
 - `plans/checklist-prueba-manual-cardiovascular.md` → subconjunto (45 de 216) del checklist maestro; borrar tras confirmar cobertura 1:1.
 
@@ -179,7 +179,7 @@ commitear (comandos exactos en el informe D, paso 9-11).
 ## Adenda (2026-07-18) — impacto de la ronda d10-d11-h4-l6-campos-multitab
 
 Tras el cierre de esta ronda, la ronda correctiva
-`docs/revision-d10-d11-h4-l6-campos-multitab-resultado.md` aplicó fixes que el
+`docs/revisiones/revision-d10-d11-h4-l6-campos-multitab-resultado.md` aplicó fixes que el
 orquestador ha verificado (diff revisado + suite completa **669 SUCCESS**):
 
 - **A11**: parcialmente mitigado — el parche `relevance.medicationClasses`

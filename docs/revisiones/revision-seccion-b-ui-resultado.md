@@ -2,7 +2,7 @@
 
 - **Rama:** `fix/seccion-b-ui-servicios`
 - **Fecha:** 2026-07-19
-- **Prompt:** `plans/prompt-correccion-seccion-b.md`
+- **Prompt:** `docs/revisiones/prompt-correccion-seccion-b.md`
 - **Alcance no tocado (Sección A):** `criteria.json`, `core/services/`, `core/data/`, `group-visibility.ts`
 
 ## Totales de suite

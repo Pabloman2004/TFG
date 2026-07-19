@@ -1,7 +1,7 @@
 # Informe de sección D — Inventario y reorganización de `.md`
 
 Ronda: revisión general 2026-07-17
-(`docs/proceso/manifiesto-revision-general-2026-07-17.md`).
+(`docs/revisiones/manifiesto-revision-general-2026-07-17.md`).
 Modo: solo análisis. No se ha movido, borrado ni renombrado ningún fichero;
 este informe es el único artefacto escrito.
 
@@ -27,14 +27,14 @@ Inventario real: **55 ficheros `.md`** fuera de `node_modules`, `.git`,
 3. **Bug latente detectado de paso** (severidad media, comprobación:
    `./scripts/check-links.sh`): hay 4 docs de primer nivel que NO están en
    `EXCLUDED_DOCS` ni tienen `@linked`
-   (`docs/plan-mejora-dosis-duracion-medicacion.md`,
-   `docs/revision-dosis-duracion-medicacion-resultado.md`,
-   `docs/revision-dosis-duracion-seccion-inventario.md`,
-   `docs/revision-dosis-duracion-seccion-lagunas.md`) → deberían disparar
+   (`docs/propuestas/plan-mejora-dosis-duracion-medicacion.md`,
+   `docs/revisiones/revision-dosis-duracion-medicacion-resultado.md`,
+   `docs/revisiones/revision-dosis-duracion-seccion-inventario.md`,
+   `docs/revisiones/revision-dosis-duracion-seccion-lagunas.md`) → deberían disparar
    DOC_HUERFANO hoy. La reorganización propuesta (moverlos a subcarpetas) lo
    resuelve de raíz.
 4. **Duplicados raíz vs docs, verificados con `git hash-object`:**
-   - `STOPP_START_CRITERIOS_CONTEXTO.md` = `docs/STOPP_START_CRITERIOS_CONTEXTO.md`
+   - `STOPP_START_CRITERIOS_CONTEXTO.md` = `docs/clinico/STOPP_START_CRITERIOS_CONTEXTO.md`
      (hash `80e1ed1c`, **idénticos byte a byte**). La copia de `docs/` está
      referenciada por `scripts/check-links.sh:189` → borrar la de raíz.
    - `RALPH.md` = `docs/proceso/RALPH.md` (hash `d05c757f`, **idénticos**) →
@@ -46,7 +46,7 @@ Inventario real: **55 ficheros `.md`** fuera de `node_modules`, `.git`,
      2026-07-17; la raíz conserva un párrafo sobre `additionalCategories` ya
      retirado en la copia actualizada) → borrar la de raíz.
    - `dudas-raquel-pendientes.md` (raíz, `f9612529`) ≠
-     `docs/dudas-raquel-pendientes.md` (`3fea4fc4`). **Aquí la viva es la de
+     `docs/clinico/dudas-raquel-pendientes.md` (`3fea4fc4`). **Aquí la viva es la de
      RAÍZ** (actualizada 2026-06-14, añade secciones 9 y 10 sobre
      dx-dependencies; la de `docs/` se quedó en 2026-05-22). Como
      `check-links.sh:190` referencia la ruta `docs/…` → FUSIONAR: volcar el
@@ -82,42 +82,42 @@ Tamaños en bytes; fecha = último commit que tocó el fichero.
 | 17 | `docs/informes-y-exportacion.md` | 9K | 2026-06-12 | Doc conceptual @linked: PDF/export/portapapeles | VIVO |
 | 18 | `docs/motor-criterios.md` | 15.2K | 2026-07-17 | Doc conceptual @linked: motor json-logic | VIVO |
 | 19 | `docs/navegacion-y-shell.md` | 6.6K | 2026-06-12 | Doc conceptual @linked: bootstrap y rutas | VIVO |
-| 20 | `docs/uml-diagrams.md` | 12.3K | 2026-06-14 | Diagramas UML de la app | VIVO |
-| 21 | `docs/STOPP_START_CRITERIOS_CONTEXTO.md` | 31.9K | 2026-06-12 | Contexto clínico STOPP/START v3 (copia canónica, en whitelist del script) | VIVO |
-| 22 | `docs/dudas-raquel-pendientes.md` | 9.3K | 2026-06-12 | Dudas tutora, versión ATRASADA (2026-05-22) | OBSOLETO (la raíz es más nueva) |
-| 23 | `docs/plan-mejora-dosis-duracion-medicacion.md` | 22K | 2026-07-17 | Plan de mejora PLAN-01 dosis/duración (sin implementar) | VIVO |
-| 24 | `docs/plan-visibilidad-medicamentos-multiclase.md` | 6.4K | 2026-07-17 | Plan de visibilidad multiclase (implementado en commit 1a49c0b) | HISTÓRICO |
-| 25 | `docs/propuesta-p14.md` | 10.9K | 2026-06-12 | Propuesta UI P14: unificar orientación de opciones (no implementada) | VIVO |
-| 26 | `docs/propuesta-p15.md` | 17.9K | 2026-06-12 | Propuesta P15: selector en árbol (iteración 1 implementada, resto pendiente) | VIVO |
-| 27 | `docs/revision-criterios-d-h.md` | 3.8K | 2026-07-17 | Informe ronda TDD criterios STOPP D-H (cerrada) | HISTÓRICO |
-| 28 | `docs/revision-dosis-duracion-medicacion.md` | 6.4K | 2026-07-17 | Manifiesto ronda dosis/duración | HISTÓRICO |
-| 29 | `docs/revision-dosis-duracion-medicacion-resultado.md` | 4.3K | 2026-07-17 | Resultado consolidado de esa ronda | HISTÓRICO |
-| 30 | `docs/revision-dosis-duracion-seccion-inventario.md` | 3.9K | 2026-07-17 | Informe de sección (inventario) de esa ronda | HISTÓRICO (subsumido por el resultado) |
-| 31 | `docs/revision-dosis-duracion-seccion-lagunas.md` | 8K | 2026-07-17 | Informe de sección (lagunas) de esa ronda | HISTÓRICO (subsumido por el resultado) |
-| 32 | `docs/revision-pendientes-relevancia.md` | 2.9K | 2026-07-17 | Manifiesto ronda pendientes de relevancia | HISTÓRICO |
-| 33 | `docs/revision-pendientes-relevancia-resultado.md` | 1.8K | 2026-07-17 | Resultado de esa ronda | HISTÓRICO |
-| 34 | `docs/revision-prueba-manual-visibilidad-multiclase.md` | 4.7K | 2026-07-17 | Informe revisión de la prueba manual multiclase | HISTÓRICO |
-| 35 | `docs/revision-visibilidad-clinica-por-sistema.md` | 12K | 2026-07-17 | Auditoría de 216 criterios + implementación multiclase | HISTÓRICO |
-| 36 | `docs/proceso/informe-revision-pendientes-relevancia.md` | 3.8K | 2026-07-17 | Informe de cierre de ronda pendientes-relevancia | HISTÓRICO |
-| 37 | `docs/proceso/manifiesto-revision-general-2026-07-17.md` | 3.7K | sin commit | Manifiesto de la ronda ACTUAL | VIVO |
-| 38 | `docs/proceso/manifiesto-revision-pendientes-relevancia.md` | 2.4K | 2026-07-17 | Manifiesto ronda pendientes-relevancia (cerrada) | HISTÓRICO |
+| 20 | `docs/arquitectura/uml-diagrams.md` | 12.3K | 2026-06-14 | Diagramas UML de la app | VIVO |
+| 21 | `docs/clinico/STOPP_START_CRITERIOS_CONTEXTO.md` | 31.9K | 2026-06-12 | Contexto clínico STOPP/START v3 (copia canónica, en whitelist del script) | VIVO |
+| 22 | `docs/clinico/dudas-raquel-pendientes.md` | 9.3K | 2026-06-12 | Dudas tutora, versión ATRASADA (2026-05-22) | OBSOLETO (la raíz es más nueva) |
+| 23 | `docs/propuestas/plan-mejora-dosis-duracion-medicacion.md` | 22K | 2026-07-17 | Plan de mejora PLAN-01 dosis/duración (sin implementar) | VIVO |
+| 24 | `docs/propuestas/plan-visibilidad-medicamentos-multiclase.md` | 6.4K | 2026-07-17 | Plan de visibilidad multiclase (implementado en commit 1a49c0b) | HISTÓRICO |
+| 25 | `docs/propuestas/propuesta-p14.md` | 10.9K | 2026-06-12 | Propuesta UI P14: unificar orientación de opciones (no implementada) | VIVO |
+| 26 | `docs/propuestas/propuesta-p15.md` | 17.9K | 2026-06-12 | Propuesta P15: selector en árbol (iteración 1 implementada, resto pendiente) | VIVO |
+| 27 | `docs/revisiones/revision-criterios-d-h.md` | 3.8K | 2026-07-17 | Informe ronda TDD criterios STOPP D-H (cerrada) | HISTÓRICO |
+| 28 | `docs/revisiones/revision-dosis-duracion-medicacion.md` | 6.4K | 2026-07-17 | Manifiesto ronda dosis/duración | HISTÓRICO |
+| 29 | `docs/revisiones/revision-dosis-duracion-medicacion-resultado.md` | 4.3K | 2026-07-17 | Resultado consolidado de esa ronda | HISTÓRICO |
+| 30 | `docs/revisiones/revision-dosis-duracion-seccion-inventario.md` | 3.9K | 2026-07-17 | Informe de sección (inventario) de esa ronda | HISTÓRICO (subsumido por el resultado) |
+| 31 | `docs/revisiones/revision-dosis-duracion-seccion-lagunas.md` | 8K | 2026-07-17 | Informe de sección (lagunas) de esa ronda | HISTÓRICO (subsumido por el resultado) |
+| 32 | `docs/revisiones/revision-pendientes-relevancia.md` | 2.9K | 2026-07-17 | Manifiesto ronda pendientes de relevancia | HISTÓRICO |
+| 33 | `docs/revisiones/revision-pendientes-relevancia-resultado.md` | 1.8K | 2026-07-17 | Resultado de esa ronda | HISTÓRICO |
+| 34 | `docs/revisiones/revision-prueba-manual-visibilidad-multiclase.md` | 4.7K | 2026-07-17 | Informe revisión de la prueba manual multiclase | HISTÓRICO |
+| 35 | `docs/revisiones/revision-visibilidad-clinica-por-sistema.md` | 12K | 2026-07-17 | Auditoría de 216 criterios + implementación multiclase | HISTÓRICO |
+| 36 | `docs/revisiones/informe-revision-pendientes-relevancia.md` | 3.8K | 2026-07-17 | Informe de cierre de ronda pendientes-relevancia | HISTÓRICO |
+| 37 | `docs/revisiones/manifiesto-revision-general-2026-07-17.md` | 3.7K | sin commit | Manifiesto de la ronda ACTUAL | VIVO |
+| 38 | `docs/revisiones/manifiesto-revision-pendientes-relevancia.md` | 2.4K | 2026-07-17 | Manifiesto ronda pendientes-relevancia (cerrada) | HISTÓRICO |
 | 39 | `docs/proceso/RALPH.md` | 3.2K | 2026-06-12 | Cómo lanzar el loop Ralph (copia canónica) | VIVO (loop con tareas pendientes) |
 | 40 | `docs/proceso/REVIEW.md` | 9.5K | 2026-07-17 | Consolidado de hallazgos (copia viva, actualizada) | VIVO (fuente del loop Ralph) |
 | 41 | `docs/proceso/VERIFICATION.md` | 4.2K | 2026-06-12 | Verificación Linked Chunks (copia canónica) | HISTÓRICO |
-| 42 | `docs/propuesta-p14.md` → ya listado | — | — | — | — |
-| 43 | `plans/analisis-proyecto.md` | 25.5K | 2026-07-12 | Análisis de arquitectura y salud del proyecto (solo lectura) | HISTÓRICO |
-| 44 | `plans/analisis-relevancia.md` | 27.8K | 2026-07-08 | Análisis de relevancia de meds por sistema (caso Digoxina) | HISTÓRICO |
-| 45 | `plans/auditoria-cardiovascular.md` | 25.1K | 2026-07-08 | Auditoría del sistema cardiovascular | HISTÓRICO |
-| 46 | `plans/verificacion-auditoria.md` | 14.7K | 2026-07-08 | Verificación escéptica de la auditoría CV | HISTÓRICO |
+| 42 | `docs/propuestas/propuesta-p14.md` → ya listado | — | — | — | — |
+| 43 | `docs/revisiones/analisis-proyecto.md` | 25.5K | 2026-07-12 | Análisis de arquitectura y salud del proyecto (solo lectura) | HISTÓRICO |
+| 44 | `docs/revisiones/analisis-relevancia.md` | 27.8K | 2026-07-08 | Análisis de relevancia de meds por sistema (caso Digoxina) | HISTÓRICO |
+| 45 | `docs/revisiones/auditoria-cardiovascular.md` | 25.1K | 2026-07-08 | Auditoría del sistema cardiovascular | HISTÓRICO |
+| 46 | `docs/revisiones/verificacion-auditoria.md` | 14.7K | 2026-07-08 | Verificación escéptica de la auditoría CV | HISTÓRICO |
 | 47 | `plans/checklist-prueba-manual-cardiovascular.md` | 19.2K | 2026-07-17 | Checklist manual de los 45 criterios CV | DUPLICADO funcional (subconjunto del maestro) |
 | 48 | `plans/checklist-prueba-manual-todos-criterios.md` | 76.4K | 2026-07-17 | Checklist manual maestro de los 216 criterios | VIVO |
 | 49 | `plans/checklist-prueba-manual-visibilidad-multiclase.md` | 4K | 2026-07-17 (modificado en working tree) | Checklist manual visibilidad multiclase | VIVO |
-| 50 | `analysis/app-shell.md` | 10.3K | 2026-06-12 | Análisis por módulo (fase previa a los docs @linked) | HISTÓRICO |
-| 51 | `analysis/core.md` | 8.5K | 2026-06-12 | Ídem | HISTÓRICO |
-| 52 | `analysis/core-data.md` | 8.1K | 2026-06-12 | Ídem | HISTÓRICO |
-| 53 | `analysis/core-services.md` | 10K | 2026-06-12 | Ídem | HISTÓRICO |
-| 54 | `analysis/historial.md` | 4.9K | 2026-06-12 | Ídem | HISTÓRICO |
-| 55 | `analysis/steps.md` | 9.5K | 2026-06-12 | Ídem | HISTÓRICO |
+| 50 | `docs/historico/analysis/app-shell.md` | 10.3K | 2026-06-12 | Análisis por módulo (fase previa a los docs @linked) | HISTÓRICO |
+| 51 | `docs/historico/analysis/core.md` | 8.5K | 2026-06-12 | Ídem | HISTÓRICO |
+| 52 | `docs/historico/analysis/core-data.md` | 8.1K | 2026-06-12 | Ídem | HISTÓRICO |
+| 53 | `docs/historico/analysis/core-services.md` | 10K | 2026-06-12 | Ídem | HISTÓRICO |
+| 54 | `docs/historico/analysis/historial.md` | 4.9K | 2026-06-12 | Ídem | HISTÓRICO |
+| 55 | `docs/historico/analysis/steps.md` | 9.5K | 2026-06-12 | Ídem | HISTÓRICO |
 | 56 | `.cursor/plans/dx_deps_generalizadas_31e1e000.plan.md` | 14.6K | 2026-06-14 | Plan interno de Cursor (todos completados) | HISTÓRICO |
 
 (La fila 42 es un descarte de numeración; total real: 55 ficheros.)
@@ -190,7 +190,7 @@ informes de sección migran también a `docs/revisiones/`.
 |-------------|-----------|-------------------|---------------|
 | `CLAUDE.md` | INTOCABLE | raíz | Leído por Claude Code en cada sesión. |
 | `AGENTS.md` | INTOCABLE | raíz | Cursor Cloud lee `AGENTS.md` de raíz. |
-| `MEMORY.md` | INTOCABLE | raíz | Memoria de agentes; citado por `docs/proceso/informe-revision-pendientes-relevancia.md:65`. |
+| `MEMORY.md` | INTOCABLE | raíz | Memoria de agentes; citado por `docs/revisiones/informe-revision-pendientes-relevancia.md:65`. |
 | `TASKS.md` | INTOCABLE | raíz | Loop Ralph con 5 tareas [ ]; `docs/proceso/RALPH.md:5` lo exige en raíz. |
 | `scratchpad.md` | INTOCABLE | raíz | Requerido en raíz por el loop (`RALPH.md:6`); borrable solo al cerrar el loop. |
 | `.cursor/plans/dx_deps_generalizadas_31e1e000.plan.md` | INTOCABLE | donde está | Almacén interno de Cursor; no es documentación del proyecto. |
@@ -198,35 +198,35 @@ informes de sección migran también a `docs/revisiones/`.
 | `REVIEW.md` (raíz) | BORRAR | — | Copia atrasada; la viva es `docs/proceso/REVIEW.md` (commit 2026-07-17). |
 | `VERIFICATION.md` (raíz) | BORRAR | — | Idéntico a `docs/proceso/VERIFICATION.md` (hash `b4ef5fa6`). |
 | `STOPP_START_CRITERIOS_CONTEXTO.md` (raíz) | BORRAR | — | Idéntico a la copia de `docs/` (hash `80e1ed1c`), que es la referenciada por `check-links.sh:189`. |
-| `dudas-raquel-pendientes.md` (raíz) | FUSIONAR | → `docs/dudas-raquel-pendientes.md` | La raíz es la versión nueva (secciones 9-10); se vuelca sobre la ruta que conoce el tooling y se borra la raíz. |
-| `docs/dudas-raquel-pendientes.md` | CONSERVAR | `docs/clinico/dudas-raquel-pendientes.md` (tras fusión) | Dudas de la tutora = material clínico del TFG; actualizar `check-links.sh:190`. |
-| `docs/STOPP_START_CRITERIOS_CONTEXTO.md` | CONSERVAR | `docs/clinico/` | Contexto clínico de referencia; actualizar `check-links.sh:189`. |
+| `dudas-raquel-pendientes.md` (raíz) | FUSIONAR | → `docs/clinico/dudas-raquel-pendientes.md` | La raíz es la versión nueva (secciones 9-10); se vuelca sobre la ruta que conoce el tooling y se borra la raíz. |
+| `docs/clinico/dudas-raquel-pendientes.md` | CONSERVAR | `docs/clinico/dudas-raquel-pendientes.md` (tras fusión) | Dudas de la tutora = material clínico del TFG; actualizar `check-links.sh:190`. |
+| `docs/clinico/STOPP_START_CRITERIOS_CONTEXTO.md` | CONSERVAR | `docs/clinico/` | Contexto clínico de referencia; actualizar `check-links.sh:189`. |
 | `docs/_map.md` | INTOCABLE | `docs/_map.md` | Ruta cableada en `check-links.sh:15`. |
 | `docs/{accesibilidad-ui,caso-clinico,catalogo-clinico,flujo-pasos,historial,informes-y-exportacion,motor-criterios,navegacion-y-shell}.md` | CONSERVAR | sin mover | 36 comentarios `@linked` en `src/` + `_map.md` + script dependen de la ruta exacta. |
-| `docs/uml-diagrams.md` | CONSERVAR | `docs/arquitectura/` | Doc de arquitectura sin dependencias de ruta (solo entrada de whitelist, que se limpia). |
-| `docs/propuesta-p14.md` | CONSERVAR | `docs/propuestas/` | Propuesta aún no implementada. |
-| `docs/propuesta-p15.md` | CONSERVAR | `docs/propuestas/` | Propuesta parcialmente implementada (pasos 6-7 pendientes). |
-| `docs/plan-mejora-dosis-duracion-medicacion.md` | CONSERVAR | `docs/propuestas/` | Plan PLAN-01 pendiente de decisión del usuario. |
-| `docs/plan-visibilidad-medicamentos-multiclase.md` | CONSERVAR | `docs/propuestas/` | Ya implementado (1a49c0b) pero documenta la decisión de diseño. |
-| `docs/revision-criterios-d-h.md` | CONSERVAR | `docs/revisiones/` | Informe de ronda cerrada; traza del TFG. |
-| `docs/revision-dosis-duracion-medicacion.md` | CONSERVAR | `docs/revisiones/` | Manifiesto de ronda cerrada. |
-| `docs/revision-dosis-duracion-medicacion-resultado.md` | CONSERVAR | `docs/revisiones/` | Resultado consolidado de la ronda. |
-| `docs/revision-dosis-duracion-seccion-inventario.md` | FUSIONAR | con `…-medicacion-resultado.md` | Informe de sección subsumido por el resultado; si el humano confirma que no aporta nada extra, borrar; si no, mover a `docs/revisiones/`. |
-| `docs/revision-dosis-duracion-seccion-lagunas.md` | FUSIONAR | con `…-medicacion-resultado.md` | Ídem. |
-| `docs/revision-pendientes-relevancia.md` | CONSERVAR | `docs/revisiones/` | Manifiesto de ronda cerrada. |
-| `docs/revision-pendientes-relevancia-resultado.md` | CONSERVAR | `docs/revisiones/` | Resultado de ronda cerrada. |
-| `docs/revision-prueba-manual-visibilidad-multiclase.md` | CONSERVAR | `docs/revisiones/` | Informe de ronda cerrada. |
-| `docs/revision-visibilidad-clinica-por-sistema.md` | CONSERVAR | `docs/revisiones/` | Auditoría con valor de traza. |
-| `docs/proceso/informe-revision-pendientes-relevancia.md` | CONSERVAR | `docs/revisiones/` | Ronda cerrada; deja de ser "proceso" vivo. |
-| `docs/proceso/manifiesto-revision-pendientes-relevancia.md` | CONSERVAR | `docs/revisiones/` | Ídem. |
-| `docs/proceso/manifiesto-revision-general-2026-07-17.md` | CONSERVAR | `docs/proceso/` (a `docs/revisiones/` al cerrar) | Ronda en curso. |
+| `docs/arquitectura/uml-diagrams.md` | CONSERVAR | `docs/arquitectura/` | Doc de arquitectura sin dependencias de ruta (solo entrada de whitelist, que se limpia). |
+| `docs/propuestas/propuesta-p14.md` | CONSERVAR | `docs/propuestas/` | Propuesta aún no implementada. |
+| `docs/propuestas/propuesta-p15.md` | CONSERVAR | `docs/propuestas/` | Propuesta parcialmente implementada (pasos 6-7 pendientes). |
+| `docs/propuestas/plan-mejora-dosis-duracion-medicacion.md` | CONSERVAR | `docs/propuestas/` | Plan PLAN-01 pendiente de decisión del usuario. |
+| `docs/propuestas/plan-visibilidad-medicamentos-multiclase.md` | CONSERVAR | `docs/propuestas/` | Ya implementado (1a49c0b) pero documenta la decisión de diseño. |
+| `docs/revisiones/revision-criterios-d-h.md` | CONSERVAR | `docs/revisiones/` | Informe de ronda cerrada; traza del TFG. |
+| `docs/revisiones/revision-dosis-duracion-medicacion.md` | CONSERVAR | `docs/revisiones/` | Manifiesto de ronda cerrada. |
+| `docs/revisiones/revision-dosis-duracion-medicacion-resultado.md` | CONSERVAR | `docs/revisiones/` | Resultado consolidado de la ronda. |
+| `docs/revisiones/revision-dosis-duracion-seccion-inventario.md` | FUSIONAR | con `…-medicacion-resultado.md` | Informe de sección subsumido por el resultado; si el humano confirma que no aporta nada extra, borrar; si no, mover a `docs/revisiones/`. |
+| `docs/revisiones/revision-dosis-duracion-seccion-lagunas.md` | FUSIONAR | con `…-medicacion-resultado.md` | Ídem. |
+| `docs/revisiones/revision-pendientes-relevancia.md` | CONSERVAR | `docs/revisiones/` | Manifiesto de ronda cerrada. |
+| `docs/revisiones/revision-pendientes-relevancia-resultado.md` | CONSERVAR | `docs/revisiones/` | Resultado de ronda cerrada. |
+| `docs/revisiones/revision-prueba-manual-visibilidad-multiclase.md` | CONSERVAR | `docs/revisiones/` | Informe de ronda cerrada. |
+| `docs/revisiones/revision-visibilidad-clinica-por-sistema.md` | CONSERVAR | `docs/revisiones/` | Auditoría con valor de traza. |
+| `docs/revisiones/informe-revision-pendientes-relevancia.md` | CONSERVAR | `docs/revisiones/` | Ronda cerrada; deja de ser "proceso" vivo. |
+| `docs/revisiones/manifiesto-revision-pendientes-relevancia.md` | CONSERVAR | `docs/revisiones/` | Ídem. |
+| `docs/revisiones/manifiesto-revision-general-2026-07-17.md` | CONSERVAR | `docs/proceso/` (a `docs/revisiones/` al cerrar) | Ronda en curso. |
 | `docs/proceso/RALPH.md` | CONSERVAR | `docs/proceso/` | Instrucciones del loop aún abierto (T12-T16). |
 | `docs/proceso/REVIEW.md` | CONSERVAR | `docs/proceso/` | Fuente viva del loop Ralph; a `docs/revisiones/` cuando el loop cierre. |
 | `docs/proceso/VERIFICATION.md` | CONSERVAR | `docs/proceso/` | Evidencia de verificación del patrón; mover a `docs/revisiones/` al cerrar el loop. |
-| `plans/analisis-proyecto.md` | CONSERVAR | `docs/revisiones/` | Análisis de solo lectura terminado; no es un plan activo. |
-| `plans/analisis-relevancia.md` | CONSERVAR | `docs/revisiones/` | Ídem. |
-| `plans/auditoria-cardiovascular.md` | CONSERVAR | `docs/revisiones/` | Auditoría terminada. |
-| `plans/verificacion-auditoria.md` | CONSERVAR | `docs/revisiones/` | Verificación de la auditoría, terminada. |
+| `docs/revisiones/analisis-proyecto.md` | CONSERVAR | `docs/revisiones/` | Análisis de solo lectura terminado; no es un plan activo. |
+| `docs/revisiones/analisis-relevancia.md` | CONSERVAR | `docs/revisiones/` | Ídem. |
+| `docs/revisiones/auditoria-cardiovascular.md` | CONSERVAR | `docs/revisiones/` | Auditoría terminada. |
+| `docs/revisiones/verificacion-auditoria.md` | CONSERVAR | `docs/revisiones/` | Verificación de la auditoría, terminada. |
 | `plans/checklist-prueba-manual-cardiovascular.md` | FUSIONAR | con `checklist-prueba-manual-todos-criterios.md` | Los 45 criterios CV son subconjunto del checklist maestro de 216; borrar tras confirmar cobertura 1:1. |
 | `plans/checklist-prueba-manual-todos-criterios.md` | CONSERVAR | `plans/` | Checklist maestro activo. |
 | `plans/checklist-prueba-manual-visibilidad-multiclase.md` | CONSERVAR | `plans/` | Activo (modificado en el working tree actual). |
@@ -249,46 +249,46 @@ git checkout -b chore/reorganizacion-docs
 git rm RALPH.md VERIFICATION.md STOPP_START_CRITERIOS_CONTEXTO.md REVIEW.md
 
 # 2. Fusión dudas-raquel: la raíz es la versión nueva -> volcarla sobre docs/ y borrar raíz
-cp dudas-raquel-pendientes.md docs/dudas-raquel-pendientes.md
-git add docs/dudas-raquel-pendientes.md
+cp dudas-raquel-pendientes.md docs/clinico/dudas-raquel-pendientes.md
+git add docs/clinico/dudas-raquel-pendientes.md
 git rm dudas-raquel-pendientes.md
 
 # 3. Crear la estructura destino
 mkdir -p docs/clinico docs/arquitectura docs/propuestas docs/revisiones docs/historico/analysis
 
 # 4. Clínico
-git mv docs/STOPP_START_CRITERIOS_CONTEXTO.md docs/clinico/
-git mv docs/dudas-raquel-pendientes.md docs/clinico/
+git mv docs/clinico/STOPP_START_CRITERIOS_CONTEXTO.md docs/clinico/
+git mv docs/clinico/dudas-raquel-pendientes.md docs/clinico/
 
 # 5. Arquitectura
-git mv docs/uml-diagrams.md docs/arquitectura/
+git mv docs/arquitectura/uml-diagrams.md docs/arquitectura/
 
 # 6. Propuestas y planes de mejora
-git mv docs/propuesta-p14.md docs/propuestas/
-git mv docs/propuesta-p15.md docs/propuestas/
-git mv docs/plan-mejora-dosis-duracion-medicacion.md docs/propuestas/
-git mv docs/plan-visibilidad-medicamentos-multiclase.md docs/propuestas/
+git mv docs/propuestas/propuesta-p14.md docs/propuestas/
+git mv docs/propuestas/propuesta-p15.md docs/propuestas/
+git mv docs/propuestas/plan-mejora-dosis-duracion-medicacion.md docs/propuestas/
+git mv docs/propuestas/plan-visibilidad-medicamentos-multiclase.md docs/propuestas/
 
 # 7. Revisiones cerradas (desde docs/, docs/proceso/ y plans/)
-git mv docs/revision-criterios-d-h.md docs/revisiones/
-git mv docs/revision-dosis-duracion-medicacion.md docs/revisiones/
-git mv docs/revision-dosis-duracion-medicacion-resultado.md docs/revisiones/
-git mv docs/revision-dosis-duracion-seccion-inventario.md docs/revisiones/
-git mv docs/revision-dosis-duracion-seccion-lagunas.md docs/revisiones/
-git mv docs/revision-pendientes-relevancia.md docs/revisiones/
-git mv docs/revision-pendientes-relevancia-resultado.md docs/revisiones/
-git mv docs/revision-prueba-manual-visibilidad-multiclase.md docs/revisiones/
-git mv docs/revision-visibilidad-clinica-por-sistema.md docs/revisiones/
-git mv docs/proceso/informe-revision-pendientes-relevancia.md docs/revisiones/
-git mv docs/proceso/manifiesto-revision-pendientes-relevancia.md docs/revisiones/
-git mv plans/analisis-proyecto.md docs/revisiones/
-git mv plans/analisis-relevancia.md docs/revisiones/
-git mv plans/auditoria-cardiovascular.md docs/revisiones/
-git mv plans/verificacion-auditoria.md docs/revisiones/
+git mv docs/revisiones/revision-criterios-d-h.md docs/revisiones/
+git mv docs/revisiones/revision-dosis-duracion-medicacion.md docs/revisiones/
+git mv docs/revisiones/revision-dosis-duracion-medicacion-resultado.md docs/revisiones/
+git mv docs/revisiones/revision-dosis-duracion-seccion-inventario.md docs/revisiones/
+git mv docs/revisiones/revision-dosis-duracion-seccion-lagunas.md docs/revisiones/
+git mv docs/revisiones/revision-pendientes-relevancia.md docs/revisiones/
+git mv docs/revisiones/revision-pendientes-relevancia-resultado.md docs/revisiones/
+git mv docs/revisiones/revision-prueba-manual-visibilidad-multiclase.md docs/revisiones/
+git mv docs/revisiones/revision-visibilidad-clinica-por-sistema.md docs/revisiones/
+git mv docs/revisiones/informe-revision-pendientes-relevancia.md docs/revisiones/
+git mv docs/revisiones/manifiesto-revision-pendientes-relevancia.md docs/revisiones/
+git mv docs/revisiones/analisis-proyecto.md docs/revisiones/
+git mv docs/revisiones/analisis-relevancia.md docs/revisiones/
+git mv docs/revisiones/auditoria-cardiovascular.md docs/revisiones/
+git mv docs/revisiones/verificacion-auditoria.md docs/revisiones/
 
 # 8. Archivo histórico de la fase de análisis
-git mv analysis/app-shell.md analysis/core.md analysis/core-data.md \
-       analysis/core-services.md analysis/historial.md analysis/steps.md \
+git mv docs/historico/analysis/app-shell.md docs/historico/analysis/core.md docs/historico/analysis/core-data.md \
+       docs/historico/analysis/core-services.md docs/historico/analysis/historial.md docs/historico/analysis/steps.md \
        docs/historico/analysis/
 rmdir analysis
 
@@ -297,8 +297,8 @@ rmdir analysis
 #    escanea docs/*.md de primer nivel); se retocan las dos rutas que siguen
 #    siendo significativas y se eliminan las muertas:
 sed -i \
-  -e 's|"docs/STOPP_START_CRITERIOS_CONTEXTO.md"|"docs/clinico/STOPP_START_CRITERIOS_CONTEXTO.md"|' \
-  -e 's|"docs/dudas-raquel-pendientes.md"|"docs/clinico/dudas-raquel-pendientes.md"|' \
+  -e 's|"docs/clinico/STOPP_START_CRITERIOS_CONTEXTO.md"|"docs/clinico/STOPP_START_CRITERIOS_CONTEXTO.md"|' \
+  -e 's|"docs/clinico/dudas-raquel-pendientes.md"|"docs/clinico/dudas-raquel-pendientes.md"|' \
   -e '/"docs\/uml-diagrams.md"/d' \
   -e '/"docs\/propuesta-p14.md"/d' \
   -e '/"docs\/propuesta-p15.md"/d' \
@@ -345,9 +345,9 @@ Desde que se elaboró el inventario han aparecido **7 ficheros `.md` nuevos**
 
 | Ruta | Propósito | Veredicto |
 |------|-----------|-----------|
-| `docs/revision-general-2026-07-17-resultado.md` | Consolidado de la ronda general (bugs + plan + reorganización) | CONSERVAR → `docs/revisiones/` al cerrar su plan de acción |
-| `docs/revision-d10-d11-h4-l6-campos-multitab.md` | Manifiesto ronda correctiva D10/D11/H4/L6 (cerrada) | CONSERVAR → `docs/revisiones/` |
-| `docs/revision-d10-d11-h4-l6-campos-multitab-resultado.md` | Resultado de esa ronda (fixes aplicados, duda B1 abierta) | CONSERVAR → `docs/revisiones/` |
+| `docs/revisiones/revision-general-2026-07-17-resultado.md` | Consolidado de la ronda general (bugs + plan + reorganización) | CONSERVAR → `docs/revisiones/` al cerrar su plan de acción |
+| `docs/revisiones/revision-d10-d11-h4-l6-campos-multitab.md` | Manifiesto ronda correctiva D10/D11/H4/L6 (cerrada) | CONSERVAR → `docs/revisiones/` |
+| `docs/revisiones/revision-d10-d11-h4-l6-campos-multitab-resultado.md` | Resultado de esa ronda (fixes aplicados, duda B1 abierta) | CONSERVAR → `docs/revisiones/` |
 | `docs/proceso/informe-revision-d10-d11-h4-l6-seccion-{a,b,c}.md` (3) | Informes de sección de esa ronda | CONSERVAR → `docs/revisiones/` (contienen la investigación de la duda B1 aún abierta) |
 | `docs/proceso/progreso-ronda.md` | Log de progreso de ronda | FUSIONAR/BORRAR al cerrar: si es genérico reutilizable, dejar en `docs/proceso/`; si es de una ronda concreta, absorber en su resultado |
 
@@ -357,3 +357,33 @@ El bloque de comandos del informe sigue siendo válido; añadir al paso 7 los
 movimientos de la tabla anterior cuando las rondas respectivas queden
 committeadas y cerradas. Prioridad nueva: **commitear antes de mover** — todo
 lo listado está `??` en git y un `git clean` lo perdería (ver C13 ampliado).
+
+---
+
+## Adenda (2026-07-19) — reorganización ejecutada
+
+Se aplicó el bloque de comandos (pasos 1–9 + adenda) sobre el working tree.
+Los duplicados de raíz y la fusión de `dudas-raquel` ya venían de la
+sección C.
+
+**Estructura resultante:**
+```
+docs/
+├── _map.md + 7 docs @linked          (sin historial.md; feature eliminada en B1)
+├── clinico/                          STOPP_START…, dudas-raquel (fusionado)
+├── arquitectura/                     uml-diagrams.md
+├── propuestas/                       p14, p15, plan-dosis-duración, plan-multiclase
+├── revisiones/                       rondas cerradas + análisis/auditorías/prompts
+├── historico/analysis/               6 snapshots (antes en analysis/)
+└── proceso/                          RALPH, REVIEW, VERIFICATION, progreso-ronda
+plans/                                3 checklists (CV + maestro + multiclase)
+```
+
+**No ejecutado (paso 10 — requiere confirmación humana):**
+- Borrar `docs/revisiones/revision-dosis-duracion-seccion-{inventario,lagunas}.md`
+- Borrar `plans/checklist-prueba-manual-cardiovascular.md`
+
+**Tooling:** `scripts/check-links.sh` → `EXCLUDED_DOCS` vacía (CHECK 3 solo
+ve `docs/*.md` de primer nivel, todos @linked). `docs/_map.md` documenta las
+subcarpetas en Excluidos. Verificación: `./scripts/check-links.sh` →
+**OK: todo limpio (0 problemas)**.

@@ -1,6 +1,6 @@
 # Informe de revisión — Sección B: Servicios de aplicación y UI
 
-- **Ronda:** Revisión general del proyecto (manifiesto `docs/proceso/manifiesto-revision-general-2026-07-17.md`)
+- **Ronda:** Revisión general del proyecto (manifiesto `docs/revisiones/manifiesto-revision-general-2026-07-17.md`)
 - **Fecha:** 2026-07-17
 - **Método:** análisis estático (no se ejecutó la suite Karma). Todos los hallazgos verificados sobre el código real con `fichero:línea`.
 
@@ -151,7 +151,7 @@ El template real del shell (`src/app/app.component.ts:22-27`) solo contiene `<ro
 
 ## Adenda (2026-07-18) — tras la ronda d10-d11-h4-l6-campos-multitab
 
-La ronda correctiva `docs/revision-d10-d11-h4-l6-campos-multitab-resultado.md`
+La ronda correctiva `docs/revisiones/revision-d10-d11-h4-l6-campos-multitab-resultado.md`
 (verificada por el orquestador: diff revisado + suite completa **669 SUCCESS**)
 refactorizó `meds-step` e introdujo `src/app/core/clinical-capture.ts` (+ spec).
 Impacto sobre los hallazgos:

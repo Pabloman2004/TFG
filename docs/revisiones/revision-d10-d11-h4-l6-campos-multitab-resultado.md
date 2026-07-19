@@ -1,6 +1,6 @@
 # Resultado — D10/D11 diagnósticos, H4/L6 ubicación, campos multi-tab
 
-**Manifiesto:** `docs/revision-d10-d11-h4-l6-campos-multitab.md`  
+**Manifiesto:** `docs/revisiones/revision-d10-d11-h4-l6-campos-multitab.md`  
 **Fecha cierre:** 2026-07-18  
 **Orquestador:** `orquestador-revision`  
 **Suite final (orquestador):** `npx ng test --watch=false --browsers=ChromeHeadless` → **669 SUCCESS**
@@ -51,7 +51,7 @@
 
 ### B1 — Dónde vive el corticoide sistémico vs AR (H4)
 
-Opciones investigadas (detalle en `docs/proceso/informe-revision-d10-d11-h4-l6-seccion-b.md`):
+Opciones investigadas (detalle en `docs/revisiones/informe-revision-d10-d11-h4-l6-seccion-b.md`):
 
 1. Añadir corticoide también como grupo propio en Osteo.
 2. Mantener solo Resp/Endo; no exigir Osteo (C1/C2 ya alinean el campo días).
@@ -61,9 +61,9 @@ Opciones investigadas (detalle en `docs/proceso/informe-revision-d10-d11-h4-l6-s
 
 ## Informes de sección (aprobados)
 
-- `docs/proceso/informe-revision-d10-d11-h4-l6-seccion-a.md`
-- `docs/proceso/informe-revision-d10-d11-h4-l6-seccion-b.md`
-- `docs/proceso/informe-revision-d10-d11-h4-l6-seccion-c.md`
+- `docs/revisiones/informe-revision-d10-d11-h4-l6-seccion-a.md`
+- `docs/revisiones/informe-revision-d10-d11-h4-l6-seccion-b.md`
+- `docs/revisiones/informe-revision-d10-d11-h4-l6-seccion-c.md`
 - Progreso: `docs/proceso/progreso-ronda.md`
 
 ## Ficheros de producción/test tocados en esta ronda

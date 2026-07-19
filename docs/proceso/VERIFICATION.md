@@ -62,7 +62,7 @@ participan del patrón; el script los ignoró correctamente:
 - `src/index.html`, `src/custom-theme.scss` — triviales/generados
 - `src/assets/logoTFG.png`, `public/favicon.ico` — binarios
 
-El doc `docs/uml-diagrams.md` es anterior al patrón Linked Chunks; tampoco
+El doc `docs/arquitectura/uml-diagrams.md` es anterior al patrón Linked Chunks; tampoco
 participa y no se contabiliza como huérfano.
 
 ### Nota técnica

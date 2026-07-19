@@ -73,16 +73,16 @@ Alcance: los 54 `.md` del proyecto (fuera de `node_modules`).
   `fichero:línea`, severidad (alta/media/baja) y comprobación reproducible.
 - El orquestador de revisión aprueba cada informe de sección antes de cerrar
   la ronda y consolida el resultado en
-  `docs/revision-general-2026-07-17-resultado.md`.
+  `docs/revisiones/revision-general-2026-07-17-resultado.md`.
 
 ## Estado (actualizado 2026-07-18)
 
 - Ronda **cerrada**: los 4 informes de sección fueron revisados y aprobados
   por el orquestador; consolidado en
-  `docs/revision-general-2026-07-17-resultado.md` (48 hallazgos: 6 altas,
+  `docs/revisiones/revision-general-2026-07-17-resultado.md` (48 hallazgos: 6 altas,
   19 medias, 23 bajas + inventario de `.md`).
 - **Posterior al cierre**, la ronda correctiva
-  `docs/revision-d10-d11-h4-l6-campos-multitab.md` aplicó fixes de UI clínica
+  `docs/revisiones/revision-d10-d11-h4-l6-campos-multitab.md` aplicó fixes de UI clínica
   (D10/D11 dx bloqueados, L6 en Osteo, campos dosis/duración multi-tab vía
   `clinical-capture.ts`). El orquestador verificó su diff y la suite completa
   (**669 SUCCESS**) y añadió una **adenda fechada 2026-07-18** a cada informe

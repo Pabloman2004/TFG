@@ -181,21 +181,12 @@ done
 # 4. CHECK 3: DOC_HUERFANO — doc bajo docs/ (salvo _map.md y excluidos del
 #    patrón) sin ningún @linked que lo referencie
 # ---------------------------------------------------------------------------
-# Docs explícitamente excluidos del patrón Linked Chunks
+# Docs de primer nivel (docs/*.md) excluidos del patrón Linked Chunks.
+# Tras la reorganización (sección D), el material no-@linked vive en
+# subcarpetas (clinico/, arquitectura/, propuestas/, revisiones/,
+# historico/, proceso/) y CHECK 3/4c solo escanean docs/*.md — la lista
+# queda vacía a propósito.
 EXCLUDED_DOCS=(
-  "docs/uml-diagrams.md"
-  "docs/propuesta-p14.md"
-  "docs/propuesta-p15.md"
-  "docs/STOPP_START_CRITERIOS_CONTEXTO.md"
-  "docs/dudas-raquel-pendientes.md"
-  "docs/revision-criterios-d-h.md"
-  "docs/plan-visibilidad-medicamentos-multiclase.md"
-  "docs/revision-visibilidad-clinica-por-sistema.md"
-  "docs/revision-prueba-manual-visibilidad-multiclase.md"
-  "docs/revision-pendientes-relevancia.md"
-  "docs/revision-pendientes-relevancia-resultado.md"
-  "docs/revision-dosis-duracion-medicacion.md"
-  "docs/revision-seccion-b-ui-resultado.md"
 )
 
 for doc_abs in "$REPO_ROOT"/docs/*.md; do

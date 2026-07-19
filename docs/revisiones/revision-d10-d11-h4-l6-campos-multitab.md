@@ -47,4 +47,4 @@ Digoxina ya inventariado en rondas previas de dosis/duración.
 - Las DUDA no se cierran como decisión tomada: investigar opciones y trade-offs.
 - Cada sección entrega informe con Corregidos / Verificados / Dudas / Bloqueados / tests.
 - El orquestador de revisión aprueba cada informe antes de cerrar y escribe
-  `docs/revision-d10-d11-h4-l6-campos-multitab-resultado.md`.
+  `docs/revisiones/revision-d10-d11-h4-l6-campos-multitab-resultado.md`.

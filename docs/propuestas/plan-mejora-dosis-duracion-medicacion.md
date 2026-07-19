@@ -1,6 +1,6 @@
 # Plan de mejora — dosis y duración estructurada en criterios STOPP/START
 
-> Documento de investigación para PLAN-01 (`docs/revision-dosis-duracion-medicacion.md`).
+> Documento de investigación para PLAN-01 (`docs/revisiones/revision-dosis-duracion-medicacion.md`).
 > No implementa nada. Presenta opciones y una recomendación razonada; la
 > decisión final es del usuario.
 

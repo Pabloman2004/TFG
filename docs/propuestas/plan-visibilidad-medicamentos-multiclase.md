@@ -33,7 +33,7 @@ Antes de dar la tarea por terminada, actualizar:
 - `docs/flujo-pasos.md`: intersección por medicamento, filtrado y deduplicación de grupos foráneos.
 - `docs/catalogo-clinico.md`: grupo de análogos de vasopresina y separación entre taxonomía visual y relevancia.
 - `docs/caso-clinico.md`: cambio del tipo `Crit`.
-- `docs/revision-visibilidad-clinica-por-sistema.md`: marcar hallazgos resueltos, pendientes y evidencia de verificación.
+- `docs/revisiones/revision-visibilidad-clinica-por-sistema.md`: marcar hallazgos resueltos, pendientes y evidencia de verificación.
 - Este documento: registrar estado final y cualquier desviación justificada del plan.
 
 ## Verificación y cierre

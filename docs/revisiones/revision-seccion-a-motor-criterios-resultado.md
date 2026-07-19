@@ -1,7 +1,7 @@
 # Resultado — Corrección Sección A (motor de criterios)
 
-- **Manifiesto:** `docs/revision-seccion-a-motor-criterios.md`
-- **Informe de sección (aprobado):** `docs/proceso/informe-revision-seccion-a-motor.md`
+- **Manifiesto:** `docs/revisiones/revision-seccion-a-motor-criterios.md`
+- **Informe de sección (aprobado):** `docs/revisiones/informe-revision-seccion-a-motor.md`
 - **Rama:** `fix/seccion-a-motor-criterios` (sin push)
 - **Fecha cierre:** 2026-07-19
 - **Suite (orquestador-revision):** **805 SUCCESS**

@@ -1,6 +1,6 @@
 # Resultado — pendientes de relevancia visual y taxonomía
 
-Manifiesto: `docs/revision-pendientes-relevancia.md`.
+Manifiesto: `docs/revisiones/revision-pendientes-relevancia.md`.
 
 ## Corregidos
 
@@ -33,6 +33,6 @@ Ninguna en este manifiesto.
 - `src/app/core/data/medications-taxonomy.ts` (+ spec)
 - `src/app/steps/meds-step/meds-step.component.spec.ts`
 - `docs/motor-criterios.md`, `docs/catalogo-clinico.md`, `docs/_map.md`
-- `docs/proceso/REVIEW.md`, `docs/revision-prueba-manual-visibilidad-multiclase.md`
-- `docs/revision-pendientes-relevancia.md` (manifiesto)
-- `docs/revision-pendientes-relevancia-resultado.md` (este informe)
+- `docs/proceso/REVIEW.md`, `docs/revisiones/revision-prueba-manual-visibilidad-multiclase.md`
+- `docs/revisiones/revision-pendientes-relevancia.md` (manifiesto)
+- `docs/revisiones/revision-pendientes-relevancia-resultado.md` (este informe)

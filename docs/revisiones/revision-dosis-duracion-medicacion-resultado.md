@@ -1,7 +1,7 @@
 # Resultado — revisión dosis y duración estructurada en criterios STOPP/START
 
-Manifiesto: `docs/revision-dosis-duracion-medicacion.md`.
-Plan derivado: `docs/plan-mejora-dosis-duracion-medicacion.md`.
+Manifiesto: `docs/revisiones/revision-dosis-duracion-medicacion.md`.
+Plan derivado: `docs/propuestas/plan-mejora-dosis-duracion-medicacion.md`.
 
 Ronda de solo verificación e investigación — no se ha modificado ningún
 fichero de producción, tal y como pidió explícitamente el usuario ("compruébamelo
@@ -56,7 +56,7 @@ independientemente de la captura de duración.
 - **PLAN-01**: elección de arquitectura para escalar la captura de
   dosis/duración — Opción A (config data-driven), Opción B (componente
   `<med-dose-input>` reutilizable, complementaria a A) u Opción C (mantener
-  el patrón manual, documentado). Ver `docs/plan-mejora-dosis-duracion-medicacion.md`
+  el patrón manual, documentado). Ver `docs/propuestas/plan-mejora-dosis-duracion-medicacion.md`
   para el detalle completo, incluida la recomendación condicionada al volumen
   final de criterios que se decida implementar, y la tabla de priorización de
   los 8 criterios candidatos restantes (excluyendo IBP, ya resuelto).
@@ -73,8 +73,8 @@ producción — coherente con no haber tocado tests tampoco.
 
 ## Ficheros modificados/creados en esta ronda
 
-- `docs/revision-dosis-duracion-medicacion.md` (manifiesto, creado)
-- `docs/plan-mejora-dosis-duracion-medicacion.md` (plan de mejora, creado)
-- `docs/revision-dosis-duracion-medicacion-resultado.md` (este documento, creado)
+- `docs/revisiones/revision-dosis-duracion-medicacion.md` (manifiesto, creado)
+- `docs/propuestas/plan-mejora-dosis-duracion-medicacion.md` (plan de mejora, creado)
+- `docs/revisiones/revision-dosis-duracion-medicacion-resultado.md` (este documento, creado)
 
 Ningún fichero de código de producción fue tocado.

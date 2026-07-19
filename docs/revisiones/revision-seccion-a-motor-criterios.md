@@ -1,8 +1,8 @@
 # Revisión — Corrección Sección A (motor de criterios)
 
 Ronda correctiva sobre los hallazgos A1–A20 de la revisión general
-(`docs/proceso/informe-revision-general-seccion-a.md`), con decisiones del
-usuario ya tomadas en `plans/prompt-correccion-seccion-a.md`.
+(`docs/revisiones/informe-revision-general-seccion-a.md`), con decisiones del
+usuario ya tomadas en `docs/revisiones/prompt-correccion-seccion-a.md`.
 
 **Alcance:** `criteria.json`, `criteria-engine.service.ts`,
 `system-relevance.ts`, catálogos en `src/app/core/data/`, specs de criterios.
@@ -45,9 +45,9 @@ códigos, push a remoto.
 ## Reglas de la ronda
 
 - Corregir con TDD; no tocar UI/Sección B ni mover `.md` ajenos al encargo.
-- Informe de sección → `docs/proceso/informe-revision-seccion-a-motor.md`.
-- Resultado final del orquestador → `docs/revision-seccion-a-motor-criterios-resultado.md`
-  (el prompt original pedía también `docs/revision-seccion-a-motor-resultado.md`;
+- Informe de sección → `docs/revisiones/informe-revision-seccion-a-motor.md`.
+- Resultado final del orquestador → `docs/revisiones/revision-seccion-a-motor-criterios-resultado.md`
+  (el prompt original pedía también `docs/revisiones/revision-seccion-a-motor-resultado.md`;
   el orquestador consolidará ahí al cerrar).
 - No cerrar dudas de producto como resueltas (en esta ronda las decisiones
   A4/A8/A9/A14/A20 ya vienen tomadas).

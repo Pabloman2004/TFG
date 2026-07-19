@@ -14,7 +14,7 @@ farmacia clínica). Tu encargo es corregir los hallazgos de la **Sección B
 (servicios de aplicación y UI)** de la ronda de revisión general.
 
 **Lee antes de empezar:**
-- `docs/proceso/informe-revision-general-seccion-b.md` — los 15 hallazgos
+- `docs/revisiones/informe-revision-general-seccion-b.md` — los 15 hallazgos
   (B1–B15) con evidencia `fichero:línea`, incluida la **adenda 2026-07-18**
   (importante: las referencias de línea de `meds-step.component.ts` están
   desplazadas ~+9 desde la línea 120, y hay helpers muertos nuevos).
@@ -38,7 +38,7 @@ farmacia clínica). Tu encargo es corregir los hallazgos de la **Sección B
   `src/app/core/services/*`, `src/app/core/data/*`,
   `src/app/core/group-visibility.ts`. Si un cambio tuyo parece exigir tocar
   eso, páralo y anótalo en el informe.
-- Al terminar, escribe `docs/revision-seccion-b-ui-resultado.md`: hallazgo →
+- Al terminar, escribe `docs/revisiones/revision-seccion-b-ui-resultado.md`: hallazgo →
   qué se hizo → tests → commit; más los totales de suite antes/después.
 
 ## Bloque 1 — Eliminar la feature de historial (B1; resuelve B9, B10 y la T12 de TASKS.md)
@@ -171,6 +171,6 @@ farmacia clínica). Tu encargo es corregir los hallazgos de la **Sección B
 ## Cierre
 
 Suite completa en verde + `./scripts/check-links.sh` en verde. Informe en
-`docs/revision-seccion-b-ui-resultado.md` con totales de suite antes/después
+`docs/revisiones/revision-seccion-b-ui-resultado.md` con totales de suite antes/después
 (bajarán por las specs eliminadas — desglosa cuántas y por qué) y la lista de
 commits en orden.

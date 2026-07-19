@@ -1,6 +1,6 @@
 # Informe de sección: Inventario y verificación
 
-Manifiesto: `docs/revision-dosis-duracion-medicacion.md`  
+Manifiesto: `docs/revisiones/revision-dosis-duracion-medicacion.md`  
 Worktree: `C:\Users\jcarl\orca\workspaces\TFG\tarpon`  
 Rama: `fix/diagnosticosComplex`  
 Routing: D1 y D3 (`VERIFICAR`) → **`resolutor-rapido`** (protocolo aplicado por orquestador-seccion sin spawn anidado).  

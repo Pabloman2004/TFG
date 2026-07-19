@@ -1,6 +1,6 @@
 # Informe de sección: Diagnósticos bloqueados (D10, D11)
 
-**Ronda:** `docs/revision-d10-d11-h4-l6-campos-multitab.md`  
+**Ronda:** `docs/revisiones/revision-d10-d11-h4-l6-campos-multitab.md`  
 **Sección:** A — Diagnósticos bloqueados con medicación (D10, D11)  
 **Orquestador:** `orquestador-seccion`  
 **Fecha:** 2026-07-18  

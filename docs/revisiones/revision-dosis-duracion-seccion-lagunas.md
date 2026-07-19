@@ -2,9 +2,9 @@
 
 **Worktree:** `C:\Users\jcarl\orca\workspaces\TFG\tarpon`  
 **Rama:** `fix/diagnosticosComplex`  
-**Manifiesto:** `docs/revision-dosis-duracion-medicacion.md`  
+**Manifiesto:** `docs/revisiones/revision-dosis-duracion-medicacion.md`  
 **Routing:** D2, B21, P1 → todas `DUDA` → resueltas por protocolo **`resolutor-profundo`** (investigación; sin implementación de lógica de criterios ni captura masiva).  
-**Entregable P1:** `docs/plan-mejora-dosis-duracion-medicacion.md` (creado).
+**Entregable P1:** `docs/propuestas/plan-mejora-dosis-duracion-medicacion.md` (creado).
 
 ### Corregidos (bug confirmado y arreglado)
 
@@ -52,7 +52,7 @@ B21 Digoxina-FA se trata aparte (misma familia de laguna, pero `durationDays` ya
 
 Arquitectura de captura (A/B/C) documentada en el plan P1; la recomendación allí es **condicionada** al recuento clínico, no una elección definitiva de orquestación.
 
-**Ficheros consultados (solo lectura):** `src/assets/data/criteria.json`, `src/app/core/types.ts`, `src/app/core/services/criteria-engine.service.ts`, `src/app/steps/meds-step/meds-step.component.html`, `docs/STOPP_START_CRITERIOS_CONTEXTO.md`, `docs/motor-criterios.md`.  
+**Ficheros consultados (solo lectura):** `src/assets/data/criteria.json`, `src/app/core/types.ts`, `src/app/core/services/criteria-engine.service.ts`, `src/app/steps/meds-step/meds-step.component.html`, `docs/clinico/STOPP_START_CRITERIOS_CONTEXTO.md`, `docs/motor-criterios.md`.  
 **Tests:** no ejecutados (sin cambios de código).  
 **Incidencias relacionadas:** B21 (caso Digoxina con campo ya existente); P1 (plan); D1 del manifiesto (inventario de lo ya estructurado).
 
@@ -68,7 +68,7 @@ Arquitectura de captura (A/B/C) documentada en el plan P1; la recomendación all
 
 - Summary: «Evitar digoxina como primera línea en FA a largo plazo (> 3 meses)…»
 - Logic actual: `fibrilacion_auricular` + `inDrugClass` DIGOXINA — **no** usa `durationDays`.
-- Guía (`docs/STOPP_START_CRITERIOS_CONTEXTO.md` B21): misma idea de control de frecuencia a largo plazo (> 3 meses) en FA.
+- Guía (`docs/clinico/STOPP_START_CRITERIOS_CONTEXTO.md` B21): misma idea de control de frecuencia a largo plazo (> 3 meses) en FA.
 - Contraste E1: mismo fármaco; UI en tab Renal ya captura `doseMcgDay` y `durationDays`; operador `digoxinaDosisAlta` exige ≥ 125 µg/día y `durationDays > 90`. Ese valor de duración **ya está disponible** en el modelo si el usuario lo rellena, pero B21 lo ignora.
 - Por tanto el coste técnico de *exigir* duración en B21 sería bajo; la duda no es de ingeniería sino de **interpretación clínica** (¿umbral evaluable vs narrativa de la guía?).
 
@@ -90,7 +90,7 @@ Arquitectura de captura (A/B/C) documentada en el plan P1; la recomendación all
 **Estado recibido:** duda (entregable documental)  
 **Resultado:** opciones investigadas + documento entregado
 
-**Entregable:** `docs/plan-mejora-dosis-duracion-medicacion.md`
+**Entregable:** `docs/propuestas/plan-mejora-dosis-duracion-medicacion.md`
 
 Contiene:
 
@@ -108,7 +108,7 @@ _Ninguno. Las dudas quedan abiertas a decisión humana (clínica/producto); no h
 
 ### Estado de tests
 
-No se ejecutó la suite: esta sección solo produjo documentación (`docs/plan-mejora-dosis-duracion-medicacion.md` y este informe). Sin cambios en `src/`.
+No se ejecutó la suite: esta sección solo produjo documentación (`docs/propuestas/plan-mejora-dosis-duracion-medicacion.md` y este informe). Sin cambios en `src/`.
 
 ---
 

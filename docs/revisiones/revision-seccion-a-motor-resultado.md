@@ -1,8 +1,8 @@
 # Resultado — Corrección Sección A (motor de criterios)
 
-Documento canónico de cierre: `docs/revision-seccion-a-motor-criterios-resultado.md`.
+Documento canónico de cierre: `docs/revisiones/revision-seccion-a-motor-criterios-resultado.md`.
 
-Informe de sección aprobado: `docs/proceso/informe-revision-seccion-a-motor.md`.
+Informe de sección aprobado: `docs/revisiones/informe-revision-seccion-a-motor.md`.
 
 - Rama: `fix/seccion-a-motor-criterios` (sin push)
 - Suite final (orquestador-revision): **805 SUCCESS**

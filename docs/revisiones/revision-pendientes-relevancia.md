@@ -1,7 +1,7 @@
 # Revisión — pendientes de relevancia visual y taxonomía
 
 Manifiesto redactado a partir de las aclaraciones del usuario sobre
-`docs/proceso/informe-revision-pendientes-relevancia.md` (fichero no presente
+`docs/revisiones/informe-revision-pendientes-relevancia.md` (fichero no presente
 en el repo; el contenido se toma del texto aportado en la ronda).
 
 ## Sección: Relevancia diagnóstica

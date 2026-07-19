@@ -12,7 +12,7 @@ la **Sección A (motor de criterios y datos clínicos)** de la ronda de revisió
 general.
 
 **Lee antes de empezar:**
-- `docs/proceso/informe-revision-general-seccion-a.md` — los 20 hallazgos
+- `docs/revisiones/informe-revision-general-seccion-a.md` — los 20 hallazgos
   (A1–A20) con evidencia `fichero:línea` y comprobaciones. Es tu fuente de
   verdad; incluye una adenda del 2026-07-18 que ya debes tener en cuenta
   (A11 parcialmente mitigado, L6 ya parcheado).
@@ -33,7 +33,7 @@ general.
 - No toques nada del alcance de la Sección B (UI/servicios: historial,
   case-io, shell…), no muevas ni borres ficheros `.md`, y no crees el
   formulario de paciente (decisión pendiente de otra ronda).
-- Al terminar, escribe `docs/revision-seccion-a-motor-resultado.md` con:
+- Al terminar, escribe `docs/revisiones/revision-seccion-a-motor-resultado.md` con:
   hallazgo → qué se hizo → tests añadidos → commit. Marca explícitamente lo
   que quede fuera o bloqueado.
 
@@ -182,5 +182,5 @@ general.
 ## Cierre
 
 Ejecuta la suite completa una última vez, anota el total en el informe
-(`docs/revision-seccion-a-motor-resultado.md`), y lista los commits creados
+(`docs/revisiones/revision-seccion-a-motor-resultado.md`), y lista los commits creados
 en orden con una línea por commit.

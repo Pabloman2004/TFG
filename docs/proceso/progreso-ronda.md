@@ -2,7 +2,7 @@
 
 ## 20:43 Â· orquestador-revision Â· arranque
 - estado: routing
-- detalle: Manifiesto en docs/revision-seccion-a-motor-criterios.md (17 ï¿½tems BUG, 1 secciï¿½n). Lanzo orquestador-seccion A con modelo Cursor Grok 4.5. Resolutores: rï¿½pido=composer-2.5-fast, profundo=cursor-grok-4.5-high-fast (sin Sonnet).
+- detalle: Manifiesto en docs/revisiones/revision-seccion-a-motor-criterios.md (17 ï¿½tems BUG, 1 secciï¿½n). Lanzo orquestador-seccion A con modelo Cursor Grok 4.5. Resolutores: rï¿½pido=composer-2.5-fast, profundo=cursor-grok-4.5-high-fast (sin Sonnet).
 
 ## 20:46 ï¿½ orquestador-seccion ï¿½ A ï¿½ Motor de criterios
 - estado: routing
@@ -323,9 +323,9 @@
 - estado: GREEN
 - detalle: criteria-d 115 SUCCESS. Logica some+id + summary salvo + Proclorperazina en excludes. Suite completa en curso.
 
-## 21:37 · orquestador-revision · retoma 2
+## 21:37 ï¿½ orquestador-revision ï¿½ retoma 2
 - estado: routing
-- detalle: Relanzo desde A13. Hechos A1/A2/A5/A10 (suite 680). Sin cambios a medias de código. Grok 4.5; sin Sonnet.
+- detalle: Relanzo desde A13. Hechos A1/A2/A5/A10 (suite 680). Sin cambios a medias de cï¿½digo. Grok 4.5; sin Sonnet.
 
 ## 22:44 Â· resolutor-profundo Â· A4
 - estado: listo
@@ -343,51 +343,51 @@
 - estado: esperando-resolutor
 - detalle: A9 â†’ resolutor-profundo (Grok 4.5 heredado)
 
-## 22:48 · resolutor-profundo · A9
+## 22:48 ï¿½ resolutor-profundo ï¿½ A9
 - estado: investigando
 - detalle: K8-PSICOTROPICO y K11 usan riesgo_caidas_repeticion; K1?K7/K4b/K8-ISRS/K9/K10/K12 usan caidas_repeticion (14 criterios).
 
-## 22:48 · resolutor-profundo · A9
+## 22:48 ï¿½ resolutor-profundo ï¿½ A9
 - estado: causa
-- detalle: Dos códigos de dx solapados sin or uniforme; casos con un solo código fallan en el subconjunto que usa el otro. Decisión: or de ambos, sin unificar ids.
+- detalle: Dos cï¿½digos de dx solapados sin or uniforme; casos con un solo cï¿½digo fallan en el subconjunto que usa el otro. Decisiï¿½n: or de ambos, sin unificar ids.
 
-## 22:49 · resolutor-profundo · A9
+## 22:49 ï¿½ resolutor-profundo ï¿½ A9
 - estado: RED
-- detalle: criteria-k.spec.ts ? test de datos + casos K1/K8-PSICOTROPICO/K11 con el código alterno (4 FAILED).
+- detalle: criteria-k.spec.ts ? test de datos + casos K1/K8-PSICOTROPICO/K11 con el cï¿½digo alterno (4 FAILED).
 
-## 22:51 · resolutor-profundo · A9
+## 22:51 ï¿½ resolutor-profundo ï¿½ A9
 - estado: GREEN
 - detalle: or uniforme caidas_repeticion|riesgo_caidas_repeticion en los 14 STOPP-K. criteria-k 7 SUCCESS. Suite 707 SUCCESS.
 
-## 22:54 · resolutor-profundo · A9
+## 22:54 ï¿½ resolutor-profundo ï¿½ A9
 - estado: listo
-- detalle: CORREGIDO bd8b39b. Suite 707 SUCCESS. Sin push. Códigos no unificados.
+- detalle: CORREGIDO bd8b39b. Suite 707 SUCCESS. Sin push. Cï¿½digos no unificados.
 
-## 23:50 · orquestador-seccion · A ? Motor de criterios
+## 23:50 ï¿½ orquestador-seccion ï¿½ A ? Motor de criterios
 - estado: agregando
 - detalle: A9 CORREGIDO por profundo (bd8b39b). Suite 707 SUCCESS. criteria-k.spec.ts creado. Siguiente A11.
 
-## 23:50 · orquestador-seccion · A ? Motor de criterios
+## 23:50 ï¿½ orquestador-seccion ï¿½ A ? Motor de criterios
 - estado: esperando-resolutor
 - detalle: A11 ? resolutor-profundo (Grok 4.5 heredado)
 
-## 22:59 · resolutor-profundo · A11
+## 22:59 ï¿½ resolutor-profundo ï¿½ A11
 - estado: investigando
 - detalle: extractReferences/walk solo ve inDrugClass; medicationClass*, multiple* y digoxinaDosisAlta invisibles. Parches relevance en E1/F2/F4/L6.
 
-## 23:02 · resolutor-profundo · A11
+## 23:02 ï¿½ resolutor-profundo ï¿½ A11
 - estado: causa
 - detalle: walk ignora medicationClassDurationAbove/DoseMgAbove, multiple* y digoxinaDosisAlta; solo inDrugClass aporta clases.
 
-## 23:02 · resolutor-profundo · A11
+## 23:02 ï¿½ resolutor-profundo ï¿½ A11
 - estado: RED
 - detalle: 4 tests nuevos en system-relevance.spec.ts fallan (duration/dose/digoxina/multiple*).
 
-## 23:06 · resolutor-profundo · A11
+## 23:06 ï¿½ resolutor-profundo ï¿½ A11
 - estado: GREEN
 - detalle: extractReferences ve medicationClass*/multiple*/digoxinaDosisAlta; parches E1/F2/F4/L6 eliminados. Specs relevancia 77 SUCCESS.
 
-## 23:08 · resolutor-profundo · A11
+## 23:08 ï¿½ resolutor-profundo ï¿½ A11
 - estado: listo
 - detalle: CORREGIDO cd52822. Suite 712 SUCCESS. Sin push. Parches relevance retirados.
 

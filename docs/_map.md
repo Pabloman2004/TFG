@@ -200,31 +200,14 @@ Ficheros que NO llevan `@linked`, con motivo:
 - `src/custom-theme.scss` — tema Material 3 generado, sin lógica.
 - `src/assets/logoTFG.png` — binario.
 - `public/favicon.ico` — binario.
-- `docs/uml-diagrams.md` — documento previo al patrón Linked Chunks (diagramas
-  UML); no participa del patrón y no requiere `@linked` desde el código.
-- `docs/propuesta-p14.md` — propuesta de mejora textual sin ficheros de código
-  asignados todavía.
-- `docs/propuesta-p15.md` — registro de decisiones del incremento P15; el
-  conocimiento implementado vive en `docs/catalogo-clinico.md` (sección
-  "Familias de variantes excluyentes").
-- `docs/plan-visibilidad-medicamentos-multiclase.md` — plan e informe de
-  ejecución del incremento; el comportamiento vigente se documenta en
-  `motor-criterios.md`, `flujo-pasos.md` y `catalogo-clinico.md`.
-- `docs/revision-visibilidad-clinica-por-sistema.md` — auditoría histórica y
-  registro de pendientes; no es la fuente de verdad del comportamiento.
-- `docs/revision-prueba-manual-visibilidad-multiclase.md` — informe de la ronda
-  de prueba manual; las reglas vigentes se consolidan en los documentos de
-  motor, catálogo y flujo.
-- `docs/revision-pendientes-relevancia.md` — manifiesto de la ronda de
-  relevancia diagnóstica y taxonomía; el comportamiento queda en
-  `motor-criterios.md` y `catalogo-clinico.md`.
-- `docs/revision-pendientes-relevancia-resultado.md` — informe de cierre de
-  esa ronda.
-- `docs/revision-seccion-b-ui-resultado.md` — informe de cierre de la
-  corrección de la Sección B (UI/servicios).
-- `docs/revision-dosis-duracion-medicacion.md` — manifiesto de revisión sobre
-  captura de dosis/duración; no es fuente de verdad del motor.
-- `docs/STOPP_START_CRITERIOS_CONTEXTO.md` — referencia clínica estática;
-  no requiere `@linked` desde código.
-- `docs/dudas-raquel-pendientes.md` — notas de revisión con el tutor; no
-  requiere `@linked` desde código.
+- Subcarpetas fuera del patrón Linked Chunks (sin `@linked` desde código;
+  `check-links.sh` solo audita `docs/*.md` de primer nivel):
+  - `docs/clinico/` — referencia clínica (`STOPP_START_CRITERIOS_CONTEXTO.md`)
+    y dudas para la tutora (`dudas-raquel-pendientes.md`).
+  - `docs/arquitectura/` — diagramas UML.
+  - `docs/propuestas/` — propuestas y planes de mejora (P14, P15, dosis/duración,
+    visibilidad multiclase).
+  - `docs/revisiones/` — manifiestos e informes de rondas cerradas.
+  - `docs/historico/analysis/` — snapshots de análisis previos a los docs @linked.
+  - `docs/proceso/` — operación viva del loop Ralph (`RALPH.md`, `REVIEW.md`,
+    `VERIFICATION.md`, `progreso-ronda.md`).

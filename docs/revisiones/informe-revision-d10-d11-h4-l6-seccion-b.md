@@ -1,6 +1,6 @@
 # Informe de sección: Ubicación de fármacos (H4, L6)
 
-**Ronda:** `docs/revision-d10-d11-h4-l6-campos-multitab.md`  
+**Ronda:** `docs/revisiones/revision-d10-d11-h4-l6-campos-multitab.md`  
 **Sección:** B — Ubicación de fármacos en tabs (H4 corticoide, L6 analgésicos)  
 **Orquestador:** `orquestador-seccion`  
 **Fecha:** 2026-07-18  

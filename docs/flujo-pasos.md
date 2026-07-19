@@ -138,7 +138,7 @@ El marcador de tab revisado se gestiona en `CaseStoreService` (`reviewedMedTabs`
   subconjunto coincidente; la taxonomía decide la presentación, no la relevancia clínica.
 - **`Intl.Collator('es')`**: la ordenación de grupos foráneos y fármacos del tab "Otros" usa el cotejador en español para ordenación correcta de caracteres como `ñ` y vocales acentuadas.
 - **Tab "Otros" de medicamentos**: agrega los fármacos de grupos con un único medicamento (`drugs.length === 1`) de todas las categorías, salvo los unitarios cuya `drugClass` es **específicamente** relevante en algún tab de sistema (esos afloran en su tab y se excluyen de "Otros" para no duplicar; la relevancia transversal/comodín no cuenta para esto); es un tab de miscelánea para fármacos poco frecuentes y no referenciados por criterios específicos.
-- **Duplicación deliberada de los dos componentes**: `MedsStepComponent` y `DiagnosisStepComponent` replican casi toda la infraestructura. No se ha extraído a un componente base. Ver "Si cambias esto…" y "Problemas detectados" en `analysis/steps.md`.
+- **Duplicación deliberada de los dos componentes**: `MedsStepComponent` y `DiagnosisStepComponent` replican casi toda la infraestructura. No se ha extraído a un componente base. Ver "Si cambias esto…" y "Problemas detectados" en `docs/historico/analysis/steps.md`.
 
 ## Invariantes
 
