@@ -129,10 +129,9 @@ verificación de ligaduras.
 bootstrap, rutas, componente raíz con las acciones globales (guardar/cargar
 caso, reset confirmado, guía rápida).
 
-**Debe cubrir**: `main.ts` → `AppComponent`, tabla de rutas y sus constantes
-(`medicaciones`, `diagnosticos`, wildcard), los diálogos transversales de
-confirmación y guía, y la existencia del stub residual `App`/`app.config.ts`
-(ver Excluidos).
+**Debe cubrir**: `main.ts` → `AppComponent` con `appConfig`, tabla de rutas y
+sus constantes (`medicaciones`, `diagnosticos`, wildcard), y los diálogos
+transversales de confirmación y guía.
 
 ### Ficheros que enlazan
 - `src/main.ts`
@@ -191,9 +190,8 @@ Ficheros que NO llevan `@linked`, con motivo:
   `scripts/audit-criteria.cjs`.
 - `src/app/**/*.spec.ts` (todos los specs) — tests: se actualizan junto al
   fichero que prueban; los docs los citan en "Si cambias esto…".
-- `src/app/app.ts`, `src/app/app.html`, `src/app/app.css`,
-  `src/app/app.config.ts` — stub residual del scaffolding de Angular CLI
-  (la raíz real es `app.component.ts`); candidato a eliminación, ver REVIEW.md.
+- `src/app/app.config.ts` — fuente única de providers del bootstrap; se
+  importa desde `main.ts` (sin `@linked` propio).
 - `src/app/steps/meds-step/meds-step.component.css`,
   `src/app/steps/diagnosis-step/diagnosis-step.component.css` — estilos de
   presentación sin lógica de negocio.

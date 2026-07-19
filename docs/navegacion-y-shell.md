@@ -6,20 +6,19 @@ Este módulo es el esqueleto de arranque de la aplicación Angular STOPP/START.
 Cubre tres responsabilidades:
 
 1. **Bootstrap**: `src/main.ts` arranca la aplicación invocando
-   `bootstrapApplication(AppComponent, …)` con los providers globales
-   (`provideAnimations`, `provideRouter`, `provideHttpClient`).
+   `bootstrapApplication(AppComponent, appConfig)`. Los providers globales
+   viven en `app.config.ts` (`provideBrowserGlobalErrorListeners`,
+   `provideZoneChangeDetection`, `provideAnimations`, `provideRouter`,
+   `provideHttpClient`).
 
 2. **Rutas**: `app.routes.ts` declara las rutas de la SPA
    (`medicaciones`, `diagnosticos`, wildcard → `medicaciones`).
    Las constantes de segmento de URL viven en `app.routes.constants.ts`.
 
-3. **Componente raíz y acciones globales**: `AppComponent` (`app.component.ts`)
-   orquesta las operaciones transversales disponibles en cualquier pantalla:
-   - Guardar el caso como JSON (`CaseIoService.exportCase()`).
-   - Cargar un caso desde fichero JSON (`CaseIoService.importFile(file)`),
-     con feedback vía `MatSnackBar` y redirección a `/medicaciones` tras éxito.
-   - Resetear el caso (destructivo, confirmado por `ConfirmResetDialogComponent`).
-   - Abrir la guía rápida (`QuickGuideDialogComponent`).
+3. **Componente raíz**: `AppComponent` (`app.component.ts`) monta
+   `<router-outlet>` e inyecta `DisplaySettingsService` para aplicar
+   `--font-scale` al arrancar. Las acciones de guardar/cargar/reset/guía
+   viven en los steps (toolbar), no en el shell.
 
 Los dos diálogos transversales (`ConfirmResetDialogComponent` y
 `QuickGuideDialogComponent`) son componentes standalone sin lógica propia:
@@ -30,9 +29,14 @@ Los dos diálogos transversales (`ConfirmResetDialogComponent` y
 
 ```
 src/main.ts
-  └─ bootstrapApplication(AppComponent, { providers: [
-       provideAnimations(), provideRouter(routes), provideHttpClient()
-     ]})
+  └─ bootstrapApplication(AppComponent, appConfig)
+
+src/app/app.config.ts
+  providers = [
+    provideBrowserGlobalErrorListeners(),
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideAnimations(), provideRouter(routes), provideHttpClient()
+  ]
 
 src/app/app.routes.ts          ← importa ROUTES desde app.routes.constants.ts
   routes = [
@@ -46,10 +50,8 @@ src/app/app.routes.constants.ts
   ROUTES = { DIAGNOSTICOS, MEDICACIONES }  ← constante tipada
 
 src/app/app.component.ts  (AppComponent, selector: app-root)
-  ├─ onSave()         → CaseIoService.exportCase()
-  ├─ onLoad(event)    → CaseIoService.importFile(file) + navigate('/medicaciones')
-  ├─ resetCase()      → abre ConfirmResetDialogComponent → si true: store.reset() + navigate
-  └─ openQuickGuide() → abre QuickGuideDialogComponent
+  └─ template: <router-outlet>
+  └─ constructor(DisplaySettingsService)  ← aplica --font-scale al arrancar
 
 src/app/confirm-reset-dialog.component.ts
   └─ template con [mat-dialog-close]="false/true"
@@ -68,60 +70,46 @@ code-splitting).
   `bootstrapApplication` (API standalone de Angular 17+) en lugar de
   `NgModule`. Todos los componentes de la shell son standalone.
 
-- **Providers globales en bootstrap, no en módulo**: `provideAnimations`,
-  `provideRouter` y `provideHttpClient` se pasan directamente al segundo
-  argumento de `bootstrapApplication`; no existe `AppModule`.
+- **`appConfig` como fuente única de providers**: evita divergencia entre
+  `main.ts` y un fichero de configuración olvidado. Incluye el listener
+  global de errores del navegador.
 
 - **Constantes de ruta separadas** (`app.routes.constants.ts`): los segmentos
   de URL se exportan como objeto `ROUTES as const`, evitando strings mágicos
-  dispersos por el código (navegaciones en `AppComponent` usan `'/medicaciones'`
-  como literal, pero las rutas en `app.routes.ts` referencian `ROUTES.*`).
+  dispersos por el código.
 
-- **`AppComponent` como contenedor de acciones globales**: el componente raíz
-  delega completamente en servicios (`CaseIoService`, `CaseStoreService`) y
-  dialoga vía `MatDialog`; no duplica lógica de dominio.
-
-- **`<input type="file">` oculto**: el input de importación está en el template
-  de `AppComponent` con `display:none`; se activa por código para mantener la
-  compatibilidad con todos los navegadores.
+- **Shell mínimo**: el root solo monta el outlet y garantiza que
+  `DisplaySettingsService` se instancie. Las acciones de caso viven en los
+  steps.
 
 ## Invariantes
 
 - El punto de entrada real de la aplicación es siempre `src/main.ts` →
-  `AppComponent`. El stub `App` (`app.ts` / `app.config.ts`) nunca debe
-  usarse como raíz activa.
+  `AppComponent` con `appConfig`.
 - Toda navegación programática tras importar un caso o hacer reset debe
   dirigirse a `/medicaciones`.
 - El reset del caso siempre pasa por el diálogo de confirmación; nunca se llama
   a `store.reset()` directamente desde la UI sin confirmación previa.
 - Rutas desconocidas (p. ej. `/historial`) caen en el wildcard y redirigen a
   `/medicaciones`.
+- La inyección de `DisplaySettingsService` en `AppComponent` no debe eliminarse:
+  es la que aplica `--font-scale` al arrancar.
 
 ## Si cambias esto…
 
 - **Cambiar un segmento de URL**: modificar `app.routes.constants.ts` y
-  revisar todos los `router.navigate(['/…'])` en `app.component.ts` y en los
-  componentes de pasos.
-- **Añadir un nuevo provider global**: añadirlo en `main.ts` (array
-  `providers`), no crear un `AppModule`.
-- **Añadir acciones globales en la barra de navegación**: modificar
-  `app.component.ts` (template inline y métodos de la clase).
-- **Cambiar el flujo de importación de caso**: modificar `onLoad()` en
-  `app.component.ts` y actualizar `docs/informes-y-exportacion.md`.
+  revisar todos los `router.navigate(['/…'])` en los componentes de pasos.
+- **Añadir un nuevo provider global**: añadirlo en `app.config.ts`, no en
+  `main.ts`.
 - **Tests afectados**: `src/app/app.component.spec.ts`,
   `src/app/app.routes.spec.ts` y `src/app/confirm-reset-dialog.component.spec.ts`.
-- **Este documento**: actualizar si se elimina el stub `App`, o se cambia el
-  esquema de providers del bootstrap.
+- **Este documento**: actualizar si se cambia el esquema de providers del
+  bootstrap o el rol del shell.
 
 ## Asunciones
 
-- Se asume que `DisplaySettingsService` se inyecta en `AppComponent` como
-  efecto secundario para que Angular lo instancie en el injector raíz desde el
-  inicio, aunque no se usa directamente en ningún método del componente. No está
-  documentado con un comentario explícito en el código.
-- No se ha podido confirmar si existe algún mecanismo que impida accidentalmente
-  arrancar la aplicación desde el stub `App` (`app.ts`) en lugar de desde
-  `AppComponent`; la diferenciación depende de que `main.ts` no se modifique.
+- `DisplaySettingsService` se inyecta en `AppComponent` deliberadamente para
+  que Angular lo instancie en el injector raíz desde el inicio.
 - La carga de rutas estática (sin lazy loading) se asume intencional para una
   herramienta de uso interno; no hay evidencia de una decisión documentada al
   respecto.
