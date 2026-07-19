@@ -72,8 +72,8 @@ export interface PatientCase {
   reviewedDxTabs?: string[];
 }
 
-export interface CaseExport {
+export type CaseExport = {
   version: string;
   exportedAt: string;
   patientCase: PatientCase;
-}
+};

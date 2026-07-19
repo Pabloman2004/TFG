@@ -117,6 +117,7 @@ verificación de ligaduras.
 ### Ficheros que enlazan
 - `src/app/core/report.service.ts`
 - `src/app/core/case-io.service.ts`
+- `src/app/core/case-export.schema.ts`
 - `src/app/core/clipboard-text.ts`
 - `src/types/pdfmake-browser.d.ts`
 - `scripts/verify-pdf-e2e.js`

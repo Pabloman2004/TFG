@@ -59,7 +59,7 @@ describe('CaseIoService — importFile()', () => {
   it('rechaza un JSON sin la propiedad patientCase', async () => {
     const bad = JSON.stringify({ version: '1.0', exportedAt: new Date().toISOString() });
     await expectAsync(service.importFile(makeFile(bad)))
-      .toBeRejectedWithError(/formato/i);
+      .toBeRejectedWithError(/caso válido/i);
   });
 
   it('rechaza un JSON con diagnoses que no es array', async () => {
@@ -68,7 +68,7 @@ describe('CaseIoService — importFile()', () => {
       patientCase: { info: null, diagnoses: 'hta', medications: [], labs: null },
     });
     await expectAsync(service.importFile(makeFile(bad)))
-      .toBeRejectedWithError(/formato/i);
+      .toBeRejectedWithError(/caso válido/i);
   });
 
   it('rechaza un JSON con medications que no es array', async () => {
@@ -77,7 +77,7 @@ describe('CaseIoService — importFile()', () => {
       patientCase: { info: null, diagnoses: [], medications: 'ibuprofeno', labs: null },
     });
     await expectAsync(service.importFile(makeFile(bad)))
-      .toBeRejectedWithError(/formato/i);
+      .toBeRejectedWithError(/caso válido/i);
   });
 
   it('restaura los sets de tabs revisados al importar un caso', async () => {
@@ -107,7 +107,7 @@ describe('CaseIoService — importFile()', () => {
       patientCase: { info: null, diagnoses: [], medications: [{ drugClasses: ['AINE'] }], labs: null },
     });
     await expectAsync(service.importFile(makeFile(bad)))
-      .toBeRejectedWithError(/formato/i);
+      .toBeRejectedWithError(/caso válido/i);
   });
 
   it('[T4] rechaza Labs con string donde va número', async () => {
@@ -125,13 +125,13 @@ describe('CaseIoService — importFile()', () => {
       patientCase: { info: null, diagnoses: [], medications: [], labs: badLabs },
     });
     await expectAsync(service.importFile(makeFile(bad)))
-      .toBeRejectedWithError(/formato/i);
+      .toBeRejectedWithError(/caso válido/i);
   });
 
   it('[T4] rechaza cuando patientCase es null', async () => {
     const bad = JSON.stringify({ version: '1.0', exportedAt: new Date().toISOString(), patientCase: null });
     await expectAsync(service.importFile(makeFile(bad)))
-      .toBeRejectedWithError(/formato/i);
+      .toBeRejectedWithError(/caso válido/i);
   });
 
   it('[T4] rechaza export sin campo version', async () => {
@@ -140,7 +140,7 @@ describe('CaseIoService — importFile()', () => {
       patientCase: { info: null, diagnoses: [], medications: [], labs: null },
     });
     await expectAsync(service.importFile(makeFile(bad)))
-      .toBeRejectedWithError(/formato/i);
+      .toBeRejectedWithError(/caso válido/i);
   });
 
   it('[T4] acepta un fixture válido completo', async () => {
@@ -155,5 +155,80 @@ describe('CaseIoService — importFile()', () => {
       },
     });
     await expectAsync(service.importFile(makeFile(valid))).toBeResolved();
+  });
+
+  // B2 — frontera de importación
+
+  it('[B2] rechaza info que no es objeto ni null', async () => {
+    const bad = JSON.stringify({
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      patientCase: { info: 'x', diagnoses: [], medications: [], labs: null },
+    });
+    await expectAsync(service.importFile(makeFile(bad)))
+      .toBeRejectedWithError(/caso válido/i);
+    expect(store.loadCase).not.toHaveBeenCalled();
+  });
+
+  it('[B2] rechaza diagnoses con elementos que no son string', async () => {
+    const bad = JSON.stringify({
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      patientCase: { info: null, diagnoses: ['hta', 123, {}], medications: [], labs: null },
+    });
+    await expectAsync(service.importFile(makeFile(bad)))
+      .toBeRejectedWithError(/caso válido/i);
+    expect(store.loadCase).not.toHaveBeenCalled();
+  });
+
+  it('[B2] rechaza reviewedMedTabs que no es array', async () => {
+    const bad = JSON.stringify({
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      patientCase: {
+        info: null, diagnoses: [], medications: [], labs: null, reviewedMedTabs: 42,
+      },
+    });
+    await expectAsync(service.importFile(makeFile(bad)))
+      .toBeRejectedWithError(/caso válido/i);
+    expect(store.loadCase).not.toHaveBeenCalled();
+  });
+
+  it('[B2] rechaza labs como objeto vacío', async () => {
+    const bad = JSON.stringify({
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      patientCase: { info: null, diagnoses: [], medications: [], labs: {} },
+    });
+    await expectAsync(service.importFile(makeFile(bad)))
+      .toBeRejectedWithError(/caso válido/i);
+    expect(store.loadCase).not.toHaveBeenCalled();
+  });
+
+  it('[B14] rechaza versión desconocida con mensaje claro', async () => {
+    const bad = JSON.stringify({
+      version: '99.0',
+      exportedAt: new Date().toISOString(),
+      patientCase: { info: null, diagnoses: [], medications: [], labs: null },
+    });
+    await expectAsync(service.importFile(makeFile(bad)))
+      .toBeRejectedWithError(/versión|caso válido/i);
+    expect(store.loadCase).not.toHaveBeenCalled();
+  });
+
+  it('el mensaje de rechazo no expone el dump técnico de Zod', async () => {
+    const bad = JSON.stringify({
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      patientCase: { info: 'x', diagnoses: [], medications: [], labs: null },
+    });
+    try {
+      await service.importFile(makeFile(bad));
+      fail('debería rechazar');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      expect(message).toMatch(/caso válido/i);
+      expect(message).not.toMatch(/ZodError|expected|Received/i);
+    }
   });
 });

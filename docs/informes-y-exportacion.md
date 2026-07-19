@@ -31,6 +31,7 @@ desencadena por una acción explícita del usuario en `AppComponent`.
 |---|---|
 | `src/app/core/report.service.ts` | Servicio Angular que construye y descarga el PDF |
 | `src/app/core/case-io.service.ts` | Servicio Angular para exportar e importar el caso en JSON |
+| `src/app/core/case-export.schema.ts` | Schema Zod de `CaseExport` (frontera de confianza del import) |
 | `src/app/core/clipboard-text.ts` | Función pura que genera el texto plano de criterios |
 | `src/types/pdfmake-browser.d.ts` | Declaraciones de tipo ambient para `pdfmake` y `vfs_fonts` |
 | `scripts/verify-pdf-e2e.js` | Script Node.js de verificación e2e de ligaduras tipográficas |
@@ -64,11 +65,11 @@ AppComponent.onSave()
 ```
 
 ```
-AppComponent.onLoad(file)
+steps.onFileLoad(file)
   └─► CaseIoService.importFile(file)
         ├─► JSON.parse(text)
-        ├─► isCaseExport(parsed)  // validación superficial
-        └─► store.loadCase(parsed.patientCase)
+        ├─► caseExportSchema.safeParse(parsed)  // Zod; versión literal '1.0'
+        └─► store.loadCase(result.data.patientCase)  // solo si el schema pasa
 ```
 
 ### Función de portapapeles (`buildCriteriaText`)
@@ -107,16 +108,13 @@ intenta extraer texto usando `PDFParse`.
   `docDefinition`. Este comportamiento se verificó con el script e2e
   `verify-pdf-e2e.js`.
 
-- **Formato de exportación versionado (`version: '1.0'`)**: el campo `version`
-  en `CaseExport` prepara una vía de migración para versiones futuras del
-  formato, aunque actualmente la importación no comprueba el valor concreto de
-  la versión.
+- **Formato de exportación versionado (`version: '1.0'`)**: el schema Zod
+  exige `z.literal('1.0')`; versiones desconocidas se rechazan sin cargar estado.
 
-- **Validación de importación intencionalmente mínima**: `isCaseExport` solo
-  verifica que `version` sea string y que `diagnoses`/`medications` sean arrays.
-  No valida tipos internos de `Med`, `PatientInfo` ni `Labs`. Esto simplifica el
-  código pero traslada la responsabilidad de detectar datos corruptos al motor
-  de criterios en tiempo de evaluación.
+- **Validación Zod en la frontera de import**: `caseExportSchema` valida
+  `info`, elementos de `diagnoses`, `Med`, `Labs` completo (objeto vacío no
+  vale) y tabs revisados como arrays de strings. El error al usuario es un
+  mensaje breve en español; `loadCase` no se llama si el parse falla.
 
 - **`buildCriteriaText` como función pura**: no tiene dependencias de Angular ni
   de servicios. Puede llamarse desde cualquier punto sin inyección de
