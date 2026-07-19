@@ -1,4 +1,5 @@
 import { Crit, JsonLogicRule } from '../types';
+import { ALL_CRITERIA } from '../services/criteria-test-helpers';
 import {
   SYSTEM_TO_TABS,
   TRANSVERSAL,
@@ -268,6 +269,12 @@ describe('buildRelevance', () => {
 
     expect(rel.specificDxsByTab.get('renal')?.has('enfermedad_renal_grave')).toBe(true);
     expect(rel.specificDxsByTab.get('renal')?.has('insuficiencia_renal_terminal')).toBe(true);
+  });
+
+  it('estreñimiento crónico aflora en urológico (I4) y gastrointestinal (F3-FARMACOS)', () => {
+    const rel = buildRelevance(ALL_CRITERIA);
+    expect(rel.specificDxsByTab.get('urologico')?.has('estrenimiento_cronico')).toBe(true);
+    expect(rel.specificDxsByTab.get('gastrointestinal')?.has('estrenimiento_cronico')).toBe(true);
   });
 
   it('ignora criterios transversales si no se pasa allTabIds', () => {

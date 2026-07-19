@@ -1,7 +1,7 @@
 import { CriteriaEngineService } from './criteria-engine.service';
 import {
   setupEngine, makeCase, makeLabs, makeMed, crit,
-  aine, dabigatran, digoxina, aldosterona, inhibidorFactorXa,
+  aine, dabigatran, digoxina, aldosterona, inhibidorFactorXa, ieca, ara2,
 } from './criteria-test-helpers';
 
 // Factories locales para medicamentos del sistema renal que aún no están en helpers
@@ -438,6 +438,52 @@ describe('Criterios STOPP — Sección E (Sistema renal)', () => {
         labs: makeLabs({ egfr_ml_min_173: 50 }),
       });
       expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+  });
+});
+
+describe('Criterios START — Sección E (Sistema renal)', () => {
+  let engine: CriteriaEngineService;
+
+  beforeEach(() => { engine = setupEngine(); });
+
+  describe('START-E4-IECA-ARA2-ERC-PROTEINURIA', () => {
+    const id = 'START-E4-IECA-ARA2-ERC-PROTEINURIA';
+    const dx = ['proteinuria'];
+
+    it('dispara con proteinuria sin IECA/ARA2', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara con dx enfermedad_renal_grave aunque no haya analítica', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: [...dx, 'enfermedad_renal_grave'],
+        medications: [],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara con eGFR < 30', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        labs: makeLabs({ egfr_ml_min_173: 29 }),
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara si ya recibe IECA', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        medications: [ieca()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara si ya recibe ARA2', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        medications: [ara2()],
+      }), [crit(id)])).toEqual([]);
     });
   });
 });

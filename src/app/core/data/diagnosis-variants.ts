@@ -31,7 +31,7 @@ export const DIAGNOSIS_VARIANT_FAMILIES: DiagnosisVariantFamily[] = [
   // EPOC (Respiratorio): rootLabel 'EPOC', rootSelectable?, variants ['EPOC GOLD 1-2','EPOC GOLD 3-4','EPOC grave']
   //   ⚠️ 'EPOC grave' solapa con 'EPOC GOLD 3-4' (ver §2.3): validar eje único antes de activar.
   // Dolor (Sintomático): sin raíz genérica, variants ['Dolor leve','Dolor leve-moderado','Dolor moderado-grave']
-  //   ⚠️ 'Dolor neuropático' es OTRO tipo, NO entra en la escala de intensidad.
+  //   ⚠️ 'Dolor neuropático' y 'Dolor irruptivo' son OTRO tipo, NO entran en la escala de intensidad.
   // Bloqueo AV (Cardiovascular): sin raíz genérica, variants ['Bloqueo AV de segundo grado','Bloqueo AV completo']
   //   ⚠️ 'Bradicardia' comparte subgrupo pero es un dx distinto, NO entra.
   // Osteopenia/Osteoporosis (Reumatológico): variants ['Osteopenia','Osteoporosis'] (continuo de densidad ósea)

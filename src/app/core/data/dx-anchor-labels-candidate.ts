@@ -146,7 +146,7 @@ export const DX_ANCHOR_LABELS_CANDIDATE: readonly DxAnchorCandidate[] = [
   { label: 'Prostatismo', rationale: 'Síndrome prostático crónico.' },
   { label: 'Retención urinaria', rationale: 'Condición urológica clínica.' },
   {
-    label: 'Hiperplasia benigna de próstata',
+    label: 'Hiperplasia benigna de próstata (síntomas prostáticos)',
     rationale: 'Diagnóstico urológico crónico estructural.',
   },
   {
@@ -198,6 +198,10 @@ export const DX_ANCHOR_LABELS_CANDIDATE: readonly DxAnchorCandidate[] = [
     rationale: 'Estado nutricional crónico del paciente.',
   },
   {
+    label: 'Diabetes mellitus',
+    rationale: 'Condición crónica de base; no debe sombrearse al citarse en STOPP-J1.',
+  },
+  {
     label: 'Diabetes con episodios frecuentes de hipoglucemia',
     rationale: 'Comorbilidad diabética con patrón clínico.',
   },
@@ -242,6 +246,16 @@ export const DX_ANCHOR_LABELS_CANDIDATE: readonly DxAnchorCandidate[] = [
   {
     label: 'Dolor moderado-grave',
     rationale: 'Síntoma actual escalado; dudoso como ancla permanente.',
+    doubtful: true,
+  },
+  {
+    label: 'Dolor irruptivo',
+    rationale: 'Tipo de dolor distinto de la escala de intensidad; no es variante mutex.',
+    doubtful: true,
+  },
+  {
+    label: 'Dolor crónico de la artrosis',
+    rationale: 'Síntoma actual ligado a la artrosis; dudoso como ancla permanente.',
     doubtful: true,
   },
 ];

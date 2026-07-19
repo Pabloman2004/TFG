@@ -445,7 +445,7 @@
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar antagonistas de la vitamina K como anticoagulantes de primera línea en la FA, salvo prótesis valvular metálica, estenosis mitral moderada-grave o TFGe < 15 ml/min/1,73 m². Los ACOD son igual de eficaces y más seguros.",
-      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE_AVK",{"var":"medications"}]},{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"!":{"in":["protesis_valvular_metalica",{"var":"diagnoses"}]}},{"!":{"in":["estenosis_mitral_moderada_grave",{"var":"diagnoses"}]}},{"or":[{"==":[{"var":"labs.egfr_ml_min_173"},null]},{">=":[{"var":"labs.egfr_ml_min_173"},15]}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE_AVK",{"var":"medications"}]},{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"!":{"in":["protesis_valvular_metalica",{"var":"diagnoses"}]}},{"!":{"in":["estenosis_mitral_moderada_grave",{"var":"diagnoses"}]}},{"!":{"egfrBelow":[15,{"var":""}]}}]},
       "excludes": {"medications":["Warfarina","Acenocumarol"],"drugClasses":["ANTICOAGULANTE_AVK"]}
     },
     {
@@ -547,7 +547,7 @@
     {
       "id": "STOPP-D4-BETABLOQUEANTE-BLOQUEO-CARDIACO",
       "type": "STOPP",
-      "system": "Sistema nervioso central",
+      "system": "Sistema cardiovascular",
       "summary": "Evitar betabloqueantes en pacientes con bloqueo cardíaco de 2º grado o completo. Riesgo de parada cardíaca.",
       "logic": {"and":[{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]},{"or":[{"in":["bloqueo_av_grado_2",{"var":"diagnoses"}]},{"in":["bloqueo_av_completo",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Metoprolol","Bisoprolol","Atenolol","Nebivolol","Carvedilol","Propranolol"],"drugClasses":["BETABLOQUEANTE"]}
@@ -841,9 +841,9 @@
       "excludes": {"drugClasses":["IBP"]}
     },
     {
-      "id": "STOPP-F3-ANTICOLINERGICO-ESTRENIMIENTO",
+      "id": "STOPP-I4-ANTIMUSCARINICO-ESTRENIMIENTO",
       "type": "STOPP",
-      "system": "Sistema gastrointestinal",
+      "system": "Sistema urogenital",
       "summary": "Evitar fármacos antimuscarínicos en estreñimiento crónico. Riesgo de empeoramiento severo del tránsito intestinal.",
       "logic": {"and":[{"inDrugClass":["ANTICOLINERGICO",{"var":"medications"}]},{"in":["estrenimiento_cronico",{"var":"diagnoses"}]}]},
       "excludes": {"medications":["Tizanidina","Amitriptilina","Nortriptilina","Imipramina","Clomipramina","Doxepina"],"drugClasses":["ANTICOLINERGICO"]}
@@ -852,7 +852,7 @@
       "id": "STOPP-F3-FARMACOS-ESTRENIMIENTO",
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
-      "summary": "Evitar fármacos que suelen causar estreñimiento (antimuscarínicos/anticolinérgicos, hierro oral, opioides, verapamilo, antiácidos con aluminio) en pacientes con estreñimiento crónico cuando existan alternativas que no estriñan. Riesgo de exacerbar el estreñimiento.",
+      "summary": "Evitar fármacos que suelen causar estreñimiento (hierro oral, opioides, verapamilo/calcioantagonistas no-DHP) en pacientes con estreñimiento crónico cuando existan alternativas que no estriñan. Riesgo de exacerbar el estreñimiento.",
       "logic": {"and":[{"or":[{"inDrugClass":["CALCIOANTAGONISTA_NO_DHP",{"var":"medications"}]},{"inDrugClass":["OPIOIDE",{"var":"medications"}]},{"inDrugClass":["HIERRO_ORAL",{"var":"medications"}]}]},{"in":["estrenimiento_cronico",{"var":"diagnoses"}]}]},
       "excludes": {"medications":["Verapamilo","Morfina","Morfina LP","Fentanilo","Oxicodona","Oxicodona LP","Buprenorfina parche","Tramadol","Metadona","Petidina"],"drugClasses":["CALCIOANTAGONISTA_NO_DHP","OPIOIDE"]}
     },
@@ -1069,7 +1069,7 @@
       "type": "STOPP",
       "system": "Sistema endocrino",
       "summary": "Evitar sulfonilureas de vida media larga (glibenclamida, clorpropamida, glimepirida) en diabetes mellitus tipo 2. Riesgo elevado de hipoglucemia prolongada en personas mayores.",
-      "logic": {"inDrugClass":["SULFONILUREA",{"var":"medications"}]},
+      "logic": {"and":[{"inDrugClass":["SULFONILUREA",{"var":"medications"}]},{"or":[{"in":["diabetes",{"var":"diagnoses"}]},{"in":["diabetes_hipoglucemias_frecuentes",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["SULFONILUREA"]}
     },
     {
@@ -1221,7 +1221,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar ISRS e ISRN en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y deteriorar el equilibrio.",
-      "logic": {"and":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"or":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"inDrugClass":["ISRN",{"var":"medications"}]}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Sertralina","Fluoxetina","Citalopram","Escitalopram","Venlafaxina","Duloxetina"],"drugClasses":["ISRS","ISRN"]}
     },
     {
@@ -1261,7 +1261,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antimuscarínicos para la vejiga hiperactiva o incontinencia urinaria de urgencia en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia.",
-      "logic": {"and":[{"inDrugClass":["ANTIESPASMÓDICO_URINARIO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIESPASMÓDICO_URINARIO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},{"or":[{"in":["incontinencia_urinaria_urgencia",{"var":"diagnoses"}]},{"in":["vejiga_hiperactiva",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["ANTIESPASMÓDICO_URINARIO"]}
     },
     {
@@ -1285,7 +1285,7 @@
       "type": "STOPP",
       "system": "Analgésicos",
       "summary": "Evitar opioides de acción prolongada sin asociar opioides de acción rápida disponibles para el dolor irruptivo moderado o grave. Riesgo de falta de control del dolor severo.",
-      "logic": {"and":[{"inDrugClass":["OPIOIDE_LP",{"var":"medications"}]},{"!":{"inDrugClass":["OPIOIDE_RAPIDO",{"var":"medications"}]}},{"in":["dolor_moderado_grave",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["OPIOIDE_LP",{"var":"medications"}]},{"!":{"inDrugClass":["OPIOIDE_RAPIDO",{"var":"medications"}]}},{"or":[{"in":["dolor_irruptivo",{"var":"diagnoses"}]},{"in":["dolor_moderado_grave",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["OPIOIDE_LP"]}
     },
     {
@@ -1293,7 +1293,7 @@
       "type": "STOPP",
       "system": "Analgésicos",
       "summary": "Evitar parche de lidocaína tópica para el tratamiento del dolor crónico de la artrosis. Sin clara evidencia de eficacia para esta indicación.",
-      "logic": {"and":[{"inDrugClass":["ANESTESICO_TOPICO",{"var":"medications"}]},{"in":["artrosis",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANESTESICO_TOPICO",{"var":"medications"}]},{"in":["dolor_cronico_artrosis",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["ANESTESICO_TOPICO"]}
     },
     {
@@ -1301,7 +1301,7 @@
       "type": "STOPP",
       "system": "Analgésicos",
       "summary": "Evitar gabapentinoides (gabapentina, pregabalina) para el tratamiento del dolor no neuropático. Sin evidencia de eficacia para dolor no neuropático.",
-      "logic": {"and":[{"inDrugClass":["GABAPENTINOIDE",{"var":"medications"}]},{"!":{"in":["dolor_neuropatico",{"var":"diagnoses"}]}}]},
+      "logic": {"and":[{"inDrugClass":["GABAPENTINOIDE",{"var":"medications"}]},{"or":[{"in":["dolor_leve",{"var":"diagnoses"}]},{"in":["dolor_leve_moderado",{"var":"diagnoses"}]},{"in":["dolor_moderado_grave",{"var":"diagnoses"}]},{"in":["artrosis",{"var":"diagnoses"}]},{"in":["dolor_cronico_artrosis",{"var":"diagnoses"}]}]},{"!":{"in":["dolor_neuropatico",{"var":"diagnoses"}]}}]},
       "excludes": {"drugClasses":["GABAPENTINOIDE"]}
     },
     {
@@ -1313,20 +1313,12 @@
       "excludes": {"medications":["Paracetamol"],"drugClasses":["ANALGESICO_SIMPLE"]}
     },
     {
-      "id": "STOPP-M1-ADT-ANTICOLINERGICOS",
+      "id": "STOPP-M1-ANTICOLINERGICOS",
       "type": "STOPP",
       "system": "Carga antimuscarínica/anticolinérgica",
-      "summary": "Evitar uso concomitante de antidepresivos tricíclicos con otros fármacos anticolinérgicos. Riesgo de toxicidad anticolinérgica acumulada (delirio, sequedad, estreñimiento, confusión).",
-      "logic": {"and":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"multipleANTICOLINERGICOS":[{"var":"medications"}]}]},
-      "excludes": {"medications":["Amitriptilina","Imipramina","Nortriptilina","Clomipramina","Doxepina"],"drugClasses":["ANTIDEPRESIVO_TRICICLICO"]}
-    },
-    {
-      "id": "STOPP-M1-NEUROLEPTICO-ANTICOLINERGICOS",
-      "type": "STOPP",
-      "system": "Carga antimuscarínica/anticolinérgica",
-      "summary": "Evitar uso concomitante de neurolépticos anticolinérgicos con otros fármacos anticolinérgicos. Riesgo de aumento de toxicidad acumulada.",
-      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"multipleANTICOLINERGICOS":[{"var":"medications"}]}]},
-      "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Olanzapina","Quetiapina","Clozapina"]}
+      "summary": "Evitar ≥2 fármacos con propiedades antimuscarínicas/anticolinérgicas concomitantes. Riesgo de toxicidad anticolinérgica acumulada (delirio, sequedad, estreñimiento, confusión).",
+      "logic": {"multipleANTICOLINERGICOS":[{"var":"medications"}]},
+      "excludes": {"drugClasses":["ANTICOLINERGICO"]}
     },
     {
       "id": "STOPP-H3B-AINE-DOLOR-LEVE",
@@ -1341,7 +1333,7 @@
       "type": "START",
       "system": "Sistema cardiovascular",
       "summary": "Considerar iniciar antihipertensivo. El paciente tiene HTA y no está recibiendo tratamiento antihipertensivo (IECA, ARA-II, betabloqueante, diurético tiazídico u otros).",
-      "logic": {"and":[{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.pas_mmhg"},null]},{">":[{"var":"labs.pas_mmhg"},140]}]},{"and":[{"!=":[{"var":"labs.pad_mmhg"},null]},{">":[{"var":"labs.pad_mmhg"},90]}]}]},{"!":{"inDrugClass":["IECA",{"var":"medications"}]}},{"!":{"inDrugClass":["ARA2",{"var":"medications"}]}},{"!":{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]}},{"!":{"inDrugClass":["DIURETICO_TIAZIDICO",{"var":"medications"}]}},{"!":{"inDrugClass":["CALCIOANTAGONISTA_NO_DHP",{"var":"medications"}]}},{"!":{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]}}]}
+      "logic": {"and":[{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]},{"and":[{"!=":[{"var":"labs.pas_mmhg"},null]},{">":[{"var":"labs.pas_mmhg"},140]}]},{"and":[{"!=":[{"var":"labs.pad_mmhg"},null]},{">":[{"var":"labs.pad_mmhg"},90]}]}]},{"!":{"inDrugClass":["IECA",{"var":"medications"}]}},{"!":{"inDrugClass":["ARA2",{"var":"medications"}]}},{"!":{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]}},{"!":{"inDrugClass":["DIURETICO_TIAZIDICO",{"var":"medications"}]}},{"!":{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]}},{"!":{"inDrugClass":["CALCIOANTAGONISTA_NO_DHP",{"var":"medications"}]}},{"!":{"inDrugClass":["CALCIOANTAGONISTA_DHP",{"var":"medications"}]}},{"!":{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]}},{"!":{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]}},{"!":{"inDrugClass":["SACUBITRILO_VALSARTAN",{"var":"medications"}]}}]}
     },
     {
       "id": "START-B2-ESTATINA-ENFERMEDAD-VASCULAR",
@@ -1383,7 +1375,7 @@
       "type": "START",
       "system": "Sistema cardiovascular",
       "summary": "Considerar iniciar antagonista de aldosterona (espironolactona, eplerenona). El paciente tiene IC con FE reducida sin deterioro grave de la función renal (TFGe > 30) y no recibe antagonistas de aldosterona.",
-      "logic": {"and":[{"in":["insuficiencia_cardiaca_fe_reducida",{"var":"diagnoses"}]},{"!":{"inDrugClass":["ANTAGONISTA_ALDOSTERONA",{"var":"medications"}]}},{"or":[{"==":[{"var":"labs.egfr_ml_min_173"},null]},{">":[{"var":"labs.egfr_ml_min_173"},30]}]}]}
+      "logic": {"and":[{"in":["insuficiencia_cardiaca_fe_reducida",{"var":"diagnoses"}]},{"!":{"inDrugClass":["ANTAGONISTA_ALDOSTERONA",{"var":"medications"}]}},{"!":{"egfrBelow":[30,{"var":""}]}}]}
     },
     {
       "id": "START-B8-ISGLT2-INSUFICIENCIA-CARDIACA",
@@ -1453,7 +1445,7 @@
       "type": "START",
       "system": "Sistema nervioso central",
       "summary": "Considerar iniciar rivastigmina. El paciente tiene demencia por cuerpos de Lewy o demencia asociada a Parkinson y no recibe inhibidores de acetilcolinesterasa.",
-      "logic": {"and":[{"or":[{"in":["demencia_cuerpos_lewy",{"var":"diagnoses"}]},{"in":["parkinson",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["INHIBIDOR_ACETILCOLINESTERASA",{"var":"medications"}]}}]}
+      "logic": {"and":[{"or":[{"in":["demencia_cuerpos_lewy",{"var":"diagnoses"}]},{"and":[{"in":["parkinson",{"var":"diagnoses"}]},{"or":[{"in":["demencia",{"var":"diagnoses"}]},{"in":["deterioro_cognitivo",{"var":"diagnoses"}]}]}]}]},{"!":{"inDrugClass":["INHIBIDOR_ACETILCOLINESTERASA",{"var":"medications"}]}}]}
     },
     {
       "id": "START-D5-ISRS-ANSIEDAD-GRAVE",
@@ -1467,7 +1459,7 @@
       "type": "START",
       "system": "Sistema nervioso central",
       "summary": "Considerar iniciar agonista dopaminérgico (ropinirol, pramipexol, rotigotina) para síndrome de piernas inquietas, descartadas deficiencia de hierro y ERC grave (TFGe < 30).",
-      "logic": {"and":[{"in":["sindrome_piernas_inquietas",{"var":"diagnoses"}]},{"!":{"inDrugClass":["AGONISTA_DOPAMINERGICO",{"var":"medications"}]}},{"or":[{"==":[{"var":"labs.egfr_ml_min_173"},null]},{">=":[{"var":"labs.egfr_ml_min_173"},30]}]}]}
+      "logic": {"and":[{"in":["sindrome_piernas_inquietas",{"var":"diagnoses"}]},{"!":{"inDrugClass":["AGONISTA_DOPAMINERGICO",{"var":"medications"}]}},{"!":{"egfrBelow":[30,{"var":""}]}}]}
     },
     {
       "id": "START-D7-PROPRANOLOL-TEMBLOR-ESENCIAL",
@@ -1502,7 +1494,7 @@
       "type": "START",
       "system": "Sistema renal",
       "summary": "Considerar iniciar IECA o ARA-II. El paciente tiene ERC con proteinuria (albuminuria > 300 mg/24 h) y no recibe IECA ni ARA-II.",
-      "logic": {"and":[{"in":["proteinuria",{"var":"diagnoses"}]},{"!":{"inDrugClass":["IECA",{"var":"medications"}]}},{"!":{"inDrugClass":["ARA2",{"var":"medications"}]}},{"or":[{"==":[{"var":"labs.egfr_ml_min_173"},null]},{">=":[{"var":"labs.egfr_ml_min_173"},30]}]}]}
+      "logic": {"and":[{"in":["proteinuria",{"var":"diagnoses"}]},{"!":{"inDrugClass":["IECA",{"var":"medications"}]}},{"!":{"inDrugClass":["ARA2",{"var":"medications"}]}},{"!":{"egfrBelow":[30,{"var":""}]}}]}
     },
     {
       "id": "START-F1-IBP-ERGE-GRAVE",
@@ -1656,7 +1648,7 @@
       "type": "START",
       "system": "Sistema endocrino",
       "summary": "Considerar iniciar IECA (o ARA-II si no tolerado). El paciente tiene diabetes con proteinuria o microalbuminuria y no recibe IECA ni ARA-II (salvo TFGe < 30).",
-      "logic": {"and":[{"in":["diabetes",{"var":"diagnoses"}]},{"in":["proteinuria",{"var":"diagnoses"}]},{"!":{"inDrugClass":["IECA",{"var":"medications"}]}},{"!":{"inDrugClass":["ARA2",{"var":"medications"}]}},{"or":[{"==":[{"var":"labs.egfr_ml_min_173"},null]},{">=":[{"var":"labs.egfr_ml_min_173"},30]}]}]}
+      "logic": {"and":[{"in":["diabetes",{"var":"diagnoses"}]},{"in":["proteinuria",{"var":"diagnoses"}]},{"!":{"inDrugClass":["IECA",{"var":"medications"}]}},{"!":{"inDrugClass":["ARA2",{"var":"medications"}]}},{"!":{"egfrBelow":[30,{"var":""}]}}]}
     },
     {
       "id": "START-K1-OPIOIDE-DOLOR-MODERADO-GRAVE",

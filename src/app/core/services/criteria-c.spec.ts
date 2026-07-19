@@ -1,6 +1,6 @@
 import { CriteriaEngineService } from './criteria-engine.service';
 import {
-  setupEngine, makeCase, makeMed, crit, withAge, ALL_CRITERIA,
+  setupEngine, makeCase, makeLabs, makeMed, crit, withAge, ALL_CRITERIA,
   aine, anticoag, anticoagAvk, anticoagDir, dabigatran,
   antiag, aas, calcioNodhp, isrs, antiagTico, amiodarona,
 } from './criteria-test-helpers';
@@ -281,6 +281,23 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
 
     it('no dispara con FA + ACOD (no es AVK)', () => {
       const p = makeCase({ diagnoses: ['fibrilacion_auricular'], medications: [anticoagDir()] });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('no dispara con FA + warfarina + dx insuficiencia_renal_terminal (ACOD contraindicado)', () => {
+      const p = makeCase({
+        diagnoses: ['fibrilacion_auricular', 'insuficiencia_renal_terminal'],
+        medications: [anticoagAvk()],
+      });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('no dispara con FA + warfarina + eGFR < 15', () => {
+      const p = makeCase({
+        diagnoses: ['fibrilacion_auricular'],
+        medications: [anticoagAvk()],
+        labs: makeLabs({ egfr_ml_min_173: 14 }),
+      });
       expect(engine.evaluate(p, [c])).toEqual([]);
     });
   });

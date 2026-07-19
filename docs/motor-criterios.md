@@ -36,7 +36,7 @@ registrados en el constructor del servicio.
 | `src/types/json-logic-js.d.ts` | Declaración de tipos ambient para `json-logic-js` (`apply`, `add_operation`) |
 | `scripts/audit-criteria.cjs` | Script Node.js one-shot de auditoría de consistencia entre `criteria.json`, `medications.ts` y `diagnoses.ts` |
 | `src/app/core/data/criteria-data-integrity.spec.ts` | Guard de suite: excludes↔catálogo, clases con miembros, whitelists dx/clases y política HTA (A12/A20) |
-| `src/assets/data/criteria.json` | Catálogo de 216 criterios (excluido del patrón @linked: JSON no admite comentarios) |
+| `src/assets/data/criteria.json` | Catálogo de 215 criterios (excluido del patrón @linked: JSON no admite comentarios) |
 
 ### Flujo principal
 
@@ -46,9 +46,9 @@ AppComponent / MedsStepComponent / DiagnosisStepComponent
         │  GET assets/data/criteria.json?v=<timestamp>   (HTTP, promesa cacheada)
         │  → buildRelevance(crits, allTabIds)             (actualiza signal relevance)
         └─► evaluate(patient, criteria)
-              │  normalizeCase(patient)       ← todo a minúsculas
-              │  normalizeCriterion(crit)     ← drug_class / diagnosis a minúsculas
-              └─► jsonLogic.apply(crit.logic, patient)    (con operadores custom)
+              │  normalizeCase(patient)       ← diagnoses / med.id / drugClasses a minúsculas
+              └─► jsonLogic.apply(crit.logic, patient)    (con operadores custom;
+                                                           literales del JSON tal cual)
 
         └─► getExcludedMedications(patient, criteria)
               │  Para cada crit con excludes:
@@ -128,14 +128,16 @@ Los operadores `multiple*` se construyen con `makeMultipleClassOp(drugClass, thr
 
 ### Normalización case-insensitive
 
-Antes de cualquier evaluación se normalizan a minúsculas:
+Solo se normaliza el **caso del paciente** (`normalizeCase`) antes de evaluar:
 - `patient.diagnoses[]`
 - `med.id` y `med.drugClasses[]`
-- Los campos `drug_class` y `diagnosis` dentro de los árboles json-logic de
-  los criterios (recorrido recursivo de `normalizeLogic`)
 
-Esto evita falsos negativos por discrepancias de capitalización entre el
-catálogo y los datos introducidos por el usuario.
+Los árboles json-logic de `criteria.json` **no se reescriben**: no existe
+`normalizeCriterion` / `normalizeLogic`. Los literales de diagnóstico y clase
+en la lógica deben escribirse ya en minúscula (p. ej. `"parkinson"`, no
+`"Parkinson"`). La tolerancia a mayúsculas de los operadores custom compara
+contra el paciente ya normalizado; un literal en mayúsculas en el JSON no
+coincidirá y el criterio no disparará.
 
 ### `buildRelevance` y `SYSTEM_TO_TABS`
 
@@ -249,8 +251,9 @@ cinco secciones:
 
 ## Invariantes
 
-- Todo criterio evaluado pasa por `normalizeCase` + `normalizeCriterion` antes
-  de aplicar `jsonLogic.apply`. Nunca se evalúa con datos sin normalizar.
+- Todo paciente evaluado pasa por `normalizeCase` antes de
+  `jsonLogic.apply`. Los literales de la lógica del criterio se usan tal cual
+  están en `criteria.json` (deben ir en minúscula).
 - `loadCriteria()` es idempotente: la segunda llamada devuelve la misma promesa
   cacheada, y `_relevance` se actualiza exactamente una vez.
 - `getExcludedMedications` solo excluye medicamentos que existen en `MEDICATIONS`
@@ -275,7 +278,8 @@ cinco secciones:
   árboles de criterios.
 - **Cambiar la estructura de un criterio en `criteria.json`**: actualizar el
   tipo `Crit` en `src/app/core/types.ts` (propietario: `docs/caso-clinico.md`),
-  el walk de `normalizeLogic`, `extractReferences` y el script de auditoría.
+  `extractReferences` y el script de auditoría. Los códigos de diagnóstico y
+  clase en `logic` van siempre en minúscula.
 - **Cambiar la correspondencia sistema → tabs**: editar `SYSTEM_TO_TABS` en
   `system-relevance.ts` y verificar que los tabs destino existen en
   `DRUG_CATEGORIES` / `DIAGNOSIS_TABS`.

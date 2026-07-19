@@ -5,58 +5,37 @@ import {
   crit,
   makeCase,
   makeMed,
-  neuroleptico,
   setupEngine,
 } from './criteria-test-helpers';
 
-const segundoAnticolinergico = () => makeMed('Oxibutinina', ['ANTICOLINERGICO', 'ANTIESPASMÓDICO_URINARIO']);
+const oxibutinina = () => makeMed('Oxibutinina', ['ANTICOLINERGICO', 'ANTIESPASMÓDICO_URINARIO']);
+const solifenacina = () => makeMed('Solifenacina', ['ANTICOLINERGICO', 'ANTIESPASMÓDICO_URINARIO']);
 
 describe('Criterios STOPP — Sección M (Anticolinérgicos concomitantes)', () => {
   let engine: CriteriaEngineService;
 
   beforeEach(() => { engine = setupEngine(); });
 
-  describe('STOPP-M1-ADT-ANTICOLINERGICOS', () => {
-    const id = 'STOPP-M1-ADT-ANTICOLINERGICOS';
+  describe('STOPP-M1-ANTICOLINERGICOS', () => {
+    const id = 'STOPP-M1-ANTICOLINERGICOS';
 
-    it('dispara con ADT + otro anticolinérgico (≥2 anticolinérgicos)', () => {
-      // ADT ya aporta clase ANTICOLINERGICO; el segundo completa el umbral
+    it('dispara con oxibutinina + solifenacina (≥2 anticolinérgicos puros)', () => {
       expect(engine.evaluate(makeCase({
-        medications: [adt(), segundoAnticolinergico()],
+        medications: [oxibutinina(), solifenacina()],
       }), [crit(id)]).length).toBe(1);
     });
 
-    it('no dispara con ADT solo (1 anticolinérgico)', () => {
-      expect(engine.evaluate(makeCase({
-        medications: [adt()],
-      }), [crit(id)])).toEqual([]);
+    it('dispara con amitriptilina + solifenacina (una sola alerta)', () => {
+      const hits = engine.evaluate(makeCase({
+        medications: [adt(), solifenacina()],
+      }), [crit(id)]);
+      expect(hits.length).toBe(1);
+      expect(hits[0].id).toBe(id);
     });
 
-    it('no dispara con 2 anticolinérgicos sin ADT', () => {
+    it('no dispara con un solo anticolinérgico', () => {
       expect(engine.evaluate(makeCase({
-        medications: [anticolinergico(), segundoAnticolinergico()],
-      }), [crit(id)])).toEqual([]);
-    });
-  });
-
-  describe('STOPP-M1-NEUROLEPTICO-ANTICOLINERGICOS', () => {
-    const id = 'STOPP-M1-NEUROLEPTICO-ANTICOLINERGICOS';
-
-    it('dispara con neuroléptico + ≥2 anticolinérgicos', () => {
-      expect(engine.evaluate(makeCase({
-        medications: [neuroleptico(), anticolinergico(), segundoAnticolinergico()],
-      }), [crit(id)]).length).toBe(1);
-    });
-
-    it('no dispara con neuroléptico + 1 anticolinérgico', () => {
-      expect(engine.evaluate(makeCase({
-        medications: [neuroleptico(), anticolinergico()],
-      }), [crit(id)])).toEqual([]);
-    });
-
-    it('no dispara con ≥2 anticolinérgicos sin neuroléptico', () => {
-      expect(engine.evaluate(makeCase({
-        medications: [anticolinergico(), segundoAnticolinergico()],
+        medications: [anticolinergico()],
       }), [crit(id)])).toEqual([]);
     });
   });

@@ -63,9 +63,12 @@ export const betabloq      = (id = 'Bisoprolol')         => makeMed(id, ['BETABL
 export const ieca          = (id = 'Enalapril')          => makeMed(id, ['IECA']);
 export const ara2          = (id = 'Valsartán')          => makeMed(id, ['ARA2']);
 export const calcioNodhp   = (id = 'Verapamilo')         => makeMed(id, ['CALCIOANTAGONISTA_NO_DHP']);
+export const calcioDhp     = (id = 'Amlodipino')         => makeMed(id, ['CALCIOANTAGONISTA_DHP']);
 export const digoxina      = ()                          => makeMed('Digoxina', ['DIGOXINA']);
 export const diureticoAsa  = (id = 'Furosemida')         => makeMed(id, ['DIURETICO_ASA']);
 export const tiazida       = (id = 'Hidroclorotiazida')  => makeMed(id, ['DIURETICO_TIAZIDICO']);
+export const alfabloqueante = (id = 'Doxazosina')        => makeMed(id, ['ALFABLOQUEANTE']);
+export const sacubitriloValsartan = ()                   => makeMed('Sacubitrilo/Valsartán', ['SACUBITRILO_VALSARTAN']);
 export const estatina      = (id = 'Atorvastatina')      => makeMed(id, ['ESTATINA']);
 export const isrs          = (id = 'Citalopram')         => makeMed(id, ['ISRS']);
 export const neuroleptico  = (id = 'Haloperidol')        => makeMed(id, ['NEUROLEPTICO']);

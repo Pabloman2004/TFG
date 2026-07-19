@@ -147,6 +147,10 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
   describe('D4-BETABLOQUEANTE-BLOQUEO-CARDIACO', () => {
     const c = crit('STOPP-D4-BETABLOQUEANTE-BLOQUEO-CARDIACO');
 
+    it('pertenece al sistema cardiovascular (no a SNC)', () => {
+      expect(c.system).toBe('Sistema cardiovascular');
+    });
+
     it('dispara con bloqueo AV grado 2 + betabloqueante', () => {
       const p = makeCase({ diagnoses: ['bloqueo_av_grado_2'], medications: [betabloq()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
@@ -758,6 +762,84 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
 
     it('no dispara sin insomnio', () => {
       expect(engine.evaluate(makeCase({ medications: [antihistaminico1g()] }), [c])).toEqual([]);
+    });
+  });
+});
+
+describe('Criterios START — Sección D (Sistema nervioso central)', () => {
+  let engine: CriteriaEngineService;
+
+  beforeEach(() => { engine = setupEngine(); });
+
+  describe('START-D4-RIVASTIGMINA-DEMENCIA-LEWY-PARKINSON', () => {
+    const id = 'START-D4-RIVASTIGMINA-DEMENCIA-LEWY-PARKINSON';
+
+    it('dispara con demencia por cuerpos de Lewy sin IACE', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['demencia_cuerpos_lewy'],
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('dispara con Parkinson + demencia sin IACE', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['parkinson', 'demencia'],
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('dispara con Parkinson + deterioro cognitivo sin IACE', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['parkinson', 'deterioro_cognitivo'],
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara con Parkinson sin demencia ni deterioro cognitivo', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['parkinson'],
+        medications: [],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara si ya recibe IACE', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['demencia_cuerpos_lewy'],
+        medications: [iace()],
+      }), [crit(id)])).toEqual([]);
+    });
+  });
+
+  describe('START-D6-AGONISTA-DOPAMINERGICO-PIERNAS-INQUIETAS', () => {
+    const id = 'START-D6-AGONISTA-DOPAMINERGICO-PIERNAS-INQUIETAS';
+    const dx = ['sindrome_piernas_inquietas'];
+
+    it('dispara con piernas inquietas sin agonista dopaminérgico', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara con dx enfermedad_renal_grave aunque no haya analítica', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: [...dx, 'enfermedad_renal_grave'],
+        medications: [],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara con eGFR < 30', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        labs: makeLabs({ egfr_ml_min_173: 29 }),
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara si ya recibe agonista dopaminérgico', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        medications: [agonistaDopa()],
+      }), [crit(id)])).toEqual([]);
     });
   });
 });

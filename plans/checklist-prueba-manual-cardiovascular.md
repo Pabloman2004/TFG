@@ -1,6 +1,6 @@
 # Checklist — prueba manual criterios Sistema cardiovascular
 
-Fuente: `criteria.json` (45 criterios). Tabs según `medications-taxonomy.ts` y `diagnoses-taxonomy.ts`.
+Fuente: `criteria.json` (46 criterios). Tabs según `medications-taxonomy.ts` y `diagnoses-taxonomy.ts`.
 
 Formato: `N. ID — resumen — Para que salte: …` con **[tab …]** en cada fármaco y dx.
 
@@ -12,7 +12,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ## Sistema cardiovascular
 
-*(STOPP: 34 | START: 11)*
+*(STOPP: 35 | START: 11)*
 
 ### STOPP
 
@@ -50,11 +50,11 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 17. STOPP-B2-VERAPAMILO-IC-NYHA — Evitar verapamilo/diltiazem en insuficiencia cardíaca grado III o IV de la NYHA. P… — Para que salte: marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP) + dx **Insuficiencia cardíaca NYHA III-IV** [tab Cardiovascular]
 
-18. STOPP-B20-ANTIHIPERTENSIVO-ESTENOSIS-AORTICA — Evitar antihipertensivos (diuréticos, antihipertensivos centrales, alfabloqueantes… — Para que salte: marcar **Metildopa** [tab Cardiovascular] (clase ANTIHIPERTENSIVO_CENTRAL) + dx **Estenosis aórtica grave sintomática** [tab Cardiovascular]
+18. STOPP-B20-ANTIHIPERTENSIVO-ESTENOSIS-AORTICA — Evitar antihipertensivos (diuréticos, antihipertensivos centrales, alfabloqueantes… — Para que salte: (marcar **Furosemida** [tab Cardiovascular + Renal] (clase DIURETICO_ASA) | marcar **Hidroclorotiazida** [tab Cardiovascular] (clase DIURETICO_TIAZIDICO) | marcar **Metildopa** [tab Cardiovascular] (clase ANTIHIPERTENSIVO_CENTRAL) | marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE)) + dx **Estenosis aórtica grave sintomática** [tab Cardiovascular]
 
 19. STOPP-B20-BETABLOQUEANTE-ESTENOSIS-AORTICA — Evitar betabloqueantes en pacientes con estenosis aórtica grave sintomática. Riesg… — Para que salte: marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE) + dx **Estenosis aórtica grave sintomática** [tab Cardiovascular]
 
-20. STOPP-B21-DIGOXINA-FA — Evitar digoxina como primera línea en FA a largo plazo (> 3 meses). Asociada a may… — Para que salte: dx **FA** [tab Cardiovascular] + marcar **Digoxina** [tab Cardiovascular (grupo unitario; si no visible → Otros)] (clase DIGOXINA)
+20. STOPP-B21-DIGOXINA-FA — Evitar digoxina como primera línea en FA a largo plazo (> 3 meses). Asociada a may… — Para que salte: dx **FA** [tab Cardiovascular]
 
 21. STOPP-B3-VERAPAMILO-BETABLOQUEANTES — Evitar uso concomitante de verapamilo/diltiazem con betabloqueantes. Riesgo de blo… — Para que salte: marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP) + marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE)
 
@@ -70,7 +70,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 27. STOPP-B5-BETABLOQUEANTE-HTA-NO-COMPLICADA — Evitar betabloqueantes en HTA no complicada. No hay evidencia sólida de su eficaci… — Para que salte: marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE) + (dx **HTA** [tab Cardiovascular] | dx **HTA no complicada** [tab Cardiovascular])
 
-28. STOPP-B6-AMIODARONA-TAQUIARRITMIA-PRIMERA-LINEA — Evitar amiodarona como primera línea en taquiarritmias supraventriculares. Mayor r… — Para que salte: marcar **Amiodarona** [tab Cardiovascular] (clase ANTIARITMICO) + dx **Taquiarritmias supraventriculares** [tab Cardiovascular]
+28. STOPP-B6-AMIODARONA-TAQUIARRITMIA-PRIMERA-LINEA — Evitar amiodarona como primera línea en taquiarritmias supraventriculares. Mayor r… — Para que salte: marcar **Amiodarona** [tab Cardiovascular] (clase ANTIARITMICO_CLASE_III) + dx **Taquiarritmias supraventriculares** [tab Cardiovascular]
 
 29. STOPP-B7-DIURETICO-ASA-PRIMERA-LINEA-HTA — Evitar diuréticos de asa como tratamiento de primera línea de la HTA. Existen alte… — Para que salte: marcar **Furosemida** [tab Cardiovascular + Renal] (clase DIURETICO_ASA) + (dx **HTA** [tab Cardiovascular] | dx **HTA no complicada** [tab Cardiovascular] | dx **HTA moderada** [tab Cardiovascular] | dx **HTA grave** [tab Cardiovascular]) + (NO marcar dx **Insuficiencia cardíaca** [tab Cardiovascular] | NO marcar dx **Insuficiencia cardíaca con función sistólica conservada** [tab Cardiovascular] | NO marcar dx **Insuficiencia cardíaca NYHA III-IV** [tab Cardiovascular])
 
@@ -84,9 +84,11 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 34. STOPP-B9-TIAZIDA-HIPOPOTASEMIA — Evitar diuréticos tiazídicos en presencia de hipopotasemia significativa (Potasio … — Para que salte: marcar **Hidroclorotiazida** [tab Cardiovascular] (clase DIURETICO_TIAZIDICO) + (dx **Hipopotasemia** [tab Metabólico] | K+=null (lab — sin pantalla UI) + K+=2.9 (lab — sin pantalla UI))
 
+35. STOPP-D4-BETABLOQUEANTE-BLOQUEO-CARDIACO — Evitar betabloqueantes en pacientes con bloqueo cardíaco de 2º grado o completo. R… — Para que salte: marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE) + (dx **Bloqueo AV de segundo grado** [tab Cardiovascular] | dx **Bloqueo AV completo** [tab Cardiovascular])
+
 ### START
 
-1. START-B1-ANTIHIPERTENSIVO-HTA — Considerar iniciar antihipertensivo. El paciente tiene HTA y no está recibiendo tr… — Para que salte: (dx **HTA** [tab Cardiovascular] | dx **HTA no complicada** [tab Cardiovascular] | dx **HTA grave** [tab Cardiovascular] | dx **HTA moderada** [tab Cardiovascular] | PAS=null (lab — sin pantalla UI) + PAS=141 (lab — sin pantalla UI) | PAD=null (lab — sin pantalla UI) + PAD=91 (lab — sin pantalla UI)) [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA); y NO marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2); y NO marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE); y NO marcar **Hidroclorotiazida** [tab Cardiovascular] (clase DIURETICO_TIAZIDICO); y NO marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP); y NO marcar **Metildopa** [tab Cardiovascular] (clase ANTIHIPERTENSIVO_CENTRAL)]
+1. START-B1-ANTIHIPERTENSIVO-HTA — Considerar iniciar antihipertensivo. El paciente tiene HTA y no está recibiendo tr… — Para que salte: (dx **HTA** [tab Cardiovascular] | dx **HTA no complicada** [tab Cardiovascular] | dx **HTA grave** [tab Cardiovascular] | dx **HTA moderada** [tab Cardiovascular] | PAS=null (lab — sin pantalla UI) + PAS=141 (lab — sin pantalla UI) | PAD=null (lab — sin pantalla UI) + PAD=91 (lab — sin pantalla UI)) [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA); y NO marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2); y NO marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE); y NO marcar **Hidroclorotiazida** [tab Cardiovascular] (clase DIURETICO_TIAZIDICO); y NO marcar **Furosemida** [tab Cardiovascular + Renal] (clase DIURETICO_ASA); y NO marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP); y NO marcar **Amlodipino** [tab Cardiovascular] (clase CALCIOANTAGONISTA_DHP); y NO marcar **Metildopa** [tab Cardiovascular] (clase ANTIHIPERTENSIVO_CENTRAL); y NO marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE); y NO marcar **Sacubitrilo/Valsartán** [tab Cardiovascular (grupo unitario; si no visible → Otros)] (clase SACUBITRILO_VALSARTAN)]
 
 2. START-B10-BETABLOQUEANTE-FA-MAL-CONTROL — Considerar iniciar betabloqueante. El paciente tiene FA crónica con mal control de… — Para que salte: dx **FA** [tab Cardiovascular] + dx **Fibrilación auricular crónica con mal control de frecuencia cardíaca** [tab Cardiovascular] [y NO marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE)]
 
@@ -102,7 +104,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 8. START-B6-BETABLOQUEANTE-IC-FE-REDUCIDA — Considerar iniciar betabloqueante cardioselectivo (bisoprolol, nebivolol, metoprol… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] [y NO marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE_CARDIOSELECTIVO); y NO marcar **Carvedilol** [tab Cardiovascular] (clase BETABLOQUEANTE_NO_CARDIOSELECTIVO)]
 
-9. START-B7-ANTAGONISTA-ALDOSTERONA-IC — Considerar iniciar antagonista de aldosterona (espironolactona, eplerenona). El pa… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] + (TFGe=null (lab — sin pantalla UI) | TFGe=31 (lab — sin pantalla UI)) [y NO marcar **Espironolactona** [tab Cardiovascular + Renal] (clase ANTAGONISTA_ALDOSTERONA)]
+9. START-B7-ANTAGONISTA-ALDOSTERONA-IC — Considerar iniciar antagonista de aldosterona (espironolactona, eplerenona). El pa… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] [y NO marcar **Espironolactona** [tab Cardiovascular + Renal] (clase ANTAGONISTA_ALDOSTERONA); y NO TFGe < 30]
 
 10. START-B8-ISGLT2-INSUFICIENCIA-CARDIACA — Considerar iniciar iSGLT2 (canagliflozina, dapagliflozina, empagliflozina, ertugli… — Para que salte: (dx **Insuficiencia cardíaca** [tab Cardiovascular] | dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular]) [y NO marcar **Canagliflozina** [tab Cardiovascular + Endocrino/Metabólico + Renal] (clase ISGLT2)]
 
@@ -114,9 +116,9 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 | Tipo | Cantidad |
 |------|----------|
-| STOPP | 34 |
+| STOPP | 35 |
 | START | 11 |
-| **Total** | **45** |
+| **Total** | **46** |
 
 ## OJO / casos difíciles solo con selección UI
 

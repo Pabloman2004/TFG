@@ -91,9 +91,11 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "Dolor leve": "Sintomático",
   "Dolor leve-moderado": "Sintomático",
   "Dolor moderado-grave": "Sintomático",
+  "Dolor irruptivo": "Sintomático",
   "Dolor neuropático": "Neurológico",
   "Artritis": "Reumatológico",
   "Artritis reumatoide": "Reumatológico",
+  "Dolor crónico de la artrosis": "Reumatológico",
   "Artrosis": "Reumatológico",
 
   // --- Betabloqueantes ---
@@ -157,8 +159,9 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "Prurito": "Dermatológico",
 
   // --- Sistema urogenital (I) ---
-  "Hiperplasia benigna de próstata": "Urológico",
+  "Hiperplasia benigna de próstata (síntomas prostáticos)": "Urológico",
   "Incontinencia urinaria de urgencia": "Urológico",
+  "Vejiga hiperactiva": "Urológico",
   "Bacteriuria asintomática": "Infeccioso",
   "Obstrucción del tracto urinario inferior": "Urológico",
   "Poliaquiuria": "Urológico",
@@ -318,9 +321,11 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "Dolor leve": "dolor_leve",
   "Dolor leve-moderado": "dolor_leve_moderado",
   "Dolor moderado-grave": "dolor_moderado_grave",
+  "Dolor irruptivo": "dolor_irruptivo",
   "Dolor neuropático": "dolor_neuropatico",
   "Artritis": "artritis",
   "Artritis reumatoide": "artritis_reumatoide",
+  "Dolor crónico de la artrosis": "dolor_cronico_artrosis",
   "Artrosis": "artrosis",
 
   // --- Betabloqueantes ---
@@ -384,8 +389,9 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "Prurito": "prurito",
 
   // --- Sistema urogenital (I) ---
-  "Hiperplasia benigna de próstata": "hiperplasia_benigna_prostata",
+  "Hiperplasia benigna de próstata (síntomas prostáticos)": "hiperplasia_benigna_prostata",
   "Incontinencia urinaria de urgencia": "incontinencia_urinaria_urgencia",
+  "Vejiga hiperactiva": "vejiga_hiperactiva",
   "Bacteriuria asintomática": "bacteriuria_asintomatica",
   "Obstrucción del tracto urinario inferior": "obstruccion_tracto_urinario_inferior",
   "Poliaquiuria": "poliaquiuria",

@@ -25,14 +25,31 @@ describe('Criterios STOPP — Sección J (Sistema endocrino)', () => {
   describe('STOPP-J1-SULFONILUREA-VIDA-MEDIA-LARGA', () => {
     const id = 'STOPP-J1-SULFONILUREA-VIDA-MEDIA-LARGA';
 
-    it('dispara con sulfonilurea', () => {
+    it('no dispara con sulfonilurea sola (sin diabetes)', () => {
       expect(engine.evaluate(makeCase({
+        medications: [sulfonilurea()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('dispara con sulfonilurea + diabetes', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['diabetes'],
+        medications: [sulfonilurea()],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('dispara con sulfonilurea + diabetes_hipoglucemias_frecuentes', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['diabetes_hipoglucemias_frecuentes'],
         medications: [sulfonilurea()],
       }), [crit(id)]).length).toBe(1);
     });
 
     it('no dispara sin sulfonilurea', () => {
-      expect(engine.evaluate(makeCase({ medications: [] }), [crit(id)])).toEqual([]);
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['diabetes'],
+        medications: [],
+      }), [crit(id)])).toEqual([]);
     });
   });
 
@@ -271,6 +288,13 @@ describe('Criterios START — Sección J (Sistema endocrino)', () => {
       expect(engine.evaluate(makeCase({
         diagnoses: dx,
         labs: makeLabs({ egfr_ml_min_173: 29 }),
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara con dx enfermedad_renal_grave aunque no haya analítica', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: [...dx, 'enfermedad_renal_grave'],
+        medications: [],
       }), [crit(id)])).toEqual([]);
     });
 

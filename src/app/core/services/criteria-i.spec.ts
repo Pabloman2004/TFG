@@ -90,6 +90,27 @@ describe('Criterios STOPP — Sección I (Sistema urogenital)', () => {
     });
   });
 
+  describe('I4-ANTIMUSCARINICO-ESTRENIMIENTO', () => {
+    const c = crit('STOPP-I4-ANTIMUSCARINICO-ESTRENIMIENTO');
+
+    it('pertenece al sistema urogenital', () => {
+      expect(c.system).toBe('Sistema urogenital');
+    });
+
+    it('dispara con estreñimiento crónico + anticolinérgico', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['estrenimiento_cronico'],
+        medications: [anticolinergico()],
+      }), [c]).length).toBe(1);
+    });
+
+    it('no dispara sin estreñimiento', () => {
+      expect(engine.evaluate(makeCase({
+        medications: [anticolinergico()],
+      }), [c])).toEqual([]);
+    });
+  });
+
   describe('I5-ALFABLOQUEANTE-HIPOTENSION-SINCOPE', () => {
     const c = crit('STOPP-I5-ALFABLOQUEANTE-HIPOTENSION-SINCOPE');
 

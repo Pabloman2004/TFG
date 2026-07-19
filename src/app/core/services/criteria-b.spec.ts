@@ -2,8 +2,8 @@ import { CriteriaEngineService } from './criteria-engine.service';
 import { critCode } from '../criteria-groups';
 import {
   setupEngine, makeCase, makeLabs, crit, withAge, makeMed, ALL_CRITERIA,
-  aine, betabloq, ieca, ara2, calcioNodhp, digoxina,
-  diureticoAsa, tiazida, estatina, antihipertCentral,
+  aine, betabloq, ieca, ara2, calcioNodhp, calcioDhp, digoxina,
+  diureticoAsa, tiazida, alfabloqueante, sacubitriloValsartan, estatina, antihipertCentral,
   amiodarona, nitrato, pde5, aldosterona, neuroleptico,
 } from './criteria-test-helpers';
 
@@ -484,6 +484,98 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
 
     it('no dispara con Digoxina a largo plazo sin FA', () => {
       expect(engine.evaluate(makeCase({ medications: [digoxinaLargoPlazo()] }), [c])).toEqual([]);
+    });
+  });
+});
+
+describe('Criterios START — Sección B (Sistema cardiovascular)', () => {
+  let engine: CriteriaEngineService;
+
+  beforeEach(() => { engine = setupEngine(); });
+
+  describe('START-B1-ANTIHIPERTENSIVO-HTA', () => {
+    const id = 'START-B1-ANTIHIPERTENSIVO-HTA';
+
+    it('dispara con HTA sin antihipertensivo', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['hta'],
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara si ya recibe amlodipino (DHP de primera línea)', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['hta'],
+        medications: [calcioDhp()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara si ya recibe furosemida', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['hta'],
+        medications: [diureticoAsa()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara si ya recibe doxazosina', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['hta'],
+        medications: [alfabloqueante()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara si ya recibe sacubitrilo/valsartán', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['hta'],
+        medications: [sacubitriloValsartan()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara si ya recibe IECA', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['hta'],
+        medications: [ieca()],
+      }), [crit(id)])).toEqual([]);
+    });
+  });
+
+  describe('START-B7-ANTAGONISTA-ALDOSTERONA-IC', () => {
+    const id = 'START-B7-ANTAGONISTA-ALDOSTERONA-IC';
+    const dx = ['insuficiencia_cardiaca_fe_reducida'];
+
+    it('dispara con IC-FE-reducida sin antagonista de aldosterona', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara con dx enfermedad_renal_grave aunque no haya analítica', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: [...dx, 'enfermedad_renal_grave'],
+        medications: [],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara con eGFR < 30', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        labs: makeLabs({ egfr_ml_min_173: 29 }),
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('dispara con eGFR = 30 (umbral inclusive vía egfrBelow)', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        labs: makeLabs({ egfr_ml_min_173: 30 }),
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara si ya recibe espironolactona', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: dx,
+        medications: [aldosterona()],
+      }), [crit(id)])).toEqual([]);
     });
   });
 });

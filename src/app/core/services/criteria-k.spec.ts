@@ -7,6 +7,7 @@ import {
   benzo,
   crit,
   hipnoticoZ,
+  isrn,
   isrs,
   makeCase,
   makeMed,
@@ -205,7 +206,21 @@ describe('Criterios STOPP — Sección K (Riesgo de caídas)', () => {
         }), [crit(id)]).length).toBe(1);
       });
 
-      it('no dispara sin ISRS', () => {
+      it('dispara con caídas + venlafaxina (ISRN)', () => {
+        expect(engine.evaluate(makeCase({
+          diagnoses: [CAIDAS],
+          medications: [isrn('Venlafaxina')],
+        }), [crit(id)]).length).toBe(1);
+      });
+
+      it('dispara con riesgo_caidas + duloxetina (ISRN)', () => {
+        expect(engine.evaluate(makeCase({
+          diagnoses: [RIESGO_CAIDAS],
+          medications: [isrn('Duloxetina')],
+        }), [crit(id)]).length).toBe(1);
+      });
+
+      it('no dispara sin ISRS ni ISRN', () => {
         expect(engine.evaluate(makeCase({
           diagnoses: [CAIDAS],
         }), [crit(id)])).toEqual([]);
@@ -300,16 +315,30 @@ describe('Criterios STOPP — Sección K (Riesgo de caídas)', () => {
     describe('STOPP-K12-ANTIMUSCARÍNICO-VEJIGA-CAIDAS', () => {
       const id = 'STOPP-K12-ANTIMUSCARÍNICO-VEJIGA-CAIDAS';
 
-      it('dispara con caídas + antiespasmódico urinario', () => {
+      it('no dispara con caídas + antiespasmódico sin indicación', () => {
         expect(engine.evaluate(makeCase({
           diagnoses: [CAIDAS],
+          medications: [antiespasmodicoUrinario()],
+        }), [crit(id)])).toEqual([]);
+      });
+
+      it('dispara con caídas + antiespasmódico + incontinencia de urgencia', () => {
+        expect(engine.evaluate(makeCase({
+          diagnoses: [CAIDAS, 'incontinencia_urinaria_urgencia'],
+          medications: [antiespasmodicoUrinario()],
+        }), [crit(id)]).length).toBe(1);
+      });
+
+      it('dispara con caídas + antiespasmódico + vejiga hiperactiva', () => {
+        expect(engine.evaluate(makeCase({
+          diagnoses: [CAIDAS, 'vejiga_hiperactiva'],
           medications: [antiespasmodicoUrinario()],
         }), [crit(id)]).length).toBe(1);
       });
 
       it('no dispara sin antiespasmódico urinario', () => {
         expect(engine.evaluate(makeCase({
-          diagnoses: [CAIDAS],
+          diagnoses: [CAIDAS, 'vejiga_hiperactiva'],
         }), [crit(id)])).toEqual([]);
       });
     });

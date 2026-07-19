@@ -39,6 +39,12 @@ describe('Criterios STOPP — Sección F (Sistema gastrointestinal)', () => {
     expect(engine.evaluate(patient, [crit('STOPP-F3-FARMACOS-ESTRENIMIENTO')]).length).toBe(1);
   });
 
+  it('F3 summary no promete antiácidos con aluminio (clase inexistente)', () => {
+    const summary = crit('STOPP-F3-FARMACOS-ESTRENIMIENTO').summary.toLowerCase();
+    expect(summary).not.toContain('aluminio');
+    expect(summary).not.toContain('antiácido');
+  });
+
   it('F4 solo dispara por encima de 200 mg diarios de hierro elemental', () => {
     const c = crit('STOPP-F4-HIERRO-ORAL-DOSIS-ALTA');
     const patient = (doseMgDay: number) => makeCase({

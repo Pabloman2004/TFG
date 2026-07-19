@@ -1,6 +1,6 @@
 # Checklist — prueba manual de TODOS los criterios
 
-Fuente: `criteria.json` (216 criterios). Tabs según `medications-taxonomy.ts` y `diagnoses-taxonomy.ts`.
+Fuente: `criteria.json` (215 criterios). Tabs según `medications-taxonomy.ts` y `diagnoses-taxonomy.ts`.
 
 Formato: `N. ID — resumen — Para que salte: …` con **[tab …]** en cada fármaco y dx.
 
@@ -12,7 +12,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ## Analgésicos
 
-*(STOPP: 6 | START: 3)*
+*(STOPP: 5 | START: 3)*
 
 ### STOPP
 
@@ -20,13 +20,11 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 2. STOPP-L2-OPIOIDE-SIN-LAXANTE — Evitar opioides en uso habitual sin asociar laxantes de forma concomitante. Riesgo… — Para que salte: marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE) [y NO marcar **Lactulosa** [tab Gastrointestinal] (clase LAXANTE)]
 
-3. STOPP-L3-OPIOIDE-PROLONGADO-SIN-RAPIDO — Evitar opioides de acción prolongada sin asociar opioides de acción rápida disponi… — Para que salte: marcar **Morfina LP** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE_LP) + dx **Dolor moderado-grave** [tab Otros (Sintomático)] [y NO marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE_RAPIDO)]
+3. STOPP-L3-OPIOIDE-PROLONGADO-SIN-RAPIDO — Evitar opioides de acción prolongada sin asociar opioides de acción rápida disponi… — Para que salte: marcar **Morfina LP** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE_LP) + (dx **Dolor irruptivo** [tab Otros (Sintomático)] | dx **Dolor moderado-grave** [tab Otros (Sintomático)]) [y NO marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE_RAPIDO)]
 
-4. STOPP-L4-LIDOCAINA-TOPICA-ARTROSIS — Evitar parche de lidocaína tópica para el tratamiento del dolor crónico de la artr… — Para que salte: marcar **Lidocaína parche** [tab Otros] (clase ANESTESICO_TOPICO) + dx **Artrosis** [tab Reumatológico]
+4. STOPP-L4-LIDOCAINA-TOPICA-ARTROSIS — Evitar parche de lidocaína tópica para el tratamiento del dolor crónico de la artr… — Para que salte: marcar **Lidocaína parche** [tab Otros] (clase ANESTESICO_TOPICO) + dx **Dolor crónico de la artrosis** [tab Reumatológico]
 
-5. STOPP-L5-GABAPENTINOIDE-DOLOR-NO-NEUROPATICO — Evitar gabapentinoides (gabapentina, pregabalina) para el tratamiento del dolor no… — Para que salte: marcar **Gabapentina** [tab Osteo/Músculo-esq. + SNC] (clase GABAPENTINOIDE) [y NO marcar dx **Dolor neuropático** [tab Neurológico]]
-
-6. STOPP-L6-PARACETAMOL-DOSIS-ALTA-HEPATOPATIA — Revisar paracetamol en pacientes malnutridos (IMC < 18) o con hepatopatía crónica:… — Para que salte: marcar **Paracetamol** [tab Osteo/Músculo-esq. (grupo unitario; si no visible → Otros)] (clase ANALGESICO_SIMPLE) + (dx **Hepatopatía crónica** [tab Otros (Hepático)] | dx **Malnutrición** [tab Metabólico])
+5. STOPP-L5-GABAPENTINOIDE-DOLOR-NO-NEUROPATICO — Evitar gabapentinoides (gabapentina, pregabalina) para el tratamiento del dolor no… — Para que salte: marcar **Gabapentina** [tab Osteo/Músculo-esq. + SNC] (clase GABAPENTINOIDE) + (dx **Dolor leve** [tab Otros (Sintomático)] | dx **Dolor leve-moderado** [tab Otros (Sintomático)] | dx **Dolor moderado-grave** [tab Otros (Sintomático)] | dx **Artrosis** [tab Reumatológico] | dx **Dolor crónico de la artrosis** [tab Reumatológico]) [y NO marcar dx **Dolor neuropático** [tab Neurológico]]
 
 ### START
 
@@ -44,13 +42,13 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ### STOPP
 
-1. STOPP-C1-AAS-DOSIS-ALTA — Revisar AAS en tratamiento crónico: si se toma a dosis superiores a 100 mg/día hay… — Para que salte: marcar **Ácido acetilsalicílico** [tab Anticoagulantes] (clase AAS)
+1. STOPP-C1-AAS-DOSIS-ALTA — Revisar AAS en tratamiento crónico: si se toma a dosis superiores a 100 mg/día hay… — Para que salte: (logic no traducida — revisar JSON)
 
 2. STOPP-C10-AINE-ANTICOAGULANTES — Evitar AINEs en pacientes en tratamiento con anticoagulantes. Riesgo de hemorragia… — Para que salte: marcar **Ibuprofeno** [tab Osteo/Músculo-esq.] (clase AINE) + marcar **Warfarina** [tab Anticoagulantes] (clase ANTICOAGULANTE)
 
-3. STOPP-C11-AVK-FA-PRIMERA-LINEA — Evitar antagonistas de la vitamina K como anticoagulantes de primera línea en la F… — Para que salte: marcar **Warfarina** [tab Anticoagulantes] (clase ANTICOAGULANTE_AVK) + dx **FA** [tab Cardiovascular] + (TFGe=null (lab — sin pantalla UI) | TFGe=15 (lab — sin pantalla UI)) [y NO marcar dx **Prótesis valvular metálica** [tab Cardiovascular]; y NO marcar dx **Estenosis mitral moderada-grave** [tab Cardiovascular]]
+3. STOPP-C11-AVK-FA-PRIMERA-LINEA — Evitar antagonistas de la vitamina K como anticoagulantes de primera línea en la F… — Para que salte: marcar **Warfarina** [tab Anticoagulantes] (clase ANTICOAGULANTE_AVK) + dx **FA** [tab Cardiovascular] [y NO marcar dx **Prótesis valvular metálica** [tab Cardiovascular]; y NO marcar dx **Estenosis mitral moderada-grave** [tab Cardiovascular]; y NO TFGe < 15]
 
-4. STOPP-C12-ISRS-ANTICOAGULANTE-SANGRADO — Evitar ISRS en pacientes con antecedentes de hemorragia grave que utilizan anticoa… — Para que salte: marcar **Warfarina** [tab Anticoagulantes] (clase ANTICOAGULANTE) + dx **Antecedentes de sangrado grave** [tab Hematológico]
+4. STOPP-C12-ISRS-ANTICOAGULANTE-SANGRADO — Evitar ISRS en pacientes con antecedentes de hemorragia grave que utilizan anticoa… — Para que salte: marcar **Warfarina** [tab Anticoagulantes] (clase ANTICOAGULANTE) + marcar **Sertralina** [tab SNC] (clase ISRS) + dx **Antecedentes de sangrado grave** [tab Hematológico]
 
 5. STOPP-C13-VERAPAMILO-INHIBIDORES-TROMBINA — Evitar uso concomitante de verapamilo/diltiazem con inhibidores directos de la tro… — Para que salte: marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP) + marcar **Dabigatrán** [tab Anticoagulantes] (clase INHIBIDOR_DIRECTO_TROMBINA)
 
@@ -58,7 +56,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 7. STOPP-C15-ANDROGENOS-TROMBOEMBOLISMO-VENOSO — Evitar andrógenos en pacientes con antecedentes de tromboembolismo venoso. Aumento… — Para que salte: marcar **Testosterona** [tab Otros] (clase ANDROGENO) + dx **Antecedentes de tromboembolismo venoso** [tab Hematológico]
 
-8. STOPP-C16-AAS-PREVENCION-PRIMARIA — Evitar AAS en prevención primaria cardiovascular (sin enfermedad cardiovascular es… — Para que salte: marcar **Ácido acetilsalicílico** [tab Anticoagulantes] (clase AAS) [y NO marcar dx **Enfermedad cardiovascular establecida** [tab Cardiovascular]; y NO marcar dx **Enfermedad vascular coronaria** [tab Cardiovascular]; y NO marcar dx **Angina de pecho** [tab Cardiovascular]; y NO marcar dx **Enfermedad vascular cerebral** [tab Cardiovascular]; y NO marcar dx **Enfermedad vascular periférica** [tab Cardiovascular]]
+8. STOPP-C16-AAS-PREVENCION-PRIMARIA — Evitar AAS en prevención primaria cardiovascular (sin enfermedad cardiovascular es… — Para que salte: marcar **Ácido acetilsalicílico** [tab Anticoagulantes] (clase AAS) [y NO marcar dx **Enfermedad cardiovascular establecida** [tab Cardiovascular]; y NO marcar dx **Enfermedad vascular coronaria** [tab Cardiovascular]; y NO marcar dx **Cardiopatía isquémica** [tab Cardiovascular]; y NO marcar dx **Angina de pecho** [tab Cardiovascular]; y NO marcar dx **Enfermedad vascular cerebral** [tab Cardiovascular]; y NO marcar dx **Ictus previo** [tab Neurológico]; y NO marcar dx **Enfermedad vascular periférica** [tab Cardiovascular]]
 
 9. STOPP-C2-ANTIAGREGANTE-RIESGO-SANGRADO — Evitar antiagregantes plaquetarios en pacientes con riesgo significativo de sangra… — Para que salte: marcar **Ácido acetilsalicílico** [tab Anticoagulantes] (clase ANTIAGREGANTE) + (dx **Riesgo significativo de sangrado** [tab Hematológico] | dx **HTA grave** [tab Cardiovascular] | dx **Diátesis hemorrágica** [tab Hematológico])
 
@@ -92,13 +90,11 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ## Carga antimuscarínica/anticolinérgica
 
-*(STOPP: 2 | START: 0)*
+*(STOPP: 1 | START: 0)*
 
 ### STOPP
 
-1. STOPP-M1-ADT-ANTICOLINERGICOS — Evitar uso concomitante de antidepresivos tricíclicos con otros fármacos anticolin… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTIDEPRESIVO_TRICICLICO) + marcar 2 anticolinérgicos (p. ej. **Oxibutinina** [tab Urológico] + **Amitriptilina** [tab Osteo/Músculo-esq. + SNC])
-
-2. STOPP-M1-NEUROLEPTICO-ANTICOLINERGICOS — Evitar uso concomitante de neurolépticos anticolinérgicos con otros fármacos antic… — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + marcar 2 anticolinérgicos (p. ej. **Oxibutinina** [tab Urológico] + **Amitriptilina** [tab Osteo/Músculo-esq. + SNC])
+1. STOPP-M1-ANTICOLINERGICOS — Evitar ≥2 fármacos con propiedades antimuscarínicas/anticolinérgicas concomitantes… — Para que salte: marcar 2 anticolinérgicos (p. ej. **Oxibutinina** [tab Urológico] + **Amitriptilina** [tab Osteo/Músculo-esq. + SNC])
 
 ---
 
@@ -132,39 +128,39 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ### STOPP
 
-1. STOPP-K1-BENZODIACEPINA-CAIDAS — Evitar benzodiacepinas en pacientes con caídas de repetición. Pueden reducir el ni… — Para que salte: marcar **Diazepam** [tab SNC] (clase BENZODIACEPINA) + dx **Caídas de repetición** [tab Otros (Geriátrico)]
+1. STOPP-K1-BENZODIACEPINA-CAIDAS — Evitar benzodiacepinas en pacientes con caídas de repetición. Pueden reducir el ni… — Para que salte: marcar **Diazepam** [tab SNC] (clase BENZODIACEPINA) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)])
 
-2. STOPP-K10-ALFABLOQUEANTE-PROSTATICO-CAIDAS — Evitar bloqueantes alfa-1-adrenérgicos (exceptuando silodosina) para síntomas pros… — Para que salte: marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE) + dx **Caídas de repetición** [tab Otros (Geriátrico)] + dx **Hiperplasia benigna de próstata** [tab Urológico]
+2. STOPP-K10-ALFABLOQUEANTE-PROSTATICO-CAIDAS — Evitar bloqueantes alfa-1-adrenérgicos (exceptuando silodosina) para síntomas pros… — Para que salte: marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)]) + dx **Hiperplasia benigna de próstata (síntomas prostáticos)** [tab Urológico]
 
-3. STOPP-K11-ANTIHIPERTENSIVO-CENTRAL-CAIDAS — Evitar antihipertensivos de acción central en pacientes con riesgo de caídas de re… — Para que salte: marcar **Metildopa** [tab Cardiovascular] (clase ANTIHIPERTENSIVO_CENTRAL) + dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)]
+3. STOPP-K11-ANTIHIPERTENSIVO-CENTRAL-CAIDAS — Evitar antihipertensivos de acción central en pacientes con riesgo de caídas de re… — Para que salte: marcar **Metildopa** [tab Cardiovascular] (clase ANTIHIPERTENSIVO_CENTRAL) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)])
 
-4. STOPP-K12-ANTIMUSCARÍNICO-VEJIGA-CAIDAS — Evitar antimuscarínicos para la vejiga hiperactiva o incontinencia urinaria de urg… — Para que salte: marcar **Oxibutinina** [tab Urológico] (clase ANTIESPASMÓDICO_URINARIO) + dx **Caídas de repetición** [tab Otros (Geriátrico)]
+4. STOPP-K12-ANTIMUSCARÍNICO-VEJIGA-CAIDAS — Evitar antimuscarínicos para la vejiga hiperactiva o incontinencia urinaria de urg… — Para que salte: marcar **Oxibutinina** [tab Urológico] (clase ANTIESPASMÓDICO_URINARIO) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)]) + (dx **Incontinencia urinaria de urgencia** [tab Urológico] | dx **Vejiga hiperactiva** [tab Urológico])
 
-5. STOPP-K2-NEUROLEPTICO-CAIDAS — Evitar neurolépticos en pacientes con caídas de repetición. Pueden causar parkinso… — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + dx **Caídas de repetición** [tab Otros (Geriátrico)]
+5. STOPP-K2-NEUROLEPTICO-CAIDAS — Evitar neurolépticos en pacientes con caídas de repetición. Pueden causar parkinso… — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)])
 
-6. STOPP-K3-VASODILATADOR-CAIDAS-HIPOTENSION — Evitar vasodilatadores (nitratos, alfabloqueantes, inhibidores PDE5) en pacientes … — Para que salte: (marcar **Isosorbide** [tab Cardiovascular] (clase NITRATO) | marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE) | marcar **Sildenafilo** [tab Urológico] (clase INHIBIDOR_PDE5)) + dx **Caídas de repetición** [tab Otros (Geriátrico)] + dx **Hipotensión ortostática** [tab Cardiovascular]
+6. STOPP-K3-VASODILATADOR-CAIDAS-HIPOTENSION — Evitar vasodilatadores (nitratos, alfabloqueantes, inhibidores PDE5) en pacientes … — Para que salte: (marcar **Isosorbide** [tab Cardiovascular] (clase NITRATO) | marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE) | marcar **Sildenafilo** [tab Urológico] (clase INHIBIDOR_PDE5)) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)]) + dx **Hipotensión ortostática** [tab Cardiovascular]
 
-7. STOPP-K4-ADT-CAIDAS — Evitar antidepresivos tricíclicos en pacientes con caídas de repetición. Pueden re… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTIDEPRESIVO_TRICICLICO) + dx **Caídas de repetición** [tab Otros (Geriátrico)]
+7. STOPP-K4-ADT-CAIDAS — Evitar antidepresivos tricíclicos en pacientes con caídas de repetición. Pueden re… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTIDEPRESIVO_TRICICLICO) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)])
 
-8. STOPP-K4-HIPNOTICO-Z-CAIDAS — Evitar hipnóticos-Z (zopiclona, zolpidem, zaleplon) en pacientes con caídas de rep… — Para que salte: marcar **Zolpidem** [tab SNC] (clase HIPNOTICO_Z) + dx **Caídas de repetición** [tab Otros (Geriátrico)]
+8. STOPP-K4-HIPNOTICO-Z-CAIDAS — Evitar hipnóticos-Z (zopiclona, zolpidem, zaleplon) en pacientes con caídas de rep… — Para que salte: marcar **Zolpidem** [tab SNC] (clase HIPNOTICO_Z) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)])
 
-9. STOPP-K5-ANTIEPILÉPTICO-CAIDAS — Evitar antiepilépticos en pacientes con caídas de repetición. Pueden reducir el ni… — Para que salte: marcar **Carbamazepina** [tab SNC] (clase ANTIEPILÉPTICO) + dx **Caídas de repetición** [tab Otros (Geriátrico)]
+9. STOPP-K5-ANTIEPILÉPTICO-CAIDAS — Evitar antiepilépticos en pacientes con caídas de repetición. Pueden reducir el ni… — Para que salte: marcar **Carbamazepina** [tab SNC] (clase ANTIEPILÉPTICO) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)])
 
-10. STOPP-K6-ANTIHISTAMINICO-1GEN-CAIDAS — Evitar antihistamínicos de primera generación en pacientes con caídas de repetició… — Para que salte: marcar **Astemizol** [tab Respiratorio] (clase ANTIHISTAMINICO_1GEN) + dx **Caídas de repetición** [tab Otros (Geriátrico)]
+10. STOPP-K6-ANTIHISTAMINICO-1GEN-CAIDAS — Evitar antihistamínicos de primera generación en pacientes con caídas de repetició… — Para que salte: marcar **Astemizol** [tab Respiratorio] (clase ANTIHISTAMINICO_1GEN) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)])
 
-11. STOPP-K7-OPIOIDE-CAIDAS — Evitar opioides en pacientes con caídas de repetición. Pueden reducir el nivel de … — Para que salte: marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE) + dx **Caídas de repetición** [tab Otros (Geriátrico)]
+11. STOPP-K7-OPIOIDE-CAIDAS — Evitar opioides en pacientes con caídas de repetición. Pueden reducir el nivel de … — Para que salte: marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)])
 
-12. STOPP-K8-ISRS-CAIDAS — Evitar ISRS e ISRN en pacientes con caídas de repetición. Pueden reducir el nivel … — Para que salte: marcar **Sertralina** [tab SNC] (clase ISRS) + dx **Caídas de repetición** [tab Otros (Geriátrico)]
+12. STOPP-K8-ISRS-CAIDAS — Evitar ISRS e ISRN en pacientes con caídas de repetición. Pueden reducir el nivel … — Para que salte: (marcar **Sertralina** [tab SNC] (clase ISRS) | marcar **Venlafaxina** [tab SNC] (clase ISRN)) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)])
 
-13. STOPP-K8-PSICOTROPICO-CAIDAS — Evitar psicotrópicos (antidepresivos, litio) en presencia de caídas de repetición.… — Para que salte: marcar **Litio** [tab SNC (grupo unitario; si no visible → Otros)] (clase PSICOTROPICO) + dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)]
+13. STOPP-K8-PSICOTROPICO-CAIDAS — Evitar psicotrópicos (antidepresivos, litio) en presencia de caídas de repetición.… — Para que salte: marcar **Litio** [tab SNC (grupo unitario; si no visible → Otros)] (clase PSICOTROPICO) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)])
 
-14. STOPP-K9-ALFABLOQUEANTE-HTA-CAIDAS — Evitar bloqueantes alfa-1-adrenérgicos como antihipertensivos en pacientes con caí… — Para que salte: marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE) + dx **Caídas de repetición** [tab Otros (Geriátrico)] + (dx **HTA** [tab Cardiovascular] | dx **HTA no complicada** [tab Cardiovascular] | dx **HTA grave** [tab Cardiovascular] | dx **HTA moderada** [tab Cardiovascular])
+14. STOPP-K9-ALFABLOQUEANTE-HTA-CAIDAS — Evitar bloqueantes alfa-1-adrenérgicos como antihipertensivos en pacientes con caí… — Para que salte: marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE) + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)]) + (dx **HTA** [tab Cardiovascular] | dx **HTA no complicada** [tab Cardiovascular] | dx **HTA grave** [tab Cardiovascular] | dx **HTA moderada** [tab Cardiovascular])
 
 ---
 
 ## Sistema cardiovascular
 
-*(STOPP: 34 | START: 11)*
+*(STOPP: 35 | START: 11)*
 
 ### STOPP
 
@@ -202,11 +198,11 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 17. STOPP-B2-VERAPAMILO-IC-NYHA — Evitar verapamilo/diltiazem en insuficiencia cardíaca grado III o IV de la NYHA. P… — Para que salte: marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP) + dx **Insuficiencia cardíaca NYHA III-IV** [tab Cardiovascular]
 
-18. STOPP-B20-ANTIHIPERTENSIVO-ESTENOSIS-AORTICA — Evitar antihipertensivos (diuréticos, antihipertensivos centrales, alfabloqueantes… — Para que salte: marcar **Metildopa** [tab Cardiovascular] (clase ANTIHIPERTENSIVO_CENTRAL) + dx **Estenosis aórtica grave sintomática** [tab Cardiovascular]
+18. STOPP-B20-ANTIHIPERTENSIVO-ESTENOSIS-AORTICA — Evitar antihipertensivos (diuréticos, antihipertensivos centrales, alfabloqueantes… — Para que salte: (marcar **Furosemida** [tab Cardiovascular + Renal] (clase DIURETICO_ASA) | marcar **Hidroclorotiazida** [tab Cardiovascular] (clase DIURETICO_TIAZIDICO) | marcar **Metildopa** [tab Cardiovascular] (clase ANTIHIPERTENSIVO_CENTRAL) | marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE)) + dx **Estenosis aórtica grave sintomática** [tab Cardiovascular]
 
 19. STOPP-B20-BETABLOQUEANTE-ESTENOSIS-AORTICA — Evitar betabloqueantes en pacientes con estenosis aórtica grave sintomática. Riesg… — Para que salte: marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE) + dx **Estenosis aórtica grave sintomática** [tab Cardiovascular]
 
-20. STOPP-B21-DIGOXINA-FA — Evitar digoxina como primera línea en FA a largo plazo (> 3 meses). Asociada a may… — Para que salte: dx **FA** [tab Cardiovascular] + marcar **Digoxina** [tab Cardiovascular (grupo unitario; si no visible → Otros)] (clase DIGOXINA)
+20. STOPP-B21-DIGOXINA-FA — Evitar digoxina como primera línea en FA a largo plazo (> 3 meses). Asociada a may… — Para que salte: dx **FA** [tab Cardiovascular]
 
 21. STOPP-B3-VERAPAMILO-BETABLOQUEANTES — Evitar uso concomitante de verapamilo/diltiazem con betabloqueantes. Riesgo de blo… — Para que salte: marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP) + marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE)
 
@@ -222,7 +218,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 27. STOPP-B5-BETABLOQUEANTE-HTA-NO-COMPLICADA — Evitar betabloqueantes en HTA no complicada. No hay evidencia sólida de su eficaci… — Para que salte: marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE) + (dx **HTA** [tab Cardiovascular] | dx **HTA no complicada** [tab Cardiovascular])
 
-28. STOPP-B6-AMIODARONA-TAQUIARRITMIA-PRIMERA-LINEA — Evitar amiodarona como primera línea en taquiarritmias supraventriculares. Mayor r… — Para que salte: marcar **Amiodarona** [tab Cardiovascular] (clase ANTIARITMICO) + dx **Taquiarritmias supraventriculares** [tab Cardiovascular]
+28. STOPP-B6-AMIODARONA-TAQUIARRITMIA-PRIMERA-LINEA — Evitar amiodarona como primera línea en taquiarritmias supraventriculares. Mayor r… — Para que salte: marcar **Amiodarona** [tab Cardiovascular] (clase ANTIARITMICO_CLASE_III) + dx **Taquiarritmias supraventriculares** [tab Cardiovascular]
 
 29. STOPP-B7-DIURETICO-ASA-PRIMERA-LINEA-HTA — Evitar diuréticos de asa como tratamiento de primera línea de la HTA. Existen alte… — Para que salte: marcar **Furosemida** [tab Cardiovascular + Renal] (clase DIURETICO_ASA) + (dx **HTA** [tab Cardiovascular] | dx **HTA no complicada** [tab Cardiovascular] | dx **HTA moderada** [tab Cardiovascular] | dx **HTA grave** [tab Cardiovascular]) + (NO marcar dx **Insuficiencia cardíaca** [tab Cardiovascular] | NO marcar dx **Insuficiencia cardíaca con función sistólica conservada** [tab Cardiovascular] | NO marcar dx **Insuficiencia cardíaca NYHA III-IV** [tab Cardiovascular])
 
@@ -236,9 +232,11 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 34. STOPP-B9-TIAZIDA-HIPOPOTASEMIA — Evitar diuréticos tiazídicos en presencia de hipopotasemia significativa (Potasio … — Para que salte: marcar **Hidroclorotiazida** [tab Cardiovascular] (clase DIURETICO_TIAZIDICO) + (dx **Hipopotasemia** [tab Metabólico] | K+=null (lab — sin pantalla UI) + K+=2.9 (lab — sin pantalla UI))
 
+35. STOPP-D4-BETABLOQUEANTE-BLOQUEO-CARDIACO — Evitar betabloqueantes en pacientes con bloqueo cardíaco de 2º grado o completo. R… — Para que salte: marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE) + (dx **Bloqueo AV de segundo grado** [tab Cardiovascular] | dx **Bloqueo AV completo** [tab Cardiovascular])
+
 ### START
 
-1. START-B1-ANTIHIPERTENSIVO-HTA — Considerar iniciar antihipertensivo. El paciente tiene HTA y no está recibiendo tr… — Para que salte: (dx **HTA** [tab Cardiovascular] | dx **HTA no complicada** [tab Cardiovascular] | dx **HTA grave** [tab Cardiovascular] | dx **HTA moderada** [tab Cardiovascular] | PAS=null (lab — sin pantalla UI) + PAS=141 (lab — sin pantalla UI) | PAD=null (lab — sin pantalla UI) + PAD=91 (lab — sin pantalla UI)) [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA); y NO marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2); y NO marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE); y NO marcar **Hidroclorotiazida** [tab Cardiovascular] (clase DIURETICO_TIAZIDICO); y NO marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP); y NO marcar **Metildopa** [tab Cardiovascular] (clase ANTIHIPERTENSIVO_CENTRAL)]
+1. START-B1-ANTIHIPERTENSIVO-HTA — Considerar iniciar antihipertensivo. El paciente tiene HTA y no está recibiendo tr… — Para que salte: (dx **HTA** [tab Cardiovascular] | dx **HTA no complicada** [tab Cardiovascular] | dx **HTA grave** [tab Cardiovascular] | dx **HTA moderada** [tab Cardiovascular] | PAS=null (lab — sin pantalla UI) + PAS=141 (lab — sin pantalla UI) | PAD=null (lab — sin pantalla UI) + PAD=91 (lab — sin pantalla UI)) [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA); y NO marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2); y NO marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE); y NO marcar **Hidroclorotiazida** [tab Cardiovascular] (clase DIURETICO_TIAZIDICO); y NO marcar **Furosemida** [tab Cardiovascular + Renal] (clase DIURETICO_ASA); y NO marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP); y NO marcar **Amlodipino** [tab Cardiovascular] (clase CALCIOANTAGONISTA_DHP); y NO marcar **Metildopa** [tab Cardiovascular] (clase ANTIHIPERTENSIVO_CENTRAL); y NO marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE); y NO marcar **Sacubitrilo/Valsartán** [tab Cardiovascular (grupo unitario; si no visible → Otros)] (clase SACUBITRILO_VALSARTAN)]
 
 2. START-B10-BETABLOQUEANTE-FA-MAL-CONTROL — Considerar iniciar betabloqueante. El paciente tiene FA crónica con mal control de… — Para que salte: dx **FA** [tab Cardiovascular] + dx **Fibrilación auricular crónica con mal control de frecuencia cardíaca** [tab Cardiovascular] [y NO marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE)]
 
@@ -254,7 +252,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 8. START-B6-BETABLOQUEANTE-IC-FE-REDUCIDA — Considerar iniciar betabloqueante cardioselectivo (bisoprolol, nebivolol, metoprol… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] [y NO marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE_CARDIOSELECTIVO); y NO marcar **Carvedilol** [tab Cardiovascular] (clase BETABLOQUEANTE_NO_CARDIOSELECTIVO)]
 
-9. START-B7-ANTAGONISTA-ALDOSTERONA-IC — Considerar iniciar antagonista de aldosterona (espironolactona, eplerenona). El pa… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] + (TFGe=null (lab — sin pantalla UI) | TFGe=31 (lab — sin pantalla UI)) [y NO marcar **Espironolactona** [tab Cardiovascular + Renal] (clase ANTAGONISTA_ALDOSTERONA)]
+9. START-B7-ANTAGONISTA-ALDOSTERONA-IC — Considerar iniciar antagonista de aldosterona (espironolactona, eplerenona). El pa… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] [y NO marcar **Espironolactona** [tab Cardiovascular + Renal] (clase ANTAGONISTA_ALDOSTERONA); y NO TFGe < 30]
 
 10. START-B8-ISGLT2-INSUFICIENCIA-CARDIACA — Considerar iniciar iSGLT2 (canagliflozina, dapagliflozina, empagliflozina, ertugli… — Para que salte: (dx **Insuficiencia cardíaca** [tab Cardiovascular] | dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular]) [y NO marcar **Canagliflozina** [tab Cardiovascular + Endocrino/Metabólico + Renal] (clase ISGLT2)]
 
@@ -268,13 +266,13 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ### STOPP
 
-1. STOPP-J1-SULFONILUREA-VIDA-MEDIA-LARGA — Evitar sulfonilureas de vida media larga (glibenclamida, clorpropamida, glimepirid… — Para que salte: marcar **Glibenclamida** [tab Endocrino/Metabólico] (clase SULFONILUREA)
+1. STOPP-J1-SULFONILUREA-VIDA-MEDIA-LARGA — Evitar sulfonilureas de vida media larga (glibenclamida, clorpropamida, glimepirid… — Para que salte: marcar **Glibenclamida** [tab Endocrino/Metabólico] (clase SULFONILUREA) + (dx **Diabetes mellitus** [tab Endocrino] | dx **Diabetes con episodios frecuentes de hipoglucemia** [tab Endocrino])
 
 2. STOPP-J10-VASOPRESINA-INCONTINENCIA — Evitar análogos de la vasopresina (desmopresina, vasopresina) para la incontinenci… — Para que salte: marcar **Desmopresina** [tab Otros] (clase ANALOGO_VASOPRESINA) + (dx **Incontinencia urinaria** [tab Urológico] | dx **Poliaquiuria** [tab Urológico])
 
 3. STOPP-J2-TIAZOLIDINDIONA-INSUFICIENCIA-CARDIACA — Evitar tiazolidindionas (rosiglitazona, pioglitazona) en pacientes con insuficienc… — Para que salte: marcar **Rosiglitazona** [tab Endocrino/Metabólico] (clase TIAZOLIDINDIONA) + (dx **Insuficiencia cardíaca** [tab Cardiovascular] | dx **Insuficiencia cardíaca NYHA III-IV** [tab Cardiovascular] | dx **Insuficiencia cardíaca con función sistólica conservada** [tab Cardiovascular])
 
-4. STOPP-J3-BETABLOQUEANTE-DIABETES-HIPOGLUCEMIA — Evitar betabloqueantes no cardioselectivos en pacientes con diabetes con episodios… — Para que salte: marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE) + dx **Diabetes con episodios frecuentes de hipoglucemia** [tab Endocrino]
+4. STOPP-J3-BETABLOQUEANTE-DIABETES-HIPOGLUCEMIA — Evitar betabloqueantes no cardioselectivos en pacientes con diabetes con episodios… — Para que salte: marcar **Carvedilol** [tab Cardiovascular] (clase BETABLOQUEANTE_NO_CARDIOSELECTIVO) + dx **Diabetes con episodios frecuentes de hipoglucemia** [tab Endocrino]
 
 5. STOPP-J4-ISGLT2-HIPOTENSION — Evitar inhibidores del cotransportador sodio-glucosa tipo 2 (iSGLT2) en presencia … — Para que salte: marcar **Canagliflozina** [tab Cardiovascular + Endocrino/Metabólico + Renal] (clase ISGLT2) + dx **Hipotensión sintomática** [tab Cardiovascular]
 
@@ -292,13 +290,13 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ### START
 
-1. START-J1-IECA-ARA2-DIABETES-PROTEINURIA — Considerar iniciar IECA (o ARA-II si no tolerado). El paciente tiene diabetes con … — Para que salte: dx **Diabetes mellitus** [tab Endocrino] + dx **Proteinuria / microalbuminuria** [tab Renal] + (TFGe=null (lab — sin pantalla UI) | TFGe=30 (lab — sin pantalla UI)) [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA); y NO marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2)]
+1. START-J1-IECA-ARA2-DIABETES-PROTEINURIA — Considerar iniciar IECA (o ARA-II si no tolerado). El paciente tiene diabetes con … — Para que salte: dx **Diabetes mellitus** [tab Endocrino] + dx **Proteinuria / microalbuminuria** [tab Renal] [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA); y NO marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2); y NO TFGe < 30]
 
 ---
 
 ## Sistema gastrointestinal
 
-*(STOPP: 10 | START: 7)*
+*(STOPP: 9 | START: 7)*
 
 ### STOPP
 
@@ -306,21 +304,19 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 2. STOPP-F2-IBP-TRATAMIENTO-PROLONGADO — IBP a dosis terapéuticas plenas durante más de 8 semanas sin revisión. Valorar red… — Para que salte: (logic no traducida — revisar JSON)
 
-3. STOPP-F3-ANTICOLINERGICO-ESTRENIMIENTO — Evitar fármacos antimuscarínicos en estreñimiento crónico. Riesgo de empeoramiento… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTICOLINERGICO) + dx **Estreñimiento crónico** [tab Gastrointestinal]
+3. STOPP-F3-FARMACOS-ESTRENIMIENTO — Evitar fármacos que suelen causar estreñimiento (hierro oral, opioides, verapamilo… — Para que salte: (marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP) | marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE) | marcar **Sulfato ferroso** [tab Renal] (clase HIERRO_ORAL)) + dx **Estreñimiento crónico** [tab Gastrointestinal]
 
-4. STOPP-F3-FARMACOS-ESTRENIMIENTO — Evitar fármacos que suelen causar estreñimiento (antimuscarínicos/anticolinérgicos… — Para que salte: (marcar **Verapamilo** [tab Cardiovascular] (clase CALCIOANTAGONISTA_NO_DHP) | marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE) | marcar **Sulfato ferroso** [tab Renal] (clase HIERRO_ORAL)) + dx **Estreñimiento crónico** [tab Gastrointestinal]
+4. STOPP-F4-HIERRO-ORAL-DOSIS-ALTA — Revisar hierro oral: dosis elementales superiores a 200 mg/día no aportan mayor ab… — Para que salte: (logic no traducida — revisar JSON)
 
-5. STOPP-F4-HIERRO-ORAL-DOSIS-ALTA — Revisar hierro oral: dosis elementales superiores a 200 mg/día no aportan mayor ab… — Para que salte: (logic no traducida — revisar JSON)
+5. STOPP-F5-CORTICOIDE-ULCERA-PEPTICA — Evitar corticosteroides con antecedentes de enfermedad ulcerosa péptica o esofagit… — Para que salte: marcar **Prednisona** [tab Endocrino/Metabólico + Respiratorio] (clase CORTICOIDE_SISTEMICO) + (dx **Antecedentes de úlcera péptica** [tab Gastrointestinal] | dx **Esofagitis erosiva** [tab Gastrointestinal]) [y NO marcar **Omeprazol** [tab Gastrointestinal] (clase IBP)]
 
-6. STOPP-F5-CORTICOIDE-ULCERA-PEPTICA — Evitar corticosteroides con antecedentes de enfermedad ulcerosa péptica o esofagit… — Para que salte: marcar **Prednisona** [tab Endocrino/Metabólico + Respiratorio] (clase CORTICOIDE_SISTEMICO) + (dx **Antecedentes de úlcera péptica** [tab Gastrointestinal] | dx **Esofagitis erosiva** [tab Gastrointestinal]) [y NO marcar **Omeprazol** [tab Gastrointestinal] (clase IBP)]
+6. STOPP-F6-ANTIAGREGANTE-EVAG — Evitar antiagregantes plaquetarios en pacientes con antecedentes de EVAG (estómago… — Para que salte: marcar **Ácido acetilsalicílico** [tab Anticoagulantes] (clase ANTIAGREGANTE) + dx **Antecedentes de EVAG** [tab Gastrointestinal]
 
-7. STOPP-F6-ANTIAGREGANTE-EVAG — Evitar antiagregantes plaquetarios en pacientes con antecedentes de EVAG (estómago… — Para que salte: marcar **Ácido acetilsalicílico** [tab Anticoagulantes] (clase ANTIAGREGANTE) + dx **Antecedentes de EVAG** [tab Gastrointestinal]
+7. STOPP-F6-AVK-EVAG — Evitar antagonistas de vitamina K en pacientes con antecedentes de EVAG (estómago … — Para que salte: marcar **Warfarina** [tab Anticoagulantes] (clase ANTICOAGULANTE_AVK) + dx **Antecedentes de EVAG** [tab Gastrointestinal]
 
-8. STOPP-F6-AVK-EVAG — Evitar antagonistas de vitamina K en pacientes con antecedentes de EVAG (estómago … — Para que salte: marcar **Warfarina** [tab Anticoagulantes] (clase ANTICOAGULANTE_AVK) + dx **Antecedentes de EVAG** [tab Gastrointestinal]
+8. STOPP-F7-NEUROLEPTICO-DISFAGIA — Evitar neurolépticos en pacientes con disfagia. Aumento del riesgo de neumonía asp… — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + dx **Disfagia** [tab Gastrointestinal]
 
-9. STOPP-F7-NEUROLEPTICO-DISFAGIA — Evitar neurolépticos en pacientes con disfagia. Aumento del riesgo de neumonía asp… — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + dx **Disfagia** [tab Gastrointestinal]
-
-10. STOPP-F8-MEGESTROL-OREXIGENO — Evitar acetato de megestrol como orexígeno. Aumento del riesgo de trombosis y mort… — Para que salte: marcar **Acetato de megestrol** [tab Otros] (clase OREXICO)
+9. STOPP-F8-MEGESTROL-OREXIGENO — Evitar acetato de megestrol como orexígeno. Aumento del riesgo de trombosis y mort… — Para que salte: marcar **Acetato de megestrol** [tab Otros] (clase OREXICO)
 
 ### START
 
@@ -342,7 +338,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ## Sistema musculoesquelético
 
-*(STOPP: 10 | START: 7)*
+*(STOPP: 11 | START: 7)*
 
 ### STOPP
 
@@ -354,7 +350,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 4. STOPP-H3B-AINE-DOLOR-LEVE — Evitar AINEs para el dolor leve-moderado cuando no se han probado primero los anal… — Para que salte: marcar **Ibuprofeno** [tab Osteo/Músculo-esq.] (clase AINE) + dx **Dolor leve-moderado** [tab Otros (Sintomático)]
 
-5. STOPP-H4-CORTICOIDE-ARTRITIS-REUMATOIDE — Evitar corticosteroides a largo plazo (> 3 meses) como monoterapia en la artritis … — Para que salte: marcar **Prednisona** [tab Endocrino/Metabólico + Respiratorio] (clase CORTICOIDE_SISTEMICO) + dx **Artritis reumatoide** [tab Reumatológico]
+5. STOPP-H4-CORTICOIDE-ARTRITIS-REUMATOIDE — Evitar corticosteroides a largo plazo (> 3 meses) como monoterapia en la artritis … — Para que salte: dx **Artritis reumatoide** [tab Reumatológico]
 
 6. STOPP-H5-CORTICOIDE-ARTROSIS — Evitar corticosteroides sistémicos para la artrosis (salvo inyecciones intraarticu… — Para que salte: marcar **Prednisona** [tab Endocrino/Metabólico + Respiratorio] (clase CORTICOIDE_SISTEMICO) + dx **Artrosis** [tab Reumatológico]
 
@@ -366,11 +362,13 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 10. STOPP-H9-OPIOIDE-ARTROSIS — Evitar opioides a largo plazo para el tratamiento de la artrosis. Sin evidencia de… — Para que salte: marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE) + dx **Artrosis** [tab Reumatológico]
 
+11. STOPP-L6-PARACETAMOL-DOSIS-ALTA-HEPATOPATIA — Revisar paracetamol en pacientes malnutridos (IMC < 18) o con hepatopatía crónica:… — Para que salte: (dx **Hepatopatía crónica** [tab Otros (Hepático)] | dx **Malnutrición** [tab Metabólico])
+
 ### START
 
 1. START-H1-FAME-ARTRITIS-REUMATOIDE-ACTIVA — Considerar iniciar FAME (metotrexato, leflunomida, sulfasalazina, hidroxicloroquin… — Para que salte: dx **Artritis reumatoide activa incapacitante** [tab Reumatológico] [y NO marcar **Metotrexato** [tab Osteo/Músculo-esq.] (clase FAME)]
 
-2. START-H2-BIFOSFONATO-VITAMINA-D-CORTICOIDE — Considerar añadir bisfosfonato y vitamina D (con calcio) para prevención de osteop… — Para que salte: marcar **Prednisona** [tab Endocrino/Metabólico + Respiratorio] (clase CORTICOIDE_SISTEMICO) + (NO marcar **Alendronato** [tab Osteo/Músculo-esq.] (clase BIFOSFONATO) | NO marcar **Colecalciferol** [tab Renal] (clase VITAMINA_D))
+2. START-H2-BIFOSFONATO-VITAMINA-D-CORTICOIDE — Considerar añadir bisfosfonato y vitamina D (con calcio) para prevención de osteop… — Para que salte: (NO marcar **Alendronato** [tab Osteo/Músculo-esq.] (clase BIFOSFONATO) | NO marcar **Colecalciferol** [tab Renal] (clase VITAMINA_D))
 
 3. START-H3-VITAMINA-D-OSTEOPOROSIS — Considerar vitamina D. El paciente tiene osteoporosis conocida o fractura por frag… — Para que salte: (dx **Osteoporosis** [tab Reumatológico] | dx **Fractura por fragilidad** [tab Reumatológico]) [y NO marcar **Colecalciferol** [tab Renal] (clase VITAMINA_D)]
 
@@ -386,7 +384,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ## Sistema nervioso central
 
-*(STOPP: 32 | START: 7)*
+*(STOPP: 31 | START: 7)*
 
 ### STOPP
 
@@ -394,23 +392,23 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 2. STOPP-D1-ADT-ESTRENIMIENTO — Evitar antidepresivos tricíclicos en pacientes con estreñimiento crónico. Riesgo d… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTIDEPRESIVO_TRICICLICO) + dx **Estreñimiento crónico** [tab Gastrointestinal]
 
-3. STOPP-D1-ADT-PROSTATISMO — Evitar antidepresivos tricíclicos en pacientes con prostatismo o retención urinari… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTIDEPRESIVO_TRICICLICO) + (dx **Prostatismo** [tab Urológico] | dx **Retención urinaria** [tab Urológico])
+3. STOPP-D1-ADT-PROSTATISMO — Evitar antidepresivos tricíclicos en pacientes con prostatismo o retención urinari… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTIDEPRESIVO_TRICICLICO) + (dx **Prostatismo** [tab Urológico] | dx **Retención urinaria** [tab Urológico] | dx **Prostatismo / Retención urinaria** [tab Urológico])
 
 4. STOPP-D1-D14_1-ADT-DEMENCIA — Evitar antidepresivos tricíclicos en pacientes con demencia, deterioro cognitivo o… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTIDEPRESIVO_TRICICLICO) + (dx **Demencia** [tab Neurológico] | dx **Deterioro cognitivo** [tab Neurológico] | dx **Delirio** [tab Neurológico])
 
 5. STOPP-D1-I2-ADT-GLAUCOMA — Evitar antidepresivos tricíclicos en pacientes con glaucoma de ángulo estrecho. Ri… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTIDEPRESIVO_TRICICLICO) + dx **Glaucoma de ángulo estrecho** [tab Otros (Oftalmológico)]
 
-6. STOPP-D10-BENZODIACEPINA-INSOMNIO — Evitar benzodiacepinas para el insomnio durante ≥ 2 semanas. Alto riesgo de depend… — Para que salte: marcar **Diazepam** [tab SNC] (clase BENZODIACEPINA) + dx **Insomnio** [tab Psiquiátrico]
+6. STOPP-D10-BENZODIACEPINA-INSOMNIO — Evitar benzodiacepinas para el insomnio durante ≥ 2 semanas. Alto riesgo de depend… — Para que salte: dx **Insomnio** [tab Psiquiátrico]
 
-7. STOPP-D11-HIPNOTICO-Z-INSOMNIO — Evitar hipnóticos-Z (zolpidem, zopiclona, zaleplon) para el insomnio durante ≥ 2 s… — Para que salte: marcar **Zolpidem** [tab SNC] (clase HIPNOTICO_Z) + dx **Insomnio** [tab Psiquiátrico]
+7. STOPP-D11-HIPNOTICO-Z-INSOMNIO — Evitar hipnóticos-Z (zolpidem, zopiclona, zaleplon) para el insomnio durante ≥ 2 s… — Para que salte: dx **Insomnio** [tab Psiquiátrico]
 
-8. STOPP-D12-F1-NEUROLEPTICO-PARKINSON-LEWY — Evitar neurolépticos (bajo olanzapina y quetiapina) en pacientes con parkinsonismo… — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + (dx **Parkinsonismo** [tab Neurológico] | dx **Demencia por cuerpos de Lewy** [tab Neurológico])
+8. STOPP-D12-F1-NEUROLEPTICO-PARKINSON-LEWY — Evitar neurolépticos (salvo clozapina y quetiapina) en pacientes con parkinsonismo… — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + (dx **Parkinsonismo** [tab Neurológico] | dx **Demencia por cuerpos de Lewy** [tab Neurológico])
 
 9. STOPP-D13-ANTIPARKINSONIAN-ANTICOLINERGICO-NEUROLEPTICO — Evitar anticolinérgicos/antimuscarínicos antiparkinsonians (biperideno, orfenadrin… — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + marcar **Biperideno** [tab SNC] (clase ANTIPARKINSONIAN_ANTICOLINERGICO)
 
 10. STOPP-D14-ANTICOLINERGICO-DEMENCIA — Evitar fármacos antimuscarínicos en presencia de delirium o demencia. Los efectos … — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTICOLINERGICO) + (dx **Demencia** [tab Neurológico] | dx **Delirio** [tab Neurológico])
 
-11. STOPP-D15-ANTIPSICOTICO-SCPD — Revisar antipsicóticos usados para síntomas conductuales y psicológicos de la deme… — Para que salte: dx **Síntomas conductuales de la demencia** [tab Neurológico] + marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO)
+11. STOPP-D15-ANTIPSICOTICO-SCPD — Revisar antipsicóticos usados para síntomas conductuales y psicológicos de la deme… — Para que salte: dx **Síntomas conductuales de la demencia** [tab Neurológico]
 
 12. STOPP-D16-NEUROLEPTICO-HIPNOTICO — No usar neurolépticos como hipnóticos. Salvo que el insomnio se deba a psicosis o … — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + dx **Insomnio** [tab Psiquiátrico] [y NO marcar dx **Psicosis** [tab Psiquiátrico]; y NO marcar dx **Síntomas conductuales de la demencia** [tab Neurológico]]
 
@@ -440,19 +438,17 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 25. STOPP-D3-ISRN-HIPERTENSION-GRAVE — Evitar inhibidores de la recaptación de serotonina/noradrenalina (venlafaxina, dul… — Para que salte: marcar **Venlafaxina** [tab SNC] (clase ISRN) + dx **HTA grave** [tab Cardiovascular]
 
-26. STOPP-D4-BETABLOQUEANTE-BLOQUEO-CARDIACO — Evitar betabloqueantes en pacientes con bloqueo cardíaco de 2º grado o completo. R… — Para que salte: marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE) + (dx **Bloqueo AV de segundo grado** [tab Cardiovascular] | dx **Bloqueo AV completo** [tab Cardiovascular])
+26. STOPP-D4-NEUROLEPTICO-PROSTATISMO — Evitar neurolépticos antimuscariínicos en pacientes con prostatismo o retención ur… — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + (dx **Prostatismo** [tab Urológico] | dx **Retención urinaria** [tab Urológico] | dx **Prostatismo / Retención urinaria** [tab Urológico])
 
-27. STOPP-D4-NEUROLEPTICO-PROSTATISMO — Evitar neurolépticos antimuscariínicos en pacientes con prostatismo o retención ur… — Para que salte: marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO) + (dx **Prostatismo** [tab Urológico] | dx **Retención urinaria** [tab Urológico])
+27. STOPP-D5-NEUROLEPTICO-SINTOMAS-DEMENCIA — Evitar neurolépticos para síntomas conductuales de la demencia sin revisión o ajus… — Para que salte: dx **Síntomas conductuales de la demencia** [tab Neurológico] + marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO)
 
-28. STOPP-D5-NEUROLEPTICO-SINTOMAS-DEMENCIA — Evitar neurolépticos para síntomas conductuales de la demencia sin revisión o ajus… — Para que salte: dx **Síntomas conductuales de la demencia** [tab Neurológico] + marcar **Haloperidol** [tab SNC] (clase NEUROLEPTICO)
+28. STOPP-D6-ISRS-HIPONATREMIA — Evitar ISRS en pacientes con hiponatremia significativa (Na+ < 130 mmol/L). Riesgo… — Para que salte: marcar **Sertralina** [tab SNC] (clase ISRS) + ((dx **Hiponatremia significativa (Na+ < 130 mmol/L)** [tab Metabólico] | dx **Hiponatremia** [tab Metabólico]) | Na+=null (lab — sin pantalla UI) + Na+=129.9 (lab — sin pantalla UI))
 
-29. STOPP-D6-ISRS-HIPONATREMIA — Evitar ISRS en pacientes con hiponatremia significativa (Na+ < 130 mmol/L). Riesgo… — Para que salte: marcar **Sertralina** [tab SNC] (clase ISRS) + ((dx **Hiponatremia significativa (Na+ < 130 mmol/L)** [tab Metabólico] | dx **Hiponatremia** [tab Metabólico]) | Na+=null (lab — sin pantalla UI) + Na+=129.9 (lab — sin pantalla UI))
+29. STOPP-D7-ISRS-SANGRADO — Evitar ISRS en pacientes con presencia de sangrado significativo concurrente actua… — Para que salte: marcar **Sertralina** [tab SNC] (clase ISRS) + dx **Riesgo significativo de sangrado** [tab Hematológico]
 
-30. STOPP-D7-ISRS-SANGRADO — Evitar ISRS en pacientes con presencia de sangrado significativo concurrente actua… — Para que salte: marcar **Sertralina** [tab SNC] (clase ISRS) + dx **Riesgo significativo de sangrado** [tab Hematológico]
+30. STOPP-D8-BENZODIACEPINA-USO-PROLONGADO — Benzodiacepinas durante ≥ 4 semanas no están indicadas. Riesgo de sedación, confus… — Para que salte: (logic no traducida — revisar JSON)
 
-31. STOPP-D8-BENZODIACEPINA-USO-PROLONGADO — Benzodiacepinas durante ≥ 4 semanas no están indicadas. Riesgo de sedación, confus… — Para que salte: marcar **Diazepam** [tab SNC] (clase BENZODIACEPINA)
-
-32. STOPP-D9-BENZODIACEPINA-DEMENCIA-AGITACION — Evitar benzodiacepinas para la agitación o síntomas psicóticos de la demencia. Sin… — Para que salte: marcar **Diazepam** [tab SNC] (clase BENZODIACEPINA) + (dx **Demencia** [tab Neurológico] | dx **Síntomas conductuales de la demencia** [tab Neurológico])
+31. STOPP-D9-BENZODIACEPINA-DEMENCIA-AGITACION — Evitar benzodiacepinas para la agitación o síntomas psicóticos de la demencia. Sin… — Para que salte: marcar **Diazepam** [tab SNC] (clase BENZODIACEPINA) + (dx **Demencia** [tab Neurológico] | dx **Síntomas conductuales de la demencia** [tab Neurológico])
 
 ### START
 
@@ -462,11 +458,11 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 3. START-D3-IACE-ALZHEIMER — Considerar iniciar inhibidor de acetilcolinesterasa (donepezilo, rivastigmina, gal… — Para que salte: dx **Enfermedad de Alzheimer leve-moderada** [tab Neurológico] [y NO marcar **Donepezilo** [tab SNC] (clase INHIBIDOR_ACETILCOLINESTERASA)]
 
-4. START-D4-RIVASTIGMINA-DEMENCIA-LEWY-PARKINSON — Considerar iniciar rivastigmina. El paciente tiene demencia por cuerpos de Lewy o … — Para que salte: (dx **Demencia por cuerpos de Lewy** [tab Neurológico] | dx **Enfermedad de Parkinson** [tab Neurológico]) [y NO marcar **Donepezilo** [tab SNC] (clase INHIBIDOR_ACETILCOLINESTERASA)]
+4. START-D4-RIVASTIGMINA-DEMENCIA-LEWY-PARKINSON — Considerar iniciar rivastigmina. El paciente tiene demencia por cuerpos de Lewy o … — Para que salte: (dx **Demencia por cuerpos de Lewy** [tab Neurológico] | dx **Enfermedad de Parkinson** [tab Neurológico] + (dx **Demencia** [tab Neurológico] | dx **Deterioro cognitivo** [tab Neurológico])) [y NO marcar **Donepezilo** [tab SNC] (clase INHIBIDOR_ACETILCOLINESTERASA)]
 
 5. START-D5-ISRS-ANSIEDAD-GRAVE — Considerar iniciar ISRS (o ISRN o pregabalina si los ISRS están contraindicados). … — Para que salte: dx **Ansiedad grave persistente** [tab Psiquiátrico] [y NO marcar **Sertralina** [tab SNC] (clase ISRS); y NO marcar **Venlafaxina** [tab SNC] (clase ISRN); y NO marcar **Gabapentina** [tab Osteo/Músculo-esq. + SNC] (clase GABAPENTINOIDE)]
 
-6. START-D6-AGONISTA-DOPAMINERGICO-PIERNAS-INQUIETAS — Considerar iniciar agonista dopaminérgico (ropinirol, pramipexol, rotigotina) para… — Para que salte: dx **Síndrome de piernas inquietas** [tab Neurológico] + (TFGe=null (lab — sin pantalla UI) | TFGe=30 (lab — sin pantalla UI)) [y NO marcar **Pramipexol** [tab SNC] (clase AGONISTA_DOPAMINERGICO)]
+6. START-D6-AGONISTA-DOPAMINERGICO-PIERNAS-INQUIETAS — Considerar iniciar agonista dopaminérgico (ropinirol, pramipexol, rotigotina) para… — Para que salte: dx **Síndrome de piernas inquietas** [tab Neurológico] [y NO marcar **Pramipexol** [tab SNC] (clase AGONISTA_DOPAMINERGICO); y NO TFGe < 30]
 
 7. START-D7-PROPRANOLOL-TEMBLOR-ESENCIAL — Considerar propranolol para el temblor esencial con deterioro funcional y discapac… — Para que salte: dx **Temblor esencial benigno** [tab Neurológico] [y NO marcar **Metoprolol** [tab Cardiovascular] (clase BETABLOQUEANTE)]
 
@@ -506,7 +502,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 3. START-E3-EPO-ERC-ANEMIA — Considerar análogo de eritropoyetina. El paciente tiene ERC grave (TFGe < 30) con … — Para que salte: TFGe=null (lab — sin pantalla UI) + TFGe=29 (lab — sin pantalla UI) + dx **Anemia sintomática** [tab Hematológico] [y NO marcar **Eritropoyetina alfa** [tab Renal] (clase EPO)]
 
-4. START-E4-IECA-ARA2-ERC-PROTEINURIA — Considerar iniciar IECA o ARA-II. El paciente tiene ERC con proteinuria (albuminur… — Para que salte: dx **Proteinuria / microalbuminuria** [tab Renal] + (TFGe=null (lab — sin pantalla UI) | TFGe=30 (lab — sin pantalla UI)) [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA); y NO marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2)]
+4. START-E4-IECA-ARA2-ERC-PROTEINURIA — Considerar iniciar IECA o ARA-II. El paciente tiene ERC con proteinuria (albuminur… — Para que salte: dx **Proteinuria / microalbuminuria** [tab Renal] [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA); y NO marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2); y NO TFGe < 30]
 
 ---
 
@@ -534,7 +530,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ## Sistema urogenital
 
-*(STOPP: 7 | START: 5)*
+*(STOPP: 8 | START: 5)*
 
 ### STOPP
 
@@ -542,21 +538,23 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 2. STOPP-I2-ANTICOLINERGICO-GLAUCOMA — Evitar fármacos antimuscarínicos sistémicos en glaucoma de ángulo estrecho. Pueden… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTICOLINERGICO) + dx **Glaucoma de ángulo estrecho** [tab Otros (Oftalmológico)]
 
-3. STOPP-I3-ANTIMUSCARÍNICO-HBP-VOLUMEN-RESIDUAL — Evitar fármacos antimuscarínicos sistémicos para síntomas urinarios en hiperplasia… — Para que salte: marcar **Oxibutinina** [tab Urológico] (clase ANTIESPASMÓDICO_URINARIO) + dx **Hiperplasia benigna de próstata** [tab Urológico]
+3. STOPP-I3-ANTIMUSCARÍNICO-HBP-VOLUMEN-RESIDUAL — Evitar fármacos antimuscarínicos sistémicos para síntomas urinarios en hiperplasia… — Para que salte: marcar **Oxibutinina** [tab Urológico] (clase ANTIESPASMÓDICO_URINARIO) + dx **Hiperplasia benigna de próstata (síntomas prostáticos)** [tab Urológico]
 
-4. STOPP-I5-ALFABLOQUEANTE-HIPOTENSION-SINCOPE — Evitar bloqueantes alfa-1-adrenérgicos (exceptuando la silodosina: alfuzosina, dox… — Para que salte: marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE) + (dx **Hipotensión ortostática** [tab Cardiovascular] | dx **Síncopes recurrentes** [tab Cardiovascular])
+4. STOPP-I4-ANTIMUSCARINICO-ESTRENIMIENTO — Evitar fármacos antimuscarínicos en estreñimiento crónico. Riesgo de empeoramiento… — Para que salte: marcar **Amitriptilina** [tab Osteo/Músculo-esq. + SNC] (clase ANTICOLINERGICO) + dx **Estreñimiento crónico** [tab Gastrointestinal]
 
-5. STOPP-I6-MIRABEGRON-HIPERTENSION-GRAVE — Evitar mirabegrón en HTA grave o lábil. Riesgo de empeoramiento de la HTA. — Para que salte: marcar **Mirabegrón** [tab Urológico (grupo unitario; si no visible → Otros)] (clase AGONISTA_BETA3) + dx **HTA grave** [tab Cardiovascular]
+5. STOPP-I5-ALFABLOQUEANTE-HIPOTENSION-SINCOPE — Evitar bloqueantes alfa-1-adrenérgicos (exceptuando la silodosina: alfuzosina, dox… — Para que salte: marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE) + (dx **Hipotensión ortostática** [tab Cardiovascular] | dx **Síncopes recurrentes** [tab Cardiovascular])
 
-6. STOPP-I7-DULOXETINA-INCONTINENCIA-URGENCIA — Evitar duloxetina en presencia de urgencia urinaria o incontinencia urinaria por u… — Para que salte: marcar **Venlafaxina** [tab SNC] (clase ISRN) + dx **Incontinencia urinaria de urgencia** [tab Urológico]
+6. STOPP-I6-MIRABEGRON-HIPERTENSION-GRAVE — Evitar mirabegrón en HTA grave o lábil. Riesgo de empeoramiento de la HTA. — Para que salte: marcar **Mirabegrón** [tab Urológico (grupo unitario; si no visible → Otros)] (clase AGONISTA_BETA3) + dx **HTA grave** [tab Cardiovascular]
 
-7. STOPP-I8-ANTIBIOTICO-BACTERIURIA-ASINTOMATICA — Evitar antibióticos para el tratamiento de la bacteriuria asintomática. No está in… — Para que salte: marcar **Ciprofloxacino** [tab Antiinfecciosos] (clase ANTIBIOTICO) + dx **Bacteriuria asintomática** [tab Otros (Infeccioso)]
+7. STOPP-I7-DULOXETINA-INCONTINENCIA-URGENCIA — Evitar duloxetina en presencia de urgencia urinaria o incontinencia urinaria por u… — Para que salte: marcar **Duloxetina** [tab SNC] (clase DULOXETINA) + dx **Incontinencia urinaria de urgencia** [tab Urológico]
+
+8. STOPP-I8-ANTIBIOTICO-BACTERIURIA-ASINTOMATICA — Evitar antibióticos para el tratamiento de la bacteriuria asintomática. No está in… — Para que salte: marcar **Ciprofloxacino** [tab Antiinfecciosos] (clase ANTIBIOTICO) + dx **Bacteriuria asintomática** [tab Otros (Infeccioso)]
 
 ### START
 
-1. START-I1-ALFABLOQUEANTE-HBP — Considerar bloqueante alfa-1-adrenérgico (tamsulosina, silodosina, alfuzosina) par… — Para que salte: dx **Hiperplasia benigna de próstata** [tab Urológico] [y NO marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE); y NO marcar **Silodosina** [tab Urológico (grupo unitario; si no visible → Otros)] (clase ALFABLOQUEANTE_PROSTATICO); y NO marcar **Finasterida** [tab Urológico] (clase INHIBIDOR_5ALFA_REDUCTASA)]
+1. START-I1-ALFABLOQUEANTE-HBP — Considerar bloqueante alfa-1-adrenérgico (tamsulosina, silodosina, alfuzosina) par… — Para que salte: dx **Hiperplasia benigna de próstata (síntomas prostáticos)** [tab Urológico] [y NO marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE); y NO marcar **Silodosina** [tab Urológico (grupo unitario; si no visible → Otros)] (clase ALFABLOQUEANTE_PROSTATICO); y NO marcar **Finasterida** [tab Urológico] (clase INHIBIDOR_5ALFA_REDUCTASA)]
 
-2. START-I2-INHIBIDOR-5ALFA-REDUCTASA-HBP — Considerar inhibidor de 5-alfa reductasa (finasterida, dutasterida) para síntomas … — Para que salte: dx **Hiperplasia benigna de próstata** [tab Urológico] [y NO marcar **Finasterida** [tab Urológico] (clase INHIBIDOR_5ALFA_REDUCTASA); y NO marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE); y NO marcar **Silodosina** [tab Urológico (grupo unitario; si no visible → Otros)] (clase ALFABLOQUEANTE_PROSTATICO)]
+2. START-I2-INHIBIDOR-5ALFA-REDUCTASA-HBP — Considerar inhibidor de 5-alfa reductasa (finasterida, dutasterida) para síntomas … — Para que salte: dx **Hiperplasia benigna de próstata (síntomas prostáticos)** [tab Urológico] [y NO marcar **Finasterida** [tab Urológico] (clase INHIBIDOR_5ALFA_REDUCTASA); y NO marcar **Alfuzosina** [tab Urológico] (clase ALFABLOQUEANTE); y NO marcar **Silodosina** [tab Urológico (grupo unitario; si no visible → Otros)] (clase ALFABLOQUEANTE_PROSTATICO)]
 
 3. START-I3-ESTROGENO-TOPICO-VAGINITIS-ATROFICA — Considerar estrógenos tópicos vaginales (estriol vaginal, promestrieno) en vaginit… — Para que salte: dx **Vaginitis atrófica sintomática** [tab Ginecológico] [y NO marcar **Estriol vaginal** [tab Urológico] (clase ESTROGENO_TOPICO)]
 
@@ -570,9 +568,9 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 | Tipo | Cantidad |
 |------|----------|
-| STOPP | 167 |
+| STOPP | 166 |
 | START | 49 |
-| **Total** | **216** |
+| **Total** | **215** |
 
 ## Índice rápido — tabs de medicamentos
 

@@ -65,7 +65,7 @@ medicamentos, y el índice de relevancia por tab que alimenta la UI.
 **Debe cubrir**: flujo `loadCriteria()` → `evaluate()` →
 `getExcludedMedications()`, operadores custom (`inDrugClass`, `egfrBelow`,
 `digoxinaDosisAlta`, `multipleNSAIDs`…), normalización case-insensitive,
-estructura de `criteria.json` (216 criterios, 13 sistemas; ver Excluidos),
+estructura de `criteria.json` (215 criterios, 13 sistemas; ver Excluidos),
 `buildRelevance` / `SYSTEM_TO_TABS`, los helpers de test compartidos y el
 script de auditoría de consistencia del catálogo.
 

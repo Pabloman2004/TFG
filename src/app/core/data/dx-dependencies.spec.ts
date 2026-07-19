@@ -242,8 +242,8 @@ describe('isDiagnosisEnabled()', () => {
 });
 
 describe('tooltip derivado usa ejemplos de fármacos, no tokens de clase crudos', () => {
-  it('Dolor moderado-grave (derivado de L3/OPIOIDE_LP): muestra nombres de fármacos + elipsis', () => {
-    const tip = DEPS['Dolor moderado-grave']?.tooltip ?? '';
+  it('Dolor irruptivo (derivado de L3/OPIOIDE_LP): muestra nombres de fármacos + elipsis', () => {
+    const tip = DEPS['Dolor irruptivo']?.tooltip ?? '';
     expect(tip).not.toContain('OPIOIDE_LP');
     expect(tip).toContain('Morfina LP');
     expect(tip).toContain('…');
@@ -513,9 +513,19 @@ describe('Tarea E — isAlwaysEnabled', () => {
     expect(isAlwaysEnabled('Fragilidad', DEPS)).toBe(true);
   });
 
-  it('diagnóstico puro-START (no en STOPP, no ancla) está siempre habilitado', () => {
+  it('Diabetes mellitus es ancla aplicada (sigue siempre habilitada tras STOPP-J1)', () => {
+    expect(ANCHOR_LABELS_APPLIED_FOR_GATING.has('Diabetes mellitus')).toBe(true);
     expect(isAlwaysEnabled('Diabetes mellitus', DEPS)).toBe(true);
+  });
+
+  it('diagnóstico puro-START (no en STOPP, no ancla) está siempre habilitado', () => {
     expect(isAlwaysEnabled('Osteoporosis', DEPS)).toBe(true);
+  });
+
+  it('Incontinencia urinaria de urgencia se habilita con solifenacina (K12)', () => {
+    const meds = [med('Solifenacina', ['ANTICOLINERGICO', 'ANTIESPASMÓDICO_URINARIO'])];
+    expect(isDiagnosisEnabled('Incontinencia urinaria de urgencia', meds, DEPS)).toBe(true);
+    expect(isDiagnosisEnabled('Vejiga hiperactiva', meds, DEPS)).toBe(true);
   });
 
   it('diagnóstico gateado NO está siempre habilitado', () => {
