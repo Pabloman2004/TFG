@@ -220,6 +220,8 @@ Ficheros que NO llevan `@linked`, con motivo:
   `motor-criterios.md` y `catalogo-clinico.md`.
 - `docs/revision-pendientes-relevancia-resultado.md` — informe de cierre de
   esa ronda.
+- `docs/revision-seccion-b-ui-resultado.md` — informe de cierre de la
+  corrección de la Sección B (UI/servicios).
 - `docs/revision-dosis-duracion-medicacion.md` — manifiesto de revisión sobre
   captura de dosis/duración; no es fuente de verdad del motor.
 - `docs/STOPP_START_CRITERIOS_CONTEXTO.md` — referencia clínica estática;
