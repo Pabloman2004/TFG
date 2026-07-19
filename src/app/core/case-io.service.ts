@@ -24,7 +24,7 @@ export class CaseIoService {
     anchor.href = url;
     anchor.download = this.buildFileName();
     anchor.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 0);
   }
 
   async importFile(file: File): Promise<void> {

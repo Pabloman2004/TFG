@@ -34,12 +34,10 @@ Servicio Angular singleton (`providedIn: 'root'`) basado exclusivamente en signa
 | `diagnoses` | `string[]` | `diagnoses` |
 | `meds` | `Med[]` | `meds` |
 | `labs` | `Labs \| null` | `labs` |
-| `results` | `Crit[]` | — (no persiste) |
 
 **Signals de estado UI:**
 | Signal | Tipo | Clave `localStorage` |
 |--------|------|----------------------|
-| `activeSystem` | `string` | `activeSystem` |
 | `activeSystemTab` | `string` | `activeSystemTab` |
 | `collapsedSections` | `string[]` | — (no persiste) |
 | `reviewedMedTabs` | `Set<string>` | `reviewedMedTabs` |
@@ -49,14 +47,13 @@ Servicio Angular singleton (`providedIn: 'root'`) basado exclusivamente en signa
 
 1. En el `constructor`, cada signal se inicializa leyendo `localStorage` mediante los métodos privados `load<T>(key)` (JSON.parse) y `loadString(key)` (string literal). Los errores de parseo devuelven `null`.
 2. A continuación, un `effect()` por signal serializa el valor con `JSON.stringify` cada vez que cambia. Cuando el valor es `null`, elimina la clave. Los errores de escritura (cuota excedida, modo incógnito) se silencian con `try/catch`.
-3. `results` no persiste entre sesiones: el constructor llama `this.persist('results', null)` explícitamente para limpiar cualquier valor cacheado de versiones anteriores.
-4. La clave legado `historial` se elimina en el arranque (la feature de historial local ya no existe).
-5. `reviewedMedTabs` y `reviewedDxTabs` son `Set<string>` en memoria pero se serializan como arrays al persistir (`[...signal()]`) y se rehidratan con `new Set(array)`.
+3. Las claves legado `results`, `activeSystem` e `historial` se eliminan en el arranque.
+4. `reviewedMedTabs` y `reviewedDxTabs` son `Set<string>` en memoria pero se serializan como arrays al persistir (`[...signal()]`) y se rehidratan con `new Set(array)`.
 
 **API pública relevante:**
 
 - `get patientCase(): PatientCase` — snapshot inmutable del caso actual; lo usan `case-io.service.ts` y `report.service.ts`.
-- `loadCase(patientCase)` — reemplaza todo el estado de dominio; limpia `results` y reinicia `activeSystem`.
+- `loadCase(patientCase)` — reemplaza todo el estado de dominio.
 - `reset()` — limpia todas las signals de dominio/UI y elimina sus claves de `localStorage`.
 - `toggleMedTabReviewed` / `toggleDxTabReviewed` / `clearMedTabReviewed` / `clearDxTabReviewed` — gestionan el conjunto de tabs revisados en la sesión.
 
@@ -64,14 +61,13 @@ Servicio Angular singleton (`providedIn: 'root'`) basado exclusivamente en signa
 
 - **Signals de Angular en lugar de RxJS**: el estado global se gestiona con `signal()` + `effect()` (Angular 17+), eliminando la complejidad de Observables para un modelo de estado sencillo y síncrono.
 - **Persistencia automática con `effect()`**: cada signal tiene su propio `effect` de escritura, lo que garantiza que cualquier mutación, independientemente de quién la origine, se refleje en `localStorage` sin necesidad de llamadas explícitas a "save".
-- **`results` no se persiste**: los criterios evaluados (`Crit[]`) se recalculan al ejecutar el motor; persistirlos introduciría riesgo de incoherencia entre la sesión guardada y la versión actual de `criteria.json`.
-- **Estado UI en el mismo servicio que el dominio**: `activeSystem`, `activeSystemTab` y `collapsedSections` conviven con los signals clínicos en `CaseStoreService`. Esto simplifica el acceso desde los componentes pero acopla la navegación de la UI al modelo de dominio.
+- **Criterios no se cachean en el store**: los steps evaluán con el motor bajo demanda (`applicableCriteria`).
+- **Estado UI en el mismo servicio que el dominio**: `activeSystemTab` y `collapsedSections` conviven con los signals clínicos en `CaseStoreService`. Esto simplifica el acceso desde los componentes pero acopla la navegación de la UI al modelo de dominio.
 
 ## Invariantes
 
 - `PatientCase.medications` es siempre un array (nunca `undefined`); los componentes pueden iterar sobre él sin comprobar nulidad.
 - `PatientCase.diagnoses` es siempre un array (nunca `undefined`).
-- Al llamar a `loadCase`, `results` se vacía (`[]`) para forzar una nueva evaluación por el motor de criterios.
 - Los errores de `localStorage` (lectura o escritura) no propagan excepciones; la app continúa funcionando sin persistencia en ese caso.
 - `reviewedMedTabs` y `reviewedDxTabs` son `Set<string>` en memoria; se exponen como arrays en `PatientCase` para ser serializables en JSON.
 
