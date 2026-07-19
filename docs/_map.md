@@ -20,10 +20,10 @@ y qué ficheros quedan excluidos del patrón y por qué.
 
 **Concepto**: el modelo de dominio del caso clínico (paciente, medicaciones,
 diagnósticos, analítica) y el estado reactivo de sesión con persistencia en
-`localStorage` (incluye el almacenamiento del historial y los tabs revisados).
+`localStorage` (incluye los tabs revisados).
 
 **Debe cubrir**: tipos de dominio (`PatientInfo`, `Med`, `Crit`, `Labs`,
-`PatientCase`, `SavedCase`, `CaseExport`), el store de signals, el ciclo
+`PatientCase`, `CaseExport`), el store de signals, el ciclo
 persistencia/rehidratación, y el acoplamiento actual estado UI / estado dominio.
 
 ### Ficheros que enlazan
@@ -123,21 +123,6 @@ verificación de ligaduras.
 
 ---
 
-## Doc: docs/historial.md
-
-**Concepto**: la vista de historial de casos guardados — listar, cargar y
-eliminar `SavedCase` persistidos localmente.
-
-**Debe cubrir**: lectura del signal `history` de `CaseStoreService`,
-navegación post-carga, y el estado actual del bug de ruta no registrada
-(`/historial` cae en el wildcard; el componente es hoy inaccesible).
-
-### Ficheros que enlazan
-- `src/app/historial/historial.component.ts`
-- `src/app/historial/historial.component.html`
-
----
-
 ## Doc: docs/navegacion-y-shell.md
 
 **Concepto**: el arranque de la aplicación y su esqueleto de navegación —
@@ -145,9 +130,9 @@ bootstrap, rutas, componente raíz con las acciones globales (guardar/cargar
 caso, reset confirmado, guía rápida).
 
 **Debe cubrir**: `main.ts` → `AppComponent`, tabla de rutas y sus constantes
-(incluida la ruta `historial` declarada pero sin componente), los diálogos
-transversales de confirmación y guía, y la existencia del stub residual
-`App`/`app.config.ts` (ver Excluidos).
+(`medicaciones`, `diagnosticos`, wildcard), los diálogos transversales de
+confirmación y guía, y la existencia del stub residual `App`/`app.config.ts`
+(ver Excluidos).
 
 ### Ficheros que enlazan
 - `src/main.ts`
@@ -181,7 +166,7 @@ en `styles.css`.
 ## Grafo de relaciones (doc ↔ código ↔ doc)
 
 ```
-caso-clinico ──tipos──────────────► motor-criterios, flujo-pasos, historial,
+caso-clinico ──tipos──────────────► motor-criterios, flujo-pasos,
   (types.ts, case-store)             informes-y-exportacion
 catalogo-clinico ──catálogos──────► motor-criterios (MEDICATIONS, taxonomías),
   (data/* + diagnosis-variants*)     flujo-pasos (tabs, isDiagnosisEnabled,
@@ -190,8 +175,6 @@ motor-criterios ──Crit[], relevance, exclusiones──► flujo-pasos
   (engine, system-relevance)         ▲ consume criteria.json (excluido)
 flujo-pasos ──acciones de usuario──► informes-y-exportacion (PDF, JSON, copy)
   (steps + group-visibility)
-historial ──loadFromHistory────────► caso-clinico (store) y navegacion-y-shell
-                                     (ruta pendiente de registrar)
 navegacion-y-shell ──monta─────────► flujo-pasos (rutas diagnosticos/
                                      medicaciones) y diálogos
 accesibilidad-ui ──transversal─────► usado por flujo-pasos y navegacion-y-shell
@@ -212,9 +195,8 @@ Ficheros que NO llevan `@linked`, con motivo:
   `src/app/app.config.ts` — stub residual del scaffolding de Angular CLI
   (la raíz real es `app.component.ts`); candidato a eliminación, ver REVIEW.md.
 - `src/app/steps/meds-step/meds-step.component.css`,
-  `src/app/steps/diagnosis-step/diagnosis-step.component.css`,
-  `src/app/historial/historial.component.css` — estilos de presentación sin
-  lógica de negocio.
+  `src/app/steps/diagnosis-step/diagnosis-step.component.css` — estilos de
+  presentación sin lógica de negocio.
 - `src/index.html` — HTML raíz trivial (fuentes, favicon, `<app-root>`).
 - `src/custom-theme.scss` — tema Material 3 generado, sin lógica.
 - `src/assets/logoTFG.png` — binario.

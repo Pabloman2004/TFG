@@ -9,7 +9,7 @@ Cubre tres responsabilidades:
    `bootstrapApplication(AppComponent, …)` con los providers globales
    (`provideAnimations`, `provideRouter`, `provideHttpClient`).
 
-2. **Rutas**: `app.routes.ts` declara las tres rutas de la SPA
+2. **Rutas**: `app.routes.ts` declara las rutas de la SPA
    (`medicaciones`, `diagnosticos`, wildcard → `medicaciones`).
    Las constantes de segmento de URL viven en `app.routes.constants.ts`.
 
@@ -39,12 +39,11 @@ src/app/app.routes.ts          ← importa ROUTES desde app.routes.constants.ts
     { path: '',              redirectTo: 'medicaciones', pathMatch: 'full' },
     { path: 'diagnosticos',  component: DiagnosisStepComponent },
     { path: 'medicaciones',  component: MedsStepComponent },
-    { path: 'historial',     component: HistorialComponent },
     { path: '**',            redirectTo: 'medicaciones' },
   ]
 
 src/app/app.routes.constants.ts
-  ROUTES = { DIAGNOSTICOS, MEDICACIONES, HISTORIAL }  ← constante tipada
+  ROUTES = { DIAGNOSTICOS, MEDICACIONES }  ← constante tipada
 
 src/app/app.component.ts  (AppComponent, selector: app-root)
   ├─ onSave()         → CaseIoService.exportCase()
@@ -95,14 +94,11 @@ code-splitting).
   dirigirse a `/medicaciones`.
 - El reset del caso siempre pasa por el diálogo de confirmación; nunca se llama
   a `store.reset()` directamente desde la UI sin confirmación previa.
-- `ROUTES.HISTORIAL` está registrada en `app.routes.ts` con `HistorialComponent`.
+- Rutas desconocidas (p. ej. `/historial`) caen en el wildcard y redirigen a
+  `/medicaciones`.
 
 ## Si cambias esto…
 
-- **Añadir la ruta `historial`**: registrarla en `app.routes.ts` con su
-  componente (`HistorialComponent`) y asegurarse de que `ROUTES.HISTORIAL`
-  ya está declarado en `app.routes.constants.ts` (lo está). Actualizar
-  `docs/historial.md` (que documenta este bug conocido).
 - **Cambiar un segmento de URL**: modificar `app.routes.constants.ts` y
   revisar todos los `router.navigate(['/…'])` en `app.component.ts` y en los
   componentes de pasos.
@@ -112,12 +108,10 @@ code-splitting).
   `app.component.ts` (template inline y métodos de la clase).
 - **Cambiar el flujo de importación de caso**: modificar `onLoad()` en
   `app.component.ts` y actualizar `docs/informes-y-exportacion.md`.
-- **Tests afectados**: `src/app/app.component.spec.ts` (cubre `resetCase`,
-  `onSave`, `onLoad`) y `src/app/confirm-reset-dialog.component.spec.ts`
-  (cubre texto de aviso, botón confirmar y cancelar). Actualizar tests si
-  se cambia el flujo.
-- **Este documento**: actualizar si se registra `historial`, se elimina el
-  stub `App`, o se cambia el esquema de providers del bootstrap.
+- **Tests afectados**: `src/app/app.component.spec.ts`,
+  `src/app/app.routes.spec.ts` y `src/app/confirm-reset-dialog.component.spec.ts`.
+- **Este documento**: actualizar si se elimina el stub `App`, o se cambia el
+  esquema de providers del bootstrap.
 
 ## Asunciones
 

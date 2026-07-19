@@ -2,7 +2,7 @@
 // Si cambias signals, claves de localStorage, reset(), loadCase() o patientCase, actualiza el doc enlazado.
 
 import { Injectable, signal, effect } from '@angular/core';
-import { Crit, PatientInfo, Labs, PatientCase, Med, SavedCase } from './types';
+import { Crit, PatientInfo, Labs, PatientCase, Med } from './types';
 
 @Injectable({ providedIn: 'root' })
 export class CaseStoreService {
@@ -17,9 +17,7 @@ export class CaseStoreService {
   collapsedSections = signal<string[]>([]);
   reviewedMedTabs = signal<Set<string>>(new Set());
   reviewedDxTabs = signal<Set<string>>(new Set());
-  history = signal<SavedCase[]>([]);
 
-  private readonly HISTORY_KEY = 'historial';
   private readonly REVIEWED_MED_KEY = 'reviewedMedTabs';
   private readonly REVIEWED_DX_KEY = 'reviewedDxTabs';
 
@@ -32,8 +30,8 @@ export class CaseStoreService {
     this.activeSystemTab.set(this.loadString('activeSystemTab') ?? 'cardiovascular');
     this.reviewedMedTabs.set(new Set(this.load<string[]>(this.REVIEWED_MED_KEY) ?? []));
     this.reviewedDxTabs.set(new Set(this.load<string[]>(this.REVIEWED_DX_KEY) ?? []));
-    this.history.set(this.load(this.HISTORY_KEY) ?? []);
     this.persist('results', null); // limpiar resultados cacheados de versiones anteriores
+    this.persist('historial', null); // limpiar historial legado (feature eliminada)
 
     effect(() => this.persist('patient', this.patient()));
     effect(() => this.persist('diagnoses', this.diagnoses()));
@@ -43,7 +41,6 @@ export class CaseStoreService {
     effect(() => this.persist('activeSystemTab', this.activeSystemTab()));
     effect(() => this.persist(this.REVIEWED_MED_KEY, [...this.reviewedMedTabs()]));
     effect(() => this.persist(this.REVIEWED_DX_KEY, [...this.reviewedDxTabs()]));
-    effect(() => this.persist(this.HISTORY_KEY, this.history()));
   }
 
   private load<T>(key: string): T | null {
@@ -109,23 +106,6 @@ export class CaseStoreService {
     ['patient', 'diagnoses', 'meds', 'labs', 'activeSystem', 'activeSystemTab',
       this.REVIEWED_MED_KEY, this.REVIEWED_DX_KEY]
       .forEach(k => this.persist(k, null));
-  }
-
-  saveToHistory(): void {
-    const entry: SavedCase = {
-      id: crypto.randomUUID(),
-      savedAt: new Date().toISOString(),
-      patientCase: this.patientCase
-    };
-    this.history.update(h => [entry, ...h]);
-  }
-
-  deleteFromHistory(id: string): void {
-    this.history.update(h => h.filter(c => c.id !== id));
-  }
-
-  loadFromHistory(entry: SavedCase): void {
-    this.loadCase(entry.patientCase);
   }
 
   loadCase(patientCase: PatientCase): void {

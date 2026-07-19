@@ -1,5 +1,5 @@
 // @linked docs/caso-clinico.md
-// Si cambias tipos de dominio (PatientInfo, Med, Labs, Crit, PatientCase, SavedCase, CaseExport), actualiza el doc enlazado.
+// Si cambias tipos de dominio (PatientInfo, Med, Labs, Crit, PatientCase, CaseExport), actualiza el doc enlazado.
 
 export type Sex = 'F' | 'M';
 
@@ -70,12 +70,6 @@ export interface PatientCase {
   labs: Labs | null;
   reviewedMedTabs?: string[];
   reviewedDxTabs?: string[];
-}
-
-export interface SavedCase {
-  id: string;              // crypto.randomUUID()
-  savedAt: string;         // new Date().toISOString()
-  patientCase: PatientCase;
 }
 
 export interface CaseExport {

@@ -89,4 +89,12 @@ describe('CaseStoreService — tabs revisados', () => {
     expect(newStore.isMedTabReviewed('cardiovascular')).toBe(true);
     expect(newStore.isDxTabReviewed('renal')).toBe(true);
   });
+
+  it('al arrancar elimina la clave legado historial de localStorage', () => {
+    localStorage.setItem('historial', JSON.stringify([{ id: 'x' }]));
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({});
+    TestBed.inject(CaseStoreService);
+    expect(localStorage.getItem('historial')).toBeNull();
+  });
 });
