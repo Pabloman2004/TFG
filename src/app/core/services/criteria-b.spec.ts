@@ -99,6 +99,29 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
     });
   });
 
+  describe('B6-AMIODARONA-TAQUIARRITMIA-PRIMERA-LINEA', () => {
+    const c = crit('STOPP-B6-AMIODARONA-TAQUIARRITMIA-PRIMERA-LINEA');
+    const flecainida = () => makeMed('Flecainida', ['ANTIARITMICO', 'ANTIARITMICO_CLASE_IC']);
+    const amiodaronaClaseIii = () =>
+      makeMed('Amiodarona', ['ANTIARITMICO', 'ANTIARITMICO_CLASE_III', 'PROLONGADOR_QTC']);
+
+    it('no dispara con flecainida + taquiarritmias supraventriculares', () => {
+      const p = makeCase({
+        diagnoses: ['taquiarritmias_supraventriculares'],
+        medications: [flecainida()],
+      });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('dispara con amiodarona + taquiarritmias supraventriculares', () => {
+      const p = makeCase({
+        diagnoses: ['taquiarritmias_supraventriculares'],
+        medications: [amiodaronaClaseIii()],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+  });
+
   describe('B7-DIURETICO-ASA-PRIMERA-LINEA-HTA', () => {
     const c = crit('STOPP-B7-DIURETICO-ASA-PRIMERA-LINEA-HTA');
 
@@ -398,6 +421,42 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
 
     it('no dispara con AINE sin insuficiencia cardíaca', () => {
       expect(engine.evaluate(makeCase({ medications: [aine()] }), [c])).toEqual([]);
+    });
+  });
+
+  describe('B20-ANTIHIPERTENSIVO-ESTENOSIS-AORTICA', () => {
+    const c = crit('STOPP-B20-ANTIHIPERTENSIVO-ESTENOSIS-AORTICA');
+
+    it('dispara con estenosis aórtica grave + furosemida', () => {
+      const p = makeCase({
+        diagnoses: ['estenosis_aortica_grave_sintomatica'],
+        medications: [diureticoAsa()],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con estenosis aórtica grave + doxazosina', () => {
+      const p = makeCase({
+        diagnoses: ['estenosis_aortica_grave_sintomatica'],
+        medications: [makeMed('Doxazosina', ['ALFABLOQUEANTE'])],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('greying de diurético de asa sin antihipertensivo central en el caso', () => {
+      const p = makeCase({ diagnoses: ['estenosis_aortica_grave_sintomatica'] });
+      const excluded = engine.getExcludedMedications(p, [c]);
+      expect(excluded.has('furosemida')).toBeTrue();
+    });
+
+    it('greying de alfabloqueante sin antihipertensivo central en el caso', () => {
+      const p = makeCase({ diagnoses: ['estenosis_aortica_grave_sintomatica'] });
+      const excluded = engine.getExcludedMedications(p, [c]);
+      expect(excluded.has('doxazosina')).toBeTrue();
+    });
+
+    it('no dispara con furosemida sin estenosis aórtica', () => {
+      expect(engine.evaluate(makeCase({ medications: [diureticoAsa()] }), [c])).toEqual([]);
     });
   });
 

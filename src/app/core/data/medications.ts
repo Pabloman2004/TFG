@@ -78,7 +78,7 @@ export const MEDICATIONS: Med[] = [
 
   // -------- ANTIDEPRESIVOS IRSN (Inhibidores duales) --------
   { id: "Venlafaxina", drugClasses: ["ISRN"] },
-  { id: "Duloxetina", drugClasses: ["ISRN"] },
+  { id: "Duloxetina", drugClasses: ["ISRN", "DULOXETINA"] },
 
   // -------- ANTIDEPRESIVOS TRICÍCLICOS (ATCs) --------
   { id: "Amitriptilina", drugClasses: ["ANTIDEPRESIVO_TRICICLICO", "ANTICOLINERGICO", "PROLONGADOR_QTC"] },

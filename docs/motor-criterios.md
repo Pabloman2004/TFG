@@ -35,6 +35,7 @@ registrados en el constructor del servicio.
 | `src/app/core/services/criteria-test-helpers.ts` | Librería compartida de utilidades de test: `ALL_CRITERIA`, `crit()`, `setupEngine()`, factories de `PatientCase`/`Med` |
 | `src/types/json-logic-js.d.ts` | Declaración de tipos ambient para `json-logic-js` (`apply`, `add_operation`) |
 | `scripts/audit-criteria.cjs` | Script Node.js one-shot de auditoría de consistencia entre `criteria.json`, `medications.ts` y `diagnoses.ts` |
+| `src/app/core/data/criteria-data-integrity.spec.ts` | Guard de suite: excludes↔catálogo, clases con miembros, whitelists dx/clases y política HTA (A12/A20) |
 | `src/assets/data/criteria.json` | Catálogo de 216 criterios (excluido del patrón @linked: JSON no admite comentarios) |
 
 ### Flujo principal
@@ -82,10 +83,9 @@ Cada entrada del array `criteria` tiene:
 - `system`: uno de los 13 sistemas fisiológicos (ver `SYSTEM_TO_TABS`).
 - `logic`: árbol json-logic ejecutable, puede usar operadores estándar y los
   personalizados registrados en `registerCustomOperators()`.
-- `relevance.medicationClasses` (opcional): clases farmacológicas que deben
-  participar en la visibilidad cuando la semántica está encapsulada en un
-  operador especial y no puede extraerse de un `inDrugClass`. No sustituye la
-  lógica ni se deriva de `excludes`.
+- `relevance.medicationClasses` (opcional): escape hatch para clases que aún
+  no pueda inferir `extractReferences`. Los operadores custom del motor ya
+  aportan su clase; no sustituye la lógica ni se deriva de `excludes`.
 - `excludes` (opcional): lista de nombres de medicamento y/o clases
   farmacológicas que ese criterio contraindica cuando se cumple.
   Debe usar el mismo alcance farmacológico que la lógica: por ejemplo,
@@ -149,16 +149,17 @@ catálogo a uno o más tabs de la UI:
   usan el marcador `TRANSVERSAL = '*'` y se expanden a todos los tabs conocidos.
 
 `buildRelevance(criteria, allTabIds)` recorre cada criterio, extrae mediante
-`extractReferences` las clases farmacológicas (`inDrugClass`), códigos de
+`extractReferences` las clases farmacológicas (`inDrugClass`,
+`medicationClassDurationAbove`, `medicationClassDoseMgAbove`, mapa
+operador→clase para `digoxinaDosisAlta` y los `multiple*`), códigos de
 diagnóstico (`in [code, {var:"diagnoses"}]`) y los sustitutos diagnósticos de
 `egfrBelow` (umbrales ≥30 → `enfermedad_renal_grave`; ≥15 →
-`insuficiencia_renal_terminal`), une las clases declaradas en
-`relevance.medicationClasses`, y acumula el resultado en los mapas
-`classesByTab` / `dxsByTab` (con la expansión transversal incluida para clases
-y, para diagnósticos, acotada al tab de origen cuando el sistema mapea a varios
-tabs y el diagnóstico pertenece a uno de ellos). E1, F2 y F4 usan el metadato
-explícito para Digoxina, IBP y hierro oral respectivamente. `excludes` no se
-consulta para construir el índice.
+`insuficiencia_renal_terminal`), une opcionalmente las clases declaradas en
+`relevance.medicationClasses` (escape hatch; ya no necesario para E1/F2/F4/L6),
+y acumula el resultado en los mapas `classesByTab` / `dxsByTab` (con la
+expansión transversal incluida para clases y, para diagnósticos, acotada al tab
+de origen cuando el sistema mapea a varios tabs y el diagnóstico pertenece a
+uno de ellos). `excludes` no se consulta para construir el índice.
 
 Además acumula `specificClassesByTab` y `specificDxsByTab`: referencias de
 criterios cuyo `system` mapea **específicamente** a un tab (los transversales NO
@@ -199,6 +200,17 @@ cinco secciones:
 
 ## Decisiones de diseño
 
+- **Política de variantes HTA**: la familia mutex
+  `{hta, hta_no_complicada, hipertension_moderada, hipertension_grave}` permite
+  marcar una sola variante en la UI. Los **criterios generales de HTA** aceptan
+  las 4 variantes; **B5**, específico de HTA no complicada, acepta solo `hta` y
+  `hta_no_complicada`. Los criterios acotados a gravedad (p. ej. solo
+  `hipertension_grave`) quedan fuera de esa regla. Lo refuerza
+  `criteria-data-integrity.spec.ts` (A20).
+- **Guard catálogo↔criterios**: `criteria-data-integrity.spec.ts` exige que
+  `excludes.medications` existan en `MEDICATIONS`, que las clases usadas tengan
+  miembros, y que códigos/clases sin criterio estén en listas blancas comentadas
+  (informativos / decorativos).
 - **json-logic para las reglas**: permite expresar cada criterio clínico como
   dato puro (JSON), sin código compilado por criterio. El árbol es serializable,
   auditable con herramientas externas y reemplazable sin recompilar la app.
@@ -206,6 +218,15 @@ cinco secciones:
   `digoxinaDosisAlta`, los operadores de dosis/duración y los `multiple*` encapsulan semántica clínica que json-logic
   estándar no puede expresar de forma compacta, manteniendo el JSON de criterios
   legible.
+- **Excepción por id de fármaco (STOPP-D12)**: cuando STOPP v3 exime fármacos
+  concretos dentro de una clase (quetiapina/clozapina en neurolépticos), la
+  lógica combina `inDrugClass(NEUROLEPTICO)` —para que `extractReferences` siga
+  indexando la clase— con `some` de json-logic sobre `medications` que exige un
+  neuroléptico cuyo `id` no sea `quetiapina` ni `clozapina` (tras
+  `normalizeCase`). Así quetiapina/clozapina solas no disparan, pero sí lo hace
+  cualquier otro neuroléptico o la combinación con uno no exento. Los
+  `excludes.medications` listan el resto de neurolépticos del catálogo y omiten
+  a propósito las dos excepciones (no greyan).
 - **Normalización en el servicio, no en los datos**: los criterios y el caso
   del paciente se normalizan en tiempo de evaluación; el catálogo y el estado
   de sesión se almacenan con capitalización original.
@@ -237,9 +258,11 @@ cinco secciones:
   silenciosamente.
 - Los operadores custom se registran en el constructor, antes de cualquier
   llamada a `evaluate` o `getExcludedMedications`.
-- `extractReferences` solo reconoce `inDrugClass` y el patrón
-  `in [string, {var:"diagnoses"}]`; otras formas de referenciar datos en la
-  lógica no se indexan en `Relevance`.
+- `extractReferences` reconoce clases en `inDrugClass`,
+  `medicationClassDurationAbove`, `medicationClassDoseMgAbove`, el mapa
+  operador→clase de `digoxinaDosisAlta`/`multiple*`, diagnósticos en
+  `in [string, {var:"diagnoses"}]` y sustitutos de `egfrBelow`; otras formas
+  de referenciar datos en la lógica no se indexan en `Relevance`.
 
 ---
 
@@ -260,6 +283,9 @@ cinco secciones:
   usar `drugClasses` consistentes con `MEDICATIONS` en `medications.ts`
   (propietario: `docs/catalogo-clinico.md`); correr `audit-criteria.cjs` para
   verificar consistencia.
+- **Añadir/quitar fármacos, clases o códigos de diagnóstico** en catálogo o
+  `criteria.json`: mantener verde `criteria-data-integrity.spec.ts` (actualizar
+  listas blancas solo si el omitido es deliberado e informativo/decorativo).
 - **Cualquier cambio en el motor**: actualizar los tests de criterios
   (`criteria-engine.service.spec.ts`, `criteria-a.spec.ts` …
   `criteria-e.spec.ts`) y este documento.

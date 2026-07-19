@@ -57,6 +57,11 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
+    it('dispara con prostatismo/retención urinaria combinado + ADT', () => {
+      const p = makeCase({ diagnoses: ['prostatismo_retencion_urinaria'], medications: [adt()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
     it('no dispara sin diagnóstico', () => {
       expect(engine.evaluate(makeCase({ medications: [adt()] }), [c])).toEqual([]);
     });
@@ -167,6 +172,11 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
 
     it('dispara con retención urinaria + Risperidona', () => {
       const p = makeCase({ diagnoses: ['retencion_urinaria'], medications: [neuroleptico('Risperidona')] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con prostatismo/retención urinaria combinado + neuroléptico', () => {
+      const p = makeCase({ diagnoses: ['prostatismo_retencion_urinaria'], medications: [neuroleptico()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
@@ -373,6 +383,19 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
+    it('no dispara con parkinsonismo + solo Quetiapina (excepción STOPP v3)', () => {
+      const p = makeCase({ diagnoses: ['parkinsonismo'], medications: [neuroleptico('Quetiapina')] });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('dispara con parkinsonismo + Quetiapina + Haloperidol', () => {
+      const p = makeCase({
+        diagnoses: ['parkinsonismo'],
+        medications: [neuroleptico('Quetiapina'), neuroleptico()],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
     it('no dispara sin diagnóstico de parkinsonismo/Lewy', () => {
       expect(engine.evaluate(makeCase({ medications: [neuroleptico()] }), [c])).toEqual([]);
     });
@@ -381,6 +404,12 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
       const p = makeCase({ diagnoses: ['parkinsonismo'] });
       const excluded = engine.getExcludedMedications(p, [c]);
       expect(excluded.has('haloperidol')).toBeTrue();
+    });
+
+    it('no bloquea Quetiapina con parkinsonismo (excepción STOPP v3)', () => {
+      const p = makeCase({ diagnoses: ['parkinsonismo'] });
+      const excluded = engine.getExcludedMedications(p, [c]);
+      expect(excluded.has('quetiapina')).toBeFalse();
     });
   });
 

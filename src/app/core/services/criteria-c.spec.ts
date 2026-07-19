@@ -90,6 +90,12 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
       const p = makeCase({ diagnoses: ['fibrilacion_auricular'], medications: [antiag()] });
       expect(engine.evaluate(p, [c])).toEqual([]);
     });
+
+    it('no bloquea anticoagulante con FA + antiagregante sin anticoagulante', () => {
+      const p = makeCase({ diagnoses: ['fibrilacion_auricular'], medications: [antiag()] });
+      const excluded = engine.getExcludedMedications(p, [c]);
+      expect(excluded.has('apixaban')).toBeFalse();
+    });
   });
 
   describe('C5-ANTIAGREGANTE-ANTICOAGULANTE-VASCULAR-ESTABLE', () => {
@@ -290,6 +296,11 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
     it('no dispara con ISRS + anticoagulante sin antecedentes de sangrado', () => {
       expect(engine.evaluate(makeCase({ medications: [isrs(), anticoag()] }), [c])).toEqual([]);
     });
+
+    it('no dispara con anticoagulante + antecedentes de sangrado sin ISRS', () => {
+      const p = makeCase({ diagnoses: ['antecedentes_sangrado_grave'], medications: [anticoag()] });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
   });
 
   describe('C13-VERAPAMILO-INHIBIDORES-TROMBINA', () => {
@@ -372,6 +383,24 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
       const p = makeCase({ medications: [verapamiloReal(), anticoagDir()] });
       const firedC14 = engine.evaluate(p, ALL_CRITERIA).filter(x => x.id.startsWith('STOPP-C14-'));
       expect(firedC14.map(x => x.id)).toEqual(['STOPP-C14-ACOD-INHIBIDORES-GLUCOPROTEINA-P']);
+    });
+  });
+
+  describe('C16-AAS-PREVENCION-PRIMARIA', () => {
+    const c = crit('STOPP-C16-AAS-PREVENCION-PRIMARIA');
+
+    it('dispara con AAS sin enfermedad cardiovascular establecida', () => {
+      expect(engine.evaluate(makeCase({ medications: [aas()] }), [c]).length).toBe(1);
+    });
+
+    it('no dispara con ictus previo + AAS (prevención secundaria)', () => {
+      const p = makeCase({ diagnoses: ['ictus_previo'], medications: [aas()] });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('no dispara con cardiopatía isquémica + AAS (prevención secundaria)', () => {
+      const p = makeCase({ diagnoses: ['cardiopatia_isquemica'], medications: [aas()] });
+      expect(engine.evaluate(p, [c])).toEqual([]);
     });
   });
 });

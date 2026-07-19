@@ -54,7 +54,7 @@
       "system": "Indicación de la medicación",
       "summary": "Evitar el uso simultáneo de dos fármacos de la clase ISRS (ej. Sertralina + Fluoxetina). Debe optimizarse la monoterapia con un único fármaco antes de considerar uno nuevo.",
       "logic": {"multipleISRS":[{"var":"medications"}]},
-      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina","Paroxetina","Fluvoxamina"],"drugClasses":["ISRS"]}
+      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina"],"drugClasses":["ISRS"]}
     },
     {
       "id": "STOPP-A3-TIAZIDA-USO-CONCOMITANTE",
@@ -141,7 +141,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar amiodarona como primera línea en taquiarritmias supraventriculares. Mayor riesgo de efectos secundarios graves que los betabloqueantes, digoxina, verapamilo o diltiazem.",
-      "logic": {"and":[{"inDrugClass":["ANTIARITMICO",{"var":"medications"}]},{"in":["taquiarritmias_supraventriculares",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIARITMICO_CLASE_III",{"var":"medications"}]},{"in":["taquiarritmias_supraventriculares",{"var":"diagnoses"}]}]},
       "excludes": {"medications":["Amiodarona"],"drugClasses":["ANTIARITMICO"]}
     },
     {
@@ -317,7 +317,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar antihipertensivos (diuréticos, antihipertensivos centrales, alfabloqueantes) en estenosis aórtica grave sintomática. Riesgo de hipotensión grave y síncopes.",
-      "logic": {"and":[{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]},{"in":["estenosis_aortica_grave_sintomatica",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"or":[{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]},{"inDrugClass":["DIURETICO_TIAZIDICO",{"var":"medications"}]},{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]},{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]}]},{"in":["estenosis_aortica_grave_sintomatica",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["DIURETICO_ASA","DIURETICO_TIAZIDICO","ANTIHIPERTENSIVO_CENTRAL","ALFABLOQUEANTE"]}
     },
     {
@@ -374,7 +374,7 @@
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar añadir anticoagulantes con antiagregantes plaquetarios en FA crónica. La combinación no aporta beneficio adicional en FA, salvo stent coronario o estenosis de alto grado (>50%).",
       "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"inDrugClass":["ANTIAGREGANTE",{"var":"medications"}]},{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]}]},
-      "excludes": {"medications":[],"drugClasses":["ANTICOAGULANTE"]}
+      "excludes": {"medications":[],"drugClasses":["ANTIAGREGANTE"]}
     },
     {
       "id": "STOPP-C5-ANTIAGREGANTE-ANTICOAGULANTE-VASCULAR-ESTABLE",
@@ -453,8 +453,8 @@
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar ISRS en pacientes con antecedentes de hemorragia grave que utilizan anticoagulantes (AVK o ACOD). Mayor riesgo de sangrado debido a los efectos antiagregantes de los ISRS.",
-      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"in":["antecedentes_sangrado_grave",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina","Paroxetina","Fluvoxamina"],"drugClasses":["ISRS"]}
+      "logic": {"and":[{"inDrugClass":["ANTICOAGULANTE",{"var":"medications"}]},{"inDrugClass":["ISRS",{"var":"medications"}]},{"in":["antecedentes_sangrado_grave",{"var":"diagnoses"}]}]},
+      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina"],"drugClasses":["ISRS"]}
     },
     {
       "id": "STOPP-C13-VERAPAMILO-INHIBIDORES-TROMBINA",
@@ -485,7 +485,7 @@
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Evitar AAS en prevención primaria cardiovascular (sin enfermedad cardiovascular establecida). No hay evidencia de reducción de mortalidad y aumenta el riesgo de sangrado.",
-      "logic": {"and":[{"inDrugClass":["AAS",{"var":"medications"}]},{"!":{"in":["enfermedad_cardiovascular",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_coronaria",{"var":"diagnoses"}]}},{"!":{"in":["angina",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_cerebral",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_periferica",{"var":"diagnoses"}]}}]},
+      "logic": {"and":[{"inDrugClass":["AAS",{"var":"medications"}]},{"!":{"in":["enfermedad_cardiovascular",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_coronaria",{"var":"diagnoses"}]}},{"!":{"in":["cardiopatia_isquemica",{"var":"diagnoses"}]}},{"!":{"in":["angina",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_cerebral",{"var":"diagnoses"}]}},{"!":{"in":["ictus_previo",{"var":"diagnoses"}]}},{"!":{"in":["enfermedad_vascular_periferica",{"var":"diagnoses"}]}}]},
       "excludes": {"medications":["Ácido acetilsalicílico"],"drugClasses":["AAS"]}
     },
     {
@@ -509,7 +509,7 @@
       "type": "STOPP",
       "system": "Sistema nervioso central",
       "summary": "Evitar antidepresivos tricíclicos en pacientes con prostatismo o retención urinaria. Alto riesgo de retención urinaria aguda.",
-      "logic": {"and":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"or":[{"in":["prostatismo",{"var":"diagnoses"}]},{"in":["retencion_urinaria",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"or":[{"in":["prostatismo",{"var":"diagnoses"}]},{"in":["retencion_urinaria",{"var":"diagnoses"}]},{"in":["prostatismo_retencion_urinaria",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Amitriptilina","Imipramina","Nortriptilina","Clomipramina","Doxepina"],"drugClasses":["ANTIDEPRESIVO_TRICICLICO"]}
     },
     {
@@ -557,7 +557,7 @@
       "type": "STOPP",
       "system": "Sistema nervioso central",
       "summary": "Evitar neurolépticos antimuscariínicos en pacientes con prostatismo o retención urinaria. Alto riesgo de retención urinaria aguda.",
-      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"in":["prostatismo",{"var":"diagnoses"}]},{"in":["retencion_urinaria",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"in":["prostatismo",{"var":"diagnoses"}]},{"in":["retencion_urinaria",{"var":"diagnoses"}]},{"in":["prostatismo_retencion_urinaria",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Risperidona","Olanzapina","Quetiapina","Clozapina"]}
     },
     {
@@ -590,7 +590,7 @@
       "system": "Sistema nervioso central",
       "summary": "Evitar ISRS en pacientes con presencia de sangrado significativo concurrente actual. Riesgo de exacerbar hemorragias.",
       "logic": {"and":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"in":["riesgo_significativo_sangrado",{"var":"diagnoses"}]}]},
-      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina","Paroxetina","Fluvoxamina"],"drugClasses":["ISRS"]}
+      "excludes": {"medications":["Citalopram","Escitalopram","Fluoxetina","Sertralina"],"drugClasses":["ISRS"]}
     },
     {
       "id": "STOPP-D8-BENZODIACEPINA-USO-PROLONGADO",
@@ -628,9 +628,9 @@
       "id": "STOPP-D12-F1-NEUROLEPTICO-PARKINSON-LEWY",
       "type": "STOPP",
       "system": "Sistema nervioso central",
-      "summary": "Evitar neurolépticos (bajo olanzapina y quetiapina) en pacientes con parkinsonismo o demencia por cuerpos de Lewy. Riesgo de efectos extrapiramidales graves.",
-      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"in":["parkinsonismo",{"var":"diagnoses"}]},{"in":["demencia_cuerpos_lewy",{"var":"diagnoses"}]}]}]},
-      "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Tioridazina","Risperidona","Aripiprazol","Olanzapina"]}
+      "summary": "Evitar neurolépticos (salvo clozapina y quetiapina) en pacientes con parkinsonismo o demencia por cuerpos de Lewy. Riesgo de efectos extrapiramidales graves.",
+      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"some":[{"var":"medications"},{"and":[{"in":["neuroleptico",{"var":"drugClasses"}]},{"!":{"in":[{"var":"id"},["quetiapina","clozapina"]]}}]}]},{"or":[{"in":["parkinsonismo",{"var":"diagnoses"}]},{"in":["demencia_cuerpos_lewy",{"var":"diagnoses"}]}]}]},
+      "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Tioridazina","Proclorperazina","Risperidona","Aripiprazol","Olanzapina"]}
     },
     {
       "id": "STOPP-D13-ANTIPARKINSONIAN-ANTICOLINERGICO-NEUROLEPTICO",
@@ -750,7 +750,6 @@
       "system": "Sistema renal",
       "summary": "Digoxina en tratamiento a largo plazo (> 90 días) a dosis mantenidas ≥ 125 μg/día con TFGe < 30 ml/min/1,73 m². Riesgo de intoxicación digitálica si no se monitorizan los niveles plasmáticos.",
       "logic": {"and":[{"egfrBelow":[30,{"var":""}]},{"digoxinaDosisAlta":[{"var":"medications"}]}]},
-      "relevance": {"medicationClasses":["DIGOXINA"]},
       "excludes": {"medications":["Digoxina"],"drugClasses":["DIGOXINA"]}
     },
     {
@@ -839,7 +838,6 @@
       "system": "Sistema gastrointestinal",
       "summary": "IBP a dosis terapéuticas plenas durante más de 8 semanas sin revisión. Valorar reducción de dosis, retirada o mantenimiento con antagonistas H2. (Alerta de revisión de duración e indicación.)",
       "logic": {"medicationClassDurationAbove":["IBP",56,{"var":"medications"}]},
-      "relevance": {"medicationClasses":["IBP"]},
       "excludes": {"drugClasses":["IBP"]}
     },
     {
@@ -864,7 +862,6 @@
       "system": "Sistema gastrointestinal",
       "summary": "Revisar hierro oral: dosis elementales superiores a 200 mg/día no aportan mayor absorción. (Alerta de revisión de dosis.)",
       "logic": {"medicationClassDoseMgAbove":["HIERRO_ORAL",200,{"var":"medications"}]},
-      "relevance": {"medicationClasses":["HIERRO_ORAL"]},
       "excludes": {"drugClasses":["HIERRO_ORAL"]}
     },
     {
@@ -1056,7 +1053,8 @@
       "type": "STOPP",
       "system": "Sistema urogenital",
       "summary": "Evitar duloxetina en presencia de urgencia urinaria o incontinencia urinaria por urgencia. Está indicada en la incontinencia urinaria de esfuerzo, no en la urgencia urinaria.",
-      "logic": {"and":[{"inDrugClass":["ISRN",{"var":"medications"}]},{"in":["incontinencia_urinaria_urgencia",{"var":"diagnoses"}]}]}
+      "logic": {"and":[{"inDrugClass":["DULOXETINA",{"var":"medications"}]},{"in":["incontinencia_urinaria_urgencia",{"var":"diagnoses"}]}]},
+      "excludes": {"medications":["Duloxetina"]}
     },
     {
       "id": "STOPP-I8-ANTIBIOTICO-BACTERIURIA-ASINTOMATICA",
@@ -1087,7 +1085,7 @@
       "type": "STOPP",
       "system": "Sistema endocrino",
       "summary": "Evitar betabloqueantes no cardioselectivos en pacientes con diabetes con episodios frecuentes de hipoglucemia. Riesgo de enmascaramiento de los síntomas de hipoglucemia (especialmente los no cardioselectivos).",
-      "logic": {"and":[{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]},{"in":["diabetes_hipoglucemias_frecuentes",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["BETABLOQUEANTE_NO_CARDIOSELECTIVO",{"var":"medications"}]},{"in":["diabetes_hipoglucemias_frecuentes",{"var":"diagnoses"}]}]},
       "excludes": {"medications":["Carvedilol","Propranolol"]}
     },
     {
@@ -1159,7 +1157,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar benzodiacepinas en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y deteriorar el equilibrio.",
-      "logic": {"and":[{"inDrugClass":["BENZODIACEPINA",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["BENZODIACEPINA",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["BENZODIACEPINA"]}
     },
     {
@@ -1167,7 +1165,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar neurolépticos en pacientes con caídas de repetición. Pueden causar parkinsonismo inducido por fármacos.",
-      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Risperidona","Olanzapina","Quetiapina","Aripiprazol","Clozapina"],"drugClasses":["NEUROLEPTICO"]}
     },
     {
@@ -1175,7 +1173,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar vasodilatadores (nitratos, alfabloqueantes, inhibidores PDE5) en pacientes con caídas de repetición e hipotensión postural persistente. Riesgo de síncopes y caídas.",
-      "logic": {"and":[{"or":[{"inDrugClass":["NITRATO",{"var":"medications"}]},{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"inDrugClass":["INHIBIDOR_PDE5",{"var":"medications"}]}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["hipotension_ortostatica",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"or":[{"inDrugClass":["NITRATO",{"var":"medications"}]},{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"inDrugClass":["INHIBIDOR_PDE5",{"var":"medications"}]}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},{"in":["hipotension_ortostatica",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["NITRATO","ALFABLOQUEANTE","INHIBIDOR_PDE5"]}
     },
     {
@@ -1183,7 +1181,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antidepresivos tricíclicos en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y el equilibrio.",
-      "logic": {"and":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIDEPRESIVO_TRICICLICO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Amitriptilina","Imipramina","Nortriptilina","Clomipramina","Doxepina"],"drugClasses":["ANTIDEPRESIVO_TRICICLICO"]}
     },
     {
@@ -1191,7 +1189,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar hipnóticos-Z (zopiclona, zolpidem, zaleplon) en pacientes con caídas de repetición. Pueden causar sedación diurna prolongada y ataxia.",
-      "logic": {"and":[{"inDrugClass":["HIPNOTICO_Z",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["HIPNOTICO_Z",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["HIPNOTICO_Z"]}
     },
     {
@@ -1199,7 +1197,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antiepilépticos en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y deteriorar la función del cerebelo.",
-      "logic": {"and":[{"inDrugClass":["ANTIEPILÉPTICO",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIEPILÉPTICO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["ANTIEPILÉPTICO"]}
     },
     {
@@ -1207,7 +1205,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antihistamínicos de primera generación en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y causar sedación.",
-      "logic": {"and":[{"inDrugClass":["ANTIHISTAMINICO_1GEN",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIHISTAMINICO_1GEN",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["ANTIHISTAMINICO_1GEN"]}
     },
     {
@@ -1215,7 +1213,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar opioides en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y aumentar el riesgo de caídas.",
-      "logic": {"and":[{"inDrugClass":["OPIOIDE",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["OPIOIDE",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["OPIOIDE"]}
     },
     {
@@ -1223,7 +1221,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar ISRS e ISRN en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia y deteriorar el equilibrio.",
-      "logic": {"and":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ISRS",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Sertralina","Fluoxetina","Citalopram","Escitalopram","Venlafaxina","Duloxetina"],"drugClasses":["ISRS","ISRN"]}
     },
     {
@@ -1231,7 +1229,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar psicotrópicos (antidepresivos, litio) en presencia de caídas de repetición. Los psicotrópicos pueden reducir el nivel de conciencia y aumentar el riesgo de caídas.",
-      "logic": {"and":[{"inDrugClass":["PSICOTROPICO",{"var":"medications"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["PSICOTROPICO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Amitriptilina","Nortriptilina","Imipramina","Clomipramina","Doxepina","Litio","Venlafaxina","Duloxetina"],"drugClasses":["ANTIDEPRESIVO_TRICICLICO","PSICOTROPICO","ISRN"]}
     },
     {
@@ -1239,7 +1237,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar bloqueantes alfa-1-adrenérgicos como antihipertensivos en pacientes con caídas de repetición. Pueden causar hipotensión ortostática y nuevas caídas.",
-      "logic": {"and":[{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["ALFABLOQUEANTE"]}
     },
     {
@@ -1247,7 +1245,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar bloqueantes alfa-1-adrenérgicos (exceptuando silodosina) para síntomas prostáticos obstructivos en pacientes con caídas de repetición. Pueden causar hipotensión ortostática.",
-      "logic": {"and":[{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["hiperplasia_benigna_prostata",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ALFABLOQUEANTE",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},{"in":["hiperplasia_benigna_prostata",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["ALFABLOQUEANTE"]}
     },
     {
@@ -1255,7 +1253,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antihipertensivos de acción central en pacientes con riesgo de caídas de repetición. Pueden reducir el nivel de conciencia y causar hipotensión ortostática.",
-      "logic": {"and":[{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIHIPERTENSIVO_CENTRAL",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Metildopa","Clonidina","Moxonidina","Rilmenidina","Guanfacina"],"drugClasses":["ANTIHIPERTENSIVO_CENTRAL"]}
     },
     {
@@ -1263,7 +1261,7 @@
       "type": "STOPP",
       "system": "Riesgo de caídas",
       "summary": "Evitar antimuscarínicos para la vejiga hiperactiva o incontinencia urinaria de urgencia en pacientes con caídas de repetición. Pueden reducir el nivel de conciencia.",
-      "logic": {"and":[{"inDrugClass":["ANTIESPASMÓDICO_URINARIO",{"var":"medications"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["ANTIESPASMÓDICO_URINARIO",{"var":"medications"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["ANTIESPASMÓDICO_URINARIO"]}
     },
     {
@@ -1312,7 +1310,6 @@
       "system": "Sistema musculoesquelético",
       "summary": "Revisar paracetamol en pacientes malnutridos (IMC < 18) o con hepatopatía crónica: dosis ≥ 3 g/día conllevan riesgo de hepatotoxicidad. (Alerta de revisión de dosis.)",
       "logic": {"and":[{"medicationClassDoseMgAbove":["ANALGESICO_SIMPLE",2999,{"var":"medications"}]},{"or":[{"in":["hepatopatia_cronica",{"var":"diagnoses"}]},{"in":["malnutricion",{"var":"diagnoses"}]}]}]},
-      "relevance": {"medicationClasses":["ANALGESICO_SIMPLE"]},
       "excludes": {"medications":["Paracetamol"],"drugClasses":["ANALGESICO_SIMPLE"]}
     },
     {
@@ -1582,7 +1579,7 @@
       "type": "START",
       "system": "Sistema musculoesquelético",
       "summary": "Considerar añadir bisfosfonato y vitamina D (con calcio) para prevención de osteoporosis inducida por corticosteroides. El paciente recibe corticosteroides orales a largo plazo sin protección ósea.",
-      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"or":[{"!":{"inDrugClass":["BIFOSFONATO",{"var":"medications"}]}},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}]}
+      "logic": {"and":[{"medicationClassDurationAbove":["CORTICOIDE_SISTEMICO",90,{"var":"medications"}]},{"or":[{"!":{"inDrugClass":["BIFOSFONATO",{"var":"medications"}]}},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}]}
     },
     {
       "id": "START-H3-VITAMINA-D-OSTEOPOROSIS",

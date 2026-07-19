@@ -66,6 +66,15 @@ export class CriteriaEngineService {
     return {
       ...input,
 
+      info: input.info
+        ? {
+            ...input.info,
+            sex: input.info.sex === null
+              ? null
+              : (input.info.sex.toLowerCase() as typeof input.info.sex),
+          }
+        : input.info,
+
       diagnoses: input.diagnoses.map(d => d.toLowerCase()),
 
       medications: input.medications.map(m => ({
@@ -79,23 +88,6 @@ export class CriteriaEngineService {
     };
   }
 
-  private normalizeCriterion(c: Crit): Crit {
-    const clone = JSON.parse(JSON.stringify(c)) as Crit;
-    this.normalizeLogic(clone.logic);
-    return clone;
-  }
-
-  private normalizeLogic(node: unknown): void {
-    if (typeof node !== 'object' || node === null) return;
-    const obj = node as Record<string, unknown>;
-    for (const key of Object.keys(obj)) {
-      if (key === 'drug_class' || key === 'diagnosis') {
-        obj[key] = String(obj[key]).toLowerCase();
-      }
-      this.normalizeLogic(obj[key]);
-    }
-  }
-
   /** =======================
    *  Evaluar criterios
    *  ======================= */
@@ -106,7 +98,6 @@ export class CriteriaEngineService {
     const normalizedPatient = this.normalizeCase(patient);
 
     return criteria
-      .map(c => this.normalizeCriterion(c))
       .filter(c => this.evaluateCriterion(c, normalizedPatient));
   }
 
@@ -119,8 +110,6 @@ export class CriteriaEngineService {
 
     for (const crit of criteria) {
       if (!crit.excludes) continue;
-
-      const normalizedCrit = this.normalizeCriterion(crit);
 
       const excludedMedNames = [
         ...(crit.excludes.medications ?? []),
@@ -152,7 +141,7 @@ export class CriteriaEngineService {
 
         const testPatient: PatientCase = { ...normalizedPatient, medications: testMedications };
 
-        if (this.evaluateCriterion(normalizedCrit, testPatient)) {
+        if (this.evaluateCriterion(crit, testPatient)) {
           excluded.set(medName.toLowerCase(), crit);
         }
       }

@@ -36,6 +36,20 @@ describe('Criterios STOPP — Sección H (Sistema musculoesquelético)', () => {
     }), [c])).toEqual([]);
   });
 
+  it('START-H2 no dispara con corticoide oral a corto plazo', () => {
+    const c = crit('START-H2-BIFOSFONATO-VITAMINA-D-CORTICOIDE');
+    expect(engine.evaluate(makeCase({
+      medications: [makeMed('Prednisona', ['CORTICOIDE_SISTEMICO'], { durationDays: 5 })],
+    }), [c])).toEqual([]);
+  });
+
+  it('START-H2 dispara con corticoide >90 días sin protección ósea', () => {
+    const c = crit('START-H2-BIFOSFONATO-VITAMINA-D-CORTICOIDE');
+    expect(engine.evaluate(makeCase({
+      medications: [makeMed('Prednisona', ['CORTICOIDE_SISTEMICO'], { durationDays: 91 })],
+    }), [c]).length).toBe(1);
+  });
+
   it('H6 dispara con AINE o colchicina y gota recurrente', () => {
     const c = crit('STOPP-H6-AINE-COLCHICINA-GOTA-CRONICA');
 
