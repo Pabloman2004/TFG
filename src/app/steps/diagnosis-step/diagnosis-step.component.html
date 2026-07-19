@@ -129,9 +129,13 @@
         <!-- Reviewed-tab toggle -->
         <div class="reviewed-bar">
           <label class="reviewed-toggle"
-                 [class.reviewed-toggle--disabled]="isReviewedDisabled(activeTab())"
-                 (click)="toggleReviewed(activeTab())">
-            <span class="cbx reviewed-cbx" [class.checked]="isReviewedChecked(activeTab())"></span>
+                 [class.reviewed-toggle--disabled]="isReviewedDisabled(activeTab())">
+            <input type="checkbox"
+                   class="visually-hidden"
+                   [checked]="isReviewedChecked(activeTab())"
+                   [disabled]="isReviewedDisabled(activeTab())"
+                   (change)="onReviewedChange(activeTab(), $event)">
+            <span class="cbx reviewed-cbx" [class.checked]="isReviewedChecked(activeTab())" aria-hidden="true"></span>
             <span class="reviewed-label">Marcar como revisado</span>
           </label>
         </div>
@@ -158,19 +162,27 @@
                       <div class="dx-family-hd">{{ family.rootLabel }}</div>
                       @if (family.showRoot) {
                         <div class="drug-row dx-radio-row"
+                             role="radio"
+                             tabindex="0"
+                             [attr.aria-checked]="isSelected(family.rootLabel)"
                              [class.dx-disabled]="!isDxEnabled(family.rootLabel)"
                              [attr.data-tooltip]="!isDxEnabled(family.rootLabel) ? dxTooltip(family.rootLabel) : null"
-                             (click)="toggleDiagnosis(family.rootLabel)">
-                          <div class="rbx" [class.checked]="isSelected(family.rootLabel)"></div>
+                             (click)="toggleDiagnosis(family.rootLabel)"
+                             (keydown.enter)="toggleDiagnosis(family.rootLabel)" (keydown.space)="$event.preventDefault(); toggleDiagnosis(family.rootLabel)">
+                          <div class="rbx" [class.checked]="isSelected(family.rootLabel)" aria-hidden="true"></div>
                           <span class="drug-name" [class.sel]="isSelected(family.rootLabel)">{{ family.rootDisplayLabel }}</span>
                         </div>
                       }
                       @for (dx of family.variants; track trackDx($index, dx)) {
                         <div class="drug-row dx-radio-row"
+                             role="radio"
+                             tabindex="0"
+                             [attr.aria-checked]="isSelected(dx)"
                              [class.dx-disabled]="!isDxEnabled(dx)"
                              [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
-                             (click)="toggleDiagnosis(dx)">
-                          <div class="rbx" [class.checked]="isSelected(dx)"></div>
+                             (click)="toggleDiagnosis(dx)"
+                             (keydown.enter)="toggleDiagnosis(dx)" (keydown.space)="$event.preventDefault(); toggleDiagnosis(dx)">
+                          <div class="rbx" [class.checked]="isSelected(dx)" aria-hidden="true"></div>
                           <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
                         </div>
                       }
@@ -178,18 +190,25 @@
                   }
                   @for (dx of plainDiagnosesIn(group); track trackDx($index, dx)) {
                     <div class="drug-row"
+                         role="checkbox"
+                         tabindex="0"
+                         [attr.aria-checked]="isSelected(dx)"
                          [class.dx-disabled]="!isDxEnabled(dx)"
                          [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
-                         (click)="toggleDiagnosis(dx)">
-                      <div class="cbx" [class.checked]="isSelected(dx)"></div>
+                         (click)="toggleDiagnosis(dx)"
+                         (keydown.enter)="toggleDiagnosis(dx)" (keydown.space)="$event.preventDefault(); toggleDiagnosis(dx)">
+                      <div class="cbx" [class.checked]="isSelected(dx)" aria-hidden="true"></div>
                       <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
                     </div>
                   }
                   @for (custom of customDxFor(group); track custom) {
                     <div class="drug-row drug-row-custom"
+                         role="button"
+                         tabindex="0"
+                         title="Diagnóstico personalizado — click para quitar"
                          (click)="removeCustomDx(group, custom)"
-                         title="Diagnóstico personalizado — click para quitar">
-                      <div class="cbx checked"></div>
+                         (keydown.enter)="removeCustomDx(group, custom)" (keydown.space)="$event.preventDefault(); removeCustomDx(group, custom)">
+                      <div class="cbx checked" aria-hidden="true"></div>
                       <span class="drug-name sel">{{ custom }}</span>
                     </div>
                   }
@@ -232,19 +251,27 @@
                           <div class="dx-family-hd">{{ family.rootLabel }}</div>
                           @if (family.showRoot) {
                             <div class="drug-row dx-radio-row"
+                                 role="radio"
+                                 tabindex="0"
+                                 [attr.aria-checked]="isSelected(family.rootLabel)"
                                  [class.dx-disabled]="!isDxEnabled(family.rootLabel)"
                                  [attr.data-tooltip]="!isDxEnabled(family.rootLabel) ? dxTooltip(family.rootLabel) : null"
-                                 (click)="toggleDiagnosis(family.rootLabel)">
-                              <div class="rbx" [class.checked]="isSelected(family.rootLabel)"></div>
+                                 (click)="toggleDiagnosis(family.rootLabel)"
+                                 (keydown.enter)="toggleDiagnosis(family.rootLabel)" (keydown.space)="$event.preventDefault(); toggleDiagnosis(family.rootLabel)">
+                              <div class="rbx" [class.checked]="isSelected(family.rootLabel)" aria-hidden="true"></div>
                               <span class="drug-name" [class.sel]="isSelected(family.rootLabel)">{{ family.rootDisplayLabel }}</span>
                             </div>
                           }
                           @for (dx of family.variants; track trackDx($index, dx)) {
                             <div class="drug-row dx-radio-row"
+                                 role="radio"
+                                 tabindex="0"
+                                 [attr.aria-checked]="isSelected(dx)"
                                  [class.dx-disabled]="!isDxEnabled(dx)"
                                  [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
-                                 (click)="toggleDiagnosis(dx)">
-                              <div class="rbx" [class.checked]="isSelected(dx)"></div>
+                                 (click)="toggleDiagnosis(dx)"
+                                 (keydown.enter)="toggleDiagnosis(dx)" (keydown.space)="$event.preventDefault(); toggleDiagnosis(dx)">
+                              <div class="rbx" [class.checked]="isSelected(dx)" aria-hidden="true"></div>
                               <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
                             </div>
                           }
@@ -252,10 +279,14 @@
                       }
                       @for (dx of plainDiagnosesIn(group); track trackDx($index, dx)) {
                         <div class="drug-row"
+                             role="checkbox"
+                             tabindex="0"
+                             [attr.aria-checked]="isSelected(dx)"
                              [class.dx-disabled]="!isDxEnabled(dx)"
                              [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
-                             (click)="toggleDiagnosis(dx)">
-                          <div class="cbx" [class.checked]="isSelected(dx)"></div>
+                             (click)="toggleDiagnosis(dx)"
+                             (keydown.enter)="toggleDiagnosis(dx)" (keydown.space)="$event.preventDefault(); toggleDiagnosis(dx)">
+                          <div class="cbx" [class.checked]="isSelected(dx)" aria-hidden="true"></div>
                           <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
                         </div>
                       }
@@ -329,7 +360,12 @@
           <div class="result-items">
             @for (group of startGroups(); track group.system) {
               <div class="sys-section">
-                <div class="sys-hdr start-sys-hdr" (click)="toggleSection('start:' + group.system)">
+                <div class="sys-hdr start-sys-hdr"
+                     role="button"
+                     tabindex="0"
+                     [attr.aria-expanded]="!isSectionCollapsed('start:' + group.system)"
+                     (click)="toggleSection('start:' + group.system)"
+                     (keydown.enter)="toggleSection('start:' + group.system)" (keydown.space)="$event.preventDefault(); toggleSection('start:' + group.system)">
                   <span class="sys-name">{{ group.system }} <span class="sys-count">({{ group.items.length }})</span></span>
                   <svg class="sys-chevron" [class.rotated]="isSectionCollapsed('start:' + group.system)"
                        width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -387,7 +423,12 @@
           <div class="result-items">
             @for (group of stoppGroups(); track group.system) {
               <div class="sys-section">
-                <div class="sys-hdr stopp-sys-hdr" (click)="toggleSection('stopp:' + group.system)">
+                <div class="sys-hdr stopp-sys-hdr"
+                     role="button"
+                     tabindex="0"
+                     [attr.aria-expanded]="!isSectionCollapsed('stopp:' + group.system)"
+                     (click)="toggleSection('stopp:' + group.system)"
+                     (keydown.enter)="toggleSection('stopp:' + group.system)" (keydown.space)="$event.preventDefault(); toggleSection('stopp:' + group.system)">
                   <span class="sys-name">{{ group.system }} <span class="sys-count">({{ group.items.length }})</span></span>
                   <svg class="sys-chevron" [class.rotated]="isSectionCollapsed('stopp:' + group.system)"
                        width="14" height="14" viewBox="0 0 24 24" fill="none">

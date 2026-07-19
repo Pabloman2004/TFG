@@ -206,7 +206,36 @@ export class MedsStepComponent implements OnInit {
   setCategory(id: string): void { this.store.activeSystemTab.set(id); }
 
   onTabSelectChange(event: Event): void {
-    this.setCategory((event.target as HTMLSelectElement).value);
+    const target = event.target;
+    if (target instanceof HTMLSelectElement) this.setCategory(target.value);
+  }
+
+  onEgfrInput(event: Event): void {
+    const target = event.target;
+    if (target instanceof HTMLInputElement) this.updateEgfr(target.value);
+  }
+
+  onClinicalFieldInput(
+    medId: string,
+    field: 'doseMcgDay' | 'doseMgDay' | 'durationDays',
+    event: Event,
+  ): void {
+    const target = event.target;
+    if (target instanceof HTMLInputElement) {
+      this.updateMedicationNumber(medId, field, target.value);
+    }
+  }
+
+  onReviewedChange(tabId: string, event: Event): void {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement)) return;
+    if (this.isReviewedDisabled(tabId)) {
+      input.checked = this.isReviewedChecked(tabId);
+      return;
+    }
+    if (input.checked !== this.isReviewedChecked(tabId)) {
+      this.toggleReviewed(tabId);
+    }
   }
 
   tabSelectLabel(tabId: string, label: string): string {

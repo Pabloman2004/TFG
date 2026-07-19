@@ -308,6 +308,42 @@ describe('DiagnosisStepComponent — badges de cabecera de criterios activados',
   });
 });
 
+describe('DiagnosisStepComponent — accesibilidad de filas', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const store = TestBed.inject(CaseStoreService);
+    store.meds.set([med('Furosemida', ['DIURETICO_ASA'])]);
+    store.diagnoses.set([]);
+    store.activeSystemTab.set('cardiovascular');
+  });
+
+  it('las filas de diagnóstico son alcanzables por teclado y togglean con Espacio', () => {
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    fixture.detectChanges();
+    const host: HTMLElement = fixture.nativeElement;
+    const row = host.querySelector(
+      '.drug-row[role="checkbox"]:not(.dx-disabled), .drug-row[role="radio"]:not(.dx-disabled)',
+    ) as HTMLElement | null;
+    expect(row).toBeTruthy();
+    expect(row!.getAttribute('tabindex')).toBe('0');
+
+    const before = row!.getAttribute('aria-checked');
+    row!.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    fixture.detectChanges();
+    expect(row!.getAttribute('aria-checked')).not.toBe(before);
+  });
+});
+
 describe('DiagnosisStepComponent — copyCriteria / exportPdf errores', () => {
   let snackBar: jasmine.SpyObj<MatSnackBar>;
   let report: { exportCase: jasmine.Spy };

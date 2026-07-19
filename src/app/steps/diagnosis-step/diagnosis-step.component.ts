@@ -166,8 +166,21 @@ export class DiagnosisStepComponent implements OnInit {
 
   setTab(id: string): void { this.store.activeSystemTab.set(id); }
 
+  onReviewedChange(tab: DiagnosisTab, event: Event): void {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement)) return;
+    if (this.isReviewedDisabled(tab)) {
+      input.checked = this.isReviewedChecked(tab);
+      return;
+    }
+    if (input.checked !== this.isReviewedChecked(tab)) {
+      this.toggleReviewed(tab);
+    }
+  }
+
   onTabSelectChange(event: Event): void {
-    this.setTab((event.target as HTMLSelectElement).value);
+    const target = event.target;
+    if (target instanceof HTMLSelectElement) this.setTab(target.value);
   }
 
   tabSelectLabel(tab: DiagnosisTab): string {

@@ -264,6 +264,43 @@ describe('MedsStepComponent — campos numéricos en el tab donde está el medic
   });
 });
 
+describe('MedsStepComponent — accesibilidad de filas', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [MedsStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+  });
+
+  it('las filas de fármaco son alcanzables por teclado y togglean con Enter', () => {
+    const fixture = TestBed.createComponent(MedsStepComponent);
+    fixture.detectChanges();
+    const host: HTMLElement = fixture.nativeElement;
+    const row = host.querySelector('.drug-row[role="checkbox"]') as HTMLElement | null;
+    expect(row).toBeTruthy();
+    expect(row!.getAttribute('tabindex')).toBe('0');
+
+    const name = row!.querySelector('.drug-name')?.textContent?.trim() ?? '';
+    expect(name.length).toBeGreaterThan(0);
+    expect(fixture.componentInstance.isSelected(name)).toBe(false);
+
+    row!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.isSelected(name)).toBe(true);
+
+    row!.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.isSelected(name)).toBe(false);
+  });
+});
+
 describe('MedsStepComponent — copyCriteria / exportPdf errores', () => {
   let snackBar: jasmine.SpyObj<MatSnackBar>;
   let report: { exportCase: jasmine.Spy };
