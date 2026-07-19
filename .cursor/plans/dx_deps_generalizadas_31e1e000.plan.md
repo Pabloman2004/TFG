@@ -25,6 +25,12 @@ isProject: false
 
 # Plan: sombreado de diagnósticos generalizado (derivado de criteria.json)
 
+> **Plan ya ejecutado** (commits `888b3a3` / `f749968`). Los enlaces a
+> `cardiovascular-dx-dependencies.ts` y a `group-visibility.ts` bajo
+> `src/app/core/data/` están rotos a propósito: el mapa manual se sustituyó
+> por `dx-dependencies.ts` + `dx-dependencies-overrides.ts`, y
+> `group-visibility.ts` vive en `src/app/core/`. No actualizar; es histórico.
+
 ## Hallazgos de la investigación (Fase 1)
 
 ### 1. ¿Estático o dinámico?

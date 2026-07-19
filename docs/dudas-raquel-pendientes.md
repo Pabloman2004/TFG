@@ -2,7 +2,7 @@
 
 > Decisiones clínicas acumuladas que requieren validación de la tutora del TFG. No bloquean desarrollo (las tareas técnicas avanzan en paralelo) pero deben resolverse antes de cerrar el TFG.
 >
-> Última actualización: 2026-05-22 (tras auditoría PROMPT 2 cierre).
+> Última actualización: 2026-06-14 (tras generalización dx-dependencies).
 
 ---
 
@@ -139,6 +139,38 @@ Resultado: el criterio dispara incorrectamente en cualquier paciente con úlcera
 - Opción C: revisar el wording de la guía v3 y aplicar literalmente lo que diga.
 
 **Estado**: NO bloqueante para la entrega actual, pero conviene resolverlo en próxima iteración. Detectado durante la auditoría taxonómica de cierre del PROMPT 2 (consolidación CORTICOIDE → CORTICOIDE_SISTEMICO).
+
+---
+
+## 9. Diagnósticos-ancla para gating (dx-dependencies)
+
+Tras generalizar el sombreado dinámico de diagnósticos, ~69 labels quedaban gateados sin medicación. Se propuso una lista **candidata** de comorbilidades/antecedentes que el médico debe poder marcar siempre (`src/app/core/data/dx-anchor-labels-candidate.ts`).
+
+**62 entradas candidatas**, de las cuales **41 aplicadas** en demo (sin `doubtful: true`). Ejemplos aplicados: Fragilidad, Ictus previo, Demencia, EPOC, Estreñimiento crónico, HTA (raíz), Insuficiencia cardíaca (genérica), enfermedad vascular, etc.
+
+**Marcadas como dudosas** (no aplicadas aún): Demencia por cuerpos de Lewy, Delirio, Insomnio, Gota activa, Dolor leve/moderado/grave, alteraciones analíticas agudas (hiponatremia, hiperpotasemia…), EPOC grave, Incontinencia urinaria, etc.
+
+**Pregunta para Raquel**: ¿Qué entradas de la lista candidata confirma como ancla permanente? ¿Cuáles deben seguir gateadas por medicación? ¿Alguna dudosa pasa a aplicada o viceversa?
+
+**Estado**: NO bloqueante para demo. La constante está marcada `PENDIENTE confirmación clínica (Raquel) — no es criterio derivable`. Documentación: `docs/catalogo-clinico.md`.
+
+---
+
+## 10. Overrides piloto CV vs derivación pura (dx-dependencies)
+
+La derivación automática desde `criteria.json` no reproduce exactamente el mapa manual de 12 labels cardiovascular. Los overrides en `dx-dependencies-overrides.ts` conservan el comportamiento del piloto. Desacuerdos donde **la derivación pura es más amplia** que el override (UI más restrictiva de lo que sugiere criteria.json):
+
+| Label | Clases en derivación pura ausentes del override |
+|-------|--------------------------------------------------|
+| Bradicardia | `INHIBIDOR_ACETILCOLINESTERASA` (STOPP-D17) |
+| Bloqueo AV 2.º / completo | `BETABLOQUEANTE`, `INHIBIDOR_ACETILCOLINESTERASA` |
+| HTA grave | `AINE`, `ANTIAGREGANTE`, `ANTICOAGULANTE`, `ISRN`, `AGONISTA_BETA3` |
+
+**Dirección inversa** (override más amplio que pure): IC FE conservada / NYHA (más clases curadas); Intervalo QTc (6 clases vs solo `PROLONGADOR_QTC` en pure).
+
+**Pregunta para Raquel**: ¿Mantener overrides como fuente de verdad del piloto hasta revisión, o ampliar overrides / criterios para alinear con derivación pura?
+
+**Estado**: NO bloqueante. Overrides no modificados en la implementación; solo documentados para revisión.
 
 ---
 

@@ -1,6 +1,6 @@
 # MEMORY — TFG STOPP/START Angular App
 
-> Documento de estado del proyecto. Última actualización: 2026-06-14 (tras dx-dependencies).
+> Documento de estado del proyecto. Última actualización: 2026-07-19 (cierre hallazgos sección C: docs↔código).
 
 ---
 
@@ -16,14 +16,14 @@ Sustituido el mapa manual `cardiovascular-dx-dependencies.ts` por derivación de
 - **`hasEffectiveDxTriggers()`** — labels sin triggers no se bloquean (p. ej. IC con FE reducida).
 - **`CriteriaEngineService.dxDependencies`** — signal calculado en `loadCriteria()`.
 - **Tests**: `dx-dependencies.spec.ts`, `diagnosis-family.spec.ts`; suite **532** tests en verde.
-- **Rama**: `dx-dependencies` (2 commits). Docs: `docs/catalogo-clinico.md`, `docs/motor-criterios.md`, `docs/flujo-pasos.md`, `docs/uml-diagrams.md`, `dudas-raquel-pendientes.md` §9–10.
+- **Rama**: `dx-dependencies` (2 commits). Docs: `docs/catalogo-clinico.md`, `docs/motor-criterios.md`, `docs/flujo-pasos.md`, `docs/uml-diagrams.md`, `docs/dudas-raquel-pendientes.md` §9–10.
 
 ### Prompts completados
 
 - **PROMPT 2 — Reestructuración por relevancia automática** ✅
   Pantallas de medicaciones y diagnósticos refactorizadas a layout de 2 buckets (propio + relevante de otros sistemas), con la relevancia derivada automáticamente de `criteria.json`.
 - **PROMPT 3 — Corrección de bugs en STOPP cardiovascular** ✅
-  Auditoría de los 49 sub-criterios STOPP-B contra la guía oficial STOPP/START v3 (fuente: `STOPP_START_CRITERIOS_CONTEXTO.md`). Eliminados 9 criterios inventados/redundantes. 404/404 tests en verde.
+  Auditoría de los 49 sub-criterios STOPP-B contra la guía oficial STOPP/START v3 (fuente: `docs/STOPP_START_CRITERIOS_CONTEXTO.md`). Eliminados 9 criterios inventados/redundantes. 404/404 tests en verde.
 - **PROMPT 4 — Medicamentos faltantes en STOPP cardiovascular** ✅
   Hallazgo clave: el grueso del trabajo planificado ya estaba cubierto en el modelo de datos (Diltiazem en `CALCIOANTAGONISTA_NO_DHP`, todos los meds B15 con clase `PROLONGADOR_QTC`). Trabajo real: 1 sub-criterio nuevo + consolidación de B15 + bug menor en Proclorperazina. 402/402 tests en verde.
 - **PROMPT 5 — Diagnósticos del sistema cardiovascular** ✅
@@ -32,12 +32,12 @@ Sustituido el mapa manual `cardiovascular-dx-dependencies.ts` por derivación de
   Cambios reales aplicados:
   1. **START-B1**: umbral PAS bajado de >150 a >140 + añadido `labs.pad_mmhg > 90`. Nuevo campo `pad_mmhg` en `types.ts:55` y en factory `makeLabs()` de `criteria-test-helpers.ts`.
   2. **START-B6**: ya usaba clase `BETABLOQUEANTE_CARDIOSELECTIVO`. Solo cosmético: enriquecido el `fullName` del grupo "Betabloqueantes" en `medications-taxonomy.ts:30` con listado oficial cardioselectivos (bisoprolol, nebivolol, metoprolol, carvedilol) para tooltip.
-  3. **START-B7**: sin cambios (ya modelaba "sin deterioro grave de función renal" vía `labs.egfr_ml_min_173 > 30`, lógica permisiva intencionada). Apuntada duda menor en `dudas-raquel-pendientes.md`.
+  3. **START-B7**: sin cambios (ya modelaba "sin deterioro grave de función renal" vía `labs.egfr_ml_min_173 > 30`, lógica permisiva intencionada). Apuntada duda menor en `docs/dudas-raquel-pendientes.md`.
   4. **Antagonistas aldosterona**: ya estaba como opción genérica vía clase `ANTAGONISTA_ALDOSTERONA`. Sin cambios.
   5. **START-B8**: ya usaba clase `ISGLT2` con 4 meds (Canagliflozina, Dapagliflozina, Empagliflozina, Ertugliflozina). Solo cosmético: añadida ertugliflozina al `summary`.
   6. **Rename**: "FA con mal control de frecuencia cardíaca" → "Fibrilación auricular crónica con mal control de frecuencia cardíaca" (3 líneas en `diagnoses.ts`: DIAGNOSIS_GROUPS L179, DIAGNOSIS_MAP L404, DIAGNOSIS_SUBGROUPS L461). Código interno `fa_mal_control_frecuencia` intacto.
   7. **Déficit de hierro**: falso positivo del tutor. Ya existía en sistema Hematológico (`diagnoses.ts:180,405`) y B11 lo referenciaba correctamente. Tras la relevancia automática del PROMPT 2 aparece en bucket B del tab Cardiovascular cuando hay IC con FE reducida.
-  8. **Unificación variantes IC**: ampliada duda #6 en `dudas-raquel-pendientes.md`, no aplicada.
+  8. **Unificación variantes IC**: ampliada duda #6 en `docs/dudas-raquel-pendientes.md`, no aplicada.
 
   Tests: 408/408 en verde (sin nuevos, no se requería TDD: cambios cosméticos + rename + extensión de OR en B1 que no rompe nada).
 
@@ -73,7 +73,7 @@ Sustituido el mapa manual `cardiovascular-dx-dependencies.ts` por derivación de
 
 ## Bugs arreglados (PROMPT 3)
 
-Auditoría contra `STOPP_START_CRITERIOS_CONTEXTO.md`. **9 eliminaciones** en `src/assets/data/criteria.json`:
+Auditoría contra `docs/STOPP_START_CRITERIOS_CONTEXTO.md`. **9 eliminaciones** en `src/assets/data/criteria.json`:
 
 **LOTE 1 — Inventados (5)**:
 - `STOPP-B2-DRONEDARONA-IC-NYHA`
@@ -129,7 +129,7 @@ Añadido inmediatamente después de `STOPP-B19-AINE-INSUFICIENCIA-CARDIACA` en `
 - Mejora menor: feedback de diagnósticos bloqueados accesible en táctil/móvil (sin hover).
 
 ### PROMPT 6 — START cardiovascular
-(Pendiente de detallar al iniciar.)
+Completado (ver «Prompts completados» arriba). No queda trabajo pendiente de este prompt.
 
 ### B16 (pendiente menor)
 Modelar "esperanza de vida <3 años" si Raquel rechaza la opción de usar `fragilidad` como proxy.
@@ -207,19 +207,19 @@ Los criterios START disparan según la variante de IC marcada:
 - `Insuficiencia cardíaca con función sistólica conservada` → no activa los específicos de FE reducida (correcto: la evidencia clínica difiere).
 - `Insuficiencia cardíaca grave` / `NYHA III-IV` → activan STOPP-B14, B2, B7-neg, B8-neg, B19 según corresponda.
 
-Esto es **por diseño**. Ver [duda #6 en dudas-raquel-pendientes.md](dudas-raquel-pendientes.md): el tutor propone unificar las 5 variantes en una sola con subopciones combinables (Estable/Sintomática/FE preservada/FE reducida). Si Raquel lo aprueba sería un refactor estructural que afectaría a ~12 criterios. Hasta entonces, **mantener el comportamiento actual**, no es bug.
+Esto es **por diseño**. Ver [duda #6 en docs/dudas-raquel-pendientes.md](docs/dudas-raquel-pendientes.md): el tutor propone unificar las 5 variantes en una sola con subopciones combinables (Estable/Sintomática/FE preservada/FE reducida). Si Raquel lo aprueba sería un refactor estructural que afectaría a ~12 criterios. Hasta entonces, **mantener el comportamiento actual**, no es bug.
 
 ---
 
 ## Bugs detectados (PROMPT 6 verificación) — pendientes
 
-### BUG bloqueante: sección de datos del paciente NO existe en UI
-El modelo de datos soporta `PatientInfo` (edad, sexo, peso…) y `Labs` (PAS, PAD, TFGe, K, Na, Ca, QTc, FC, glucosa, INR…), pero **no hay componente UI** que los edite:
-- Rutas (`app.routes.ts`): solo `medicaciones` y `diagnosticos`.
+### BUG bloqueante: no hay step de datos del paciente (edad/sexo/constantes)
+El modelo de datos soporta `PatientInfo` (edad, sexo, peso…) y `Labs` (PAS, PAD, TFGe, K, Na, Ca, QTc, FC, glucosa, INR…), pero **no hay un step dedicado** que edite demografía ni el resto de constantes:
+- Rutas (`app.routes.ts`): solo `medicaciones` y `diagnosticos` (la feature historial se eliminó en `63d175f`).
 - No existe `patient-info-step/` ni `lab-values-step/`.
-- Única vía actual de poblar `patient` y `labs`: import de caso JSON vía `case-io.service.ts`.
+- **Parcialmente mitigado**: el tab Renal captura TFGe y `clinical-capture.ts` expone dosis/duración de fármacos relevantes en el tab donde el med es visible; el resto de `patient`/`labs` sigue dependiendo del import JSON (`case-io.service.ts`).
 
-**Impacto**: criterios que dependen de edad o labs no se pueden activar manualmente desde la UI. Afectados: STOPP-B7/B8/B9/B14/B15/B16, START-B1/B7, y casi todos los criterios con prerrequisito edad ≥65.
+**Impacto**: criterios que dependen de edad, sexo u otros labs (PAS/PAD, K, QTc…) no se pueden activar manualmente desde la UI. Afectados: STOPP-B7/B8/B9/B14/B15/B16, START-B1/B7/I3/I4, y casi todos los criterios con prerrequisito edad ≥65.
 
 **Pendiente**: planificar PROMPT 7 con nuevo step `patient-info-step/` (datos demográficos + bloque colapsable de labs) añadido como **primer paso** en la navegación. Esfuerzo estimado: ~1 día.
 
@@ -242,7 +242,7 @@ Definidos en `meds-step.component.css:760-782` y `diagnosis-step.component.css:8
 - **No renumerar IDs internos** de criterios tras eliminaciones. Los IDs (`STOPP-B2-DRONEDARONA-IC-NYHA`, etc.) son estables y rompen trazabilidad con tests/specs si se cambian. Renombrar etiquetas visibles al usuario es otra cuestión (vía `critCode()` en `criteria-groups.ts`).
 - **No añadir clases huérfanas** a `medications-taxonomy.ts` sin que haya un criterio en `criteria.json` que las use (o se vaya a añadir en el mismo PR).
 - **No eliminar clases legítimas sin uso** sin validar con Raquel (ej. `ANTIANGINOSO`).
-- **Una sola fuente de verdad para STOPP/START**: `STOPP_START_CRITERIOS_CONTEXTO.md`. No usar conocimiento externo del modelo ni buscar online sin pedir permiso.
+- **Una sola fuente de verdad para STOPP/START**: `docs/STOPP_START_CRITERIOS_CONTEXTO.md`. No usar conocimiento externo del modelo ni buscar online sin pedir permiso.
 - **No tocar nada sin aprobación**: en sesiones de auditoría/refactor, mostrar análisis y propuesta antes de aplicar.
 - **TDD obligatorio**: cualquier código de producción nuevo va precedido de test que falla.
 - **Tests en verde tras cada cambio**: lanzar `npx ng test --watch=false --browsers=ChromeHeadless` antes de cerrar tarea.

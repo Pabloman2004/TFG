@@ -171,3 +171,26 @@ El commit `2eb03bf` dice «Cierra los 5 puntos de la ronda `docs/proceso/informe
   ronda nueva; su "BUG bloqueante" sigue citando evidencia parcialmente
   obsoleta, ahora un punto más (los campos de dosis/duración ya no viven solo
   en Renal tras `clinical-capture.ts`).
+
+---
+
+## Adenda (2026-07-19) — correcciones aplicadas (Fase 4 del consolidado)
+
+Tras la eliminación del historial (`63d175f`) y la unificación del shell
+(`f2e0311`), se aplicaron las correcciones documentales pendientes:
+
+| Id | Acción |
+|----|--------|
+| C1 | T7 en `TASKS.md` actualizada: stubs borrados; `app.config.ts` vive como providers |
+| C2 | `docs/dudas-raquel-pendientes.md` recibe §9–§10; borrada la copia raíz |
+| C3+C12 | Borrados duplicados raíz: `REVIEW.md`, `RALPH.md`, `VERIFICATION.md`, `STOPP_START_CRITERIOS_CONTEXTO.md` |
+| C4–C6 | Cerrados por B1 (sin `docs/historial.md` ni ruta `/historial`); `navegacion-y-shell.md`/`_map.md` ya coherentes |
+| C7 | `MEMORY.md` actualizado (cabecera, BUG paciente, PROMPT 6, rutas canónicas `docs/`) |
+| C8 | T12 marcada `[x]` (fix previo + feature eliminada) |
+| C9 | Cabecera «Snapshot histórico» en `analysis/*.md` |
+| C10 | `AGENTS.md`: suite ~807 specs |
+| C11 | Nota de plan ejecutado en `.cursor/plans/dx_deps_generalizadas_*.plan.md` |
+| C13 | Sigue pendiente: conviene **commitear** informes/manifiestos de ronda |
+
+`check-links.sh` sigue reportando 20 `DOC_HUERFANO`/`FUERA_DE_MAPA` previos
+(docs de revisión fuera de whitelist) — fuera del alcance C; ver Sección D.

@@ -1,5 +1,5 @@
 
-# TASKS — Ralph loop sobre REVIEW.md
+# TASKS — Ralph loop sobre docs/proceso/REVIEW.md
 
 Reglas para el agente:
 - Coge SIEMPRE la primera tarea [ ] de arriba a abajo (están ordenadas por prioridad).
@@ -33,8 +33,8 @@ Reglas para el agente:
 [x] T6 — Arreglar `scripts/verify-pdf-e2e.js`: (a) re-guardar como UTF-8 sin bytes nulos; (b) revisar la API de pdf-parse contra la versión instalada en package.json y corregir el uso si `new PDFParse({data}).getText()` no es la API real.
     VERIFICAR: `file scripts/verify-pdf-e2e.js` no lo detecta como binario (sin bytes nulos) y el script se ejecuta end-to-end sin lanzar TypeError.
 +
-[x] T7 — Eliminar el componente raíz duplicado: borrar `src/app/app.ts`, `app.html`, `app.css`, `app.config.ts` y `app.spec.ts` (stub del CLI). `main.ts` ya arranca AppComponent. Actualizar la sección "excluidos" de docs/_map.md para retirar los ficheros borrados.
-    VERIFICAR: `npm run build` en verde, npm test en verde, grep confirma que nada importa los ficheros borrados, check-links.sh exit 0.
+[x] T7 — Eliminar el componente raíz duplicado (stub del CLI): borrados `src/app/app.ts`, `app.html`, `app.css` y `app.spec.ts`. `app.config.ts` se conserva como fuente única de providers (`main.ts` → `AppComponent` + `appConfig`). Hecho en `f2e0311` (B5/B6).
+    VERIFICAR: `npm run build` en verde, npm test en verde, grep confirma que nada importa los stubs borrados, check-links.sh exit 0.
 
 ## Medios
 
@@ -50,8 +50,9 @@ Reglas para el agente:
 [x] T11 — Sustituir el cache-bust `?v=Date.now()` de loadCriteria() por una constante de versión (p.ej. importada de un fichero version.ts o de environment), de modo que criteria.json sea cacheable entre recargas dentro de una misma build.
     VERIFICAR: test/grep que confirma que la URL de fetch no contiene Date.now() y sí la constante.
 
-[ ] T12 — `formatDate` del historial: ante fecha no parseable devolver un fallback ('—') en lugar de "Invalid Date".
-    VERIFICAR: test con savedAt corrupto → renderiza fallback.
+[x] T12 — `formatDate` del historial: ante fecha no parseable devolver un fallback legible en lugar de "Invalid Date".
+    Hecho en `bbc405a` (fallback `'Fecha desconocida'`); la feature historial se eliminó después en `63d175f` (B1), así que el código ya no está en el árbol.
+    VERIFICAR: (histórico) test con savedAt corrupto → renderiza fallback.
 
 ## Bajos (limpieza)
 

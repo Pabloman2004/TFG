@@ -1,3 +1,5 @@
+> **Snapshot histórico** (análisis de código ~2026-06-12). No es fuente de verdad del comportamiento actual; ver los docs Linked Chunks en `docs/` y `docs/_map.md`. Conservado como antecedente de `docs/proceso/REVIEW.md`.
+
 # Análisis: core-services
 
 ## Propósito
