@@ -18,6 +18,78 @@ const makeExportJson = (patientCase: PatientCase = makePatientCase()): string =>
 const makeFile = (content: string): File =>
   new File([content], 'caso.json', { type: 'application/json' });
 
+describe('CaseIoService — exportCase()', () => {
+  let service: CaseIoService;
+  let store: jasmine.SpyObj<CaseStoreService>;
+
+  beforeEach(() => {
+    store = jasmine.createSpyObj('CaseStoreService', ['loadCase'], {
+      patient: jasmine.createSpy('patient').and.returnValue({ name: 'María Gómez', age: 70, sex: 'F' }),
+    });
+    (store as unknown as { patientCase: PatientCase }).patientCase = makePatientCase({
+      diagnoses: ['hta'],
+      medications: [{ id: 'Ibuprofeno', drugClasses: ['AINE'] }],
+    });
+
+    TestBed.configureTestingModule({
+      providers: [
+        CaseIoService,
+        { provide: CaseStoreService, useValue: store },
+      ],
+    });
+    service = TestBed.inject(CaseIoService);
+  });
+
+  it('nombra el fichero con el paciente y la fecha, y dispara la descarga', () => {
+    const createObjectURL = spyOn(URL, 'createObjectURL').and.returnValue('blob:test');
+    spyOn(URL, 'revokeObjectURL');
+    const click = jasmine.createSpy('click');
+    const anchor = { href: '', download: '', click } as unknown as HTMLAnchorElement;
+    spyOn(document, 'createElement').and.returnValue(anchor);
+
+    service.exportCase();
+
+    expect(createObjectURL).toHaveBeenCalled();
+    const blob = createObjectURL.calls.mostRecent().args[0] as Blob;
+    expect(blob.type).toBe('application/json');
+    expect(click).toHaveBeenCalled();
+    expect(anchor.download).toMatch(/^stopp-start_maría_gómez_\d{4}-\d{2}-\d{2}\.json$/);
+  });
+
+  it('revoca la object URL de forma diferida tras el click', async () => {
+    spyOn(URL, 'createObjectURL').and.returnValue('blob:deferred');
+    const revokeObjectURL = spyOn(URL, 'revokeObjectURL');
+    spyOn(document, 'createElement').and.returnValue({
+      href: '', download: '', click: jasmine.createSpy('click'),
+    } as unknown as HTMLAnchorElement);
+
+    service.exportCase();
+    expect(revokeObjectURL).not.toHaveBeenCalled();
+
+    await new Promise<void>(resolve => setTimeout(resolve, 0));
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:deferred');
+  });
+
+  it('el blob contiene el patientCase exportado en versión 1.0', async () => {
+    let captured: Blob | null = null;
+    spyOn(URL, 'createObjectURL').and.callFake((blob: Blob) => {
+      captured = blob;
+      return 'blob:content';
+    });
+    spyOn(URL, 'revokeObjectURL');
+    spyOn(document, 'createElement').and.returnValue({
+      href: '', download: '', click: jasmine.createSpy('click'),
+    } as unknown as HTMLAnchorElement);
+
+    service.exportCase();
+    expect(captured).toBeTruthy();
+    const parsed = JSON.parse(await captured!.text()) as { version: string; patientCase: PatientCase };
+    expect(parsed.version).toBe('1.0');
+    expect(parsed.patientCase.diagnoses).toEqual(['hta']);
+    expect(parsed.patientCase.medications[0]?.id).toBe('Ibuprofeno');
+  });
+});
+
 describe('CaseIoService — importFile()', () => {
   let service: CaseIoService;
   let store: jasmine.SpyObj<CaseStoreService>;

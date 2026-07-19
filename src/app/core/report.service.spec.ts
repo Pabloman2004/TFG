@@ -1,131 +1,92 @@
 import { TestBed } from '@angular/core/testing';
+import pdfMake from 'pdfmake/build/pdfmake';
+
 import { ReportService } from './report.service';
 import { Crit } from './types';
-
-// Access private methods via type cast
-type AnyReport = Record<string, (...args: unknown[]) => unknown>;
 
 const makeCrit = (id: string, type: 'STOPP' | 'START', system: string, summary: string): Crit =>
   ({ id, type, system, summary });
 
-describe('ReportService — buildHeader', () => {
+describe('ReportService — exportCase()', () => {
   let service: ReportService;
+  let download: jasmine.Spy;
+  let createPdf: jasmine.Spy;
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [ReportService] });
     service = TestBed.inject(ReportService);
+    download = jasmine.createSpy('download');
+    createPdf = spyOn(pdfMake, 'createPdf').and.returnValue({ download } as never);
+    spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 404 }));
   });
 
-  it('sin logo devuelve un objeto con stack (sin columns)', () => {
-    const result = (service as unknown as AnyReport)['buildHeader'](null) as Record<string, unknown>;
-    expect(result['stack']).toBeDefined();
-    expect(result['columns']).toBeUndefined();
+  it('genera el docDefinition completo y descarga el PDF', async () => {
+    const stopp = makeCrit('A1', 'STOPP', 'Cardiovascular', 'Descripción STOPP');
+    const start = makeCrit('B1', 'START', 'Cardiovascular', 'Descripción START');
+
+    await service.exportCase({
+      patient: { name: 'Ana Pérez', age: 80, sex: 'F' },
+      diagnoses: ['hta'],
+      meds: [{ id: 'Ibuprofeno', drugClasses: ['AINE'] }],
+      results: [stopp, start],
+      fileName: 'informe-test.pdf',
+    });
+
+    expect(createPdf).toHaveBeenCalledTimes(1);
+    const docDefinition = createPdf.calls.mostRecent().args[0] as Record<string, unknown>;
+
+    expect(docDefinition['defaultStyle']).toEqual(
+      jasmine.objectContaining({ fontFeatures: { liga: false } }),
+    );
+    expect(docDefinition['styles']).toEqual(
+      jasmine.objectContaining({
+        reportTitle: jasmine.objectContaining({ fontSize: 20 }),
+        sectionTitle: jasmine.anything(),
+      }),
+    );
+    expect(typeof docDefinition['footer']).toBe('function');
+
+    const content = docDefinition['content'] as unknown[];
+    expect(content.length).toBeGreaterThan(5);
+    const title = content.find(
+      (node): node is { text: string } =>
+        typeof node === 'object' && node !== null && 'text' in node
+        && (node as { text: unknown }).text === 'Informe STOPP/START',
+    );
+    expect(title).toBeTruthy();
+
+    const serialized = JSON.stringify(docDefinition);
+    expect(serialized).toContain('STOPP');
+    expect(serialized).toContain('START');
+    expect(serialized).toContain('Descripción STOPP');
+    expect(serialized).toContain('Descripción START');
+    expect(serialized).toContain('A1');
+    expect(serialized).toContain('B1');
+
+    expect(download).toHaveBeenCalledWith('informe-test.pdf');
   });
 
-  it('con logo devuelve un objeto con columns (image + stack)', () => {
-    const result = (service as unknown as AnyReport)['buildHeader']('data:image/png;base64,ABC') as Record<string, unknown>;
-    expect(result['columns']).toBeDefined();
-    const cols = result['columns'] as unknown[];
-    expect(cols.length).toBe(2);
-    expect((cols[0] as Record<string, unknown>)['image']).toBe('data:image/png;base64,ABC');
-  });
-});
+  it('usa nombre de fichero por defecto derivado del paciente', async () => {
+    await service.exportCase({
+      patient: { name: 'Juan López', age: null, sex: null },
+      diagnoses: [],
+      meds: [],
+      results: [],
+    });
 
-describe('ReportService — buildTwoColumnSection', () => {
-  let service: ReportService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [ReportService] });
-    service = TestBed.inject(ReportService);
+    expect(download).toHaveBeenCalledWith('stopp-start_juan_lópez.pdf');
   });
 
-  it('con diagnósticos y medicaciones devuelve listas ul', () => {
-    const result = (service as unknown as AnyReport)['buildTwoColumnSection'](
-      ['Hipertensión arterial'], ['Ibuprofeno']
-    ) as Record<string, unknown>;
+  it('sin criterios incluye filas vacías de STOPP y START', async () => {
+    await service.exportCase({
+      patient: null,
+      diagnoses: [],
+      meds: [],
+      results: [],
+    });
 
-    const cols = result['columns'] as Array<Record<string, unknown>>;
-    expect(cols.length).toBe(2);
-
-    const diagStack = cols[0]['stack'] as Array<Record<string, unknown>>;
-    const medStack  = cols[1]['stack'] as Array<Record<string, unknown>>;
-
-    expect(diagStack[1]['ul']).toEqual(['Hipertensión arterial']);
-    expect(medStack[1]['ul']).toEqual(['Ibuprofeno']);
-  });
-
-  it('con listas vacías devuelve texto "Sin datos"', () => {
-    const result = (service as unknown as AnyReport)['buildTwoColumnSection']([], []) as Record<string, unknown>;
-    const cols = result['columns'] as Array<Record<string, unknown>>;
-    const diagContent = (cols[0]['stack'] as Array<Record<string, unknown>>)[1];
-    const medContent  = (cols[1]['stack'] as Array<Record<string, unknown>>)[1];
-
-    expect((diagContent['text'] as string)).toContain('Sin datos');
-    expect((medContent['text'] as string)).toContain('Sin datos');
-  });
-});
-
-describe('ReportService — buildCriteriaContent', () => {
-  let service: ReportService;
-
-  const stoppCrit = makeCrit('A1', 'STOPP', 'Cardiovascular', 'Descripción STOPP');
-  const startCrit = makeCrit('B1', 'START', 'Cardiovascular', 'Descripción START');
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [ReportService] });
-    service = TestBed.inject(ReportService);
-  });
-
-  it('devuelve un array de 3 elementos (bloque STOPP, separador, bloque START)', () => {
-    const result = (service as unknown as AnyReport)['buildCriteriaContent'](
-      [stoppCrit], [startCrit]
-    ) as unknown[];
-    expect(result.length).toBe(3);
-  });
-
-  it('el header del bloque STOPP incluye el recuento correcto', () => {
-    const result = (service as unknown as AnyReport)['buildCriteriaContent'](
-      [stoppCrit, stoppCrit], []
-    ) as Array<Record<string, unknown>>;
-
-    const stoppBlock = result[0] as Record<string, unknown>;
-    const table = stoppBlock['table'] as Record<string, unknown>;
-    const body = table['body'] as Array<Array<Record<string, unknown>>>;
-    const headerText: string = body[0][0]['text'] as string;
-
-    expect(headerText).toContain('STOPP');
-    expect(headerText).toContain('2');
-  });
-
-  it('sin criterios START muestra fila "Ningún criterio"', () => {
-    const result = (service as unknown as AnyReport)['buildCriteriaContent'](
-      [], []
-    ) as Array<Record<string, unknown>>;
-
-    const startBlock = result[2] as Record<string, unknown>;
-    const table = startBlock['table'] as Record<string, unknown>;
-    const body = table['body'] as Array<Array<Record<string, unknown>>>;
-    const dataRow = body[2];
-    expect((dataRow[0]['text'] as string)).toContain('Ningún criterio');
-  });
-
-  it('con un caso clínico real: datos de criterios aparecen en las filas', () => {
-    const result = (service as unknown as AnyReport)['buildCriteriaContent'](
-      [stoppCrit], [startCrit]
-    ) as Array<Record<string, unknown>>;
-
-    const stoppBlock = result[0] as Record<string, unknown>;
-    const stoppTable = stoppBlock['table'] as Record<string, unknown>;
-    const stoppBody = stoppTable['body'] as Array<Array<Record<string, unknown>>>;
-    const stoppDataRow = stoppBody[2]; // [0]=subheader, [1]=colHeaders, [2]=data
-    expect(stoppDataRow[0]['text']).toBe('A1');
-    expect(stoppDataRow[2]['text']).toBe('Descripción STOPP');
-
-    const startBlock = result[2] as Record<string, unknown>;
-    const startTable = startBlock['table'] as Record<string, unknown>;
-    const startBody = startTable['body'] as Array<Array<Record<string, unknown>>>;
-    const startDataRow = startBody[2];
-    expect(startDataRow[0]['text']).toBe('B1');
-    expect(startDataRow[2]['text']).toBe('Descripción START');
+    const docDefinition = createPdf.calls.mostRecent().args[0] as Record<string, unknown>;
+    const serialized = JSON.stringify(docDefinition);
+    expect(serialized).toContain('Ningún criterio aplicable');
   });
 });
