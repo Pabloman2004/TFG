@@ -47,6 +47,8 @@
 4. `c4f6715` — fix(B3/B4/B7/B8/B13): bugs puntuales y limpieza de estado muerto
 5. `2617371` — fix(B11/B12): accesibilidad de controles y eliminación de `$any` en templates
 6. `b238480` — test(B15): higiene de specs de report y exportCase
+7. `11bffec` — docs: informe de resultado de la corrección Sección B
+8. `6611429` — docs: registrar informe Sección B en excluidos de `_map.md`
 
 ## Fuera de alcance (anotado)
 
