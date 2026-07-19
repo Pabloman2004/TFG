@@ -174,8 +174,8 @@ describe('MedsStepComponent — datos necesarios para criterios renales', () => 
     component.updateMedicationNumber('Sulfato ferroso', 'doseMgDay', '201');
     component.updateMedicationNumber('Omeprazol', 'durationDays', '57');
 
-    expect(component.medicationById('Sulfato ferroso')?.doseMgDay).toBe(201);
-    expect(component.medicationById('Omeprazol')?.durationDays).toBe(57);
+    expect(component.store.meds().find(m => m.id === 'Sulfato ferroso')?.doseMgDay).toBe(201);
+    expect(component.store.meds().find(m => m.id === 'Omeprazol')?.durationDays).toBe(57);
   });
 
   it('guarda dosis de AAS, duración de SNC y dosis de paracetamol', () => {
@@ -188,10 +188,9 @@ describe('MedsStepComponent — datos necesarios para criterios renales', () => 
     component.updateMedicationNumber('Lorazepam', 'durationDays', '28');
     component.updateMedicationNumber('Paracetamol', 'doseMgDay', '3000');
 
-    expect(component.medicationById('Ácido acetilsalicílico')?.doseMgDay).toBe(150);
-    expect(component.medicationById('Lorazepam')?.durationDays).toBe(28);
-    expect(component.medicationById('Paracetamol')?.doseMgDay).toBe(3000);
-    expect(component.durationCaptureMeds().map(m => m.id)).toContain('Lorazepam');
+    expect(component.store.meds().find(m => m.id === 'Ácido acetilsalicílico')?.doseMgDay).toBe(150);
+    expect(component.store.meds().find(m => m.id === 'Lorazepam')?.durationDays).toBe(28);
+    expect(component.store.meds().find(m => m.id === 'Paracetamol')?.doseMgDay).toBe(3000);
   });
 });
 
@@ -262,5 +261,86 @@ describe('MedsStepComponent — campos numéricos en el tab donde está el medic
     fixture.detectChanges();
 
     expect(clinicalLabels(host)).toContain('Lorazepam (días)');
+  });
+});
+
+describe('MedsStepComponent — accesibilidad de filas', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [MedsStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+  });
+
+  it('las filas de fármaco son alcanzables por teclado y togglean con Enter', () => {
+    const fixture = TestBed.createComponent(MedsStepComponent);
+    fixture.detectChanges();
+    const host: HTMLElement = fixture.nativeElement;
+    const row = host.querySelector('.drug-row[role="checkbox"]') as HTMLElement | null;
+    expect(row).toBeTruthy();
+    expect(row!.getAttribute('tabindex')).toBe('0');
+
+    const name = row!.querySelector('.drug-name')?.textContent?.trim() ?? '';
+    expect(name.length).toBeGreaterThan(0);
+    expect(fixture.componentInstance.isSelected(name)).toBe(false);
+
+    row!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.isSelected(name)).toBe(true);
+
+    row!.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.isSelected(name)).toBe(false);
+  });
+});
+
+describe('MedsStepComponent — copyCriteria / exportPdf errores', () => {
+  let snackBar: jasmine.SpyObj<MatSnackBar>;
+  let report: { exportCase: jasmine.Spy };
+
+  beforeEach(async () => {
+    snackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
+    report = { exportCase: jasmine.createSpy('exportCase').and.rejectWith(new Error('PDF falló')) };
+    await TestBed.configureTestingModule({
+      imports: [MedsStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    })
+      .overrideComponent(MedsStepComponent, {
+        set: {
+          providers: [
+            { provide: MatSnackBar, useValue: snackBar },
+            { provide: ReportService, useValue: report },
+          ],
+        },
+      })
+      .compileComponents();
+  });
+
+  it('[B4] muestra snackbar si el portapapeles rechaza', async () => {
+    const clipboard = { writeText: jasmine.createSpy('writeText').and.rejectWith(new Error('denied')) };
+    spyOnProperty(navigator, 'clipboard', 'get').and.returnValue(clipboard as unknown as Clipboard);
+    const component = TestBed.createComponent(MedsStepComponent).componentInstance;
+    await component.copyCriteria();
+    expect(snackBar.open).toHaveBeenCalled();
+    expect(component.copied()).toBe(false);
+  });
+
+  it('muestra snackbar si exportCase del PDF falla', async () => {
+    const component = TestBed.createComponent(MedsStepComponent).componentInstance;
+    await component.onExportPdf();
+    expect(report.exportCase).toHaveBeenCalled();
+    expect(snackBar.open).toHaveBeenCalled();
   });
 });

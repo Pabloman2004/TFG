@@ -3,39 +3,10 @@
 import { Injectable } from '@angular/core';
 
 import { CaseStoreService } from './case-store.service';
-import { CaseExport, PatientCase } from './types';
+import { CaseExport } from './types';
+import { caseExportSchema, EXPORT_VERSION } from './case-export.schema';
 
-const EXPORT_VERSION = '1.0';
-
-function isMed(m: unknown): boolean {
-  if (!m || typeof m !== 'object') return false;
-  const obj = m as Record<string, unknown>;
-  return typeof obj['id'] === 'string' && Array.isArray(obj['drugClasses']);
-}
-
-function isLabsValue(v: unknown): boolean {
-  return v === null || typeof v === 'number';
-}
-
-function isLabs(labs: unknown): boolean {
-  if (!labs || typeof labs !== 'object') return false;
-  return Object.values(labs as Record<string, unknown>).every(isLabsValue);
-}
-
-function isPatientCase(data: unknown): data is PatientCase {
-  if (!data || typeof data !== 'object') return false;
-  const d = data as Record<string, unknown>;
-  if (!Array.isArray(d['diagnoses']) || !Array.isArray(d['medications'])) return false;
-  if (!(d['medications'] as unknown[]).every(isMed)) return false;
-  if (d['labs'] !== null && d['labs'] !== undefined && !isLabs(d['labs'])) return false;
-  return true;
-}
-
-function isCaseExport(data: unknown): data is CaseExport {
-  if (!data || typeof data !== 'object') return false;
-  const d = data as Record<string, unknown>;
-  return typeof d['version'] === 'string' && isPatientCase(d['patientCase']);
-}
+const INVALID_CASE_MESSAGE = 'El fichero no es un caso válido. Comprueba que sea una exportación STOPP/START en versión 1.0.';
 
 @Injectable({ providedIn: 'root' })
 export class CaseIoService {
@@ -53,7 +24,7 @@ export class CaseIoService {
     anchor.href = url;
     anchor.download = this.buildFileName();
     anchor.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 0);
   }
 
   async importFile(file: File): Promise<void> {
@@ -64,10 +35,11 @@ export class CaseIoService {
     } catch {
       throw new Error('Formato no válido: el archivo no contiene JSON válido.');
     }
-    if (!isCaseExport(parsed)) {
-      throw new Error('Formato no válido: el archivo no tiene la estructura esperada.');
+    const result = caseExportSchema.safeParse(parsed);
+    if (!result.success) {
+      throw new Error(INVALID_CASE_MESSAGE);
     }
-    this.store.loadCase(parsed.patientCase);
+    this.store.loadCase(result.data.patientCase);
   }
 
   private buildFileName(): string {

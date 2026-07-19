@@ -15,7 +15,7 @@ import { CaseStoreService } from '../../core/case-store.service';
 import { CriteriaEngineService } from '../../core/services/criteria-engine.service';
 import { ReportService } from '../../core/report.service';
 import { CaseIoService } from '../../core/case-io.service';
-import { Crit, Med } from '../../core/types';
+import { Crit } from '../../core/types';
 import { MEDICATIONS } from '../../core/data/medications';
 
 import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP } from '../../core/data/diagnoses';
@@ -45,8 +45,6 @@ export class DiagnosisStepComponent implements OnInit {
     return this.tabs.some(t => t.id === id) ? id : (DIAGNOSIS_TABS[0]?.id ?? 'cardiovascular');
   });
   readonly criteria = signal<Crit[]>([]);
-  readonly lastCriterionId = signal<string | null>(null);
-  private previousCriteriaIds = new Set<string>();
 
   readonly activeTab = computed<DiagnosisTab>(
     () => this.tabs.find(t => t.id === this.activeTabId()) ?? this.tabs[0],
@@ -73,10 +71,6 @@ export class DiagnosisStepComponent implements OnInit {
     this.applicableCriteria().filter(c => c.type === 'START'),
   );
 
-  readonly criteriaGroups = computed<CritGroup[]>(() =>
-    groupBySystem(this.applicableCriteria()),
-  );
-
   readonly startGroups = computed<CritGroup[]>(() => groupBySystem(this.startCriteria()));
   readonly stoppGroups = computed<CritGroup[]>(() => groupBySystem(this.stoppCriteria()));
 
@@ -96,18 +90,6 @@ export class DiagnosisStepComponent implements OnInit {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
-    effect(() => {
-      const current = this.applicableCriteria();
-      const currentIds = new Set(current.map(c => c.id));
-      const newIds = [...currentIds].filter(id => !this.previousCriteriaIds.has(id));
-      if (newIds.length > 0) {
-        this.lastCriterionId.set(newIds[newIds.length - 1]);
-      } else if (current.length === 0) {
-        this.lastCriterionId.set(null);
-      }
-      this.previousCriteriaIds = currentIds;
-    }, { allowSignalWrites: true });
-
     effect(() => {
       const meds = this.store.meds();
       const diagnoses = this.store.diagnoses();
@@ -184,8 +166,21 @@ export class DiagnosisStepComponent implements OnInit {
 
   setTab(id: string): void { this.store.activeSystemTab.set(id); }
 
+  onReviewedChange(tab: DiagnosisTab, event: Event): void {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement)) return;
+    if (this.isReviewedDisabled(tab)) {
+      input.checked = this.isReviewedChecked(tab);
+      return;
+    }
+    if (input.checked !== this.isReviewedChecked(tab)) {
+      this.toggleReviewed(tab);
+    }
+  }
+
   onTabSelectChange(event: Event): void {
-    this.setTab((event.target as HTMLSelectElement).value);
+    const target = event.target;
+    if (target instanceof HTMLSelectElement) this.setTab(target.value);
   }
 
   tabSelectLabel(tab: DiagnosisTab): string {
@@ -237,6 +232,7 @@ export class DiagnosisStepComponent implements OnInit {
     return this.store.diagnoses().filter(code => {
       if (knownCodes.has(code)) return false;
       if (knownAnyCode.has(code)) return false;
+      if (code === this.otroCode(group)) return false;
       return code.startsWith(`${group.id}__`);
     }).map(code => code.slice(group.id.length + 2));
   }
@@ -321,24 +317,38 @@ export class DiagnosisStepComponent implements OnInit {
   }
 
   async onExportPdf(): Promise<void> {
-    const patient = this.store.patientCase;
-    const criteria = await this.criteriaEngine.loadCriteria();
-    const results = this.criteriaEngine.evaluate(patient, criteria);
-    await this.report.exportCase({
-      patient: this.store.patient(),
-      diagnoses: this.store.diagnoses(),
-      meds: this.store.meds(),
-      results,
-    });
+    try {
+      const patient = this.store.patientCase;
+      const criteria = await this.criteriaEngine.loadCriteria();
+      const results = this.criteriaEngine.evaluate(patient, criteria);
+      await this.report.exportCase({
+        patient: this.store.patient(),
+        diagnoses: this.store.diagnoses(),
+        meds: this.store.meds(),
+        results,
+      });
+    } catch (err) {
+      this.snackBar.open(
+        err instanceof Error ? err.message : 'Error al exportar el PDF.',
+        'Cerrar', { duration: 6000 },
+      );
+    }
   }
 
   readonly copied = signal(false);
 
   async copyCriteria(): Promise<void> {
     const text = buildCriteriaText(this.applicableCriteria());
-    await navigator.clipboard.writeText(text);
-    this.copied.set(true);
-    setTimeout(() => this.copied.set(false), 2000);
+    try {
+      await navigator.clipboard.writeText(text);
+      this.copied.set(true);
+      setTimeout(() => this.copied.set(false), 2000);
+    } catch (err) {
+      this.snackBar.open(
+        err instanceof Error ? err.message : 'No se pudo copiar al portapapeles.',
+        'Cerrar', { duration: 6000 },
+      );
+    }
   }
 
   toggleSection(system: string): void {

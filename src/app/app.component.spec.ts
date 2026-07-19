@@ -1,109 +1,44 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { of } from 'rxjs';
+import { provideRouter } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { CaseStoreService } from './core/case-store.service';
-import { CaseIoService } from './core/case-io.service';
+import { DisplaySettingsService, FONT_SCALES } from './core/display-settings.service';
 
-describe('AppComponent — resetCase', () => {
-  let dialog: jasmine.SpyObj<MatDialog>;
-  let store: jasmine.SpyObj<CaseStoreService>;
-  let caseIo: jasmine.SpyObj<CaseIoService>;
-  let snackBar: jasmine.SpyObj<MatSnackBar>;
-
-  const setup = (confirmed: boolean | undefined) => {
-    dialog.open.and.returnValue({ afterClosed: () => of(confirmed) } as any);
-    const fixture = TestBed.createComponent(AppComponent);
-    const router = TestBed.inject(Router);
-    spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    return { component: fixture.componentInstance, router };
-  };
-
+describe('AppComponent — shell', () => {
   beforeEach(async () => {
-    dialog  = jasmine.createSpyObj('MatDialog', ['open']);
-    store   = jasmine.createSpyObj('CaseStoreService', ['reset', 'loadCase'], { patient: () => null });
-    caseIo  = jasmine.createSpyObj('CaseIoService', ['exportCase', 'importFile']);
-    snackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
-
+    localStorage.clear();
+    document.documentElement.style.removeProperty('--font-scale');
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [provideRouter([])],
-    })
-      .overrideComponent(AppComponent, {
-        set: {
-          providers: [
-            { provide: MatDialog,        useValue: dialog  },
-            { provide: CaseStoreService, useValue: store   },
-            { provide: CaseIoService,    useValue: caseIo  },
-            { provide: MatSnackBar,      useValue: snackBar },
-          ],
-        },
-      })
-      .compileComponents();
+    }).compileComponents();
   });
 
-  it('abre el diálogo de confirmación antes de limpiar', () => {
-    setup(false).component.resetCase();
-    expect(dialog.open).toHaveBeenCalled();
+  afterEach(() => {
+    localStorage.clear();
+    document.documentElement.style.removeProperty('--font-scale');
   });
 
-  it('limpia el caso y navega cuando el usuario confirma', () => {
-    const { component, router } = setup(true);
-    component.resetCase();
-    expect(store.reset).toHaveBeenCalled();
-    expect(router.navigate).toHaveBeenCalledWith(['/medicaciones']);
+  it('renderiza el router-outlet', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 
-  it('no limpia el caso cuando el usuario cancela', () => {
-    const { component, router } = setup(false);
-    component.resetCase();
-    expect(store.reset).not.toHaveBeenCalled();
-    expect(router.navigate).not.toHaveBeenCalled();
-  });
+  it('al crear el shell se aplica la escala tipográfica guardada', () => {
+    const saved = FONT_SCALES[1];
+    localStorage.setItem('font-scale', String(saved));
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [AppComponent],
+      providers: [provideRouter([])],
+    });
 
-  it('no limpia el caso si el diálogo se cierra sin confirmar (undefined)', () => {
-    const { component } = setup(undefined);
-    component.resetCase();
-    expect(store.reset).not.toHaveBeenCalled();
-  });
+    TestBed.createComponent(AppComponent);
+    const settings = TestBed.inject(DisplaySettingsService);
 
-  it('delega la exportación a CaseIoService al guardar', () => {
-    const { component } = setup(false);
-    component.onSave();
-    expect(caseIo.exportCase).toHaveBeenCalled();
-  });
-
-  it('muestra confirmación y navega al cargar un fichero válido', async () => {
-    caseIo.importFile.and.returnValue(Promise.resolve());
-    const { component, router } = setup(false);
-
-    const file = new File(['{}'], 'caso.json', { type: 'application/json' });
-    const event = { target: { files: [file], value: '' } } as unknown as Event;
-
-    await component.onLoad(event);
-
-    expect(caseIo.importFile).toHaveBeenCalledWith(file);
-    expect(snackBar.open).toHaveBeenCalledWith(
-      jasmine.stringMatching(/cargado/i), jasmine.anything(), jasmine.anything()
-    );
-    expect(router.navigate).toHaveBeenCalledWith(['/medicaciones']);
-  });
-
-  it('muestra error en snackbar si el fichero es inválido', async () => {
-    const errorMsg = 'Formato no válido: el archivo no contiene JSON válido.';
-    caseIo.importFile.and.returnValue(Promise.reject(new Error(errorMsg)));
-    const { component } = setup(false);
-
-    const file = new File(['bad'], 'caso.json');
-    const event = { target: { files: [file], value: '' } } as unknown as Event;
-
-    await component.onLoad(event);
-
-    expect(snackBar.open).toHaveBeenCalledWith(
-      errorMsg, 'Cerrar', jasmine.anything()
-    );
+    expect(settings.fontScale()).toBe(saved);
+    expect(document.documentElement.style.getPropertyValue('--font-scale')).toBe(String(saved));
   });
 });

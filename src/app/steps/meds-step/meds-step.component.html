@@ -130,9 +130,13 @@
         <!-- Reviewed-tab toggle -->
         <div class="reviewed-bar">
           <label class="reviewed-toggle"
-                 [class.reviewed-toggle--disabled]="isReviewedDisabled(activeCategoryId())"
-                 (click)="toggleReviewed(activeCategoryId())">
-            <span class="cbx reviewed-cbx" [class.checked]="isReviewedChecked(activeCategoryId())"></span>
+                 [class.reviewed-toggle--disabled]="isReviewedDisabled(activeCategoryId())">
+            <input type="checkbox"
+                   class="visually-hidden"
+                   [checked]="isReviewedChecked(activeCategoryId())"
+                   [disabled]="isReviewedDisabled(activeCategoryId())"
+                   (change)="onReviewedChange(activeCategoryId(), $event)">
+            <span class="cbx reviewed-cbx" [class.checked]="isReviewedChecked(activeCategoryId())" aria-hidden="true"></span>
             <span class="reviewed-label">Marcar como revisado</span>
           </label>
         </div>
@@ -145,7 +149,7 @@
                      min="0"
                      step="0.1"
                      [value]="store.labs()?.egfr_ml_min_173 ?? ''"
-                     (input)="updateEgfr($any($event.target).value)">
+                     (input)="onEgfrInput($event)">
             </label>
           </section>
         }
@@ -159,7 +163,7 @@
                        [min]="field.min"
                        [step]="field.step"
                        [value]="field.value ?? ''"
-                       (input)="updateMedicationNumber(field.medId, field.field, $any($event.target).value)">
+                       (input)="onClinicalFieldInput(field.medId, field.field, $event)">
               </label>
             }
           </section>
@@ -178,18 +182,28 @@
                       <span class="group-sel-badge" aria-hidden="true">{{ groupSelectionCount(group) }}</span>
                     }
                     <span class="col-label" [class.col-label-act]="isGroupChecked(group)"
-                          [appTooltip]="group.fullName ?? null">{{ group.label }}</span>
+                          [appTooltip]="group.fullName ?? null"
+                          [attr.tabindex]="group.fullName ? 0 : null">{{ group.label }}</span>
                   </div>
                   @for (drug of group.drugs; track trackDrug($index, drug)) {
-                    <div class="drug-row" (click)="toggleDrug(drug)">
-                      <div class="cbx" [class.checked]="isSelected(drug)"></div>
+                    <div class="drug-row"
+                         role="checkbox"
+                         tabindex="0"
+                         [attr.aria-checked]="isSelected(drug)"
+                         (click)="toggleDrug(drug)"
+                         (keydown.enter)="toggleDrug(drug)" (keydown.space)="$event.preventDefault(); toggleDrug(drug)">
+                      <div class="cbx" [class.checked]="isSelected(drug)" aria-hidden="true"></div>
                       <span class="drug-name" [class.sel]="isSelected(drug)">{{ drug }}</span>
                     </div>
                   }
                   @for (custom of customDrugsFor(group); track custom.id) {
-                    <div class="drug-row drug-row-custom" (click)="removeMed(custom.id)"
-                         title="Medicación personalizada — click para quitar">
-                      <div class="cbx checked"></div>
+                    <div class="drug-row drug-row-custom"
+                         role="button"
+                         tabindex="0"
+                         title="Medicación personalizada — click para quitar"
+                         (click)="removeMed(custom.id)"
+                         (keydown.enter)="removeMed(custom.id)" (keydown.space)="$event.preventDefault(); removeMed(custom.id)">
+                      <div class="cbx checked" aria-hidden="true"></div>
                       <span class="drug-name sel">{{ custom.id }}</span>
                     </div>
                   }
@@ -223,20 +237,30 @@
                         <span class="group-sel-badge" aria-hidden="true">{{ groupSelectionCount(group) }}</span>
                       }
                       <span class="col-label" [class.col-label-act]="isGroupChecked(group)"
-                            [appTooltip]="group.fullName ?? null">{{ group.label }}</span>
+                            [appTooltip]="group.fullName ?? null"
+                            [attr.tabindex]="group.fullName ? 0 : null">{{ group.label }}</span>
                       <span class="cross-badge"
                             [title]="'Sistema primario: ' + group.originTabLabel">{{ group.originTabLabel }}</span>
                     </div>
                     @for (drug of group.drugs; track trackDrug($index, drug)) {
-                      <div class="drug-row" (click)="toggleDrug(drug)">
-                        <div class="cbx" [class.checked]="isSelected(drug)"></div>
+                      <div class="drug-row"
+                           role="checkbox"
+                           tabindex="0"
+                           [attr.aria-checked]="isSelected(drug)"
+                           (click)="toggleDrug(drug)"
+                           (keydown.enter)="toggleDrug(drug)" (keydown.space)="$event.preventDefault(); toggleDrug(drug)">
+                        <div class="cbx" [class.checked]="isSelected(drug)" aria-hidden="true"></div>
                         <span class="drug-name" [class.sel]="isSelected(drug)">{{ drug }}</span>
                       </div>
                     }
                     @for (custom of customDrugsFor(group); track custom.id) {
-                      <div class="drug-row drug-row-custom" (click)="removeMed(custom.id)"
-                           title="Medicación personalizada — click para quitar">
-                        <div class="cbx checked"></div>
+                      <div class="drug-row drug-row-custom"
+                           role="button"
+                           tabindex="0"
+                           title="Medicación personalizada — click para quitar"
+                           (click)="removeMed(custom.id)"
+                           (keydown.enter)="removeMed(custom.id)" (keydown.space)="$event.preventDefault(); removeMed(custom.id)">
+                        <div class="cbx checked" aria-hidden="true"></div>
                         <span class="drug-name sel">{{ custom.id }}</span>
                       </div>
                     }
@@ -315,7 +339,12 @@
           <div class="result-items">
             @for (group of startGroups(); track group.system) {
               <div class="sys-section">
-                <div class="sys-hdr start-sys-hdr" (click)="toggleSection('start:' + group.system)">
+                <div class="sys-hdr start-sys-hdr"
+                     role="button"
+                     tabindex="0"
+                     [attr.aria-expanded]="!isSectionCollapsed('start:' + group.system)"
+                     (click)="toggleSection('start:' + group.system)"
+                     (keydown.enter)="toggleSection('start:' + group.system)" (keydown.space)="$event.preventDefault(); toggleSection('start:' + group.system)">
                   <span class="sys-name">{{ group.system }} <span class="sys-count">({{ group.items.length }})</span></span>
                   <svg class="sys-chevron" [class.rotated]="isSectionCollapsed('start:' + group.system)"
                        width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -373,7 +402,12 @@
           <div class="result-items">
             @for (group of stoppGroups(); track group.system) {
               <div class="sys-section">
-                <div class="sys-hdr stopp-sys-hdr" (click)="toggleSection('stopp:' + group.system)">
+                <div class="sys-hdr stopp-sys-hdr"
+                     role="button"
+                     tabindex="0"
+                     [attr.aria-expanded]="!isSectionCollapsed('stopp:' + group.system)"
+                     (click)="toggleSection('stopp:' + group.system)"
+                     (keydown.enter)="toggleSection('stopp:' + group.system)" (keydown.space)="$event.preventDefault(); toggleSection('stopp:' + group.system)">
                   <span class="sys-name">{{ group.system }} <span class="sys-count">({{ group.items.length }})</span></span>
                   <svg class="sys-chevron" [class.rotated]="isSectionCollapsed('stopp:' + group.system)"
                        width="14" height="14" viewBox="0 0 24 24" fill="none">

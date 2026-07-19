@@ -20,10 +20,10 @@ y qué ficheros quedan excluidos del patrón y por qué.
 
 **Concepto**: el modelo de dominio del caso clínico (paciente, medicaciones,
 diagnósticos, analítica) y el estado reactivo de sesión con persistencia en
-`localStorage` (incluye el almacenamiento del historial y los tabs revisados).
+`localStorage` (incluye los tabs revisados).
 
 **Debe cubrir**: tipos de dominio (`PatientInfo`, `Med`, `Crit`, `Labs`,
-`PatientCase`, `SavedCase`, `CaseExport`), el store de signals, el ciclo
+`PatientCase`, `CaseExport`), el store de signals, el ciclo
 persistencia/rehidratación, y el acoplamiento actual estado UI / estado dominio.
 
 ### Ficheros que enlazan
@@ -117,24 +117,10 @@ verificación de ligaduras.
 ### Ficheros que enlazan
 - `src/app/core/report.service.ts`
 - `src/app/core/case-io.service.ts`
+- `src/app/core/case-export.schema.ts`
 - `src/app/core/clipboard-text.ts`
 - `src/types/pdfmake-browser.d.ts`
 - `scripts/verify-pdf-e2e.js`
-
----
-
-## Doc: docs/historial.md
-
-**Concepto**: la vista de historial de casos guardados — listar, cargar y
-eliminar `SavedCase` persistidos localmente.
-
-**Debe cubrir**: lectura del signal `history` de `CaseStoreService`,
-navegación post-carga, y el estado actual del bug de ruta no registrada
-(`/historial` cae en el wildcard; el componente es hoy inaccesible).
-
-### Ficheros que enlazan
-- `src/app/historial/historial.component.ts`
-- `src/app/historial/historial.component.html`
 
 ---
 
@@ -144,10 +130,9 @@ navegación post-carga, y el estado actual del bug de ruta no registrada
 bootstrap, rutas, componente raíz con las acciones globales (guardar/cargar
 caso, reset confirmado, guía rápida).
 
-**Debe cubrir**: `main.ts` → `AppComponent`, tabla de rutas y sus constantes
-(incluida la ruta `historial` declarada pero sin componente), los diálogos
-transversales de confirmación y guía, y la existencia del stub residual
-`App`/`app.config.ts` (ver Excluidos).
+**Debe cubrir**: `main.ts` → `AppComponent` con `appConfig`, tabla de rutas y
+sus constantes (`medicaciones`, `diagnosticos`, wildcard), y los diálogos
+transversales de confirmación y guía.
 
 ### Ficheros que enlazan
 - `src/main.ts`
@@ -181,7 +166,7 @@ en `styles.css`.
 ## Grafo de relaciones (doc ↔ código ↔ doc)
 
 ```
-caso-clinico ──tipos──────────────► motor-criterios, flujo-pasos, historial,
+caso-clinico ──tipos──────────────► motor-criterios, flujo-pasos,
   (types.ts, case-store)             informes-y-exportacion
 catalogo-clinico ──catálogos──────► motor-criterios (MEDICATIONS, taxonomías),
   (data/* + diagnosis-variants*)     flujo-pasos (tabs, isDiagnosisEnabled,
@@ -190,8 +175,6 @@ motor-criterios ──Crit[], relevance, exclusiones──► flujo-pasos
   (engine, system-relevance)         ▲ consume criteria.json (excluido)
 flujo-pasos ──acciones de usuario──► informes-y-exportacion (PDF, JSON, copy)
   (steps + group-visibility)
-historial ──loadFromHistory────────► caso-clinico (store) y navegacion-y-shell
-                                     (ruta pendiente de registrar)
 navegacion-y-shell ──monta─────────► flujo-pasos (rutas diagnosticos/
                                      medicaciones) y diálogos
 accesibilidad-ui ──transversal─────► usado por flujo-pasos y navegacion-y-shell
@@ -208,13 +191,11 @@ Ficheros que NO llevan `@linked`, con motivo:
   `scripts/audit-criteria.cjs`.
 - `src/app/**/*.spec.ts` (todos los specs) — tests: se actualizan junto al
   fichero que prueban; los docs los citan en "Si cambias esto…".
-- `src/app/app.ts`, `src/app/app.html`, `src/app/app.css`,
-  `src/app/app.config.ts` — stub residual del scaffolding de Angular CLI
-  (la raíz real es `app.component.ts`); candidato a eliminación, ver REVIEW.md.
+- `src/app/app.config.ts` — fuente única de providers del bootstrap; se
+  importa desde `main.ts` (sin `@linked` propio).
 - `src/app/steps/meds-step/meds-step.component.css`,
-  `src/app/steps/diagnosis-step/diagnosis-step.component.css`,
-  `src/app/historial/historial.component.css` — estilos de presentación sin
-  lógica de negocio.
+  `src/app/steps/diagnosis-step/diagnosis-step.component.css` — estilos de
+  presentación sin lógica de negocio.
 - `src/index.html` — HTML raíz trivial (fuentes, favicon, `<app-root>`).
 - `src/custom-theme.scss` — tema Material 3 generado, sin lógica.
 - `src/assets/logoTFG.png` — binario.
@@ -239,6 +220,8 @@ Ficheros que NO llevan `@linked`, con motivo:
   `motor-criterios.md` y `catalogo-clinico.md`.
 - `docs/revision-pendientes-relevancia-resultado.md` — informe de cierre de
   esa ronda.
+- `docs/revision-seccion-b-ui-resultado.md` — informe de cierre de la
+  corrección de la Sección B (UI/servicios).
 - `docs/revision-dosis-duracion-medicacion.md` — manifiesto de revisión sobre
   captura de dosis/duración; no es fuente de verdad del motor.
 - `docs/STOPP_START_CRITERIOS_CONTEXTO.md` — referencia clínica estática;

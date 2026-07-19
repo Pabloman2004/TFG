@@ -2,7 +2,7 @@
 // Si cambias signals, claves de localStorage, reset(), loadCase() o patientCase, actualiza el doc enlazado.
 
 import { Injectable, signal, effect } from '@angular/core';
-import { Crit, PatientInfo, Labs, PatientCase, Med, SavedCase } from './types';
+import { PatientInfo, Labs, PatientCase, Med } from './types';
 
 @Injectable({ providedIn: 'root' })
 export class CaseStoreService {
@@ -11,15 +11,11 @@ export class CaseStoreService {
   diagnoses = signal<string[]>([]);
   meds = signal<Med[]>([]);
   labs = signal<Labs | null>(null);
-  results = signal<Crit[]>([]);
-  activeSystem = signal<string>('Todos');
   activeSystemTab = signal<string>('cardiovascular');
   collapsedSections = signal<string[]>([]);
   reviewedMedTabs = signal<Set<string>>(new Set());
   reviewedDxTabs = signal<Set<string>>(new Set());
-  history = signal<SavedCase[]>([]);
 
-  private readonly HISTORY_KEY = 'historial';
   private readonly REVIEWED_MED_KEY = 'reviewedMedTabs';
   private readonly REVIEWED_DX_KEY = 'reviewedDxTabs';
 
@@ -28,22 +24,20 @@ export class CaseStoreService {
     this.diagnoses.set(this.load('diagnoses') ?? []);
     this.meds.set(this.load('meds') ?? []);
     this.labs.set(this.load('labs'));
-    this.activeSystem.set(this.loadString('activeSystem') ?? 'Todos');
     this.activeSystemTab.set(this.loadString('activeSystemTab') ?? 'cardiovascular');
     this.reviewedMedTabs.set(new Set(this.load<string[]>(this.REVIEWED_MED_KEY) ?? []));
     this.reviewedDxTabs.set(new Set(this.load<string[]>(this.REVIEWED_DX_KEY) ?? []));
-    this.history.set(this.load(this.HISTORY_KEY) ?? []);
     this.persist('results', null); // limpiar resultados cacheados de versiones anteriores
+    this.persist('activeSystem', null); // limpiar signal UI legado
+    this.persist('historial', null); // limpiar historial legado (feature eliminada)
 
     effect(() => this.persist('patient', this.patient()));
     effect(() => this.persist('diagnoses', this.diagnoses()));
     effect(() => this.persist('meds', this.meds()));
     effect(() => this.persist('labs', this.labs()));
-    effect(() => this.persist('activeSystem', this.activeSystem()));
     effect(() => this.persist('activeSystemTab', this.activeSystemTab()));
     effect(() => this.persist(this.REVIEWED_MED_KEY, [...this.reviewedMedTabs()]));
     effect(() => this.persist(this.REVIEWED_DX_KEY, [...this.reviewedDxTabs()]));
-    effect(() => this.persist(this.HISTORY_KEY, this.history()));
   }
 
   private load<T>(key: string): T | null {
@@ -75,9 +69,6 @@ export class CaseStoreService {
     }
   }
 
-  setResults(list: Crit[]) { this.results.set(list); }
-  setActiveSystem(s: string) { this.activeSystem.set(s); }
-
   isMedTabReviewed(tabId: string): boolean { return this.reviewedMedTabs().has(tabId); }
   isDxTabReviewed(tabId: string): boolean { return this.reviewedDxTabs().has(tabId); }
 
@@ -100,32 +91,13 @@ export class CaseStoreService {
     this.diagnoses.set([]);
     this.meds.set([]);
     this.labs.set(null);
-    this.results.set([]);
-    this.activeSystem.set('Todos');
     this.activeSystemTab.set('cardiovascular');
     this.collapsedSections.set([]);
     this.reviewedMedTabs.set(new Set());
     this.reviewedDxTabs.set(new Set());
-    ['patient', 'diagnoses', 'meds', 'labs', 'activeSystem', 'activeSystemTab',
+    ['patient', 'diagnoses', 'meds', 'labs', 'activeSystemTab',
       this.REVIEWED_MED_KEY, this.REVIEWED_DX_KEY]
       .forEach(k => this.persist(k, null));
-  }
-
-  saveToHistory(): void {
-    const entry: SavedCase = {
-      id: crypto.randomUUID(),
-      savedAt: new Date().toISOString(),
-      patientCase: this.patientCase
-    };
-    this.history.update(h => [entry, ...h]);
-  }
-
-  deleteFromHistory(id: string): void {
-    this.history.update(h => h.filter(c => c.id !== id));
-  }
-
-  loadFromHistory(entry: SavedCase): void {
-    this.loadCase(entry.patientCase);
   }
 
   loadCase(patientCase: PatientCase): void {
@@ -135,8 +107,6 @@ export class CaseStoreService {
     this.labs.set(patientCase.labs);
     this.reviewedMedTabs.set(new Set(patientCase.reviewedMedTabs ?? []));
     this.reviewedDxTabs.set(new Set(patientCase.reviewedDxTabs ?? []));
-    this.results.set([]);
-    this.activeSystem.set('Todos');
   }
 
   get patientCase(): PatientCase {

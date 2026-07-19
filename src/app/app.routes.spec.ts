@@ -4,13 +4,13 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { routes } from './app.routes';
-import { HistorialComponent } from './historial/historial.component';
+import { MedsStepComponent } from './steps/meds-step/meds-step.component';
 import { ROUTES } from './app.routes.constants';
 
 @Component({ standalone: true, template: '<router-outlet />', imports: [RouterOutlet] })
 class TestShellComponent {}
 
-describe('app.routes — ruta historial', () => {
+describe('app.routes — wildcard', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TestShellComponent],
@@ -18,15 +18,16 @@ describe('app.routes — ruta historial', () => {
     }).compileComponents();
   });
 
-  it('navegar a /historial renderiza HistorialComponent (no redirige al wildcard)', async () => {
+  it('la ruta desconocida /historial cae en el wildcard hacia /medicaciones', async () => {
     const router = TestBed.inject(Router);
     const fixture = TestBed.createComponent(TestShellComponent);
     fixture.detectChanges();
 
-    await router.navigate([ROUTES.HISTORIAL]);
+    await router.navigate(['historial']);
     fixture.detectChanges();
 
+    expect(router.url).toBe(`/${ROUTES.MEDICACIONES}`);
     const currentRoute = router.routerState.snapshot.root.firstChild;
-    expect(currentRoute?.component).toBe(HistorialComponent);
+    expect(currentRoute?.component).toBe(MedsStepComponent);
   });
 });

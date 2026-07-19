@@ -179,6 +179,22 @@ describe('DiagnosisStepComponent — UI del árbol de variantes HTA (P15 paso 4)
     expect(fixture.componentInstance.tabSelectionCount(cardio)).toBe(1);
   });
 
+  it('[B3] seleccionar Otro una vez suma 1 al badge y no renderiza fila personalizada «otro»', () => {
+    const fixture = render();
+    const group = hipertensionGroup();
+    const cardio = DIAGNOSIS_TABS.find(t => t.id === 'cardiovascular')!;
+    fixture.componentInstance.toggleOtroDx(group);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.groupSelectionCount(group)).toBe(1);
+    expect(fixture.componentInstance.tabSelectionCount(cardio)).toBe(1);
+    expect(fixture.componentInstance.customDxFor(group)).toEqual([]);
+    const customLabels = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll('.drug-row .drug-name'),
+    ).map(e => e.textContent?.trim().toLowerCase());
+    expect(customLabels).not.toContain('otro');
+  });
+
   it('una variante deshabilitada (sin medicación habilitante) se renderiza como dx-disabled', () => {
     store.meds.set([]);
     const fixture = render();
@@ -289,5 +305,85 @@ describe('DiagnosisStepComponent — badges de cabecera de criterios activados',
     const host: HTMLElement = render().nativeElement;
 
     expect(badgeLabel(host, '.stopp-badge-corner')).toBe('STOPP');
+  });
+});
+
+describe('DiagnosisStepComponent — accesibilidad de filas', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const store = TestBed.inject(CaseStoreService);
+    store.meds.set([med('Furosemida', ['DIURETICO_ASA'])]);
+    store.diagnoses.set([]);
+    store.activeSystemTab.set('cardiovascular');
+  });
+
+  it('las filas de diagnóstico son alcanzables por teclado y togglean con Espacio', () => {
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    fixture.detectChanges();
+    const host: HTMLElement = fixture.nativeElement;
+    const row = host.querySelector(
+      '.drug-row[role="checkbox"]:not(.dx-disabled), .drug-row[role="radio"]:not(.dx-disabled)',
+    ) as HTMLElement | null;
+    expect(row).toBeTruthy();
+    expect(row!.getAttribute('tabindex')).toBe('0');
+
+    const before = row!.getAttribute('aria-checked');
+    row!.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    fixture.detectChanges();
+    expect(row!.getAttribute('aria-checked')).not.toBe(before);
+  });
+});
+
+describe('DiagnosisStepComponent — copyCriteria / exportPdf errores', () => {
+  let snackBar: jasmine.SpyObj<MatSnackBar>;
+  let report: { exportCase: jasmine.Spy };
+
+  beforeEach(async () => {
+    snackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
+    report = { exportCase: jasmine.createSpy('exportCase').and.rejectWith(new Error('PDF falló')) };
+    await TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    })
+      .overrideComponent(DiagnosisStepComponent, {
+        set: {
+          providers: [
+            { provide: MatSnackBar, useValue: snackBar },
+            { provide: ReportService, useValue: report },
+          ],
+        },
+      })
+      .compileComponents();
+  });
+
+  it('[B4] muestra snackbar si el portapapeles rechaza', async () => {
+    const clipboard = { writeText: jasmine.createSpy('writeText').and.rejectWith(new Error('denied')) };
+    spyOnProperty(navigator, 'clipboard', 'get').and.returnValue(clipboard as unknown as Clipboard);
+    const component = TestBed.createComponent(DiagnosisStepComponent).componentInstance;
+    await component.copyCriteria();
+    expect(snackBar.open).toHaveBeenCalled();
+    expect(component.copied()).toBe(false);
+  });
+
+  it('muestra snackbar si exportCase del PDF falla', async () => {
+    const component = TestBed.createComponent(DiagnosisStepComponent).componentInstance;
+    await component.onExportPdf();
+    expect(report.exportCase).toHaveBeenCalled();
+    expect(snackBar.open).toHaveBeenCalled();
   });
 });

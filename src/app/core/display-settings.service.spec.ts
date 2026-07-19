@@ -60,4 +60,19 @@ describe('DisplaySettingsService', () => {
   it('exposes the available scales', () => {
     expect(FONT_SCALES).toEqual([1, 1.15, 1.3]);
   });
+
+  it('[B8] si localStorage lanza al leer, arranca con escala por defecto', () => {
+    spyOn(localStorage, 'getItem').and.throwError('Storage blocked');
+    expect(createService().fontScale()).toBe(1);
+    expect(document.documentElement.style.getPropertyValue('--font-scale')).toBe('1');
+  });
+
+  it('[B8] si localStorage lanza al escribir, la escala CSS sigue aplicándose', () => {
+    const service = createService();
+    spyOn(localStorage, 'setItem').and.throwError('Storage blocked');
+    service.setFontScale(1.15);
+    flush();
+    expect(service.fontScale()).toBe(1.15);
+    expect(document.documentElement.style.getPropertyValue('--font-scale')).toBe('1.15');
+  });
 });

@@ -8,8 +8,12 @@ export type FontScale = (typeof FONT_SCALES)[number];
 const STORAGE_KEY = 'font-scale';
 
 function loadScale(): FontScale {
-  const stored = parseFloat(localStorage.getItem(STORAGE_KEY) ?? '1');
-  return (FONT_SCALES as readonly number[]).includes(stored) ? (stored as FontScale) : 1;
+  try {
+    const stored = parseFloat(localStorage.getItem(STORAGE_KEY) ?? '1');
+    return (FONT_SCALES as readonly number[]).includes(stored) ? (stored as FontScale) : 1;
+  } catch {
+    return 1;
+  }
 }
 
 /**
@@ -34,6 +38,10 @@ export class DisplaySettingsService {
 
   private apply(scale: FontScale): void {
     document.documentElement.style.setProperty('--font-scale', String(scale));
-    localStorage.setItem(STORAGE_KEY, String(scale));
+    try {
+      localStorage.setItem(STORAGE_KEY, String(scale));
+    } catch {
+      // Storage bloqueado — la escala sigue aplicada en CSS
+    }
   }
 }

@@ -195,6 +195,7 @@ EXCLUDED_DOCS=(
   "docs/revision-pendientes-relevancia.md"
   "docs/revision-pendientes-relevancia-resultado.md"
   "docs/revision-dosis-duracion-medicacion.md"
+  "docs/revision-seccion-b-ui-resultado.md"
 )
 
 for doc_abs in "$REPO_ROOT"/docs/*.md; do
