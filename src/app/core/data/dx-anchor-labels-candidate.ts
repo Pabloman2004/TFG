@@ -31,8 +31,11 @@ export const DX_ANCHOR_LABELS_CANDIDATE: readonly DxAnchorCandidate[] = [
   { label: 'Demencia', rationale: 'Síndrome neurodegenerativo crónico; condición basal del paciente.' },
   {
     label: 'Demencia por cuerpos de Lewy',
-    rationale: 'Subtipo de demencia crónica; antecedente clínico estable.',
-    doubtful: true,
+    rationale: 'Subtipo de demencia crónica; antecedente clínico estable. Diagnóstico ancla de START-D4 (rivastigmina), debe poder marcarse sin neuroléptico previo.',
+  },
+  {
+    label: 'Enfermedad de Parkinson',
+    rationale: 'Enfermedad neurodegenerativa crónica; ancla de START-D1/D4. Citada además en STOPP-D12/F1 como forma de parkinsonismo, así que debe seguir siempre seleccionable.',
   },
   { label: 'Deterioro cognitivo', rationale: 'Condición cognitiva crónica, frecuentemente pre-demencia.' },
   {

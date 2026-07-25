@@ -15,7 +15,7 @@ import { CaseStoreService } from '../../core/case-store.service';
 import { CriteriaEngineService } from '../../core/services/criteria-engine.service';
 import { ReportService } from '../../core/report.service';
 import { CaseIoService } from '../../core/case-io.service';
-import { Med, Crit, Labs } from '../../core/types';
+import { Med, Crit } from '../../core/types';
 import { MEDICATIONS } from '../../core/data/medications';
 import { DRUG_CATEGORIES, DrugCategory, DrugGroup } from '../../core/data/medications-taxonomy';
 import { ROUTES } from '../../app.routes.constants';
@@ -25,25 +25,6 @@ import { isMedGroupChecked } from '../../core/group-checked';
 import { computeMedGroupBuckets, medGroupsVisibleInTab, MedGroupBuckets, MedForeignGroup } from '../../core/group-visibility';
 import { clinicalCaptureFields, medsVisibleInTabGroups } from '../../core/clinical-capture';
 import { TooltipDirective } from '../../shared/tooltip.directive';
-
-const emptyLabs = (): Labs => ({
-  glucosa_mg_dl: null,
-  colesterol_total_mg_dl: null,
-  trigliceridos_mg_dl: null,
-  hdl_mg_dl: null,
-  ldl_mg_dl: null,
-  creatinina_mg_dl: null,
-  egfr_ml_min_173: null,
-  inr: null,
-  tsh_uUl: null,
-  fc_lpm: null,
-  qtc_ms: null,
-  potasio_mmol_l: null,
-  sodio_mmol_l: null,
-  calcio_corregido_mmol_l: null,
-  pas_mmhg: null,
-  pad_mmhg: null,
-});
 
 @Component({
   selector: 'app-meds-step',
@@ -210,11 +191,6 @@ export class MedsStepComponent implements OnInit {
     if (target instanceof HTMLSelectElement) this.setCategory(target.value);
   }
 
-  onEgfrInput(event: Event): void {
-    const target = event.target;
-    if (target instanceof HTMLInputElement) this.updateEgfr(target.value);
-  }
-
   onClinicalFieldInput(
     medId: string,
     field: 'doseMcgDay' | 'doseMgDay' | 'durationDays',
@@ -276,14 +252,6 @@ export class MedsStepComponent implements OnInit {
       }
       const { durationDays: _, ...withoutValue } = medication;
       return value === null ? withoutValue : { ...withoutValue, durationDays: value };
-    }));
-  }
-
-  updateEgfr(rawValue: string): void {
-    const value = this.optionalNonNegativeNumber(rawValue);
-    this.store.labs.update(labs => ({
-      ...(labs ?? emptyLabs()),
-      egfr_ml_min_173: value,
     }));
   }
 

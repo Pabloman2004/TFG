@@ -64,6 +64,7 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "Prostatismo": "Urológico",
   "Retención urinaria": "Urológico",
   "Caídas de repetición": "Geriátrico",
+  "No sale de casa": "Geriátrico",
   "Episodio depresivo": "Psiquiátrico",
 
   // --- Neurolépticos/Antipsicóticos ---
@@ -198,6 +199,7 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "Hiperparatiroidismo secundario": "Endocrino",
   "Anemia sintomática": "Hematológico",
   "Hiperfosfatemia": "Metabólico",
+  "Hipocalcemia": "Metabólico",
 
   // --- START criterios gastrointestinal ---
   "ERGE grave o estenosis esofágica péptica": "Gastrointestinal",
@@ -294,6 +296,7 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "Prostatismo": "prostatismo",
   "Retención urinaria": "retencion_urinaria",
   "Caídas de repetición": "caidas_repeticion",
+  "No sale de casa": "no_sale_de_casa",
   "Episodio depresivo": "episodio_depresivo",
 
   // --- Neurolépticos/Antipsicóticos ---
@@ -428,6 +431,7 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "Hiperparatiroidismo secundario": "hiperparatiroidismo_secundario",
   "Anemia sintomática": "anemia_sintomatica",
   "Hiperfosfatemia": "hiperfosfatemia",
+  "Hipocalcemia": "hipocalcemia",
 
   // --- START criterios gastrointestinal ---
   "ERGE grave o estenosis esofágica péptica": "erge_grave",

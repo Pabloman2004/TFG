@@ -115,6 +115,14 @@ describe('buildDxDependencies — otros sistemas', () => {
     expect(DEPS['Dolor leve']?.classes).toContain('OPIOIDE');
     expect(isDiagnosisEnabled('Dolor leve', [], DEPS)).toBe(false);
   });
+
+  it('demencia por cuerpos de Lewy es seleccionable sin medicación (la necesita START-D4)', () => {
+    expect(isDiagnosisEnabled('Demencia por cuerpos de Lewy', [], DEPS)).toBe(true);
+  });
+
+  it('Enfermedad de Parkinson es seleccionable sin medicación pese a citarse en STOPP', () => {
+    expect(isDiagnosisEnabled('Enfermedad de Parkinson', [], DEPS)).toBe(true);
+  });
 });
 
 describe('isDiagnosisEnabled()', () => {

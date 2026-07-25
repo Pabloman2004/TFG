@@ -133,6 +133,22 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
     it('no dispara con diurético de asa sin HTA', () => {
       expect(engine.evaluate(makeCase({ medications: [diureticoAsa()] }), [c])).toEqual([]);
     });
+
+    it('no dispara (excepción) si además hay IC con FE reducida', () => {
+      const p = makeCase({
+        diagnoses: ['hta', 'insuficiencia_cardiaca_fe_reducida'],
+        medications: [diureticoAsa()],
+      });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('no dispara (excepción) si además hay IC grave', () => {
+      const p = makeCase({
+        diagnoses: ['hta', 'insuficiencia_cardiaca_grave'],
+        medications: [diureticoAsa()],
+      });
+      expect(engine.evaluate(p, [c])).toEqual([]);
+    });
   });
 
   describe('B8-DIURETICO-ASA-EDEMAS-MALEOLARES', () => {
@@ -145,6 +161,14 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
 
     it('no dispara sin ese diagnóstico', () => {
       expect(engine.evaluate(makeCase({ medications: [diureticoAsa()] }), [c])).toEqual([]);
+    });
+
+    it('no dispara (excepción) si los edemas se explican por IC con FE reducida', () => {
+      const p = makeCase({
+        diagnoses: ['edemas_maleolares', 'insuficiencia_cardiaca_fe_reducida'],
+        medications: [diureticoAsa()],
+      });
+      expect(engine.evaluate(p, [c])).toEqual([]);
     });
   });
 
@@ -419,8 +443,53 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
+    it('dispara también con IC con FE reducida', () => {
+      const p = makeCase({
+        diagnoses: ['insuficiencia_cardiaca_fe_reducida'],
+        medications: [aine(), diureticoAsa()],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara también con IC grave', () => {
+      const p = makeCase({
+        diagnoses: ['insuficiencia_cardiaca_grave'],
+        medications: [aine(), diureticoAsa()],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
     it('no dispara con AINE sin insuficiencia cardíaca', () => {
       expect(engine.evaluate(makeCase({ medications: [aine()] }), [c])).toEqual([]);
+    });
+  });
+
+  describe('B19-CORTICOIDE-SISTEMICO-IC', () => {
+    const c = crit('STOPP-B19-CORTICOIDE-SISTEMICO-IC');
+    const corticoide = () => makeMed('Prednisona', ['CORTICOIDE_SISTEMICO']);
+
+    it('dispara con IC con FE reducida + corticoide + diurético de asa', () => {
+      const p = makeCase({
+        diagnoses: ['insuficiencia_cardiaca_fe_reducida'],
+        medications: [corticoide(), diureticoAsa()],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara con insuficiencia cardíaca genérica + corticoide + diurético de asa', () => {
+      const p = makeCase({
+        diagnoses: ['insuficiencia_cardiaca'],
+        medications: [corticoide(), diureticoAsa()],
+      });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('no dispara sin diurético de asa', () => {
+      const p = makeCase({
+        diagnoses: ['insuficiencia_cardiaca_fe_reducida'],
+        medications: [corticoide()],
+      });
+      expect(engine.evaluate(p, [c])).toEqual([]);
     });
   });
 
@@ -539,6 +608,63 @@ describe('Criterios START — Sección B (Sistema cardiovascular)', () => {
     });
   });
 
+  describe('START-B2-ESTATINA-ENFERMEDAD-VASCULAR', () => {
+    const id = 'START-B2-ESTATINA-ENFERMEDAD-VASCULAR';
+
+    it('dispara con enfermedad vascular sin estatina', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['enfermedad_vascular_coronaria'],
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara en paciente con fragilidad', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['enfermedad_vascular_coronaria', 'fragilidad'],
+        medications: [],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara si ya recibe estatina', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['enfermedad_vascular_coronaria'],
+        medications: [estatina()],
+      }), [crit(id)])).toEqual([]);
+    });
+  });
+
+  describe('START-B8-ISGLT2-INSUFICIENCIA-CARDIACA', () => {
+    const id = 'START-B8-ISGLT2-INSUFICIENCIA-CARDIACA';
+
+    it('dispara con IC con FE reducida', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['insuficiencia_cardiaca_fe_reducida'],
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('dispara con IC con función sistólica conservada (FE preservada)', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['ic_funcion_sistolica_conservada'],
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('dispara con IC grave', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['insuficiencia_cardiaca_grave'],
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara si ya recibe iSGLT2', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['ic_funcion_sistolica_conservada'],
+        medications: [makeMed('Empagliflozina', ['ISGLT2'])],
+      }), [crit(id)])).toEqual([]);
+    });
+  });
+
   describe('START-B7-ANTAGONISTA-ALDOSTERONA-IC', () => {
     const id = 'START-B7-ANTAGONISTA-ALDOSTERONA-IC';
     const dx = ['insuficiencia_cardiaca_fe_reducida'];
@@ -575,6 +701,38 @@ describe('Criterios START — Sección B (Sistema cardiovascular)', () => {
       expect(engine.evaluate(makeCase({
         diagnoses: dx,
         medications: [aldosterona()],
+      }), [crit(id)])).toEqual([]);
+    });
+  });
+
+  describe('START-B10-BETABLOQUEANTE-FA-MAL-CONTROL', () => {
+    const id = 'START-B10-BETABLOQUEANTE-FA-MAL-CONTROL';
+
+    it('dispara con «FA crónica con mal control de frecuencia» sin betabloqueante', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['fa_mal_control_frecuencia'],
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no exige marcar además la FA genérica (el diagnóstico específico la implica)', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['fa_mal_control_frecuencia', 'fibrilacion_auricular'],
+        medications: [],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara si ya recibe betabloqueante', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['fa_mal_control_frecuencia'],
+        medications: [betabloq()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara con FA sin mal control de frecuencia documentado', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['fibrilacion_auricular'],
+        medications: [],
       }), [crit(id)])).toEqual([]);
     });
   });

@@ -9,10 +9,20 @@ La aplicación STOPP/START guía al clínico en dos pasos secuenciales:
    Cada tab muestra campos clínicos contextuales cuando hay medicamentos
    seleccionados **visibles en ese tab** (propios o foráneos): dosis/duración
    según la clase del fármaco (Digoxina, IBP, hierro, benzos/Z, corticoides,
-   paracetamol, AAS…). El tab Renal además captura TFGe. Los cambios
-   actualizan inmutablemente `Med[]` o `Labs` y se persisten junto con el caso.
+   paracetamol, AAS…). La captura de **analíticas/constantes** ya no vive aquí:
+   se centraliza en el paso de Diagnósticos (ver paso 2). Los cambios actualizan
+   inmutablemente `Med[]` y se persisten junto con el caso.
 
 2. **Paso 2 — Diagnósticos** (`/diagnosticos`, `DiagnosisStepComponent`): el clínico selecciona los diagnósticos activos organizados por sistema orgánico. La columna derecha sigue mostrando los criterios activados actualizados.
+
+   La pestaña «Otros» incluye además un **panel fijo de analítica/constantes**
+   (TFGe, PAS/PAD, frecuencia, QTc, iones, calcio corregido, TSH) siempre visible,
+   con todos los campos que algún criterio puede leer. Es fijo a propósito: los
+   criterios START (p. ej. B1, que sugiere antihipertensivo si PAS/PAD elevada y el
+   paciente **no** toma ninguno) dependen de constantes de cribado que ninguna
+   selección "activa", así que no pueden condicionarse a un medicamento o
+   diagnóstico. La presentación la aporta `core/lab-capture.ts` y los cambios
+   actualizan inmutablemente `Labs`, compartido con el paso de Medicamentos.
 
 En ambos pasos:
 - Cada tab puede marcarse como "revisado" explícitamente si no tiene selección, para dejar constancia de que el clínico lo revisó y no aplica nada.
@@ -34,6 +44,7 @@ En ambos pasos:
 | `src/app/core/criteria-groups.ts` | Helpers puros `groupBySystem` / `critCode` |
 | `src/app/core/group-visibility.ts` | Lógica unificada de visibilidad de buckets (T8) |
 | `src/app/core/clinical-capture.ts` | Campos de dosis/duración visibles por tab y clase de fármaco |
+| `src/app/core/lab-capture.ts` | Presentación del panel fijo de analítica/constantes (todos los campos, siempre; pestaña «Otros» de diagnósticos) |
 
 ### Flujo reactivo (ambos componentes)
 

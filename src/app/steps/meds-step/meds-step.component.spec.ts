@@ -156,16 +156,6 @@ describe('MedsStepComponent — datos necesarios para criterios renales', () => 
     });
   });
 
-  it('guarda TFGe numérica y permite limpiarla', () => {
-    const component = setup();
-
-    component.updateEgfr('29');
-    expect(component.store.labs()?.egfr_ml_min_173).toBe(29);
-
-    component.updateEgfr('');
-    expect(component.store.labs()?.egfr_ml_min_173).toBeNull();
-  });
-
   it('guarda dosis de hierro en mg y duración de IBP', () => {
     const component = setup();
     component.toggleDrug('Sulfato ferroso');

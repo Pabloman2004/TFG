@@ -21,6 +21,22 @@ describe('Criterios STOPP — Sección F (Sistema gastrointestinal)', () => {
     expect(engine.evaluate(patient, [crit('STOPP-F1-PROCINETICO-PARKINSONISMO')]).length).toBe(1);
   });
 
+  it('F1 dispara también con Enfermedad de Parkinson (es un parkinsonismo)', () => {
+    const patient = makeCase({
+      diagnoses: ['parkinson'],
+      medications: [makeMed('Proclorperazina', ['PROCINETICO'])],
+    });
+    expect(engine.evaluate(patient, [crit('STOPP-F1-PROCINETICO-PARKINSONISMO')]).length).toBe(1);
+  });
+
+  it('F1 dispara también con parkinsonismo inducido por fármacos', () => {
+    const patient = makeCase({
+      diagnoses: ['parkinsonismo_inducido_por_farmacos'],
+      medications: [makeMed('Proclorperazina', ['PROCINETICO'])],
+    });
+    expect(engine.evaluate(patient, [crit('STOPP-F1-PROCINETICO-PARKINSONISMO')]).length).toBe(1);
+  });
+
   it('F2 exige más de ocho semanas de IBP', () => {
     const c = crit('STOPP-F2-IBP-TRATAMIENTO-PROLONGADO');
     const patient = (durationDays: number) => makeCase({

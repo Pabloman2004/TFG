@@ -63,6 +63,13 @@ describe('Criterios STOPP — Sección J (Sistema endocrino)', () => {
       }), [crit(id)]).length).toBe(1);
     });
 
+    it('dispara también con IC con FE reducida + tiazolidindiona', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['insuficiencia_cardiaca_fe_reducida'],
+        medications: [tiazolidindiona()],
+      }), [crit(id)]).length).toBe(1);
+    });
+
     it('no dispara sin insuficiencia cardiaca', () => {
       expect(engine.evaluate(makeCase({
         medications: [tiazolidindiona()],

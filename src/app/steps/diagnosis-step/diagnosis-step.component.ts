@@ -15,8 +15,9 @@ import { CaseStoreService } from '../../core/case-store.service';
 import { CriteriaEngineService } from '../../core/services/criteria-engine.service';
 import { ReportService } from '../../core/report.service';
 import { CaseIoService } from '../../core/case-io.service';
-import { Crit } from '../../core/types';
+import { Crit, Labs } from '../../core/types';
 import { MEDICATIONS } from '../../core/data/medications';
+import { LabKey, labCaptureFields } from '../../core/lab-capture';
 
 import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP } from '../../core/data/diagnoses';
 import { applyMutex } from '../../core/data/diagnosis-variants';
@@ -29,6 +30,25 @@ import { groupBySystem, critCode, CritGroup } from '../../core/criteria-groups';
 import { isDxGroupChecked } from '../../core/group-checked';
 import { computeDxGroupBuckets, dxGroupsVisibleInTab, DxGroupBuckets } from '../../core/group-visibility';
 
+const emptyLabs = (): Labs => ({
+  glucosa_mg_dl: null,
+  colesterol_total_mg_dl: null,
+  trigliceridos_mg_dl: null,
+  hdl_mg_dl: null,
+  ldl_mg_dl: null,
+  creatinina_mg_dl: null,
+  egfr_ml_min_173: null,
+  inr: null,
+  tsh_uUl: null,
+  fc_lpm: null,
+  qtc_ms: null,
+  potasio_mmol_l: null,
+  sodio_mmol_l: null,
+  calcio_corregido_mmol_l: null,
+  pas_mmhg: null,
+  pad_mmhg: null,
+});
+
 @Component({
   selector: 'app-diagnosis-step',
   standalone: true,
@@ -40,6 +60,7 @@ import { computeDxGroupBuckets, dxGroupsVisibleInTab, DxGroupBuckets } from '../
 export class DiagnosisStepComponent implements OnInit {
   readonly store = inject(CaseStoreService);
   readonly tabs = DIAGNOSIS_TABS;
+  readonly OTROS_TAB_ID = 'otros';
   readonly activeTabId = computed<string>(() => {
     const id = this.store.activeSystemTab();
     return this.tabs.some(t => t.id === id) ? id : (DIAGNOSIS_TABS[0]?.id ?? 'cardiovascular');
@@ -77,6 +98,12 @@ export class DiagnosisStepComponent implements OnInit {
   readonly groupBuckets = computed<DxGroupBuckets>(() =>
     computeDxGroupBuckets(this.activeTab(), this.tabs, this.criteriaEngine.relevance()),
   );
+
+  // Panel fijo de analítica/constantes: siempre ofrece todos los campos que algún
+  // criterio puede leer. Vive en la pestaña «Otros» porque muchos criterios START
+  // (p. ej. B1: PAS/PAD) dependen de constantes de cribado que ninguna selección
+  // "activa", así que no pueden condicionarse a un medicamento o diagnóstico.
+  readonly labCaptureFields = computed(() => labCaptureFields(this.store.labs()));
 
   @ViewChild('fileInput') private fileInputRef!: ElementRef<HTMLInputElement>;
 
@@ -165,6 +192,25 @@ export class DiagnosisStepComponent implements OnInit {
   }
 
   setTab(id: string): void { this.store.activeSystemTab.set(id); }
+
+  onLabInput(key: LabKey, event: Event): void {
+    const target = event.target;
+    if (target instanceof HTMLInputElement) this.updateLab(key, target.value);
+  }
+
+  updateLab(key: LabKey, rawValue: string): void {
+    const value = this.optionalNonNegativeNumber(rawValue);
+    this.store.labs.update(labs => ({
+      ...(labs ?? emptyLabs()),
+      [key]: value,
+    }));
+  }
+
+  private optionalNonNegativeNumber(rawValue: string): number | null {
+    if (rawValue.trim() === '') return null;
+    const value = Number(rawValue);
+    return Number.isFinite(value) && value >= 0 ? value : null;
+  }
 
   onReviewedChange(tab: DiagnosisTab, event: Event): void {
     const input = event.target;

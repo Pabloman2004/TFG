@@ -447,6 +447,54 @@ describe('Criterios START — Sección E (Sistema renal)', () => {
 
   beforeEach(() => { engine = setupEngine(); });
 
+  describe('START-E1/E2/E3 — equivalencias renales por diagnóstico', () => {
+    const sinAnalitica = (diagnoses: readonly string[]) =>
+      makeCase({ diagnoses: [...diagnoses], medications: [] });
+
+    it('E1 dispara con dx enfermedad_renal_grave + calcio bajo + hiperparatiroidismo', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['enfermedad_renal_grave', 'hiperparatiroidismo_secundario'],
+        labs: makeLabs({ calcio_corregido_mmol_l: 2.0 }),
+      }), [crit('START-E1-CALCITRIOL-ERC-HIPOCALCEMIA-HIPERPARATIROIDISMO')]).length).toBe(1);
+    });
+
+    it('E1 dispara con dx hipocalcemia (sin analítica de calcio)', () => {
+      expect(engine.evaluate(sinAnalitica([
+        'enfermedad_renal_grave', 'hipocalcemia', 'hiperparatiroidismo_secundario',
+      ]), [crit('START-E1-CALCITRIOL-ERC-HIPOCALCEMIA-HIPERPARATIROIDISMO')]).length).toBe(1);
+    });
+
+    it('E1 no dispara sin hipocalcemia (ni dx ni calcio < 2,10)', () => {
+      expect(engine.evaluate(sinAnalitica([
+        'enfermedad_renal_grave', 'hiperparatiroidismo_secundario',
+      ]), [crit('START-E1-CALCITRIOL-ERC-HIPOCALCEMIA-HIPERPARATIROIDISMO')])).toEqual([]);
+    });
+
+    it('E2 dispara con dx enfermedad_renal_grave + hiperfosfatemia sin analítica', () => {
+      expect(engine.evaluate(sinAnalitica([
+        'enfermedad_renal_grave', 'hiperfosfatemia',
+      ]), [crit('START-E2-QUELANTE-FOSFORO-ERC-HIPERFOSFATEMIA')]).length).toBe(1);
+    });
+
+    it('E3 dispara con dx enfermedad_renal_grave + anemia sintomática sin analítica', () => {
+      expect(engine.evaluate(sinAnalitica([
+        'enfermedad_renal_grave', 'anemia_sintomatica',
+      ]), [crit('START-E3-EPO-ERC-ANEMIA')]).length).toBe(1);
+    });
+
+    it('E2 no dispara sin insuficiencia renal (ni dx ni analítica)', () => {
+      expect(engine.evaluate(sinAnalitica(['hiperfosfatemia']),
+        [crit('START-E2-QUELANTE-FOSFORO-ERC-HIPERFOSFATEMIA')])).toEqual([]);
+    });
+
+    it('E3 sigue disparando por analítica con eGFR < 30', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['anemia_sintomatica'],
+        labs: makeLabs({ egfr_ml_min_173: 25 }),
+      }), [crit('START-E3-EPO-ERC-ANEMIA')]).length).toBe(1);
+    });
+  });
+
   describe('START-E4-IECA-ARA2-ERC-PROTEINURIA', () => {
     const id = 'START-E4-IECA-ARA2-ERC-PROTEINURIA';
     const dx = ['proteinuria'];

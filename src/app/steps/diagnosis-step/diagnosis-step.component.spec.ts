@@ -387,3 +387,60 @@ describe('DiagnosisStepComponent — copyCriteria / exportPdf errores', () => {
     expect(snackBar.open).toHaveBeenCalled();
   });
 });
+
+describe('DiagnosisStepComponent — panel fijo de analítica en «Otros»', () => {
+  let store: CaseStoreService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    store = TestBed.inject(CaseStoreService);
+    store.meds.set([]);
+    store.diagnoses.set([]);
+  });
+
+  const labInputs = (host: HTMLElement): HTMLInputElement[] =>
+    [...host.querySelectorAll('.clinical-data-panel .clinical-field input')] as HTMLInputElement[];
+
+  it('ofrece los campos de analítica siempre, sin depender de ninguna selección', () => {
+    const component = TestBed.createComponent(DiagnosisStepComponent).componentInstance;
+    expect(component.labCaptureFields().length).toBeGreaterThan(0);
+    expect(component.labCaptureFields().map(f => f.key)).toContain('pas_mmhg');
+    expect(component.labCaptureFields().map(f => f.key)).toContain('egfr_ml_min_173');
+  });
+
+  it('renderiza el panel en la pestaña «Otros» y no en un tab de sistema', () => {
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    const host = fixture.nativeElement as HTMLElement;
+
+    fixture.componentInstance.setTab('cardiovascular');
+    fixture.detectChanges();
+    expect(labInputs(host).length).toBe(0);
+
+    fixture.componentInstance.setTab('otros');
+    fixture.detectChanges();
+    expect(labInputs(host).length).toBe(fixture.componentInstance.labCaptureFields().length);
+  });
+
+  it('updateLab guarda la constante y permite limpiarla sin pisar las demás', () => {
+    const component = TestBed.createComponent(DiagnosisStepComponent).componentInstance;
+
+    component.updateLab('pas_mmhg', '150');
+    component.updateLab('egfr_ml_min_173', '29');
+    expect(store.labs()?.pas_mmhg).toBe(150);
+    expect(store.labs()?.egfr_ml_min_173).toBe(29);
+
+    component.updateLab('pas_mmhg', '');
+    expect(store.labs()?.pas_mmhg).toBeNull();
+    expect(store.labs()?.egfr_ml_min_173).toBe(29);
+  });
+});

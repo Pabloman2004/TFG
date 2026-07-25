@@ -387,6 +387,16 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
+    it('dispara también con Enfermedad de Parkinson (es un parkinsonismo)', () => {
+      const p = makeCase({ diagnoses: ['parkinson'], medications: [neuroleptico()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
+    it('dispara también con parkinsonismo inducido por fármacos', () => {
+      const p = makeCase({ diagnoses: ['parkinsonismo_inducido_por_farmacos'], medications: [neuroleptico()] });
+      expect(engine.evaluate(p, [c]).length).toBe(1);
+    });
+
     it('no dispara con parkinsonismo + solo Quetiapina (excepción STOPP v3)', () => {
       const p = makeCase({ diagnoses: ['parkinsonismo'], medications: [neuroleptico('Quetiapina')] });
       expect(engine.evaluate(p, [c])).toEqual([]);

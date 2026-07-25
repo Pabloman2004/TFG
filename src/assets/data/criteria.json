@@ -149,7 +149,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar diuréticos de asa como tratamiento de primera línea de la HTA. Existen alternativas más efectivas y con menos efectos adversos, salvo que exista insuficiencia cardíaca.",
-      "logic": {"and":[{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]}]},{"!":{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]}}]},
+      "logic": {"and":[{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]},{"or":[{"in":["hta",{"var":"diagnoses"}]},{"in":["hta_no_complicada",{"var":"diagnoses"}]},{"in":["hipertension_moderada",{"var":"diagnoses"}]},{"in":["hipertension_grave",{"var":"diagnoses"}]}]},{"!":{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_fe_reducida",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_grave",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]}}]},
       "excludes": {"medications":["Furosemida","Torasemida"],"drugClasses":["DIURETICO_ASA"]}
     },
     {
@@ -157,7 +157,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar diuréticos de asa en edemas maleolares sin evidencia clínica, bioquímica o radiológica de insuficiencia cardíaca, hepática, renal o síndrome nefrótico.",
-      "logic": {"and":[{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]},{"in":["edemas_maleolares",{"var":"diagnoses"}]},{"!":{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]},{"in":["insuficiencia_hepatica",{"var":"diagnoses"}]},{"in":["insuficiencia_renal",{"var":"diagnoses"}]},{"in":["sindrome_nefrotico",{"var":"diagnoses"}]}]}}]},
+      "logic": {"and":[{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]},{"in":["edemas_maleolares",{"var":"diagnoses"}]},{"!":{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_fe_reducida",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_grave",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]},{"in":["insuficiencia_hepatica",{"var":"diagnoses"}]},{"in":["insuficiencia_renal",{"var":"diagnoses"}]},{"in":["sindrome_nefrotico",{"var":"diagnoses"}]}]}}]},
       "excludes": {"medications":["Furosemida","Torasemida"],"drugClasses":["DIURETICO_ASA"]}
     },
     {
@@ -301,7 +301,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar AINEs o corticoides en pacientes con insuficiencia cardíaca que requiera diuréticos de asa. Riesgo de descompensación de la insuficiencia cardíaca.",
-      "logic": {"and":[{"inDrugClass":["AINE",{"var":"medications"}]},{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]},{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]}]},
+      "logic": {"and":[{"inDrugClass":["AINE",{"var":"medications"}]},{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_fe_reducida",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_grave",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]},{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]}]},
       "excludes": {"medications":["Ibuprofeno","Naproxeno","Diclofenaco","Indometacina","Piroxicam","Celecoxib","Prednisona","Metilprednisolona","Dexametasona","Hidrocortisona"],"drugClasses":["AINE","CORTICOIDE_SISTEMICO"]}
     },
     {
@@ -309,7 +309,7 @@
       "type": "STOPP",
       "system": "Sistema cardiovascular",
       "summary": "Evitar corticoides sistémicos en pacientes con insuficiencia cardíaca que requiera diuréticos de asa. Riesgo de descompensación de la insuficiencia cardíaca por retención hidrosalina.",
-      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]},{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]}]},
+      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_fe_reducida",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_grave",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]}]},{"inDrugClass":["DIURETICO_ASA",{"var":"medications"}]}]},
       "excludes": {"medications":["Prednisona","Metilprednisolona","Dexametasona","Hidrocortisona"],"drugClasses":["CORTICOIDE_SISTEMICO"]}
     },
     {
@@ -629,7 +629,7 @@
       "type": "STOPP",
       "system": "Sistema nervioso central",
       "summary": "Evitar neurolépticos (salvo clozapina y quetiapina) en pacientes con parkinsonismo o demencia por cuerpos de Lewy. Riesgo de efectos extrapiramidales graves.",
-      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"some":[{"var":"medications"},{"and":[{"in":["neuroleptico",{"var":"drugClasses"}]},{"!":{"in":[{"var":"id"},["quetiapina","clozapina"]]}}]}]},{"or":[{"in":["parkinsonismo",{"var":"diagnoses"}]},{"in":["demencia_cuerpos_lewy",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]},{"some":[{"var":"medications"},{"and":[{"in":["neuroleptico",{"var":"drugClasses"}]},{"!":{"in":[{"var":"id"},["quetiapina","clozapina"]]}}]}]},{"or":[{"in":["parkinsonismo",{"var":"diagnoses"}]},{"in":["parkinson",{"var":"diagnoses"}]},{"in":["parkinsonismo_inducido_por_farmacos",{"var":"diagnoses"}]},{"in":["demencia_cuerpos_lewy",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Tioridazina","Proclorperazina","Risperidona","Aripiprazol","Olanzapina"]}
     },
     {
@@ -829,7 +829,7 @@
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
       "summary": "Evitar proclorperazina o metoclopramida en presencia de parkinsonismo. Riesgo de empeoramiento de los síntomas parkinsonianos.",
-      "logic": {"and":[{"inDrugClass":["PROCINETICO",{"var":"medications"}]},{"in":["parkinsonismo",{"var":"diagnoses"}]}]},
+      "logic": {"and":[{"inDrugClass":["PROCINETICO",{"var":"medications"}]},{"or":[{"in":["parkinsonismo",{"var":"diagnoses"}]},{"in":["parkinson",{"var":"diagnoses"}]},{"in":["parkinsonismo_inducido_por_farmacos",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Metoclopramida","Proclorperazina"],"drugClasses":["PROCINETICO"]}
     },
     {
@@ -1077,7 +1077,7 @@
       "type": "STOPP",
       "system": "Sistema endocrino",
       "summary": "Evitar tiazolidindionas (rosiglitazona, pioglitazona) en pacientes con insuficiencia cardíaca. Riesgo de descompensación de insuficiencia cardíaca.",
-      "logic": {"and":[{"inDrugClass":["TIAZOLIDINDIONA",{"var":"medications"}]},{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["TIAZOLIDINDIONA",{"var":"medications"}]},{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_fe_reducida",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_grave",{"var":"diagnoses"}]},{"in":["ic_nyha_3_4",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]}]}]},
       "excludes": {"drugClasses":["TIAZOLIDINDIONA"]}
     },
     {
@@ -1340,7 +1340,7 @@
       "type": "START",
       "system": "Sistema cardiovascular",
       "summary": "Considerar iniciar estatina. El paciente tiene enfermedad vascular establecida (coronaria, cerebral o periférica) y no recibe estatinas, salvo en fragilidad grave o final de vida.",
-      "logic": {"and":[{"or":[{"in":["enfermedad_vascular_coronaria",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_cerebral",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_periferica",{"var":"diagnoses"}]},{"in":["enfermedad_cardiovascular",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["ESTATINA",{"var":"medications"}]}}]}
+      "logic": {"and":[{"or":[{"in":["enfermedad_vascular_coronaria",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_cerebral",{"var":"diagnoses"}]},{"in":["enfermedad_vascular_periferica",{"var":"diagnoses"}]},{"in":["enfermedad_cardiovascular",{"var":"diagnoses"}]}]},{"!":{"in":["fragilidad",{"var":"diagnoses"}]}},{"!":{"inDrugClass":["ESTATINA",{"var":"medications"}]}}]}
     },
     {
       "id": "START-B3-IECA-CARDIOPATIA-ISQUEMICA",
@@ -1382,7 +1382,7 @@
       "type": "START",
       "system": "Sistema cardiovascular",
       "summary": "Considerar iniciar iSGLT2 (canagliflozina, dapagliflozina, empagliflozina, ertugliflozina). El paciente tiene insuficiencia cardíaca sintomática y no recibe inhibidores SGLT2.",
-      "logic": {"and":[{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_fe_reducida",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["ISGLT2",{"var":"medications"}]}}]}
+      "logic": {"and":[{"or":[{"in":["insuficiencia_cardiaca",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_fe_reducida",{"var":"diagnoses"}]},{"in":["ic_funcion_sistolica_conservada",{"var":"diagnoses"}]},{"in":["insuficiencia_cardiaca_grave",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["ISGLT2",{"var":"medications"}]}}]}
     },
     {
       "id": "START-B9-SACUBITRILO-VALSARTAN-IC",
@@ -1396,7 +1396,7 @@
       "type": "START",
       "system": "Sistema cardiovascular",
       "summary": "Considerar iniciar betabloqueante. El paciente tiene FA crónica con mal control de la frecuencia cardíaca y no recibe betabloqueantes.",
-      "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"in":["fa_mal_control_frecuencia",{"var":"diagnoses"}]},{"!":{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]}}]}
+      "logic": {"and":[{"in":["fa_mal_control_frecuencia",{"var":"diagnoses"}]},{"!":{"inDrugClass":["BETABLOQUEANTE",{"var":"medications"}]}}]}
     },
     {
       "id": "START-B11-HIERRO-IV-IC-DEFICIT-HIERRO",
@@ -1473,21 +1473,21 @@
       "type": "START",
       "system": "Sistema renal",
       "summary": "Considerar 1-alfa-hidroxicolecalciferol o calcitriol. El paciente tiene ERC grave (TFGe < 30), hipocalcemia (calcio < 2,10 mmol/l) e hiperparatiroidismo secundario, y no recibe vitamina D activa.",
-      "logic": {"and":[{"!=":[{"var":"labs.egfr_ml_min_173"},null]},{"<":[{"var":"labs.egfr_ml_min_173"},30]},{"!=":[{"var":"labs.calcio_corregido_mmol_l"},null]},{"<":[{"var":"labs.calcio_corregido_mmol_l"},2.1]},{"in":["hiperparatiroidismo_secundario",{"var":"diagnoses"}]},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}
+      "logic": {"and":[{"egfrBelow":[30,{"var":""}]},{"or":[{"and":[{"!=":[{"var":"labs.calcio_corregido_mmol_l"},null]},{"<":[{"var":"labs.calcio_corregido_mmol_l"},2.1]}]},{"in":["hipocalcemia",{"var":"diagnoses"}]}]},{"in":["hiperparatiroidismo_secundario",{"var":"diagnoses"}]},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}
     },
     {
       "id": "START-E2-QUELANTE-FOSFORO-ERC-HIPERFOSFATEMIA",
       "type": "START",
       "system": "Sistema renal",
       "summary": "Considerar quelante del fósforo (sevelámero, carbonato de lantano). El paciente tiene ERC grave (TFGe < 30) con hiperfosfatemia persistente y no recibe quelantes.",
-      "logic": {"and":[{"!=":[{"var":"labs.egfr_ml_min_173"},null]},{"<":[{"var":"labs.egfr_ml_min_173"},30]},{"in":["hiperfosfatemia",{"var":"diagnoses"}]},{"!":{"inDrugClass":["QUELANTE_FOSFORO",{"var":"medications"}]}}]}
+      "logic": {"and":[{"egfrBelow":[30,{"var":""}]},{"in":["hiperfosfatemia",{"var":"diagnoses"}]},{"!":{"inDrugClass":["QUELANTE_FOSFORO",{"var":"medications"}]}}]}
     },
     {
       "id": "START-E3-EPO-ERC-ANEMIA",
       "type": "START",
       "system": "Sistema renal",
       "summary": "Considerar análogo de eritropoyetina. El paciente tiene ERC grave (TFGe < 30) con anemia sintomática no atribuible a déficits hemáticos o de hierro, y no recibe eritropoyetina.",
-      "logic": {"and":[{"!=":[{"var":"labs.egfr_ml_min_173"},null]},{"<":[{"var":"labs.egfr_ml_min_173"},30]},{"in":["anemia_sintomatica",{"var":"diagnoses"}]},{"!":{"inDrugClass":["EPO",{"var":"medications"}]}}]}
+      "logic": {"and":[{"egfrBelow":[30,{"var":""}]},{"in":["anemia_sintomatica",{"var":"diagnoses"}]},{"!":{"inDrugClass":["EPO",{"var":"medications"}]}}]}
     },
     {
       "id": "START-E4-IECA-ARA2-ERC-PROTEINURIA",
@@ -1592,7 +1592,7 @@
       "type": "START",
       "system": "Sistema musculoesquelético",
       "summary": "Considerar vitamina D en paciente mayor con déficit confirmado de vitamina D que no sale de casa, sufre caídas o tiene osteopenia, y no recibe suplementación.",
-      "logic": {"and":[{"or":[{"in":["deficit_vitamina_d",{"var":"diagnoses"}]},{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["osteopenia",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}
+      "logic": {"and":[{"in":["deficit_vitamina_d",{"var":"diagnoses"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]},{"in":["osteopenia",{"var":"diagnoses"}]},{"in":["no_sale_de_casa",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}
     },
     {
       "id": "START-H8-INHIBIDOR-XANTINA-OXIDASA-GOTA",
@@ -1655,7 +1655,7 @@
       "type": "START",
       "system": "Analgésicos",
       "summary": "Considerar opioide potente para dolor moderado-grave no artrósico. El paracetamol y los AINEs no son suficientes o están contraindicados. El paciente no recibe opioides.",
-      "logic": {"and":[{"in":["dolor_moderado_grave",{"var":"diagnoses"}]},{"!":{"in":["artrosis",{"var":"diagnoses"}]}},{"!":{"inDrugClass":["OPIOIDE",{"var":"medications"}]}}]}
+      "logic": {"and":[{"in":["dolor_moderado_grave",{"var":"diagnoses"}]},{"!":{"in":["artrosis",{"var":"diagnoses"}]}},{"!":{"in":["dolor_cronico_artrosis",{"var":"diagnoses"}]}},{"!":{"inDrugClass":["OPIOIDE",{"var":"medications"}]}}]}
     },
     {
       "id": "START-K2-LAXANTE-CON-OPIOIDE",

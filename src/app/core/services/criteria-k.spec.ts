@@ -366,6 +366,12 @@ describe('Criterios START — Sección K', () => {
       }), [crit(id)])).toEqual([]);
     });
 
+    it('no dispara con dolor crónico de la artrosis', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['dolor_moderado_grave', 'dolor_cronico_artrosis'],
+      }), [crit(id)])).toEqual([]);
+    });
+
     it('no dispara si ya recibe opioide', () => {
       expect(engine.evaluate(makeCase({
         diagnoses: ['dolor_moderado_grave'],

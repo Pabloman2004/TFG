@@ -163,6 +163,16 @@ expansión transversal incluida para clases y, para diagnósticos, acotada al ta
 de origen cuando el sistema mapea a varios tabs y el diagnóstico pertenece a
 uno de ellos). `excludes` no se consulta para construir el índice.
 
+La captura de analítica **no** pasa por el índice de relevancia: los criterios
+START (p. ej. B1: PAS/PAD, o los START renales con TFGe) se disparan por la
+**ausencia** de una clase de medicación, así que ninguna selección "activa" el
+campo y no puede condicionarse. Por eso `labCaptureFields` (`core/lab-capture.ts`)
+ofrece un **panel fijo** con todos los campos que algún criterio puede leer,
+siempre visible en la pestaña «Otros» del paso de diagnósticos. El invariante lo
+verifica `lab-capture.spec.ts`: todo lab leído por un criterio real tiene ficha de
+presentación (`LAB_SPECS`), de modo que ningún criterio queda inalcanzable por
+falta de campo en la interfaz.
+
 Además acumula `specificClassesByTab` y `specificDxsByTab`: referencias de
 criterios cuyo `system` mapea **específicamente** a un tab (los transversales NO
 se vuelcan aquí). `computeMedGroupBuckets` usa `specificClassesByTab` para el

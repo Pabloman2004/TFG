@@ -94,7 +94,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 3. START-B11-HIERRO-IV-IC-DEFICIT-HIERRO — Considerar hierro intravenoso. El paciente tiene IC con FE reducida y déficit de h… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] + dx **Déficit de hierro** [tab Hematológico] [y NO marcar **Hierro carboximaltosa IV** [tab Renal] (clase HIERRO_IV)]
 
-4. START-B2-ESTATINA-ENFERMEDAD-VASCULAR — Considerar iniciar estatina. El paciente tiene enfermedad vascular establecida (co… — Para que salte: (dx **Enfermedad vascular coronaria** [tab Cardiovascular] | dx **Enfermedad vascular cerebral** [tab Cardiovascular] | dx **Enfermedad vascular periférica** [tab Cardiovascular] | dx **Enfermedad cardiovascular establecida** [tab Cardiovascular]) [y NO marcar **Atorvastatina** [tab Endocrino/Metabólico] (clase ESTATINA)]
+4. START-B2-ESTATINA-ENFERMEDAD-VASCULAR — Considerar iniciar estatina. El paciente tiene enfermedad vascular establecida (co… — Para que salte: (dx **Enfermedad vascular coronaria** [tab Cardiovascular] | dx **Enfermedad vascular cerebral** [tab Cardiovascular] | dx **Enfermedad vascular periférica** [tab Cardiovascular] | dx **Enfermedad cardiovascular establecida** [tab Cardiovascular]) [y NO marcar dx **Fragilidad** [tab Otros (Geriátrico)]; y NO marcar **Atorvastatina** [tab Endocrino/Metabólico] (clase ESTATINA)]
 
 5. START-B3-IECA-CARDIOPATIA-ISQUEMICA — Considerar iniciar IECA. El paciente tiene cardiopatía isquémica y no recibe IECA. — Para que salte: dx **Cardiopatía isquémica** [tab Cardiovascular] [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA)]
 
@@ -106,7 +106,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 9. START-B7-ANTAGONISTA-ALDOSTERONA-IC — Considerar iniciar antagonista de aldosterona (espironolactona, eplerenona). El pa… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] [y NO marcar **Espironolactona** [tab Cardiovascular + Renal] (clase ANTAGONISTA_ALDOSTERONA); y NO TFGe < 30]
 
-10. START-B8-ISGLT2-INSUFICIENCIA-CARDIACA — Considerar iniciar iSGLT2 (canagliflozina, dapagliflozina, empagliflozina, ertugli… — Para que salte: (dx **Insuficiencia cardíaca** [tab Cardiovascular] | dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular]) [y NO marcar **Canagliflozina** [tab Cardiovascular + Endocrino/Metabólico + Renal] (clase ISGLT2)]
+10. START-B8-ISGLT2-INSUFICIENCIA-CARDIACA — Considerar iniciar iSGLT2 (canagliflozina, dapagliflozina, empagliflozina, ertugli… — Para que salte: (dx **Insuficiencia cardíaca** [tab Cardiovascular] | dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] | dx **Insuficiencia cardíaca con función sistólica conservada** [tab Cardiovascular] | dx **Insuficiencia cardíaca grave** [tab Cardiovascular]) [y NO marcar **Canagliflozina** [tab Cardiovascular + Endocrino/Metabólico + Renal] (clase ISGLT2)]
 
 11. START-B9-SACUBITRILO-VALSARTAN-IC — Considerar sacubitrilo/valsartán en IC con FE reducida sintomática pese a tratamie… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] + (marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA) | marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2)) [y NO marcar **Sacubitrilo/Valsartán** [tab Cardiovascular (grupo unitario; si no visible → Otros)] (clase SACUBITRILO_VALSARTAN)]
 

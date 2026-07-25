@@ -87,9 +87,11 @@ describe('buildDxDependencies — conflación padre/variante (derivación pura)'
     expect(classes).not.toContain('DIURETICO_ASA');
   });
 
-  it('Demencia por cuerpos de Lewy conserva NEUROLEPTICO; Demencia genérica es ancla fuera del mapa', () => {
+  it('Demencia por cuerpos de Lewy y Demencia genérica son anclas fuera del mapa de gating', () => {
+    // DLB es ancla desde que START-D4 (rivastigmina) la necesita como diagnóstico
+    // independiente: no debe quedar gateada tras un neuroléptico (STOPP-D12).
     const pureDeps = pure();
-    expect(pureDeps['Demencia por cuerpos de Lewy']?.classes).toContain('NEUROLEPTICO');
+    expect(pureDeps['Demencia por cuerpos de Lewy']).toBeUndefined();
     expect(pureDeps['Demencia']).toBeUndefined();
   });
 });

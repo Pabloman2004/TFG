@@ -28,7 +28,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ### START
 
-1. START-K1-OPIOIDE-DOLOR-MODERADO-GRAVE — Considerar opioide potente para dolor moderado-grave no artrósico. El paracetamol … — Para que salte: dx **Dolor moderado-grave** [tab Otros (Sintomático)] [y NO marcar dx **Artrosis** [tab Reumatológico]; y NO marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE)]
+1. START-K1-OPIOIDE-DOLOR-MODERADO-GRAVE — Considerar opioide potente para dolor moderado-grave no artrósico. El paracetamol … — Para que salte: dx **Dolor moderado-grave** [tab Otros (Sintomático)] [y NO marcar dx **Artrosis** [tab Reumatológico]; y NO marcar dx **Dolor crónico de la artrosis** [tab Reumatológico]; y NO marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE)]
 
 2. START-K2-LAXANTE-CON-OPIOIDE — Considerar iniciar laxante. El paciente recibe opioides de forma regular y no tien… — Para que salte: marcar **Morfina** [tab Osteo/Músculo-esq. + SNC] (clase OPIOIDE) [y NO marcar **Lactulosa** [tab Gastrointestinal] (clase LAXANTE)]
 
@@ -242,7 +242,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 3. START-B11-HIERRO-IV-IC-DEFICIT-HIERRO — Considerar hierro intravenoso. El paciente tiene IC con FE reducida y déficit de h… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] + dx **Déficit de hierro** [tab Hematológico] [y NO marcar **Hierro carboximaltosa IV** [tab Renal] (clase HIERRO_IV)]
 
-4. START-B2-ESTATINA-ENFERMEDAD-VASCULAR — Considerar iniciar estatina. El paciente tiene enfermedad vascular establecida (co… — Para que salte: (dx **Enfermedad vascular coronaria** [tab Cardiovascular] | dx **Enfermedad vascular cerebral** [tab Cardiovascular] | dx **Enfermedad vascular periférica** [tab Cardiovascular] | dx **Enfermedad cardiovascular establecida** [tab Cardiovascular]) [y NO marcar **Atorvastatina** [tab Endocrino/Metabólico] (clase ESTATINA)]
+4. START-B2-ESTATINA-ENFERMEDAD-VASCULAR — Considerar iniciar estatina. El paciente tiene enfermedad vascular establecida (co… — Para que salte: (dx **Enfermedad vascular coronaria** [tab Cardiovascular] | dx **Enfermedad vascular cerebral** [tab Cardiovascular] | dx **Enfermedad vascular periférica** [tab Cardiovascular] | dx **Enfermedad cardiovascular establecida** [tab Cardiovascular]) [y NO marcar dx **Fragilidad** [tab Otros (Geriátrico)]; y NO marcar **Atorvastatina** [tab Endocrino/Metabólico] (clase ESTATINA)]
 
 5. START-B3-IECA-CARDIOPATIA-ISQUEMICA — Considerar iniciar IECA. El paciente tiene cardiopatía isquémica y no recibe IECA. — Para que salte: dx **Cardiopatía isquémica** [tab Cardiovascular] [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA)]
 
@@ -254,7 +254,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 9. START-B7-ANTAGONISTA-ALDOSTERONA-IC — Considerar iniciar antagonista de aldosterona (espironolactona, eplerenona). El pa… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] [y NO marcar **Espironolactona** [tab Cardiovascular + Renal] (clase ANTAGONISTA_ALDOSTERONA); y NO TFGe < 30]
 
-10. START-B8-ISGLT2-INSUFICIENCIA-CARDIACA — Considerar iniciar iSGLT2 (canagliflozina, dapagliflozina, empagliflozina, ertugli… — Para que salte: (dx **Insuficiencia cardíaca** [tab Cardiovascular] | dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular]) [y NO marcar **Canagliflozina** [tab Cardiovascular + Endocrino/Metabólico + Renal] (clase ISGLT2)]
+10. START-B8-ISGLT2-INSUFICIENCIA-CARDIACA — Considerar iniciar iSGLT2 (canagliflozina, dapagliflozina, empagliflozina, ertugli… — Para que salte: (dx **Insuficiencia cardíaca** [tab Cardiovascular] | dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] | dx **Insuficiencia cardíaca con función sistólica conservada** [tab Cardiovascular] | dx **Insuficiencia cardíaca grave** [tab Cardiovascular]) [y NO marcar **Canagliflozina** [tab Cardiovascular + Endocrino/Metabólico + Renal] (clase ISGLT2)]
 
 11. START-B9-SACUBITRILO-VALSARTAN-IC — Considerar sacubitrilo/valsartán en IC con FE reducida sintomática pese a tratamie… — Para que salte: dx **Insuficiencia cardíaca con FE reducida** [tab Cardiovascular] + (marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA) | marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2)) [y NO marcar **Sacubitrilo/Valsartán** [tab Cardiovascular (grupo unitario; si no visible → Otros)] (clase SACUBITRILO_VALSARTAN)]
 
@@ -374,7 +374,7 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 4. START-H4-ANTIRRESORTIVO-OSTEOPOROSIS — Considerar antirresortivo (bisfosfonato, denosumab) o anabolizante óseo (teriparat… — Para que salte: (dx **Osteoporosis** [tab Reumatológico] | dx **Fractura por fragilidad** [tab Reumatológico]) [y NO marcar **Alendronato** [tab Osteo/Músculo-esq.] (clase ANTIRRESORTIVO); y NO marcar **Teriparatida** [tab Osteo/Músculo-esq. (grupo unitario; si no visible → Otros)] (clase ANABOLIZANTE_OSEO)]
 
-5. START-H5-VITAMINA-D-DEFICIT-CAIDAS-OSTEOPENIA — Considerar vitamina D en paciente mayor con déficit confirmado de vitamina D que n… — Para que salte: (dx **Déficit de vitamina D confirmado** [tab Metabólico] | dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Osteopenia** [tab Reumatológico]) [y NO marcar **Colecalciferol** [tab Renal] (clase VITAMINA_D)]
+5. START-H5-VITAMINA-D-DEFICIT-CAIDAS-OSTEOPENIA — Considerar vitamina D en paciente mayor con déficit confirmado de vitamina D que n… — Para que salte: dx **Déficit de vitamina D confirmado** [tab Metabólico] + (dx **Caídas de repetición** [tab Otros (Geriátrico)] | dx **Riesgo de caídas de repetición** [tab Otros (Síntoma)] | dx **Osteopenia** [tab Reumatológico] | dx **No sale de casa** [tab Otros (Geriátrico)]) [y NO marcar **Colecalciferol** [tab Renal] (clase VITAMINA_D)]
 
 6. START-H8-INHIBIDOR-XANTINA-OXIDASA-GOTA — Considerar inhibidor de la xantina oxidasa (alopurinol, febuxostat) como profilaxi… — Para que salte: dx **Gota recurrente** [tab Reumatológico] [y NO marcar **Alopurinol** [tab Endocrino/Metabólico] (clase INHIBIDOR_XANTINA_OXIDASA)]
 
@@ -496,11 +496,11 @@ Leyenda tabs dx: tab de diagnósticos en la UI (`Otros (Sistema)` = subgrupo den
 
 ### START
 
-1. START-E1-CALCITRIOL-ERC-HIPOCALCEMIA-HIPERPARATIROIDISMO — Considerar 1-alfa-hidroxicolecalciferol o calcitriol. El paciente tiene ERC grave … — Para que salte: TFGe=null (lab — sin pantalla UI) + TFGe=29 (lab — sin pantalla UI) + Ca corr.=null (lab — sin pantalla UI) + Ca corr.=2 (lab — sin pantalla UI) + dx **Hiperparatiroidismo secundario** [tab Endocrino] [y NO marcar **Colecalciferol** [tab Renal] (clase VITAMINA_D)]
+1. START-E1-CALCITRIOL-ERC-HIPOCALCEMIA-HIPERPARATIROIDISMO — Considerar 1-alfa-hidroxicolecalciferol o calcitriol. El paciente tiene ERC grave … — Para que salte: TFGe < 30 (lab egfr=29 o dx **Enfermedad renal grave** [tab Renal]) + Ca corr.=null (lab — sin pantalla UI) + Ca corr.=2 (lab — sin pantalla UI) + dx **Hiperparatiroidismo secundario** [tab Endocrino] [y NO marcar **Colecalciferol** [tab Renal] (clase VITAMINA_D)]
 
-2. START-E2-QUELANTE-FOSFORO-ERC-HIPERFOSFATEMIA — Considerar quelante del fósforo (sevelámero, carbonato de lantano). El paciente ti… — Para que salte: TFGe=null (lab — sin pantalla UI) + TFGe=29 (lab — sin pantalla UI) + dx **Hiperfosfatemia** [tab Metabólico] [y NO marcar **Sevelámero** [tab Renal] (clase QUELANTE_FOSFORO)]
+2. START-E2-QUELANTE-FOSFORO-ERC-HIPERFOSFATEMIA — Considerar quelante del fósforo (sevelámero, carbonato de lantano). El paciente ti… — Para que salte: TFGe < 30 (lab egfr=29 o dx **Enfermedad renal grave** [tab Renal]) + dx **Hiperfosfatemia** [tab Metabólico] [y NO marcar **Sevelámero** [tab Renal] (clase QUELANTE_FOSFORO)]
 
-3. START-E3-EPO-ERC-ANEMIA — Considerar análogo de eritropoyetina. El paciente tiene ERC grave (TFGe < 30) con … — Para que salte: TFGe=null (lab — sin pantalla UI) + TFGe=29 (lab — sin pantalla UI) + dx **Anemia sintomática** [tab Hematológico] [y NO marcar **Eritropoyetina alfa** [tab Renal] (clase EPO)]
+3. START-E3-EPO-ERC-ANEMIA — Considerar análogo de eritropoyetina. El paciente tiene ERC grave (TFGe < 30) con … — Para que salte: TFGe < 30 (lab egfr=29 o dx **Enfermedad renal grave** [tab Renal]) + dx **Anemia sintomática** [tab Hematológico] [y NO marcar **Eritropoyetina alfa** [tab Renal] (clase EPO)]
 
 4. START-E4-IECA-ARA2-ERC-PROTEINURIA — Considerar iniciar IECA o ARA-II. El paciente tiene ERC con proteinuria (albuminur… — Para que salte: dx **Proteinuria / microalbuminuria** [tab Renal] [y NO marcar **Enalapril** [tab Cardiovascular + Renal] (clase IECA); y NO marcar **Valsartán** [tab Cardiovascular + Renal] (clase ARA2); y NO TFGe < 30]
 

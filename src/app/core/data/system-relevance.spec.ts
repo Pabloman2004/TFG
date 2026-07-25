@@ -277,6 +277,11 @@ describe('buildRelevance', () => {
     expect(rel.specificDxsByTab.get('gastrointestinal')?.has('estrenimiento_cronico')).toBe(true);
   });
 
+  it('hipocalcemia aflora en renal (START-E1) para poder marcarse en ese tab', () => {
+    const rel = buildRelevance(ALL_CRITERIA);
+    expect(rel.specificDxsByTab.get('renal')?.has('hipocalcemia')).toBe(true);
+  });
+
   it('ignora criterios transversales si no se pasa allTabIds', () => {
     const rel = buildRelevance([
       crit({

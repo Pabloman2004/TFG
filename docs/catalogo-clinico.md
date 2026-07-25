@@ -130,6 +130,28 @@ de las clases declaradas (o coincide por id). Esta función es consumida por
   criterios y se centraliza en `dx-dependencies.ts`, con overrides declarativos para excepciones.
   Esto evita duplicar manualmente las relaciones medicamento–diagnóstico.
 
+- **Matices clínicos no modelados (simplificación deliberada)**: varios criterios llevan en su
+  enunciado un adjetivo que la lógica no comprueba, porque modelarlo exigiría un diagnóstico nuevo
+  cuyo único efecto sería obligar al clínico a marcar dos casillas donde hoy marca una. El texto
+  del criterio se mantiene fiel a la fuente STOPP/START y la lógica dispara con el diagnóstico
+  base; la matización queda a juicio de quien revisa la alerta. Casos vigentes:
+
+  | Criterio | Matiz del enunciado | Diagnóstico que evalúa |
+  |---|---|---|
+  | START-B1 | umbral relajado (>150/90) si fragilidad moderada-grave | umbral único >140/90 |
+  | START-B4 | cardiopatía isquémica **sintomática** | `cardiopatia_isquemica` |
+  | START-D1 | Parkinson con **deterioro funcional** | `parkinson` |
+  | START-D3 | Alzheimer **leve-moderado** | `alzheimer` |
+  | START-H1 | artritis reumatoide activa **incapacitante** | `artritis_reumatoide_activa` |
+  | START-I5 | disfunción eréctil **que causa sufrimiento** | `disfuncion_erectil` |
+  | STOPP-I3 | HBP con **volumen residual > 200 ml** | `hiperplasia_benigna_prostata` |
+
+  La excepción que sí se modela es START-B2 (estatina): su "salvo fragilidad o final de vida" usa
+  el diagnóstico `fragilidad`, que ya existía en el catálogo y no obliga a marcar nada nuevo — el
+  criterio simplemente deja de recomendar la estatina cuando la fragilidad está marcada. El
+  criterio para decidir es ese: si el matiz se apoya en un diagnóstico existente, se modela; si
+  exige inventar uno redundante con el base, se documenta aquí.
+
 - **`byClass()` como helper interno**: en lugar de filtrar `MEDICATIONS` en cada componente,
   `medications-taxonomy.ts` centraliza la derivación de listas de fármacos por clase. Garantiza
   que si se añade un fármaco al catálogo, aparece automáticamente en todos los grupos que declaren

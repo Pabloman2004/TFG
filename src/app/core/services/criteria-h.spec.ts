@@ -63,6 +63,47 @@ describe('Criterios STOPP — Sección H (Sistema musculoesquelético)', () => {
     }), [c]).length).toBe(1);
   });
 
+  describe('START-H5-VITAMINA-D-DEFICIT-CAIDAS-OSTEOPENIA', () => {
+    const c = crit('START-H5-VITAMINA-D-DEFICIT-CAIDAS-OSTEOPENIA');
+
+    it('no dispara con caídas de repetición sin déficit confirmado', () => {
+      expect(engine.evaluate(makeCase({ diagnoses: ['caidas_repeticion'] }), [c])).toEqual([]);
+    });
+
+    it('no dispara con osteopenia sin déficit confirmado', () => {
+      expect(engine.evaluate(makeCase({ diagnoses: ['osteopenia'] }), [c])).toEqual([]);
+    });
+
+    it('no dispara con déficit de vitamina D sin factor de riesgo', () => {
+      expect(engine.evaluate(makeCase({ diagnoses: ['deficit_vitamina_d'] }), [c])).toEqual([]);
+    });
+
+    it('dispara con déficit confirmado + caídas de repetición', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['deficit_vitamina_d', 'caidas_repeticion'],
+      }), [c]).length).toBe(1);
+    });
+
+    it('dispara con déficit confirmado + osteopenia', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['deficit_vitamina_d', 'osteopenia'],
+      }), [c]).length).toBe(1);
+    });
+
+    it('dispara con déficit confirmado + no sale de casa', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['deficit_vitamina_d', 'no_sale_de_casa'],
+      }), [c]).length).toBe(1);
+    });
+
+    it('no dispara si ya recibe vitamina D', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['deficit_vitamina_d', 'caidas_repeticion'],
+        medications: [makeMed('Colecalciferol', ['VITAMINA_D'])],
+      }), [c])).toEqual([]);
+    });
+  });
+
   it('verifica H7–H9', () => {
     expectActive('STOPP-H7-AINE-CORTICOIDES', ['artritis'], [
       aine(),

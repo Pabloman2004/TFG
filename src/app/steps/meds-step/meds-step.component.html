@@ -141,19 +141,6 @@
           </label>
         </div>
 
-        @if (activeCategoryId() === 'renal') {
-          <section class="clinical-data-panel" aria-label="Datos para criterios renales">
-            <label class="clinical-field">
-              <span>TFGe (ml/min/1,73 m²)</span>
-              <input type="number"
-                     min="0"
-                     step="0.1"
-                     [value]="store.labs()?.egfr_ml_min_173 ?? ''"
-                     (input)="onEgfrInput($event)">
-            </label>
-          </section>
-        }
-
         @if (clinicalCaptureFields().length > 0) {
           <section class="clinical-data-panel" aria-label="Dosis y duración de medicamentos">
             @for (field of clinicalCaptureFields(); track field.trackKey) {

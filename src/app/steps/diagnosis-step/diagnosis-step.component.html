@@ -140,6 +140,21 @@
           </label>
         </div>
 
+        @if (activeTabId() === OTROS_TAB_ID) {
+          <section class="clinical-data-panel" aria-label="Analítica y constantes">
+            @for (field of labCaptureFields(); track field.key) {
+              <label class="clinical-field">
+                <span>{{ field.label }}</span>
+                <input type="number"
+                       [min]="field.min"
+                       [step]="field.step"
+                       [value]="field.value ?? ''"
+                       (input)="onLabInput(field.key, $event)">
+              </label>
+            }
+          </section>
+        }
+
         <!-- Diagnosis columns -->
         <div class="cols-wrap">
 
