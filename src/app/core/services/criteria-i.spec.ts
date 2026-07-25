@@ -22,9 +22,6 @@ const estrogenoTopico = () => makeMed('Estriol vaginal', ['ESTROGENO_TOPICO']);
 const femaleInfo = {
   name: 'Test', age: 80, sex: 'F' as const, mrn: null, weightKg: null, heightCm: null, notes: null,
 };
-const maleInfo = {
-  name: 'Test', age: 80, sex: 'M' as const, mrn: null, weightKg: null, heightCm: null, notes: null,
-};
 
 describe('Criterios STOPP — Sección I (Sistema urogenital)', () => {
   let engine: CriteriaEngineService;
@@ -241,10 +238,12 @@ describe('Criterios START — Sección I (Sistema urogenital)', () => {
     });
   });
 
+  // I3 e I4 dejaron de comprobar info.sex: la UI no captura el sexo, así que la
+  // cláusula los hacía inalcanzables. El matiz «en mujeres» queda en el summary.
   describe('START-I3-ESTROGENO-TOPICO-VAGINITIS-ATROFICA', () => {
     const id = 'START-I3-ESTROGENO-TOPICO-VAGINITIS-ATROFICA';
 
-    it('dispara con mujer, vaginitis atrófica y sin estrógeno tópico', () => {
+    it('dispara con vaginitis atrófica y sin estrógeno tópico', () => {
       const result = engine.evaluate(makeCase({
         info: femaleInfo,
         diagnoses: ['vaginitis_atrofica'],
@@ -254,12 +253,11 @@ describe('Criterios START — Sección I (Sistema urogenital)', () => {
       expect(result.length).toBe(1);
     });
 
-    it('no dispara con varón y vaginitis atrófica', () => {
+    it('dispara sin datos de paciente: no depende del sexo registrado', () => {
       expect(engine.evaluate(makeCase({
-        info: maleInfo,
         diagnoses: ['vaginitis_atrofica'],
         medications: [],
-      }), [crit(id)])).toEqual([]);
+      }), [crit(id)]).length).toBe(1);
     });
 
     it('no dispara si ya recibe estrógeno tópico', () => {
@@ -274,7 +272,7 @@ describe('Criterios START — Sección I (Sistema urogenital)', () => {
   describe('START-I4-ESTROGENO-TOPICO-ITU-RECURRENTES', () => {
     const id = 'START-I4-ESTROGENO-TOPICO-ITU-RECURRENTES';
 
-    it('dispara con mujer, ITU recurrentes y sin estrógeno tópico', () => {
+    it('dispara con ITU recurrentes y sin estrógeno tópico', () => {
       const result = engine.evaluate(makeCase({
         info: femaleInfo,
         diagnoses: ['infecciones_urinarias_recurrentes'],
@@ -284,12 +282,11 @@ describe('Criterios START — Sección I (Sistema urogenital)', () => {
       expect(result.length).toBe(1);
     });
 
-    it('no dispara con varón e ITU recurrentes', () => {
+    it('dispara sin datos de paciente: no depende del sexo registrado', () => {
       expect(engine.evaluate(makeCase({
-        info: maleInfo,
         diagnoses: ['infecciones_urinarias_recurrentes'],
         medications: [],
-      }), [crit(id)])).toEqual([]);
+      }), [crit(id)]).length).toBe(1);
     });
 
     it('no dispara si ya recibe estrógeno tópico', () => {

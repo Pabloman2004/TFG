@@ -58,6 +58,12 @@ describe('DRUG_CATEGORIES — cobertura del catálogo', () => {
     expect(groupedDrugs.has('Acetato de megestrol')).toBe(true);
   });
 
+  it('la oxigenoterapia domiciliaria es seleccionable en el tab respiratorio (START-G3)', () => {
+    const respiratorio = DRUG_CATEGORIES.find(cat => cat.id === 'respiratorio');
+    const group = respiratorio?.groups.find(g => g.drugClass === 'OXIGENOTERAPIA');
+    expect(group?.drugs).toContain('Oxigenoterapia domiciliaria');
+  });
+
   it('los análogos de vasopresina son seleccionables para STOPP-J10', () => {
     expect(groupedDrugs.has('Desmopresina')).toBe(true);
     expect(groupedDrugs.has('Vasopresina')).toBe(true);

@@ -116,6 +116,7 @@ const RAW_DRUG_CATEGORIES: DrugCategory[] = [
       { id: 'lama', label: 'LAMA', fullName: 'Antimuscarínicos de acción larga inhalados (tiotropio, aclidinio, umeclidinio…)', drugs: byClass('LAMA'), drugClass: 'LAMA' },
       { id: 'laba', label: 'LABA', fullName: 'Agonistas beta-2 de acción larga inhalados (formoterol, salmeterol, indacaterol…)', drugs: byClass('LABA'), drugClass: 'LABA' },
       { id: 'ci_inh', label: 'Corticoides inhalados', drugs: byClass('CORTICOIDE_INHALADO'), drugClass: 'CORTICOIDE_INHALADO' },
+      { id: 'oxigenoterapia', label: 'Oxigenoterapia', fullName: 'Oxigenoterapia domiciliaria crónica (habitualmente ≥15 h/día)', drugs: byClass('OXIGENOTERAPIA'), drugClass: 'OXIGENOTERAPIA' },
       { id: 'metilxant', label: 'Metilxantinas', fullName: 'Metilxantinas (teofilina)', drugs: byClass('METILXANTINA'), drugClass: 'METILXANTINA' },
       { id: 'antihist1g', label: 'Antihist. 1ª gen.', fullName: 'Antihistamínicos de primera generación (difenhidramina, clorfeniramina…)', drugs: byClass('ANTIHISTAMINICO_1GEN'), drugClass: 'ANTIHISTAMINICO_1GEN' },
       { id: 'corticoide_sist', label: 'Corticoides sistémicos', drugs: byClass('CORTICOIDE_SISTEMICO'), drugClass: 'CORTICOIDE_SISTEMICO' },

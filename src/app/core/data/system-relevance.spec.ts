@@ -282,6 +282,16 @@ describe('buildRelevance', () => {
     expect(rel.specificDxsByTab.get('renal')?.has('hipocalcemia')).toBe(true);
   });
 
+  it('inmunocompromiso/deterioro grave aflora en gastrointestinal (exclusión de START-F6)', () => {
+    const rel = buildRelevance(ALL_CRITERIA);
+    expect(rel.specificDxsByTab.get('gastrointestinal')?.has('inmunocompromiso_deterioro_grave')).toBe(true);
+  });
+
+  it('hipoxemia crónica aflora en respiratorio (START-G3) para poder marcarse en ese tab', () => {
+    const rel = buildRelevance(ALL_CRITERIA);
+    expect(rel.specificDxsByTab.get('respiratorio')?.has('hipoxemia_cronica')).toBe(true);
+  });
+
   it('ignora criterios transversales si no se pasa allTabIds', () => {
     const rel = buildRelevance([
       crit({

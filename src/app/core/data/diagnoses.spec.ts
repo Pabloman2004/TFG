@@ -1,4 +1,9 @@
-import { resolveDiagnosisLabel, normalizeDiagnosis, DIAGNOSIS_MAP } from './diagnoses';
+import {
+  resolveDiagnosisLabel,
+  normalizeDiagnosis,
+  DIAGNOSIS_GROUPS,
+  DIAGNOSIS_MAP,
+} from './diagnoses';
 
 describe('resolveDiagnosisLabel', () => {
   it('devuelve el label legible para un código conocido del catálogo', () => {
@@ -58,5 +63,11 @@ describe('normalizeDiagnosis', () => {
 
   it('incluye esofagitis erosiva como diagnóstico seleccionable para STOPP-F5', () => {
     expect(DIAGNOSIS_MAP['Esofagitis erosiva']).toBe('esofagitis_erosiva');
+  });
+
+  it('incluye la hipoxemia crónica documentada como diagnóstico respiratorio para START-G3', () => {
+    const label = 'Hipoxemia crónica documentada (pO2 < 60 mmHg o SatO2 < 89%)';
+    expect(DIAGNOSIS_MAP[label]).toBe('hipoxemia_cronica');
+    expect(DIAGNOSIS_GROUPS[label]).toBe('Respiratorio');
   });
 });

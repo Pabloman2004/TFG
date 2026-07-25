@@ -117,3 +117,56 @@ describe('Criterios STOPP — Sección H (Sistema musculoesquelético)', () => {
     ]);
   });
 });
+
+describe('Criterios START — Sección H: retirada de tratamiento óseo', () => {
+  let engine: CriteriaEngineService;
+
+  beforeEach(() => { engine = setupEngine(); });
+
+  const bifosfonato = () => makeMed('Alendronato', ['BIFOSFONATO', 'ANTIRRESORTIVO']);
+
+  describe('START-H6-ANTIRRESORTIVO-TRAS-RETIRADA-DENOSUMAB', () => {
+    const id = 'START-H6-ANTIRRESORTIVO-TRAS-RETIRADA-DENOSUMAB';
+
+    it('dispara tras retirar denosumab si no hay antirresortivo de relevo', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['retirada_denosumab'],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara si ya recibe un antirresortivo de relevo', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['retirada_denosumab'],
+        medications: [bifosfonato()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara por tener osteoporosis sin retirada de denosumab', () => {
+      expect(engine.evaluate(makeCase({ diagnoses: ['osteoporosis'] }), [crit(id)])).toEqual([]);
+    });
+  });
+
+  describe('START-H7-ANTIRRESORTIVO-TRAS-RETIRADA-ANABOLIZANTE-OSEO', () => {
+    const id = 'START-H7-ANTIRRESORTIVO-TRAS-RETIRADA-ANABOLIZANTE-OSEO';
+
+    it('dispara tras retirar teriparatida/abaloparatida sin antirresortivo', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['retirada_anabolizante_oseo'],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara si ya recibe un antirresortivo de consolidación', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['retirada_anabolizante_oseo'],
+        medications: [bifosfonato()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara mientras sigue con el anabolizante óseo', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['osteoporosis'],
+        medications: [makeMed('Teriparatida', ['ANABOLIZANTE_OSEO'])],
+      }), [crit(id)])).toEqual([]);
+    });
+  });
+});

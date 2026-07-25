@@ -123,6 +123,28 @@ export type BuildDxDepsOptions = {
   includeExcludeClasses?: boolean;
 };
 
+/**
+ * Labels que algún criterio START exige en positivo. El gating se deriva de STOPP
+ * (fármaco presente → habilita el dx), pero un START recomienda INICIAR el fármaco:
+ * condicionar su diagnóstico a esa medicación lo haría inalcanzable justo para el
+ * paciente al que apunta el criterio. Estos labels quedan siempre habilitados.
+ */
+export const startRequiredLabels = (criteria: readonly Crit[]): ReadonlySet<string> => {
+  // extractPositiveDxCodes, no la variante ...ForDependencies: el colapso
+  // padre/variante de esta última descartaría las variantes de HTA e IC, que son
+  // labels distintos y marcables por separado en la UI.
+  const codes = new Set(
+    criteria
+      .filter(c => c.type === 'START')
+      .flatMap(c => [...extractPositiveDxCodes(c.logic)]),
+  );
+  return new Set(
+    Object.entries(DIAGNOSIS_MAP)
+      .filter(([, code]) => codes.has(code))
+      .map(([label]) => label),
+  );
+};
+
 export const buildDxDependencies = (
   criteria: readonly Crit[],
   overrides: Record<string, DxTrigger> = DX_DEPENDENCIES_OVERRIDES,
@@ -130,6 +152,7 @@ export const buildDxDependencies = (
 ): DxDependencies => {
   validateOverrideLabels(overrides, DIAGNOSIS_MAP);
 
+  const startRequired = startRequiredLabels(criteria);
   const classesByCode = new Map<string, Set<string>>();
 
   for (const c of criteria) {
@@ -157,7 +180,10 @@ export const buildDxDependencies = (
     derived[label] = triggerFromClasses(classes);
   }
 
-  return { ...derived, ...overrides };
+  return Object.fromEntries(
+    Object.entries({ ...derived, ...overrides })
+      .filter(([label]) => !startRequired.has(label)),
+  );
 };
 
 export const isDiagnosisEnabled = (

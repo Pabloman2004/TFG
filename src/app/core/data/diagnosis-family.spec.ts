@@ -55,7 +55,10 @@ describe('extractPositiveDxCodesForDependencies', () => {
 });
 
 describe('buildDxDependencies — conflación padre/variante (derivación pura)', () => {
-  const pure = () => buildDxDependencies(ALL_CRITERIA, {});
+  // Solo STOPP: el gating se deriva de STOPP y estos casos verifican el reparto
+  // padre/variante de clases. Con los START en la lista, HTA e IC-preservada
+  // quedarían exentas y las aserciones no discriminarían nada.
+  const pure = () => buildDxDependencies(ALL_CRITERIA.filter(c => c.type === 'STOPP'), {});
 
   it('IC FE conservada no hereda TIAZOLIDINDIONA del OR genérico (J2)', () => {
     const classes = pure()['Insuficiencia cardíaca con función sistólica conservada']?.classes ?? [];

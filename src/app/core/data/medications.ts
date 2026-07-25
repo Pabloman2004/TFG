@@ -365,6 +365,9 @@ export const MEDICATIONS: Med[] = [
   { id: "Fluticasona inhalada", drugClasses: ["CORTICOIDE_INHALADO"] },
   { id: "Mometasona inhalada", drugClasses: ["CORTICOIDE_INHALADO"] },
 
+  // -------- OXIGENOTERAPIA (no farmacológico; modelado como tratamiento crónico para START-G3) --------
+  { id: "Oxigenoterapia domiciliaria", drugClasses: ["OXIGENOTERAPIA"] },
+
   // -------- FAME (Fármacos Antirreumáticos Modificadores de la Enfermedad) --------
   { id: "Leflunomida", drugClasses: ["FAME", "INMUNOSUPRESOR"] },
   { id: "Sulfasalazina", drugClasses: ["FAME"] },
@@ -384,6 +387,7 @@ export const MEDICATIONS: Med[] = [
 
   // -------- ANABOLIZANTES ÓSEOS --------
   { id: "Teriparatida", drugClasses: ["ANABOLIZANTE_OSEO"] },
+  { id: "Abaloparatida", drugClasses: ["ANABOLIZANTE_OSEO"] },
 
   // -------- ÁCIDO FÓLICO --------
   { id: "Ácido fólico", drugClasses: ["ACIDO_FOLICO"] },

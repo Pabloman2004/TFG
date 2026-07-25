@@ -105,6 +105,19 @@ explícitas viven en `dx-dependencies-overrides.ts`.
 de las clases declaradas (o coincide por id). Esta función es consumida por
 `diagnosis-step.component.ts` para habilitar/deshabilitar checkboxes de diagnósticos.
 
+**Exención START (`startRequiredLabels`)**: el gating solo se deriva de criterios STOPP, porque su
+forma es «fármaco presente + diagnóstico → alerta». Un criterio START tiene la forma inversa
+(«diagnóstico presente + fármaco AUSENTE → recomendar iniciarlo»), así que condicionar su
+diagnóstico a una medicación lo vuelve inalcanzable justo para el paciente al que apunta. Por eso
+`buildDxDependencies` elimina del mapa final —derivados **y** overrides— todo label que algún
+START exija en positivo. Afecta hoy a HTA y sus tres variantes (START-B1), IC con función
+sistólica conservada e IC grave (START-B8), EPOC grave (G2), artritis reumatoide activa
+incapacitante (H1), riesgo de caídas de repetición (H5) y dolor moderado-grave (K1).
+
+Se usa `extractPositiveDxCodes`, no `extractPositiveDxCodesForDependencies`: el colapso
+padre/variante de esta última descartaría las variantes de HTA e IC, que son labels distintos y
+marcables por separado en la UI.
+
 ---
 
 ## Decisiones de diseño
@@ -143,14 +156,37 @@ de las clases declaradas (o coincide por id). Esta función es consumida por
   | START-D1 | Parkinson con **deterioro funcional** | `parkinson` |
   | START-D3 | Alzheimer **leve-moderado** | `alzheimer` |
   | START-H1 | artritis reumatoide activa **incapacitante** | `artritis_reumatoide_activa` |
+  | START-I3 | vaginitis atrófica **en mujeres** | `vaginitis_atrofica` (sin comprobar sexo) |
+  | START-I4 | ITU recurrentes **en mujeres** | `infecciones_urinarias_recurrentes` (sin comprobar sexo) |
   | START-I5 | disfunción eréctil **que causa sufrimiento** | `disfuncion_erectil` |
   | STOPP-I3 | HBP con **volumen residual > 200 ml** | `hiperplasia_benigna_prostata` |
+
+  START-I3 e I4 son un caso aparte: su cláusula `info.sex == "f"` sí estaba modelada, pero la app
+  no tiene formulario de sexo (`case-store.service.ts` solo rellena `patient` al importar un JSON),
+  así que la comprobación volvía ambos criterios inalcanzables desde la interfaz. Se retiró la
+  cláusula el 2026-07-25 y el matiz «en mujeres» queda en el `summary`, visible en la alerta. Si
+  algún día se añade el formulario de edad/sexo, conviene reponerla — sobre todo en I4, cuyo
+  diagnóstico (ITU recurrentes) no es exclusivo de mujeres y hoy puede recomendar estrógenos
+  vaginales en un varón.
 
   La excepción que sí se modela es START-B2 (estatina): su "salvo fragilidad o final de vida" usa
   el diagnóstico `fragilidad`, que ya existía en el catálogo y no obliga a marcar nada nuevo — el
   criterio simplemente deja de recomendar la estatina cuando la fragilidad está marcada. El
   criterio para decidir es ese: si el matiz se apoya en un diagnóstico existente, se modela; si
   exige inventar uno redundante con el base, se documenta aquí.
+
+- **Tratamientos no farmacológicos como «medicación»**: START-G3 recomienda oxigenoterapia
+  domiciliaria, que no es un fármaco pero sí un tratamiento crónico que el paciente puede tener o
+  no. Se modela con la clase `OXIGENOTERAPIA` y el ítem «Oxigenoterapia domiciliaria» en
+  `MEDICATIONS`, expuesto como grupo propio del tab Respiratorio. Así el criterio usa el mismo
+  operador `inDrugClass` que el resto y no necesita un mecanismo aparte.
+
+- **Vacunas (START-L1..L4) fuera de alcance**: el patrón anterior las haría implementables —una
+  categoría «Vacunas administradas» daría el interruptor de "ya vacunado"— pero se descartaron
+  deliberadamente el 2026-07-25. El motivo que no resuelve el modelo es **L1, que es anual**: el
+  catálogo representa presencia/ausencia, no vigencia temporal, así que una casilla marcada
+  apagaría el criterio para siempre en vez de hasta la temporada siguiente. Representarlo bien
+  exigiría fechas en el modelo de medicación. Ver `docs/revisiones/revision-start-2026-07-19.md` §1.
 
 - **`byClass()` como helper interno**: en lugar de filtrar `MEDICATIONS` en cada componente,
   `medications-taxonomy.ts` centraliza la derivación de listas de fármacos por clase. Garantiza

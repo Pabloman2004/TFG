@@ -1536,7 +1536,7 @@
       "type": "START",
       "system": "Sistema gastrointestinal",
       "summary": "Considerar probiótico (Saccharomyces boulardii, Lactobacillus) de forma concomitante con el antibiótico, para prevención de diarrea por Clostridioides difficile.",
-      "logic": {"and":[{"inDrugClass":["ANTIBIOTICO",{"var":"medications"}]},{"!":{"inDrugClass":["PROBIOTICO",{"var":"medications"}]}}]}
+      "logic": {"and":[{"inDrugClass":["ANTIBIOTICO",{"var":"medications"}]},{"!":{"inDrugClass":["PROBIOTICO",{"var":"medications"}]}},{"!":{"in":["inmunocompromiso_deterioro_grave",{"var":"diagnoses"}]}}]}
     },
     {
       "id": "START-F7-ERRADICACION-H-PYLORI",
@@ -1558,6 +1558,13 @@
       "system": "Sistema respiratorio",
       "summary": "Considerar iniciar corticosteroide inhalado pautado. El paciente tiene asma moderada-grave o EPOC estadio GOLD 3-4 y no recibe corticoide inhalado.",
       "logic": {"and":[{"or":[{"in":["asma_moderada_grave",{"var":"diagnoses"}]},{"in":["epoc_gold_3_4",{"var":"diagnoses"}]},{"in":["epoc_grave",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["CORTICOIDE_INHALADO",{"var":"medications"}]}}]}
+    },
+    {
+      "id": "START-G3-OXIGENOTERAPIA-HIPOXEMIA-CRONICA",
+      "type": "START",
+      "system": "Sistema respiratorio",
+      "summary": "Considerar iniciar oxigenoterapia domiciliaria continua. El paciente tiene hipoxemia crónica documentada (pO2 < 60 mmHg o SatO2 < 89%) y no recibe oxigenoterapia.",
+      "logic": {"and":[{"in":["hipoxemia_cronica",{"var":"diagnoses"}]},{"!":{"inDrugClass":["OXIGENOTERAPIA",{"var":"medications"}]}}]}
     },
     {
       "id": "START-H1-FAME-ARTRITIS-REUMATOIDE-ACTIVA",
@@ -1595,6 +1602,20 @@
       "logic": {"and":[{"in":["deficit_vitamina_d",{"var":"diagnoses"}]},{"or":[{"in":["caidas_repeticion",{"var":"diagnoses"}]},{"in":["riesgo_caidas_repeticion",{"var":"diagnoses"}]},{"in":["osteopenia",{"var":"diagnoses"}]},{"in":["no_sale_de_casa",{"var":"diagnoses"}]}]},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}
     },
     {
+      "id": "START-H6-ANTIRRESORTIVO-TRAS-RETIRADA-DENOSUMAB",
+      "type": "START",
+      "system": "Sistema musculoesquelético",
+      "summary": "Considerar iniciar un antirresortivo (bisfosfonato) tras suspender denosumab habiendo recibido 2 o más dosis, para evitar la pérdida ósea acelerada y las fracturas vertebrales por rebote. El paciente no recibe ningún antirresortivo de relevo.",
+      "logic": {"and":[{"in":["retirada_denosumab",{"var":"diagnoses"}]},{"!":{"inDrugClass":["ANTIRRESORTIVO",{"var":"medications"}]}}]}
+    },
+    {
+      "id": "START-H7-ANTIRRESORTIVO-TRAS-RETIRADA-ANABOLIZANTE-OSEO",
+      "type": "START",
+      "system": "Sistema musculoesquelético",
+      "summary": "Considerar iniciar un antirresortivo (bisfosfonato, denosumab) tras suspender teriparatida o abaloparatida, para consolidar la ganancia de masa ósea obtenida. El paciente no recibe ningún antirresortivo.",
+      "logic": {"and":[{"in":["retirada_anabolizante_oseo",{"var":"diagnoses"}]},{"!":{"inDrugClass":["ANTIRRESORTIVO",{"var":"medications"}]}}]}
+    },
+    {
       "id": "START-H8-INHIBIDOR-XANTINA-OXIDASA-GOTA",
       "type": "START",
       "system": "Sistema musculoesquelético",
@@ -1626,15 +1647,15 @@
       "id": "START-I3-ESTROGENO-TOPICO-VAGINITIS-ATROFICA",
       "type": "START",
       "system": "Sistema urogenital",
-      "summary": "Considerar estrógenos tópicos vaginales (estriol vaginal, promestrieno) en vaginitis atrófica sintomática. La paciente no recibe estrógenos tópicos.",
-      "logic": {"and":[{"in":["vaginitis_atrofica",{"var":"diagnoses"}]},{"==":[{"var":"info.sex"},"f"]},{"!":{"inDrugClass":["ESTROGENO_TOPICO",{"var":"medications"}]}}]}
+      "summary": "Considerar estrógenos tópicos vaginales (estriol vaginal, promestrieno) en mujeres con vaginitis atrófica sintomática. La paciente no recibe estrógenos tópicos.",
+      "logic": {"and":[{"in":["vaginitis_atrofica",{"var":"diagnoses"}]},{"!":{"inDrugClass":["ESTROGENO_TOPICO",{"var":"medications"}]}}]}
     },
     {
       "id": "START-I4-ESTROGENO-TOPICO-ITU-RECURRENTES",
       "type": "START",
       "system": "Sistema urogenital",
-      "summary": "Considerar estrógenos tópicos vaginales para prevención de infecciones urinarias recurrentes en mujeres. La paciente no recibe estrógenos tópicos.",
-      "logic": {"and":[{"in":["infecciones_urinarias_recurrentes",{"var":"diagnoses"}]},{"==":[{"var":"info.sex"},"f"]},{"!":{"inDrugClass":["ESTROGENO_TOPICO",{"var":"medications"}]}}]}
+      "summary": "Considerar estrógenos tópicos vaginales para prevención de infecciones urinarias recurrentes en mujeres. Valorar solo en mujeres: la regla no comprueba el sexo. La paciente no recibe estrógenos tópicos.",
+      "logic": {"and":[{"in":["infecciones_urinarias_recurrentes",{"var":"diagnoses"}]},{"!":{"inDrugClass":["ESTROGENO_TOPICO",{"var":"medications"}]}}]}
     },
     {
       "id": "START-I5-INHIBIDOR-PDE5-DISFUNCION-ERECTIL",

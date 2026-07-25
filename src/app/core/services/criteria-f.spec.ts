@@ -111,3 +111,35 @@ describe('Criterios STOPP — Sección F (Sistema gastrointestinal)', () => {
     }), [crit('STOPP-F8-MEGESTROL-OREXIGENO')]).length).toBe(1);
   });
 });
+
+describe('Criterios START — Sección F (Sistema gastrointestinal)', () => {
+  let engine: CriteriaEngineService;
+  beforeEach(() => { engine = setupEngine(); });
+
+  describe('START-F6-PROBIOTICO-CON-ANTIBIOTICO', () => {
+    const id = 'START-F6-PROBIOTICO-CON-ANTIBIOTICO';
+    const antibiotico = () => makeMed('Amoxicilina', ['ANTIBIOTICO']);
+    const probiotico = () => makeMed('Saccharomyces boulardii', ['PROBIOTICO']);
+
+    it('dispara con antibiótico y sin probiótico', () => {
+      expect(engine.evaluate(makeCase({ medications: [antibiotico()] }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara si ya toma un probiótico', () => {
+      expect(engine.evaluate(makeCase({
+        medications: [antibiotico(), probiotico()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara en inmunocomprometido o gravemente deteriorado (exclusión de la guía)', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['inmunocompromiso_deterioro_grave'],
+        medications: [antibiotico()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara sin antibiótico', () => {
+      expect(engine.evaluate(makeCase({ medications: [] }), [crit(id)])).toEqual([]);
+    });
+  });
+});

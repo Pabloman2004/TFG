@@ -29,6 +29,7 @@ const engineStub = () => ({
 
 describe('DiagnosisStepComponent.toggleDiagnosis — exclusividad de variantes HTA (P15)', () => {
   let store: CaseStoreService;
+  let engine: ReturnType<typeof engineStub>;
 
   const createComponent = (): DiagnosisStepComponent => {
     const fixture = TestBed.createComponent(DiagnosisStepComponent);
@@ -36,11 +37,12 @@ describe('DiagnosisStepComponent.toggleDiagnosis — exclusividad de variantes H
   };
 
   beforeEach(() => {
+    engine = engineStub();
     TestBed.configureTestingModule({
       imports: [DiagnosisStepComponent],
       providers: [
         provideRouter(routes),
-        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: CriteriaEngineService, useValue: engine },
         { provide: ReportService, useValue: {} },
         { provide: CaseIoService, useValue: {} },
         { provide: MatSnackBar, useValue: { open: () => undefined } },
@@ -82,6 +84,11 @@ describe('DiagnosisStepComponent.toggleDiagnosis — exclusividad de variantes H
   });
 
   it('el radio respeta isDxEnabled: una variante deshabilitada no se selecciona', () => {
+    // Dependencia sintética: el catálogo real ya no gatea las variantes de HTA
+    // (START-B1 las exime), y aquí se ejercita el guard de toggleDiagnosis.
+    engine.dxDependencies.set({
+      'HTA grave': { classes: ['DIGOXINA'], tooltip: 'Disponible si se marca Digoxina' },
+    });
     const component = createComponent();
     store.meds.set([]); // sin medicación habilitante
     store.diagnoses.set(['hipertension_moderada']);
@@ -104,6 +111,7 @@ describe('DiagnosisStepComponent.toggleDiagnosis — exclusividad de variantes H
 
 describe('DiagnosisStepComponent — UI del árbol de variantes HTA (P15 paso 4)', () => {
   let store: CaseStoreService;
+  let engine: ReturnType<typeof engineStub>;
 
   const hipertensionGroup = () =>
     DIAGNOSIS_TABS.find(t => t.id === 'cardiovascular')!.groups.find(g => g.id === 'hipertension')!;
@@ -115,11 +123,12 @@ describe('DiagnosisStepComponent — UI del árbol de variantes HTA (P15 paso 4)
   };
 
   beforeEach(() => {
+    engine = engineStub();
     TestBed.configureTestingModule({
       imports: [DiagnosisStepComponent],
       providers: [
         provideRouter(routes),
-        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: CriteriaEngineService, useValue: engine },
         { provide: ReportService, useValue: {} },
         { provide: CaseIoService, useValue: {} },
         { provide: MatSnackBar, useValue: { open: () => undefined } },
@@ -196,6 +205,11 @@ describe('DiagnosisStepComponent — UI del árbol de variantes HTA (P15 paso 4)
   });
 
   it('una variante deshabilitada (sin medicación habilitante) se renderiza como dx-disabled', () => {
+    // El catálogo real ya no gatea ninguna variante de HTA (START-B1 las exime del
+    // gating), así que se inyecta la dependencia para ejercitar el render en sí.
+    engine.dxDependencies.set({
+      'HTA grave': { classes: ['DIGOXINA'], tooltip: 'Disponible si se marca Digoxina' },
+    });
     store.meds.set([]);
     const fixture = render();
     const host: HTMLElement = fixture.nativeElement;

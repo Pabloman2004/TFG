@@ -1,6 +1,13 @@
 // Overrides clínicos del piloto cardiovascular y casos donde la derivación pura
 // desde criteria.json no reproduce el comportamiento curado manualmente.
 // Cada clase está respaldada por un criterio STOPP en criteria.json (ID en comentario).
+//
+// OJO: buildDxDependencies descarta el override de todo label que algún criterio
+// START exija en positivo (ver startRequiredLabels). Hoy quedan inertes por esa
+// regla: las tres variantes de HTA (START-B1), «IC con función sistólica
+// conservada» e «IC grave» (START-B8) y «Riesgo de caídas de repetición»
+// (START-H5). Se conservan porque documentan las clases STOPP que los citan y
+// volverían a aplicar si esos START cambiaran.
 
 import { DxTrigger } from './dx-dependencies';
 

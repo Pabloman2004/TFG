@@ -84,8 +84,47 @@ describe('A1+A2 — Insomnio habilitado con benzodiacepina o hipnótico-Z (D10/D
   });
 });
 
+/**
+ * Diagnósticos que algún criterio START exige en positivo para recomendar iniciar
+ * un tratamiento. El gating (derivado de STOPP) no puede aplicarles: exigiría que
+ * el paciente ya tomase el fármaco que el START propone empezar.
+ */
+const START_REQUIRED_LABELS = [
+  'Artritis reumatoide activa incapacitante', // START-H1
+  'Dolor moderado-grave',                     // START-K1
+  'EPOC grave',                               // START-G2
+  'HTA',                                      // START-B1
+  'HTA grave',                                // START-B1
+  'HTA moderada',                             // START-B1
+  'HTA no complicada',                        // START-B1
+  'Hipoxemia crónica documentada (pO2 < 60 mmHg o SatO2 < 89%)', // START-G3
+  'Insuficiencia cardíaca con función sistólica conservada',     // START-B8
+  'Insuficiencia cardíaca grave',             // START-B8
+  'Riesgo de caídas de repetición',           // START-H5
+];
+
+describe('buildDxDependencies — un dx exigido por un START nunca se bloquea', () => {
+  it('todos los diagnósticos exigidos en positivo por un START son marcables sin medicación', () => {
+    const blocked = START_REQUIRED_LABELS.filter(
+      label => !isDiagnosisEnabled(label, [], DEPS),
+    );
+    expect(blocked).toEqual([]);
+  });
+
+  it('la exención se aplica también a los labels con override manual', () => {
+    expect(DEPS['HTA no complicada']).toBeUndefined();
+    expect(DEPS['Insuficiencia cardíaca con función sistólica conservada']).toBeUndefined();
+  });
+
+  it('no desactiva el gating de un dx que solo cita STOPP', () => {
+    expect(isDiagnosisEnabled('Insomnio', [], DEPS)).toBe(false);
+    expect(isDiagnosisEnabled('Dolor leve', [], DEPS)).toBe(false);
+  });
+});
+
 describe('buildDxDependencies — snapshot piloto cardiovascular', () => {
-  const pilotLabels = Object.keys(DX_DEPENDENCIES_OVERRIDES);
+  const pilotLabels = Object.keys(DX_DEPENDENCIES_OVERRIDES)
+    .filter(label => !START_REQUIRED_LABELS.includes(label));
 
   it('reproduce las clases del mapa manual cardiovascular', () => {
     for (const label of pilotLabels) {
@@ -136,16 +175,12 @@ describe('isDiagnosisEnabled()', () => {
   });
 
   it('deshabilita un diagnóstico con dependencia cuando no hay medicaciones', () => {
-    expect(
-      isDiagnosisEnabled('Insuficiencia cardíaca con función sistólica conservada', [], DEPS),
-    ).toBe(false);
+    expect(isDiagnosisEnabled('Insuficiencia cardíaca NYHA III-IV', [], DEPS)).toBe(false);
   });
 
   it('habilita un diagnóstico cuya dependencia se cumple por la clase del medicamento', () => {
-    const meds = [med('Digoxina', ['DIGOXINA'])];
-    expect(
-      isDiagnosisEnabled('Insuficiencia cardíaca con función sistólica conservada', meds, DEPS),
-    ).toBe(true);
+    const meds = [med('Furosemida', ['DIURETICO_ASA'])];
+    expect(isDiagnosisEnabled('Insuficiencia cardíaca NYHA III-IV', meds, DEPS)).toBe(true);
   });
 
   it('habilita cuando se cumple cualquiera de varias clases requeridas (OR)', () => {
@@ -163,18 +198,15 @@ describe('isDiagnosisEnabled()', () => {
   });
 
   it('mapa contiene una entrada por cada regla STOPP-B con dependencia diagnóstica exclusiva', () => {
+    // Las variantes de HTA e IC-preservada/grave salieron del mapa al exigirlas
+    // START-B1 y START-B8: ver «un dx exigido por un START nunca se bloquea».
     const requiredKeys = [
-      'Insuficiencia cardíaca con función sistólica conservada',
       'Insuficiencia cardíaca NYHA III-IV',
       'Bradicardia',
       'Bloqueo AV de segundo grado',
       'Bloqueo AV completo',
-      'HTA no complicada',
-      'HTA grave',
-      'HTA moderada',
       'Taquiarritmias supraventriculares',
       'Estenosis aórtica grave sintomática',
-      'Insuficiencia cardíaca grave',
       'Intervalo QTc prolongado',
     ];
     for (const key of requiredKeys) {
@@ -359,67 +391,41 @@ describe('Tarea A — Bloqueo AV completo: faltan BETABLOQUEANTE (D4) e INHIBIDO
   });
 });
 
-describe('Tarea A — HTA grave: clases faltantes (H2, D3, K9, C2, I6)', () => {
-  it('AINE habilita HTA grave (H2)', () => {
-    expect(isDiagnosisEnabled('HTA grave', [med('Ibuprofeno', ['AINE'])], DEPS)).toBe(true);
+/**
+ * Las variantes de HTA y de IC-preservada/grave estaban gateadas por las clases que
+ * las citan en STOPP (H2, D3, K9, C2, I6, J2) — el conjunto que curó la «Tarea A».
+ * START-B1 y START-B8 las exigen en positivo para recomendar iniciar antihipertensivo
+ * o iSGLT2, así que quedaron exentas de gating: los tests por clase de la Tarea A ya
+ * no discriminan nada para estos labels y se sustituyen por la regla vigente.
+ */
+describe('HTA e IC-preservada/grave — exentas de gating (START-B1, START-B8)', () => {
+  it('las tres variantes de HTA son marcables sin ninguna medicación', () => {
+    expect(isDiagnosisEnabled('HTA grave', [], DEPS)).toBe(true);
+    expect(isDiagnosisEnabled('HTA moderada', [], DEPS)).toBe(true);
+    expect(isDiagnosisEnabled('HTA no complicada', [], DEPS)).toBe(true);
   });
 
-  it('ISRN habilita HTA grave (D3)', () => {
-    expect(isDiagnosisEnabled('HTA grave', [med('Venlafaxina', ['ISRN'])], DEPS)).toBe(true);
+  it('IC con función sistólica conservada e IC grave son marcables sin medicación', () => {
+    expect(
+      isDiagnosisEnabled('Insuficiencia cardíaca con función sistólica conservada', [], DEPS),
+    ).toBe(true);
+    expect(isDiagnosisEnabled('Insuficiencia cardíaca grave', [], DEPS)).toBe(true);
   });
 
-  it('alfabloqueante habilita HTA grave (K9)', () => {
-    expect(isDiagnosisEnabled('HTA grave', [med('Tamsulosina', ['ALFABLOQUEANTE'])], DEPS)).toBe(true);
+  it('ninguna conserva entrada en el mapa de dependencias', () => {
+    for (const label of [
+      'HTA grave',
+      'HTA moderada',
+      'HTA no complicada',
+      'Insuficiencia cardíaca con función sistólica conservada',
+      'Insuficiencia cardíaca grave',
+    ]) {
+      expect(DEPS[label]).withContext(label).toBeUndefined();
+    }
   });
 
-  it('antiagregante habilita HTA grave (C2)', () => {
-    expect(isDiagnosisEnabled('HTA grave', [med('Clopidogrel', ['ANTIAGREGANTE'])], DEPS)).toBe(true);
-  });
-
-  it('anticoagulante habilita HTA grave (C2)', () => {
-    expect(isDiagnosisEnabled('HTA grave', [med('Apixaban', ['ANTICOAGULANTE'])], DEPS)).toBe(true);
-  });
-
-  it('agonista beta3 habilita HTA grave (I6)', () => {
-    expect(isDiagnosisEnabled('HTA grave', [med('Mirabegrón', ['AGONISTA_BETA3'])], DEPS)).toBe(true);
-  });
-
-  it('HTA grave sigue deshabilitada sin medicación relevante', () => {
-    expect(isDiagnosisEnabled('HTA grave', [med('Enalapril', ['IECA'])], DEPS)).toBe(false);
-  });
-});
-
-describe('Tarea A — HTA moderada: clases faltantes (H2, K9)', () => {
-  it('AINE habilita HTA moderada (H2)', () => {
-    expect(isDiagnosisEnabled('HTA moderada', [med('Naproxeno', ['AINE'])], DEPS)).toBe(true);
-  });
-
-  it('alfabloqueante habilita HTA moderada (K9)', () => {
-    expect(isDiagnosisEnabled('HTA moderada', [med('Doxazosina', ['ALFABLOQUEANTE'])], DEPS)).toBe(true);
-  });
-
-  it('HTA moderada sigue deshabilitada sin medicación relevante', () => {
-    expect(isDiagnosisEnabled('HTA moderada', [med('Enalapril', ['IECA'])], DEPS)).toBe(false);
-  });
-});
-
-describe('Tarea A — HTA no complicada: falta ALFABLOQUEANTE (K9)', () => {
-  it('alfabloqueante habilita HTA no complicada (K9)', () => {
-    expect(isDiagnosisEnabled('HTA no complicada', [med('Tamsulosina', ['ALFABLOQUEANTE'])], DEPS)).toBe(true);
-  });
-
-  it('HTA no complicada sigue deshabilitada sin medicación relevante', () => {
-    expect(isDiagnosisEnabled('HTA no complicada', [med('Enalapril', ['IECA'])], DEPS)).toBe(false);
-  });
-});
-
-describe('Tarea A — IC con función sistólica conservada e IC NYHA III-IV: falta TIAZOLIDINDIONA (J2)', () => {
-  it('tiazolidindiona habilita IC con función sistólica conservada (J2)', () => {
-    const meds = [med('Pioglitazona', ['TIAZOLIDINDIONA'])];
-    expect(isDiagnosisEnabled('Insuficiencia cardíaca con función sistólica conservada', meds, DEPS)).toBe(true);
-  });
-
-  it('tiazolidindiona habilita IC NYHA III-IV (J2)', () => {
+  it('IC NYHA III-IV sí sigue gateada: ningún START la exige', () => {
+    expect(isDiagnosisEnabled('Insuficiencia cardíaca NYHA III-IV', [], DEPS)).toBe(false);
     const meds = [med('Pioglitazona', ['TIAZOLIDINDIONA'])];
     expect(isDiagnosisEnabled('Insuficiencia cardíaca NYHA III-IV', meds, DEPS)).toBe(true);
   });
@@ -538,7 +544,7 @@ describe('Tarea E — isAlwaysEnabled', () => {
 
   it('diagnóstico gateado NO está siempre habilitado', () => {
     expect(isAlwaysEnabled('Bradicardia', DEPS)).toBe(false);
-    expect(isAlwaysEnabled('Insuficiencia cardíaca con función sistólica conservada', DEPS)).toBe(false);
+    expect(isAlwaysEnabled('Insuficiencia cardíaca NYHA III-IV', DEPS)).toBe(false);
   });
 });
 
@@ -564,18 +570,15 @@ describe('Seguimiento B — Riesgo significativo de sangrado: ANTIAGREGANTE y AN
   });
 });
 
-describe('Seguimiento B — Riesgo de caídas de repetición: ANTIDEPRESIVO_TRICICLICO e ISRN (K8)', () => {
-  it('amitriptilina (ANTIDEPRESIVO_TRICICLICO) habilita Riesgo de caídas de repetición (K8)', () => {
-    const meds = [med('Amitriptilina', ['ANTIDEPRESIVO_TRICICLICO'])];
-    expect(isDiagnosisEnabled('Riesgo de caídas de repetición', meds, DEPS)).toBe(true);
+describe('Riesgo de caídas de repetición — exento de gating (START-H5)', () => {
+  // Las clases K8 (tricíclico, ISRN) que curó la Tarea B siguen en el override, pero
+  // el label queda exento: START-H5 lo exige para recomendar vitamina D, y esperar a
+  // que el paciente ya tome un psicótropo lo haría inalcanzable.
+  it('es marcable sin ninguna medicación', () => {
+    expect(isDiagnosisEnabled('Riesgo de caídas de repetición', [], DEPS)).toBe(true);
   });
 
-  it('venlafaxina (ISRN) habilita Riesgo de caídas de repetición (K8)', () => {
-    const meds = [med('Venlafaxina', ['ISRN'])];
-    expect(isDiagnosisEnabled('Riesgo de caídas de repetición', meds, DEPS)).toBe(true);
-  });
-
-  it('Riesgo de caídas de repetición sigue deshabilitado sin medicación relevante', () => {
-    expect(isDiagnosisEnabled('Riesgo de caídas de repetición', [med('Enalapril', ['IECA'])], DEPS)).toBe(false);
+  it('no conserva entrada en el mapa de dependencias', () => {
+    expect(DEPS['Riesgo de caídas de repetición']).toBeUndefined();
   });
 });

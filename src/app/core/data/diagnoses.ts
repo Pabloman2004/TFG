@@ -157,6 +157,7 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "Epilepsia": "Neurológico",
   "Temblor esencial benigno": "Neurológico",
   "Alergia": "Inmunológico",
+  "Inmunocompromiso o deterioro grave": "Inmunológico",
   "Prurito": "Dermatológico",
 
   // --- Sistema urogenital (I) ---
@@ -212,11 +213,14 @@ export const DIAGNOSIS_GROUPS: Record<string, string> = {
   "Asma moderada-grave": "Respiratorio",
   "EPOC estadio GOLD 1-2": "Respiratorio",
   "EPOC estadio GOLD 3-4": "Respiratorio",
+  "Hipoxemia crónica documentada (pO2 < 60 mmHg o SatO2 < 89%)": "Respiratorio",
 
   // --- START criterios musculoesquelético ---
   "Artritis reumatoide activa incapacitante": "Reumatológico",
   "Osteoporosis": "Reumatológico",
   "Fractura por fragilidad": "Reumatológico",
+  "Retirada de denosumab tras 2 o más dosis": "Reumatológico",
+  "Retirada de teriparatida o abaloparatida": "Reumatológico",
   "Osteopenia": "Reumatológico",
   "Gota recurrente": "Reumatológico",
   "Déficit de vitamina D confirmado": "Metabólico",
@@ -389,6 +393,7 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "Epilepsia": "epilepsia",
   "Temblor esencial benigno": "temblor_esencial_benigno",
   "Alergia": "alergia",
+  "Inmunocompromiso o deterioro grave": "inmunocompromiso_deterioro_grave",
   "Prurito": "prurito",
 
   // --- Sistema urogenital (I) ---
@@ -444,11 +449,14 @@ export const DIAGNOSIS_MAP: Record<string, string> = {
   "Asma moderada-grave": "asma_moderada_grave",
   "EPOC estadio GOLD 1-2": "epoc_gold_1_2",
   "EPOC estadio GOLD 3-4": "epoc_gold_3_4",
+  "Hipoxemia crónica documentada (pO2 < 60 mmHg o SatO2 < 89%)": "hipoxemia_cronica",
 
   // --- START criterios musculoesquelético ---
   "Artritis reumatoide activa incapacitante": "artritis_reumatoide_activa",
   "Osteoporosis": "osteoporosis",
   "Fractura por fragilidad": "fractura_fragilidad",
+  "Retirada de denosumab tras 2 o más dosis": "retirada_denosumab",
+  "Retirada de teriparatida o abaloparatida": "retirada_anabolizante_oseo",
   "Osteopenia": "osteopenia",
   "Gota recurrente": "gota_recurrente",
   "Déficit de vitamina D confirmado": "deficit_vitamina_d",

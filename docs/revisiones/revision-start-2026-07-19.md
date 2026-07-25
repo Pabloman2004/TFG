@@ -13,25 +13,57 @@
 > matices) documentado como simplificación deliberada en `catalogo-clinico.md`.
 > §1 y §6 siguen abiertos. Suite: 885 SUCCESS.
 
-**Recuento:** el JSON tiene **49 criterios START**; el checklist enumera **57**.
-Faltan exactamente 8 (detalle en §1).
+**Recuento:** el JSON tiene **52 criterios START** (49 en la revisión original,
++3 el 2026-07-25 al implementar G3, H6 y H7); el checklist enumera **57**.
+Faltan 5: A1 y las cuatro vacunas (detalle en §1).
 
-## 1. ALTA — 8 criterios del checklist que NO existen en el catálogo
+## 1. ALTA — 8 criterios del checklist que NO existían en el catálogo (quedan 5)
 
 | Checklist | Descripción | Estado |
 |---|---|---|
 | A1 | Medicamento indicado, adecuado y sin contraindicación, no iniciado | Ausente (probablemente no modelable: es juicio clínico puro, no una regla fármaco↔dx) |
-| G3 | Oxigenoterapia domiciliaria en hipoxemia crónica documentada | Ausente (no existe ni la "medicación" oxígeno ni el dx hipoxemia crónica) |
-| H6 | Antirresortivo tras retirada de denosumab (≥2 dosis) | Ausente (salto visible H5 → H8 en los ids) |
-| H7 | Antirresortivo tras retirada de teriparatida/abaloparatida | Ausente |
-| L1 | Vacuna antigripal anual | Sección de vacunas ausente por completo |
-| L2 | Vacuna antineumocócica al menos una vez | Ausente |
-| L3 | Vacuna varicela-zóster | Ausente |
-| L4 | Vacuna SARS-CoV-2 | Ausente |
+| G3 | Oxigenoterapia domiciliaria en hipoxemia crónica documentada | **IMPLEMENTADO 2026-07-25**: dx «Hipoxemia crónica documentada (pO2 < 60 mmHg o SatO2 < 89%)» (`hipoxemia_cronica`) + clase `OXIGENOTERAPIA` con el ítem «Oxigenoterapia domiciliaria» en el tab Respiratorio |
+| H6 | Antirresortivo tras retirada de denosumab (≥2 dosis) | **IMPLEMENTADO 2026-07-25**: dx «Retirada de denosumab tras 2 o más dosis» (`retirada_denosumab`) |
+| H7 | Antirresortivo tras retirada de teriparatida/abaloparatida | **IMPLEMENTADO 2026-07-25**: dx «Retirada de teriparatida o abaloparatida» (`retirada_anabolizante_oseo`) + Abaloparatida en el catálogo |
+| L1 | Vacuna antigripal anual | **FUERA DE ALCANCE (decisión 2026-07-25)** |
+| L2 | Vacuna antineumocócica al menos una vez | **FUERA DE ALCANCE (decisión 2026-07-25)** |
+| L3 | Vacuna varicela-zóster | **FUERA DE ALCANCE (decisión 2026-07-25)** |
+| L4 | Vacuna SARS-CoV-2 | **FUERA DE ALCANCE (decisión 2026-07-25)** |
 
-Las cuatro vacunas requieren decidir antes si el modelo admite "medicaciones"
-que no son fármacos crónicos (y cómo se captura "ya vacunado"). A1, G3, H6 y
-H7 requieren catálogo nuevo (dx de hipoxemia, estado "retirada de denosumab").
+H6 y H7 se resolvieron modelando la retirada como un diagnóstico marcable más,
+sin mecanismo nuevo. G3 resolvió la duda sobre "medicaciones" no farmacológicas:
+una clase como `OXIGENOTERAPIA` es viable y no necesita mecanismo aparte.
+
+Quedan fuera dos bloques, por decisión explícita y no por olvido:
+
+- **A1**: no modelable. Es juicio clínico puro («el fármaco está indicado y no se
+  ha iniciado»), no una regla fármaco↔dx que el motor pueda evaluar.
+- **L1–L4 (vacunas)**: **fuera de alcance del TFG**. Eran implementables — el
+  patrón de G3 daba el interruptor de "ya vacunado" con una categoría «Vacunas
+  administradas» en el paso de medicación— pero se descartó. Dos razones: son
+  recomendaciones universales que dispararían en todo paciente hasta marcarlas,
+  y **L1 es anual**, algo que el modelo no sabe representar: una casilla marcada
+  no distingue "vacunado esta temporada" de "vacunado hace tres años", así que el
+  criterio se apagaría para siempre. L2, L3 y L4 no tienen ese problema, pero se
+  dejan fuera con L1 para no partir la sección.
+
+**Para la prueba manual: no busques L1–L4 ni A1. No están y no van a estar.**
+El bloque START se queda en **52 de 57** deliberadamente.
+
+### Nota sobre I3 e I4 (2026-07-25)
+
+Ambos exigían `info.sex == "f"`. La app no tiene formulario de sexo —
+`case-store.service.ts:10` inicializa `patient` a `null` y solo se rellena vía
+`loadCase()`, es decir importando un JSON escrito a mano— así que la cláusula
+los volvía inalcanzables desde la interfaz. **Decisión del usuario: se retira la
+comprobación de sexo.** El matiz «en mujeres» queda en el `summary`, que el
+clínico ve en la alerta.
+
+Efecto secundario a vigilar: I4 (estrógenos vaginales para prevenir ITU
+recurrentes) ya no distingue sexo, y «Infecciones urinarias recurrentes» no es
+un diagnóstico exclusivo de mujeres, así que puede aparecer en un varón. En I3
+el riesgo es nulo porque la vaginitis atrófica ya lo es de por sí. Si se añade
+el formulario de edad/sexo (§3), conviene reponer la cláusula en I4.
 **Decisión clínica pendiente:** ¿se implementan o se documentan como fuera de
 alcance? Si es lo segundo, conviene anotarlo en el checklist para que la
 prueba manual no los busque.
@@ -147,6 +179,41 @@ excluirlo también, o un paciente con ambos dx recibirá la recomendación de
 opioide que el criterio quiere evitar.
 
 **Fix sugerido:** añadir `{"!":{"in":["dolor_cronico_artrosis",…]}}` al `and`.
+
+## 10. ALTA — El gating de diagnósticos bloqueaba 6 criterios START (CORREGIDO 2026-07-25)
+
+Detectado al revisar START-H1. `buildDxDependencies` deriva el gating de la UI
+desde los criterios STOPP: un diagnóstico solo se puede marcar si el paciente ya
+tiene marcado alguno de los fármacos que lo citan. Eso es correcto para STOPP
+(«fármaco + dx → alerta») pero invierte el sentido de START («dx + fármaco
+ausente → recomendar iniciarlo»): el diagnóstico quedaba inalcanzable justo para
+el paciente al que apunta el criterio.
+
+Diagnósticos afectados y criterio START que bloqueaban:
+
+| Diagnóstico | Gateado por | START bloqueado |
+|---|---|---|
+| Artritis reumatoide activa incapacitante | AINE, CORTICOIDE_SISTEMICO (STOPP-H7) | H1 |
+| HTA / no complicada / moderada / grave | override manual (H2, D3, K9, C2, I6) | B1 |
+| IC con función sistólica conservada | override manual (B9, B10, B11, J2) | B8 |
+| Insuficiencia cardíaca grave | override manual (B14: PDE5, NITRATO) | B8 |
+| EPOC grave | derivado de STOPP | G2 |
+| Riesgo de caídas de repetición | override manual (K8, K11) | H5 |
+| Dolor moderado-grave | OPIOIDE (STOPP-L) | K1 |
+
+Nota: **§2 de este mismo informe corrigió la lógica de B8 para que aceptara la FE
+preservada, pero el diagnóstico seguía sin poder marcarse** sin fármaco previo, así
+que el fix no era observable desde la interfaz.
+
+**Fix aplicado:** `startRequiredLabels(criteria)` en `dx-dependencies.ts` calcula
+los labels exigidos en positivo por algún START y `buildDxDependencies` los
+elimina del mapa final, derivados y overrides incluidos. Es una regla general, no
+una lista manual: al añadir un criterio START nuevo la exención se aplica sola.
+Un test-guard enumera los labels esperados para que un cambio de catálogo que los
+vuelva a bloquear falle. Los overrides de esos labels quedan inertes pero se
+conservan (ver comentario en `dx-dependencies-overrides.ts`).
+
+Efecto en la UI: esas casillas pasan a estar siempre habilitadas. Suite 910 SUCCESS.
 
 ## Resto de criterios: sin defecto detectado
 

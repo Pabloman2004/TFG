@@ -50,3 +50,33 @@ describe('Criterios STOPP — Sección G (Sistema respiratorio)', () => {
     expect(engine.evaluate(patient, [crit('STOPP-G4-BENZODIACEPINA-INSUFICIENCIA-RESPIRATORIA')]).length).toBe(1);
   });
 });
+
+describe('Criterios START — Sección G (Sistema respiratorio)', () => {
+  let engine: CriteriaEngineService;
+
+  beforeEach(() => { engine = setupEngine(); });
+
+  describe('START-G3-OXIGENOTERAPIA-HIPOXEMIA-CRONICA', () => {
+    const id = 'START-G3-OXIGENOTERAPIA-HIPOXEMIA-CRONICA';
+    const oxigeno = () => makeMed('Oxigenoterapia domiciliaria', ['OXIGENOTERAPIA']);
+
+    it('dispara con hipoxemia crónica documentada y sin oxigenoterapia', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['hipoxemia_cronica'],
+      }), [crit(id)]).length).toBe(1);
+    });
+
+    it('no dispara si el paciente ya recibe oxigenoterapia domiciliaria', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['hipoxemia_cronica'],
+        medications: [oxigeno()],
+      }), [crit(id)])).toEqual([]);
+    });
+
+    it('no dispara sin hipoxemia crónica documentada', () => {
+      expect(engine.evaluate(makeCase({
+        diagnoses: ['epoc_gold_3_4'],
+      }), [crit(id)])).toEqual([]);
+    });
+  });
+});
