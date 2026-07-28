@@ -361,33 +361,6 @@
   border-color: #16a34a;
 }
 
-.clinical-data-panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px 16px;
-  border-bottom: 1px solid #dbeafe;
-  background: #eff6ff;
-}
-
-.clinical-field {
-  display: grid;
-  gap: 4px;
-  color: #334155;
-  font-size: 11.5px;
-  font-weight: 600;
-}
-
-.clinical-field input {
-  width: 150px;
-  padding: 6px 8px;
-  border: 1px solid #bfdbfe;
-  border-radius: 6px;
-  background: #fff;
-  color: #0f172a;
-  font: inherit;
-}
-
 /* Columns */
 .cols-wrap {
   flex: 1;
@@ -822,4 +795,56 @@
 @media (max-width: 600px) {
   .top-nav { padding: 10px 14px; }
   .main-grid { padding: 12px; gap: 12px; }
+}
+
+/* ── Resaltado de relación (Relevantes de otros sistemas) ── */
+.drug-col--highlight {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+  animation: foreign-highlight-pulse 1.6s ease-in-out 5;
+}
+
+.crit-card--highlight {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+  animation: foreign-highlight-pulse 1.6s ease-in-out 5;
+}
+
+@keyframes foreign-highlight-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25); }
+  50% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.4); }
+}
+
+/* Marca persistente: cuántos fármacos foráneos seleccionados apuntan al grupo.
+   Mientras sigan marcados el enlace se ve, aunque el pulso ya se haya apagado. */
+.link-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 1px 5px;
+  border-radius: 999px;
+  border: 1px solid #93c5fd;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: calc(10px * var(--font-scale, 1));
+  font-weight: 700;
+  line-height: 1.4;
+  cursor: help;
+}
+
+.link-badge--multi {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drug-col--highlight,
+  .crit-card--highlight {
+    animation: none;
+  }
 }

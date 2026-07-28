@@ -194,13 +194,11 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
   describe('D5 y D15 — alertas independientes para SCPD', () => {
     const d5 = crit('STOPP-D5-NEUROLEPTICO-SINTOMAS-DEMENCIA');
     const d15 = crit('STOPP-D15-ANTIPSICOTICO-SCPD');
-    const neurolepticoProlongado = (id = 'Haloperidol') =>
-      makeMed(id, ['NEUROLEPTICO'], { durationDays: 85 });
 
-    it('genera las dos alertas con SCPD + neuroléptico > 12 semanas', () => {
+    it('genera las dos alertas con SCPD + neuroléptico sin duración', () => {
       const p = makeCase({
         diagnoses: ['sintomas_conductuales_demencia'],
-        medications: [neurolepticoProlongado()],
+        medications: [neuroleptico()],
       });
       expect(engine.evaluate(p, [d5, d15]).map(result => result.id)).toEqual([
         'STOPP-D5-NEUROLEPTICO-SINTOMAS-DEMENCIA',
@@ -208,26 +206,20 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
       ]);
     });
 
-    it('D5 dispara y D15 no si el neuroléptico no supera 12 semanas', () => {
+    it('genera las dos alertas con SCPD + Risperidona', () => {
       const p = makeCase({
         diagnoses: ['sintomas_conductuales_demencia'],
-        medications: [neuroleptico()],
-      });
-      expect(engine.evaluate(p, [d5, d15]).map(result => result.id)).toEqual([
-        'STOPP-D5-NEUROLEPTICO-SINTOMAS-DEMENCIA',
-      ]);
-    });
-
-    it('genera las dos alertas con SCPD + Risperidona > 12 semanas', () => {
-      const p = makeCase({
-        diagnoses: ['sintomas_conductuales_demencia'],
-        medications: [neurolepticoProlongado('Risperidona')],
+        medications: [neuroleptico('Risperidona')],
       });
       expect(engine.evaluate(p, [d5, d15]).length).toBe(2);
     });
 
     it('no dispara sin diagnóstico de demencia conductual', () => {
-      expect(engine.evaluate(makeCase({ medications: [neurolepticoProlongado()] }), [d5, d15])).toEqual([]);
+      expect(engine.evaluate(makeCase({ medications: [neuroleptico()] }), [d5, d15])).toEqual([]);
+    });
+
+    it('D15 summary menciona > 12 semanas como nota clínica', () => {
+      expect(d15.summary.toLowerCase()).toMatch(/12 semanas|más de 12/);
     });
   });
 
@@ -280,22 +272,13 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
 
   describe('D8-BENZODIACEPINA-USO-PROLONGADO', () => {
     const c = crit('STOPP-D8-BENZODIACEPINA-USO-PROLONGADO');
-    const benzoProlongada = () => makeMed('Lorazepam', ['BENZODIACEPINA'], { durationDays: 28 });
 
-    it('dispara con benzodiacepina ≥ 4 semanas', () => {
-      const p = makeCase({ medications: [benzoProlongada()] });
-      expect(engine.evaluate(p, [c]).length).toBe(1);
+    it('dispara al seleccionar benzodiacepina sin duración', () => {
+      expect(engine.evaluate(makeCase({ medications: [benzo()] }), [c]).length).toBe(1);
     });
 
-    it('no dispara con benzodiacepina < 4 semanas', () => {
-      const p = makeCase({
-        medications: [makeMed('Lorazepam', ['BENZODIACEPINA'], { durationDays: 27 })],
-      });
-      expect(engine.evaluate(p, [c])).toEqual([]);
-    });
-
-    it('no dispara con benzodiacepina sin duración', () => {
-      expect(engine.evaluate(makeCase({ medications: [benzo()] }), [c])).toEqual([]);
+    it('el summary menciona uso prolongado (> 4 semanas) como nota de revisión', () => {
+      expect(c.summary.toLowerCase()).toMatch(/4 semanas|≥ 4/);
     });
   });
 
@@ -323,23 +306,18 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
 
   describe('D10-BENZODIACEPINA-INSOMNIO', () => {
     const c = crit('STOPP-D10-BENZODIACEPINA-INSOMNIO');
-    const benzoInsomnio = () => makeMed('Lorazepam', ['BENZODIACEPINA'], { durationDays: 14 });
 
-    it('dispara con insomnio + benzodiacepina ≥ 2 semanas', () => {
-      const p = makeCase({ diagnoses: ['insomnio'], medications: [benzoInsomnio()] });
+    it('dispara con insomnio + benzodiacepina sin duración', () => {
+      const p = makeCase({ diagnoses: ['insomnio'], medications: [benzo()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('no dispara con insomnio + benzodiacepina < 2 semanas', () => {
-      const p = makeCase({
-        diagnoses: ['insomnio'],
-        medications: [makeMed('Lorazepam', ['BENZODIACEPINA'], { durationDays: 13 })],
-      });
-      expect(engine.evaluate(p, [c])).toEqual([]);
+    it('no dispara sin insomnio', () => {
+      expect(engine.evaluate(makeCase({ medications: [benzo()] }), [c])).toEqual([]);
     });
 
-    it('no dispara sin insomnio', () => {
-      expect(engine.evaluate(makeCase({ medications: [benzoInsomnio()] }), [c])).toEqual([]);
+    it('el summary menciona > 2 semanas', () => {
+      expect(c.summary.toLowerCase()).toMatch(/2 semanas|≥ 2/);
     });
   });
 
@@ -347,28 +325,24 @@ describe('Criterios STOPP — Sección D (Sistema nervioso central)', () => {
 
   describe('D11-HIPNOTICO-Z-INSOMNIO', () => {
     const c = crit('STOPP-D11-HIPNOTICO-Z-INSOMNIO');
-    const zProlongado = (id = 'Zolpidem') => makeMed(id, ['HIPNOTICO_Z'], { durationDays: 14 });
+    const hipnoticoZ = (id = 'Zolpidem') => makeMed(id, ['HIPNOTICO_Z']);
 
-    it('dispara con insomnio + Zolpidem ≥ 2 semanas', () => {
-      const p = makeCase({ diagnoses: ['insomnio'], medications: [zProlongado()] });
+    it('dispara con insomnio + Zolpidem sin duración', () => {
+      const p = makeCase({ diagnoses: ['insomnio'], medications: [hipnoticoZ()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('dispara con insomnio + Zopiclona ≥ 2 semanas', () => {
-      const p = makeCase({ diagnoses: ['insomnio'], medications: [zProlongado('Zopiclona')] });
+    it('dispara con insomnio + Zopiclona sin duración', () => {
+      const p = makeCase({ diagnoses: ['insomnio'], medications: [hipnoticoZ('Zopiclona')] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
-    });
-
-    it('no dispara con insomnio + hipnótico-Z < 2 semanas', () => {
-      const p = makeCase({
-        diagnoses: ['insomnio'],
-        medications: [makeMed('Zolpidem', ['HIPNOTICO_Z'], { durationDays: 13 })],
-      });
-      expect(engine.evaluate(p, [c])).toEqual([]);
     });
 
     it('no dispara sin insomnio', () => {
-      expect(engine.evaluate(makeCase({ medications: [zProlongado()] }), [c])).toEqual([]);
+      expect(engine.evaluate(makeCase({ medications: [hipnoticoZ()] }), [c])).toEqual([]);
+    });
+
+    it('el summary menciona > 2 semanas', () => {
+      expect(c.summary.toLowerCase()).toMatch(/2 semanas|≥ 2/);
     });
   });
 

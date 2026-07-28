@@ -1,10 +1,15 @@
 import { computeMedGroupBuckets, computeDxGroupBuckets, medGroupsVisibleInTab, dxGroupsVisibleInTab } from './group-visibility';
 import { DRUG_CATEGORIES, DrugCategory } from './data/medications-taxonomy';
-import { DiagnosisTab } from './data/diagnoses-taxonomy';
+import { DIAGNOSIS_TABS, DiagnosisTab } from './data/diagnoses-taxonomy';
 import { buildRelevance, Relevance } from './data/system-relevance';
 import { Med } from './types';
 import { MEDICATIONS } from './data/medications';
 import { ALL_CRITERIA } from './services/criteria-test-helpers';
+
+const ALL_TAB_IDS = Array.from(new Set([
+  ...DRUG_CATEGORIES.map(c => c.id),
+  ...DIAGNOSIS_TABS.map(t => t.id),
+]));
 
 // ─── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -37,8 +42,17 @@ const makeRelevance = (
 ): Relevance => ({
   classesByTab: toClassMap(classesByTab),
   specificClassesByTab: toClassMap(specificClassesByTab),
+  specificClassCriteriaByTab: new Map(),
+  classesByCriterion: new Map(),
+  requiredClassesByCriterion: new Map(),
+  classAlternativesByCriterion: new Map(),
   dxsByTab: new Map(),
   specificDxsByTab: new Map(),
+  specificDxCriteriaByTab: new Map(),
+  dxsByCriterion: new Map(),
+  dxAlternativesByCriterion: new Map(),
+  criteriaByRequiredClass: new Map(),
+  criteriaByDx: new Map(),
 });
 
 const TABS: DiagnosisTab[] = [
@@ -62,8 +76,17 @@ const TABS: DiagnosisTab[] = [
 const makeDxRelevance = (dxsByTab: Record<string, string[]>): Relevance => ({
   classesByTab: new Map(),
   specificClassesByTab: new Map(),
+  specificClassCriteriaByTab: new Map(),
+  classesByCriterion: new Map(),
+  requiredClassesByCriterion: new Map(),
+  classAlternativesByCriterion: new Map(),
   dxsByTab: new Map(Object.entries(dxsByTab).map(([k, v]) => [k, new Set(v)])),
   specificDxsByTab: new Map(Object.entries(dxsByTab).map(([k, v]) => [k, new Set(v)])),
+  specificDxCriteriaByTab: new Map(),
+  dxsByCriterion: new Map(),
+  dxAlternativesByCriterion: new Map(),
+  criteriaByRequiredClass: new Map(),
+  criteriaByDx: new Map(),
 });
 
 // ─── computeMedGroupBuckets ────────────────────────────────────────────────────
@@ -313,6 +336,91 @@ describe('computeMedGroupBuckets', () => {
     const otros = computeMedGroupBuckets('otros', catsParacetamol, rel, 'otros');
     expect(otros.ownAll[0].drugs).toContain('Paracetamol');
   });
+
+  // ─── Relevancia estricta en foreignRelevant (solo específica del tab) ───────
+
+  it('grupo multi-fármaco solo en classesByTab (transversal) no aparece en foreignRelevant', () => {
+    // ANTIHISTAMINICO llega a cardiovascular por expansión transversal (caídas),
+    // pero no por criterio cardiovascular específico.
+    const catsWithAnti: DrugCategory[] = [
+      ...CATS,
+      {
+        id: 'respiratorio',
+        label: 'Respiratorio',
+        groups: [{
+          id: 'antihist',
+          label: 'Antihistamínicos',
+          drugs: ['Clorfeniramina', 'Difenhidramina'],
+          drugClass: 'ANTIHISTAMINICO',
+        }],
+      },
+    ];
+    const rel = makeRelevance(
+      { cardio: ['ANTIHISTAMINICO'] },
+      {},
+    );
+    const buckets = computeMedGroupBuckets('cardio', catsWithAnti, rel, 'otros');
+    expect(buckets.foreignRelevant.map(g => g.id)).not.toContain('antihist');
+  });
+
+  it('grupo multi-fármaco en specificClassesByTab sí aparece en foreignRelevant', () => {
+    const catsWithCort: DrugCategory[] = [
+      ...CATS,
+      {
+        id: 'endocrino',
+        label: 'Endocrino',
+        groups: [{
+          id: 'corticoides',
+          label: 'Corticoides sistémicos',
+          drugs: ['Prednisona', 'Prednisolona'],
+          drugClass: 'CORTICOIDE_SISTEMICO',
+        }],
+      },
+    ];
+    const rel = makeRelevance(
+      { cardio: ['CORTICOIDE_SISTEMICO'] },
+      { cardio: ['CORTICOIDE_SISTEMICO'] },
+    );
+    const buckets = computeMedGroupBuckets('cardio', catsWithCort, rel, 'otros');
+    expect(buckets.foreignRelevant.length).toBe(1);
+    expect(buckets.foreignRelevant[0].id).toBe('corticoides');
+    expect(buckets.foreignRelevant[0].originTabId).toBe('endocrino');
+    expect(buckets.foreignRelevant[0].originTabLabel).toBe('Endocrino');
+  });
+
+  it('grupo reducido a un solo fármaco relevante conserva solo ese fármaco', () => {
+    const categories: DrugCategory[] = [
+      {
+        id: 'cardio',
+        label: 'Cardiovascular',
+        groups: [
+          { id: 'g1', label: 'Betabloqueantes', drugs: ['Bisoprolol', 'Atenolol'], drugClass: 'BETABLOQUEANTE' },
+        ],
+      },
+      {
+        id: 'endocrino',
+        label: 'Endocrino',
+        groups: [{
+          id: 'mixto',
+          label: 'Grupo mixto',
+          drugs: ['Prednisona', 'Metformina', 'Insulina'],
+          drugClass: 'CORTICOIDE_SISTEMICO',
+        }],
+      },
+    ];
+    const medications: Med[] = [
+      { id: 'Prednisona', drugClasses: ['CORTICOIDE_SISTEMICO'] },
+      { id: 'Metformina', drugClasses: ['BIGUANIDA'] },
+      { id: 'Insulina', drugClasses: ['INSULINA'] },
+    ];
+    const rel = makeRelevance(
+      { cardio: ['CORTICOIDE_SISTEMICO'] },
+      { cardio: ['CORTICOIDE_SISTEMICO'] },
+    );
+    const buckets = computeMedGroupBuckets('cardio', categories, rel, 'otros', medications);
+    expect(buckets.foreignRelevant.length).toBe(1);
+    expect(buckets.foreignRelevant[0].drugs).toEqual(['Prednisona']);
+  });
 });
 
 // ─── medGroupsVisibleInTab ─────────────────────────────────────────────────────
@@ -329,7 +437,7 @@ describe('medGroupsVisibleInTab', () => {
 });
 
 describe('visibilidad farmacológica con datos clínicos reales', () => {
-  const relevance = buildRelevance(ALL_CRITERIA);
+  const relevance = buildRelevance(ALL_CRITERIA, ALL_TAB_IDS);
 
   const foreignDrugsIn = (tabId: string): readonly string[] =>
     computeMedGroupBuckets(
@@ -409,6 +517,37 @@ describe('visibilidad farmacológica con datos clínicos reales', () => {
     expect(foreignDrugsIn('urologico')).toContain('Amoxicilina');
   });
 
+  it('cardiovascular: foreignRelevant solo incluye fármacos con criterio específico del sistema', () => {
+    const cardioDrugs = foreignDrugsIn('cardiovascular');
+
+    const mustNotAppear = [
+      'Clorfeniramina', 'Dexclorfeniramina', 'Difenhidramina',
+      'Alprazolam', 'Diazepam', 'Lorazepam',
+      'Gabapentina', 'Pregabalina',
+      'Zolpidem', 'Zopiclona',
+      'Tramadol', 'Morfina',
+      'Oxibutinina', 'Solifenacina', 'Tolterodina',
+      'Biperideno', 'Trihexifenidilo',
+      'Lactulosa', 'Macrogol',
+      'Carbamazepina', 'Levetiracetam',
+      'Fluoxetina', 'Sertralina',
+      'Duloxetina', 'Venlafaxina',
+    ];
+    for (const drug of mustNotAppear) {
+      expect(cardioDrugs).withContext(`${drug} no debe aparecer en cardiovascular`).not.toContain(drug);
+    }
+
+    const mustAppear = [
+      'Prednisona', 'Ibuprofeno', 'Haloperidol',
+      'Ondansetrón', 'Mirabegrón', 'Sildenafilo',
+      'Litio', 'Ciprofloxacino', 'Azitromicina',
+      'Amitriptilina', 'Amilorida', 'Simvastatina',
+    ];
+    for (const drug of mustAppear) {
+      expect(cardioDrugs).withContext(`${drug} debe aparecer en cardiovascular`).toContain(drug);
+    }
+  });
+
   it('no relega Paracetamol al tab Otros (STOPP-L6 vía Osteo)', () => {
     const otros = computeMedGroupBuckets(
       'otros',
@@ -455,8 +594,17 @@ describe('computeDxGroupBuckets', () => {
     const rel: Relevance = {
       classesByTab: new Map(),
       specificClassesByTab: new Map(),
+      specificClassCriteriaByTab: new Map(),
+      classesByCriterion: new Map(),
+      requiredClassesByCriterion: new Map(),
+      classAlternativesByCriterion: new Map(),
       dxsByTab: new Map([['cardio', new Set(['demencia'])]]),
       specificDxsByTab: new Map(),
+      specificDxCriteriaByTab: new Map(),
+      dxsByCriterion: new Map(),
+      dxAlternativesByCriterion: new Map(),
+      criteriaByRequiredClass: new Map(),
+      criteriaByDx: new Map(),
     };
     const result = computeDxGroupBuckets(TABS[0], TABS, rel);
     expect(result.foreignRelevant.length).toBe(0);

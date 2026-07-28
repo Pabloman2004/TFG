@@ -107,32 +107,25 @@ describe('Criterios STOPP — Sección L (Analgésicos)', () => {
 
   describe('L6-PARACETAMOL-DOSIS-ALTA-HEPATOPATIA', () => {
     const c = crit('STOPP-L6-PARACETAMOL-DOSIS-ALTA-HEPATOPATIA');
-    const paraAlta = () => makeMed('Paracetamol', ['ANALGESICO_SIMPLE'], { doseMgDay: 3000 });
+    const para = () => makeMed('Paracetamol', ['ANALGESICO_SIMPLE']);
 
-    it('dispara con hepatopatía + paracetamol ≥ 3 g/día', () => {
-      const p = makeCase({ diagnoses: ['hepatopatia_cronica'], medications: [paraAlta()] });
+    it('dispara con hepatopatía + paracetamol sin dosis', () => {
+      const p = makeCase({ diagnoses: ['hepatopatia_cronica'], medications: [para()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('dispara con malnutrición + paracetamol ≥ 3 g/día', () => {
-      const p = makeCase({ diagnoses: ['malnutricion'], medications: [paraAlta()] });
+    it('dispara con malnutrición + paracetamol sin dosis', () => {
+      const p = makeCase({ diagnoses: ['malnutricion'], medications: [para()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('no dispara con hepatopatía + paracetamol < 3 g/día', () => {
-      const p = makeCase({
-        diagnoses: ['hepatopatia_cronica'],
-        medications: [makeMed('Paracetamol', ['ANALGESICO_SIMPLE'], { doseMgDay: 2999 })],
-      });
+    it('no dispara con hepatopatía sin paracetamol', () => {
+      const p = makeCase({ diagnoses: ['hepatopatia_cronica'] });
       expect(engine.evaluate(p, [c])).toEqual([]);
     });
 
-    it('no dispara con hepatopatía + paracetamol sin dosis', () => {
-      const p = makeCase({
-        diagnoses: ['hepatopatia_cronica'],
-        medications: [makeMed('Paracetamol', ['ANALGESICO_SIMPLE'])],
-      });
-      expect(engine.evaluate(p, [c])).toEqual([]);
+    it('el summary menciona riesgo ≥ 3 g/día', () => {
+      expect(c.summary.toLowerCase()).toMatch(/3 g|≥ 3/);
     });
   });
 });

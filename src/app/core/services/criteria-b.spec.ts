@@ -531,28 +531,18 @@ describe('Criterios STOPP — Sección B (Sistema cardiovascular)', () => {
 
   describe('B21-DIGOXINA-FA', () => {
     const c = crit('STOPP-B21-DIGOXINA-FA');
-    const digoxinaLargoPlazo = () => makeMed('Digoxina', ['DIGOXINA'], { durationDays: 91 });
 
-    it('dispara con FA + Digoxina > 3 meses', () => {
-      const p = makeCase({ diagnoses: ['fibrilacion_auricular'], medications: [digoxinaLargoPlazo()] });
+    it('dispara con FA + Digoxina sin duración capturada', () => {
+      const p = makeCase({ diagnoses: ['fibrilacion_auricular'], medications: [digoxina()] });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('no dispara con FA + Digoxina ≤ 3 meses', () => {
-      const p = makeCase({
-        diagnoses: ['fibrilacion_auricular'],
-        medications: [makeMed('Digoxina', ['DIGOXINA'], { durationDays: 90 })],
-      });
-      expect(engine.evaluate(p, [c])).toEqual([]);
+    it('no dispara con Digoxina sin FA', () => {
+      expect(engine.evaluate(makeCase({ medications: [digoxina()] }), [c])).toEqual([]);
     });
 
-    it('no dispara con FA + Digoxina sin duración', () => {
-      const p = makeCase({ diagnoses: ['fibrilacion_auricular'], medications: [digoxina()] });
-      expect(engine.evaluate(p, [c])).toEqual([]);
-    });
-
-    it('no dispara con Digoxina a largo plazo sin FA', () => {
-      expect(engine.evaluate(makeCase({ medications: [digoxinaLargoPlazo()] }), [c])).toEqual([]);
+    it('el summary indica revisar uso a largo plazo (> 3 meses)', () => {
+      expect(c.summary.toLowerCase()).toContain('3 meses');
     });
   });
 });

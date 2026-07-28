@@ -878,3 +878,47 @@
   .top-nav { padding: 10px 14px; }
   .main-grid { padding: 12px; gap: 12px; }
 }
+
+.drug-row--highlight,
+.crit-card--highlight {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+  animation: foreign-highlight-pulse 1.6s ease-in-out 5;
+}
+
+@keyframes foreign-highlight-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25); }
+  50% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.4); }
+}
+
+/* Marca persistente: cuántos diagnósticos foráneos seleccionados apuntan aquí. */
+.link-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 1px 5px;
+  border-radius: 999px;
+  border: 1px solid #93c5fd;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: calc(10px * var(--font-scale, 1));
+  font-weight: 700;
+  line-height: 1.4;
+  cursor: help;
+}
+
+.link-badge--multi {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drug-row--highlight,
+  .crit-card--highlight {
+    animation: none;
+  }
+}

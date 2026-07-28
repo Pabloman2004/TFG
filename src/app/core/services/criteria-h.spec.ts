@@ -21,33 +21,36 @@ describe('Criterios STOPP — Sección H (Sistema musculoesquelético)', () => {
     expectActive('STOPP-H2-AINE-HIPERTENSION-GRAVE', ['hipertension_grave'], [aine()]);
     expectActive('STOPP-H3-AINE-ARTRITIS-ARTROSIS', ['artrosis'], [aine()]);
     expectActive('STOPP-H4-CORTICOIDE-ARTRITIS-REUMATOIDE', ['artritis_reumatoide'], [
-      makeMed('Prednisona', ['CORTICOIDE_SISTEMICO'], { durationDays: 91 }),
+      makeMed('Prednisona', ['CORTICOIDE_SISTEMICO']),
     ]);
     expectActive('STOPP-H5-CORTICOIDE-ARTROSIS', ['artrosis'], [
       makeMed('Prednisona', ['CORTICOIDE_SISTEMICO']),
     ]);
   });
 
-  it('H4 no dispara con corticoide ≤ 3 meses en AR', () => {
+  it('H4 no dispara sin artritis reumatoide', () => {
     const c = crit('STOPP-H4-CORTICOIDE-ARTRITIS-REUMATOIDE');
     expect(engine.evaluate(makeCase({
-      diagnoses: ['artritis_reumatoide'],
-      medications: [makeMed('Prednisona', ['CORTICOIDE_SISTEMICO'], { durationDays: 90 })],
+      medications: [makeMed('Prednisona', ['CORTICOIDE_SISTEMICO'])],
     }), [c])).toEqual([]);
   });
 
-  it('START-H2 no dispara con corticoide oral a corto plazo', () => {
-    const c = crit('START-H2-BIFOSFONATO-VITAMINA-D-CORTICOIDE');
-    expect(engine.evaluate(makeCase({
-      medications: [makeMed('Prednisona', ['CORTICOIDE_SISTEMICO'], { durationDays: 5 })],
-    }), [c])).toEqual([]);
+  it('H4 summary menciona > 3 meses', () => {
+    expect(crit('STOPP-H4-CORTICOIDE-ARTRITIS-REUMATOIDE').summary.toLowerCase())
+      .toMatch(/3 meses|> 3/);
   });
 
-  it('START-H2 dispara con corticoide >90 días sin protección ósea', () => {
+  it('START-H2 no dispara sin corticoide', () => {
+    const c = crit('START-H2-BIFOSFONATO-VITAMINA-D-CORTICOIDE');
+    expect(engine.evaluate(makeCase({ medications: [] }), [c])).toEqual([]);
+  });
+
+  it('START-H2 dispara con corticoide sin protección ósea (sin duración)', () => {
     const c = crit('START-H2-BIFOSFONATO-VITAMINA-D-CORTICOIDE');
     expect(engine.evaluate(makeCase({
-      medications: [makeMed('Prednisona', ['CORTICOIDE_SISTEMICO'], { durationDays: 91 })],
+      medications: [makeMed('Prednisona', ['CORTICOIDE_SISTEMICO'])],
     }), [c]).length).toBe(1);
+    expect(c.summary.toLowerCase()).toMatch(/largo plazo|prolongad/);
   });
 
   it('H6 dispara con AINE o colchicina y gota recurrente', () => {

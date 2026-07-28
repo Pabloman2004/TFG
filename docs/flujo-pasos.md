@@ -6,12 +6,13 @@ La aplicación STOPP/START guía al clínico en dos pasos secuenciales:
 
 1. **Paso 1 — Medicamentos** (`/medicaciones`, `MedsStepComponent`): el clínico selecciona los fármacos activos del paciente organizados por categoría terapéutica (tabs: cardiovascular, neurológico, etc.). En tiempo real se evalúan los criterios STOPP/START y se muestran en una columna derecha agrupados por sistema orgánico.
 
-   Cada tab muestra campos clínicos contextuales cuando hay medicamentos
-   seleccionados **visibles en ese tab** (propios o foráneos): dosis/duración
-   según la clase del fármaco (Digoxina, IBP, hierro, benzos/Z, corticoides,
-   paracetamol, AAS…). La captura de **analíticas/constantes** ya no vive aquí:
-   se centraliza en el paso de Diagnósticos (ver paso 2). Los cambios actualizan
-   inmutablemente `Med[]` y se persisten junto con el caso.
+   Los umbrales de dosis/duración de ciertos criterios (p. ej. AAS > 100 mg/día,
+   benzodiacepina > 4 semanas) viven en el texto del aviso (`summary`) como juicio
+   clínico: el criterio se notifica al seleccionar el fármaco (y el diagnóstico
+   cuando aplica), sin pedir esos datos al usuario. La captura de
+   **analíticas/constantes** se centraliza en el paso de Diagnósticos (ver paso 2).
+   Los campos opcionales `doseMgDay` / `doseMcgDay` / `durationDays` pueden seguir
+   presentes en casos JSON antiguos y se cargan sin error, pero ya no se editan en la UI.
 
 2. **Paso 2 — Diagnósticos** (`/diagnosticos`, `DiagnosisStepComponent`): el clínico selecciona los diagnósticos activos organizados por sistema orgánico. La columna derecha sigue mostrando los criterios activados actualizados.
 
@@ -43,7 +44,7 @@ En ambos pasos:
 | `src/app/core/group-checked.ts` | Helpers puros `isMedGroupChecked` / `isDxGroupChecked` |
 | `src/app/core/criteria-groups.ts` | Helpers puros `groupBySystem` / `critCode` |
 | `src/app/core/group-visibility.ts` | Lógica unificada de visibilidad de buckets (T8) |
-| `src/app/core/clinical-capture.ts` | Campos de dosis/duración visibles por tab y clase de fármaco |
+| `src/app/core/clinical-capture.ts` | Helper de visibilidad de medicamentos por grupos del tab (`medsVisibleInTabGroups`) |
 | `src/app/core/lab-capture.ts` | Presentación del panel fijo de analítica/constantes (todos los campos, siempre; pestaña «Otros» de diagnósticos) |
 
 ### Flujo reactivo (ambos componentes)
@@ -77,14 +78,15 @@ Exporta cuatro funciones puras y sus tipos asociados:
 - **`computeMedGroupBuckets(tabId, categories, relevance, otrosTabId, medications)`**: calcula
   `MedGroupBuckets` (`{ ownAll, foreignRelevant }`). Recibe el catálogo para comparar todas las
   `drugClasses` de cada medicamento con las clases relevantes del tab:
-  - Los **multi-fármaco** (`drugs.length > 1`) usan `relevance.classesByTab` (relevancia completa,
-    transversal incluida): siempre en `ownAll` de su tab; como foráneos solo con los medicamentos
-    cuya intersección de clases sea no vacía.
-  - Los **unitarios** (`drugs.length === 1`) solo afloran por relevancia **específica**
-    (`relevance.specificClassesByTab`): como foráneos aparecen únicamente en el tab cuyo criterio
-    referencia alguna de sus clases; si afloran en cualquier tab específico, permanecen visibles
-    también en su categoría principal. La relevancia transversal no basta para hacerlos aflorar
-    (p. ej. Paracetamol vía "Analgésicos" permanece en Otros).
+  - Tanto **multi-fármaco** como **unitarios** usan solo relevancia **específica**
+    (`relevance.specificClassesByTab`) para el bucket «Relevantes de otros sistemas»: un fármaco
+    foráneo solo aparece si algún criterio cuyo `system` mapea específicamente a ese tab cita
+    alguna de sus clases. La relevancia transversal (Analgésicos, Caídas, Anticolinérgicos,
+    Indicación) **no** aporta casillas foráneas.
+  - Los **unitarios** (`drugs.length === 1`) además solo afloran fuera de «Otros» por esa misma
+    relevancia específica: si afloran en cualquier tab específico, permanecen visibles también
+    en su categoría principal. La relevancia transversal no basta (p. ej. Paracetamol vía
+    "Analgésicos" permanece en Otros).
   - La coincidencia se calcula por medicamento, no por `DrugGroup.drugClass`. Esto permite que un
     AOD aflore por `INHIBIDOR_FACTOR_XA`, aunque el grupo visual se denomine
     `ANTICOAGULANTE_DIRECTO`, y que grupos sin `drugClass` afloren por sus miembros.
@@ -92,6 +94,43 @@ Exporta cuatro funciones puras y sus tipos asociados:
     `drugClass` coincide directamente con la clase relevante antes de recurrir a la coincidencia
     multiclase. El mismo ID puede aparecer en tabs distintos y conserva una única selección
     compartida en el store.
+  - Al **marcar** un fármaco del bucket «Relevantes de otros sistemas»,
+    `resolveForeignHighlight` (`foreign-provenance.ts`) resalta durante 8 s. La cascada es
+    **aditiva**, no excluyente: resalta los grupos propios co-partícipes del tab **y** la
+    tarjeta del criterio si ya está disparado; si ningún criterio se ha disparado todavía,
+    añade además un snackbar (`panelClass: snack-relacion`, estilado en `styles.css`) con el
+    criterio y lo que falta por marcar. Desmarcar no resalta; marcar un fármaco de `ownAll`
+    tampoco.
+  - Una casilla foránea puede estar implicada en **varios criterios** (20 de las 135 casillas
+    de diagnóstico lo están): el aviso los nombra todos, una línea por criterio, ordenados
+    del más cercano a dispararse al más lejano. Los criterios que comparten código corto
+    (STOPP-B14 tiene dos variantes) se agrupan y se conserva la vía más corta.
+  - Cada requisito pendiente lleva **dónde encontrarlo** (`paso 1 · Cardiovascular`), porque
+    116 de esas 135 casillas exigen algo del otro paso o de otra pestaña. La ubicación se
+    omite cuando el requisito ya está en el paso y la pestaña actuales, y lista hasta dos
+    pestañas cuando la clase vive en varias (`SNC o Osteo/Músculo-esq.`).
+  - Solo se resaltan **co-requisitos**, nunca **alternativas**. Si el criterio pide
+    `A y (B o C)` y el usuario marca `C`, se resalta `A` — no `B`, cuya selección no acercaría
+    el criterio a dispararse. Lo resuelven `classAlternativesByCriterion` /
+    `dxAlternativesByCriterion`, que `buildRelevance` calcula a partir de las ramas de cada
+    nodo `or`. El mensaje de «requiere» colapsa cada racimo de alternativas en una entrada
+    («Insuficiencia cardíaca u otras 4 variantes») y nombra las clases con etiqueta legible
+    vía `drugClassLabel`.
+  - `foreignLinksByOwnGroup` / `foreignLinksByOwnDx` calculan un enlace **persistente**:
+    mientras el fármaco (o diagnóstico) foráneo siga marcado, el grupo propio relacionado
+    muestra un `.link-badge` con el número de casillas foráneas que apuntan a él. Es lo que
+    permite ver que dos selecciones distintas convergen en el mismo grupo, algo que el pulso
+    transitorio por sí solo no comunica.
+  - `relatedSelectionLinks` extiende ese enlace **a través de pasos y pestañas**, en sentido
+    inverso: dado un elemento de la pestaña actual, devuelve qué elementos **ya marcados**
+    (de cualquier paso) lo necesitan. Es lo que hace que, tras un aviso del tipo «requiere:
+    Intervalo QTc prolongado (diagnóstico · paso 2 · Cardiovascular)», al llegar a ese
+    diagnóstico se vea un chip 🔗 con los fármacos que lo esperan. Se apoya en los índices
+    inversos globales `criteriaByRequiredClass` / `criteriaByDx` de `Relevance` y respeta la
+    misma regla de alternativas. Ambos componentes combinan los dos mapas con
+    `mergeLinkMaps`. En el paso 1 los objetivos incluyen la clase del grupo **y** las de sus
+    miembros, para que un diagnóstico pueda apuntar a grupos que contienen fármacos
+    relevantes aunque el grupo no lleve esa clase (QTc → Antiarrítmicos, Antianginosos).
   - El tab especial `otrosTabId` agrega los fármacos de grupos unitarios, **excepto** los que
     afloran por relevancia específica en algún tab de sistema (para no duplicarlos), usando
     también todas las clases del medicamento.
@@ -101,8 +140,8 @@ Exporta cuatro funciones puras y sus tipos asociados:
   de lo anterior; devuelve `[...ownAll, ...foreignRelevant]`.
 - **`computeDxGroupBuckets(tab, allTabs, relevance)`**: calcula `DxGroupBuckets`
   (`{ ownGroups, foreignRelevant }`). Los grupos foráneos se construyen agrupando diagnósticos de
-  otros tabs que aparecen en `relevance.dxsByTab.get(tab.id)`; cada grupo foráneo lleva
-  `originTabId`/`originTabLabel` para que la plantilla los distinga visualmente.
+  otros tabs que aparecen en `relevance.specificDxsByTab.get(tab.id)` (sin expansión transversal);
+  cada grupo foráneo lleva `originTabId`/`originTabLabel` para que la plantilla los distinga.
 - **`dxGroupsVisibleInTab(tab, allTabs, relevance)`**: alias plano del anterior.
 
 Todos los cálculos usan `Intl.Collator('es', { sensitivity: 'base' })` para ordenación correcta

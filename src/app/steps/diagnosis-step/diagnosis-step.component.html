@@ -181,6 +181,7 @@
                              tabindex="0"
                              [attr.aria-checked]="isSelected(family.rootLabel)"
                              [class.dx-disabled]="!isDxEnabled(family.rootLabel)"
+                             [class.drug-row--highlight]="isDxHighlighted(family.rootLabel)"
                              [attr.data-tooltip]="!isDxEnabled(family.rootLabel) ? dxTooltip(family.rootLabel) : null"
                              (click)="toggleDiagnosis(family.rootLabel)"
                              (keydown.enter)="toggleDiagnosis(family.rootLabel)" (keydown.space)="$event.preventDefault(); toggleDiagnosis(family.rootLabel)">
@@ -209,11 +210,23 @@
                          tabindex="0"
                          [attr.aria-checked]="isSelected(dx)"
                          [class.dx-disabled]="!isDxEnabled(dx)"
+                         [class.drug-row--highlight]="isDxHighlighted(dx)"
                          [attr.data-tooltip]="!isDxEnabled(dx) ? dxTooltip(dx) : null"
                          (click)="toggleDiagnosis(dx)"
                          (keydown.enter)="toggleDiagnosis(dx)" (keydown.space)="$event.preventDefault(); toggleDiagnosis(dx)">
                       <div class="cbx" [class.checked]="isSelected(dx)" aria-hidden="true"></div>
                       <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
+                      @if (linkedForeignDxs(dx).length > 0) {
+                        <span class="link-badge"
+                              [class.link-badge--multi]="linkedForeignDxs(dx).length > 1"
+                              [title]="linkedForeignDxTooltip(dx)">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                          </svg>
+                          {{ linkedForeignDxs(dx).length }}
+                        </span>
+                      }
                     </div>
                   }
                   @for (custom of customDxFor(group); track custom) {
@@ -390,7 +403,8 @@
                 <div class="sys-body" [class.collapsed]="isSectionCollapsed('start:' + group.system)">
                   <div class="sys-body-inner">
                     @for (c of group.items; track trackCrit($index, c)) {
-                      <div class="crit-card start-card">
+                      <div class="crit-card start-card"
+                           [class.crit-card--highlight]="isCriterionHighlighted(c)">
                         <div class="crit-card-left">
                           <span class="crit-code">{{ critCode(c.id) }}</span>
                         </div>
@@ -453,7 +467,8 @@
                 <div class="sys-body" [class.collapsed]="isSectionCollapsed('stopp:' + group.system)">
                   <div class="sys-body-inner">
                     @for (c of group.items; track trackCrit($index, c)) {
-                      <div class="crit-card stopp-card">
+                      <div class="crit-card stopp-card"
+                           [class.crit-card--highlight]="isCriterionHighlighted(c)">
                         <div class="crit-card-left">
                           <span class="crit-code">{{ critCode(c.id) }}</span>
                         </div>

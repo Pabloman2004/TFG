@@ -12,22 +12,14 @@ describe('Criterios STOPP — Sección C (Anticoagulantes/Antiagregantes)', () =
 
   describe('C1-AAS-DOSIS-ALTA', () => {
     const c = crit('STOPP-C1-AAS-DOSIS-ALTA');
-    const aasAlta = () => makeMed('Ácido acetilsalicílico', ['ANTIAGREGANTE', 'AAS'], { doseMgDay: 101 });
 
-    it('dispara con AAS > 100 mg/día', () => {
-      const p = makeCase({ medications: [aasAlta()] });
-      expect(engine.evaluate(p, [c]).length).toBe(1);
+    it('dispara al seleccionar AAS sin dosis capturada', () => {
+      expect(engine.evaluate(makeCase({ medications: [aas()] }), [c]).length).toBe(1);
     });
 
-    it('no dispara con AAS ≤ 100 mg/día', () => {
-      const p = makeCase({
-        medications: [makeMed('Ácido acetilsalicílico', ['ANTIAGREGANTE', 'AAS'], { doseMgDay: 100 })],
-      });
-      expect(engine.evaluate(p, [c])).toEqual([]);
-    });
-
-    it('no dispara con AAS sin dosis', () => {
-      expect(engine.evaluate(makeCase({ medications: [aas()] }), [c])).toEqual([]);
+    it('el summary es alerta de revisión de dosis (> 100 mg/día)', () => {
+      expect(c.summary.toLowerCase()).toContain('100 mg');
+      expect(c.summary.toLowerCase()).toContain('revisión');
     });
   });
 

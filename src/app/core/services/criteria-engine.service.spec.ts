@@ -97,26 +97,6 @@ describe('CriteriaEngineService — Motor genérico', () => {
     });
   });
 
-  describe('operador digoxinaDosisAlta', () => {
-    const criterion = { id: 'B1', type: 'STOPP' as const, system: 'Test', summary: 'Test',
-      logic: { digoxinaDosisAlta: [{ var: 'medications' }] } };
-
-    it('activa el criterio con dosis ≥125 mcg y duración >90 días', () => {
-      const p = makeCase({ medications: [makeMed('Digoxina', ['digoxina'], { doseMcgDay: 125, durationDays: 91 })] });
-      expect(engine.evaluate(p, [criterion]).length).toBe(1);
-    });
-
-    it('no activa con dosis por debajo del umbral', () => {
-      const p = makeCase({ medications: [makeMed('Digoxina', ['digoxina'], { doseMcgDay: 124, durationDays: 91 })] });
-      expect(engine.evaluate(p, [criterion])).toEqual([]);
-    });
-
-    it('no activa con duración ≤90 días', () => {
-      const p = makeCase({ medications: [makeMed('Digoxina', ['digoxina'], { doseMcgDay: 125, durationDays: 90 })] });
-      expect(engine.evaluate(p, [criterion])).toEqual([]);
-    });
-  });
-
   describe('operador multipleNSAIDs', () => {
     const criterion = { id: 'A3', type: 'STOPP' as const, system: 'Test', summary: 'Test',
       logic: { multipleNSAIDs: [{ var: 'medications' }] } };

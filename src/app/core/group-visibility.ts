@@ -102,11 +102,10 @@ export function computeMedGroupBuckets(
     };
   }
 
-  // Grupos multi-fármaco usan la relevancia completa (transversal incluida);
-  // los unitarios solo afloran por relevancia ESPECÍFICA del tab.
-  const fullClasses = normalizedClasses(
-    relevance?.classesByTab.get(tabId) ?? new Set<string>(),
-  );
+  // Tanto multi-fármaco como unitarios usan solo relevancia ESPECÍFICA del tab
+  // (excluye la expansión transversal de Analgésicos / Caídas / Anticolinérgicos /
+  // Indicación). Un fármaco foráneo solo aparece si algún criterio cuyo `system`
+  // mapea a este tab lo cita.
   const specificClasses = normalizedClasses(
     relevance?.specificClassesByTab.get(tabId) ?? new Set<string>(),
   );
@@ -124,22 +123,18 @@ export function computeMedGroupBuckets(
 
   const candidates = categories
     .filter(category => category.id !== tabId)
-    .flatMap(category => category.groups.map(group => {
-      const allowed = group.drugs.length > 1 ? fullClasses : specificClasses;
-      return {
-        category,
-        group,
-        allowed,
-        direct: !!group.drugClass && allowed.has(group.drugClass.toUpperCase()),
-      };
-    }));
+    .flatMap(category => category.groups.map(group => ({
+      category,
+      group,
+      direct: !!group.drugClass && specificClasses.has(group.drugClass.toUpperCase()),
+    })));
   const prioritizedCandidates = [
     ...candidates.filter(candidate => candidate.direct),
     ...candidates.filter(candidate => !candidate.direct),
   ];
 
-  for (const { category, group, allowed } of prioritizedCandidates) {
-    const drugs = relevantDrugs(group, allowed, classesByDrug)
+  for (const { category, group } of prioritizedCandidates) {
+    const drugs = relevantDrugs(group, specificClasses, classesByDrug)
       .filter(drugId => !ownDrugIds.has(drugId))
       .filter(drugId => !seenForeignDrugIds.has(drugId));
     if (drugs.length === 0) continue;

@@ -209,3 +209,40 @@ body {
   border-top: 6px solid #e5e7eb;
   border-bottom: 0;
 }
+
+/* ========================
+   SNACKBAR DE RELACIÓN
+   Aviso «Relacionado con STOPP Bxx — requiere: …» que aparece al marcar una
+   casilla de «Relevantes de otros sistemas». Se renderiza en el overlay de
+   Angular Material, fuera del scope del componente, por eso vive aquí.
+   Usa el mismo azul (#1d4ed8 / #dbeafe) que el bucket foráneo y el resaltado.
+======================== */
+.snack-relacion .mdc-snackbar__surface {
+  background-color: #1e3a8a !important;
+  border: 1px solid #1d4ed8;
+  border-left: 4px solid #60a5fa;
+  border-radius: .6rem !important;
+  box-shadow: 0 8px 24px rgba(30, 58, 138, .28) !important;
+  max-width: min(680px, 92vw) !important;
+}
+
+.snack-relacion .mdc-snackbar__label,
+.snack-relacion .mat-mdc-snack-bar-label {
+  color: #eff6ff !important;
+  font-size: calc(13px * var(--font-scale, 1));
+  line-height: 1.5;
+  letter-spacing: .01em;
+  /* El aviso multi-criterio lleva una línea por criterio. */
+  white-space: pre-line;
+}
+
+.snack-relacion .mat-mdc-snack-bar-action,
+.snack-relacion .mat-mdc-button.mat-mdc-snack-bar-action {
+  color: #bfdbfe !important;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.snack-relacion .mat-mdc-snack-bar-action:hover {
+  background-color: rgba(191, 219, 254, .14);
+}

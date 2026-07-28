@@ -171,7 +171,6 @@ const OPS = {
   multipleISRS: () => `marcar 2 ISRS (p. ej. ${fmtMed('Sertralina')} + ${fmtMed('Fluoxetina')})`,
   multipleANTIAGREGANTES: () => `marcar 2 antiagregantes (p. ej. ${fmtMed('Ácido acetilsalicílico')} + ${fmtMed('Clopidogrel')})`,
   multipleANTICOLINERGICOS: () => `marcar 2 anticolinérgicos (p. ej. ${fmtMed('Oxibutinina')} + ${fmtMed('Amitriptilina')})`,
-  digoxinaDosisAlta: () => `${fmtMed('Digoxina')} con dosis ≥125 µg/día y duración >90 días (JSON: doseMcgDay/durationDays)`,
 };
 
 function parseLogic(node, neg = false) {

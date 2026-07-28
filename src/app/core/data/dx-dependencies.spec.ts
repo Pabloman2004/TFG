@@ -41,24 +41,21 @@ describe('extractDrugClasses', () => {
     expect([...classes].sort()).toEqual(['AINE', 'DIURETICO_ASA']);
   });
 
-  it('extrae la clase de medicationClassDurationAbove (D10/D11)', () => {
-    const classes = extractDrugClasses({
+  it('extrae BENZODIACEPINA e HIPNOTICO_Z vía inDrugClass (D10/D11)', () => {
+    const benzo = extractDrugClasses({
       and: [
-        { medicationClassDurationAbove: ['BENZODIACEPINA', 13, { var: 'medications' }] },
+        { inDrugClass: ['BENZODIACEPINA', { var: 'medications' }] },
         { in: ['insomnio', { var: 'diagnoses' }] },
       ],
     });
-    expect([...classes]).toEqual(['BENZODIACEPINA']);
-  });
-
-  it('extrae HIPNOTICO_Z de medicationClassDurationAbove', () => {
-    const classes = extractDrugClasses({
+    const z = extractDrugClasses({
       and: [
-        { medicationClassDurationAbove: ['HIPNOTICO_Z', 13, { var: 'medications' }] },
+        { inDrugClass: ['HIPNOTICO_Z', { var: 'medications' }] },
         { in: ['insomnio', { var: 'diagnoses' }] },
       ],
     });
-    expect([...classes]).toEqual(['HIPNOTICO_Z']);
+    expect([...benzo]).toEqual(['BENZODIACEPINA']);
+    expect([...z]).toEqual(['HIPNOTICO_Z']);
   });
 });
 

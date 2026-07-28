@@ -198,42 +198,6 @@ export class CriteriaEngineService {
       return (meds as Med[]).some(m => hasDrugClass(m, dc));
     });
 
-    // ¿Hay Digoxina con dosis alta (≥125 μg/día) y a largo plazo (> 90 días)?
-    jsonLogic.add_operation('digoxinaDosisAlta', (meds: unknown) => {
-      if (!Array.isArray(meds)) return false;
-      return (meds as Med[]).some(m =>
-        hasDrugClass(m, 'digoxina') &&
-        m.doseMcgDay != null && m.doseMcgDay >= 125 &&
-        m.durationDays != null && m.durationDays > 90
-      );
-    });
-
-    jsonLogic.add_operation('medicationClassDurationAbove', (
-      drugClass: unknown,
-      days: unknown,
-      meds: unknown,
-    ) => {
-      if (typeof drugClass !== 'string' || typeof days !== 'number' || !Array.isArray(meds)) return false;
-      return (meds as Med[]).some(medication =>
-        hasDrugClass(medication, drugClass.toLowerCase()) &&
-        medication.durationDays != null &&
-        medication.durationDays > days
-      );
-    });
-
-    jsonLogic.add_operation('medicationClassDoseMgAbove', (
-      drugClass: unknown,
-      doseMg: unknown,
-      meds: unknown,
-    ) => {
-      if (typeof drugClass !== 'string' || typeof doseMg !== 'number' || !Array.isArray(meds)) return false;
-      return (meds as Med[]).some(medication =>
-        hasDrugClass(medication, drugClass.toLowerCase()) &&
-        medication.doseMgDay != null &&
-        medication.doseMgDay > doseMg
-      );
-    });
-
     // ¿La función renal del paciente está por debajo del umbral?
     // Equivalencias clínicas para cuando el usuario no introduce valor numérico:
     //   - "enfermedad_renal_grave"          ≡ TFGe < 30

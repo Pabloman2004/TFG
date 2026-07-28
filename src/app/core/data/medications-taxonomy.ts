@@ -201,6 +201,26 @@ const MED_GROUP_LABEL_MAP: Record<string, string> = Object.fromEntries(
   RAW_DRUG_CATEGORIES.flatMap(cat => cat.groups.map(g => [g.id, g.label]))
 );
 
+/**
+ * drugClass → etiqueta legible del grupo que la representa en la UI.
+ * Permite que los avisos hablen de «Diuréticos de asa» en vez de `DIURETICO_ASA`.
+ */
+const DRUG_CLASS_LABEL_MAP: ReadonlyMap<string, string> = new Map(
+  RAW_DRUG_CATEGORIES.flatMap(cat =>
+    cat.groups
+      .filter((g): g is DrugGroup & { drugClass: string } => !!g.drugClass)
+      .map(g => [g.drugClass.toUpperCase(), g.label] as const),
+  ),
+);
+
+/** Etiqueta legible de una clase farmacológica; si no hay grupo, humaniza el código. */
+export function drugClassLabel(drugClass: string): string {
+  const known = DRUG_CLASS_LABEL_MAP.get(drugClass.toUpperCase());
+  if (known) return known;
+  const words = drugClass.toLowerCase().replace(/_/g, ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
 export function resolveMedicationLabel(id: string): string {
   if (!id.startsWith('otro__')) return id;
   const groupId = id.slice('otro__'.length);

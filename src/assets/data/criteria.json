@@ -332,8 +332,8 @@
       "id": "STOPP-B21-DIGOXINA-FA",
       "type": "STOPP",
       "system": "Sistema cardiovascular",
-      "summary": "Evitar digoxina como primera línea en FA a largo plazo (> 3 meses). Asociada a mayor mortalidad; se prefieren betabloqueantes.",
-      "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"medicationClassDurationAbove":["DIGOXINA",90,{"var":"medications"}]}]},
+      "summary": "Revisar digoxina como primera línea en FA: el uso a largo plazo (> 3 meses) se asocia a mayor mortalidad; se prefieren betabloqueantes. (Alerta de revisión de duración e indicación.)",
+      "logic": {"and":[{"in":["fibrilacion_auricular",{"var":"diagnoses"}]},{"inDrugClass":["DIGOXINA",{"var":"medications"}]}]},
       "excludes": {"medications":["Digoxina"],"drugClasses":["DIGOXINA"]}
     },
     {
@@ -341,7 +341,7 @@
       "type": "STOPP",
       "system": "Anticoagulantes/Antiagregantes",
       "summary": "Revisar AAS en tratamiento crónico: si se toma a dosis superiores a 100 mg/día hay mayor riesgo de sangrado sin evidencia de mayor eficacia. (Alerta de revisión de dosis.)",
-      "logic": {"medicationClassDoseMgAbove":["AAS",100,{"var":"medications"}]},
+      "logic": {"inDrugClass":["AAS",{"var":"medications"}]},
       "excludes": {"drugClasses":["AAS"]}
     },
     {
@@ -572,8 +572,8 @@
       "id": "STOPP-D15-ANTIPSICOTICO-SCPD",
       "type": "STOPP",
       "system": "Sistema nervioso central",
-      "summary": "Revisar antipsicóticos usados para síntomas conductuales y psicológicos de la demencia durante más de 12 semanas. Mantenerlos solo ante síntomas graves y tras fracaso de alternativas no farmacológicas.",
-      "logic": {"and":[{"in":["sintomas_conductuales_demencia",{"var":"diagnoses"}]},{"medicationClassDurationAbove":["NEUROLEPTICO",84,{"var":"medications"}]}]},
+      "summary": "Revisar antipsicóticos usados para síntomas conductuales y psicológicos de la demencia: mantenerlos más de 12 semanas solo ante síntomas graves y tras fracaso de alternativas no farmacológicas. (Alerta de revisión de duración.)",
+      "logic": {"and":[{"in":["sintomas_conductuales_demencia",{"var":"diagnoses"}]},{"inDrugClass":["NEUROLEPTICO",{"var":"medications"}]}]},
       "excludes": {"medications":["Haloperidol","Clorpromazina","Levomepromazina","Risperidona","Olanzapina","Quetiapina","Aripiprazol","Clozapina"],"drugClasses":["NEUROLEPTICO"]}
     },
     {
@@ -596,8 +596,8 @@
       "id": "STOPP-D8-BENZODIACEPINA-USO-PROLONGADO",
       "type": "STOPP",
       "system": "Sistema nervioso central",
-      "summary": "Benzodiacepinas durante ≥ 4 semanas no están indicadas. Riesgo de sedación, confusión, pérdida de equilibrio, caídas y accidentes. (Alerta de revisión: valorar retirada gradual si el tratamiento supera las 2 semanas.)",
-      "logic": {"medicationClassDurationAbove":["BENZODIACEPINA",27,{"var":"medications"}]},
+      "summary": "Revisar benzodiacepinas: el uso prolongado (> 4 semanas) no está indicado. Riesgo de sedación, confusión, pérdida de equilibrio, caídas y accidentes. (Alerta de revisión de duración.)",
+      "logic": {"inDrugClass":["BENZODIACEPINA",{"var":"medications"}]},
       "excludes": {"drugClasses":["BENZODIACEPINA"]}
     },
     {
@@ -612,16 +612,16 @@
       "id": "STOPP-D10-BENZODIACEPINA-INSOMNIO",
       "type": "STOPP",
       "system": "Sistema nervioso central",
-      "summary": "Evitar benzodiacepinas para el insomnio durante ≥ 2 semanas. Alto riesgo de dependencia, caídas, fracturas y accidentes de tráfico. (Alerta de revisión de duración.)",
-      "logic": {"and":[{"medicationClassDurationAbove":["BENZODIACEPINA",13,{"var":"medications"}]},{"in":["insomnio",{"var":"diagnoses"}]}]},
+      "summary": "Revisar benzodiacepinas para el insomnio: uso > 2 semanas conlleva alto riesgo de dependencia, caídas, fracturas y accidentes de tráfico. (Alerta de revisión de duración.)",
+      "logic": {"and":[{"inDrugClass":["BENZODIACEPINA",{"var":"medications"}]},{"in":["insomnio",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["BENZODIACEPINA"]}
     },
     {
       "id": "STOPP-D11-HIPNOTICO-Z-INSOMNIO",
       "type": "STOPP",
       "system": "Sistema nervioso central",
-      "summary": "Evitar hipnóticos-Z (zolpidem, zopiclona, zaleplon) para el insomnio durante ≥ 2 semanas. Mayor riesgo de caídas y fracturas en personas mayores. (Alerta de revisión de duración.)",
-      "logic": {"and":[{"medicationClassDurationAbove":["HIPNOTICO_Z",13,{"var":"medications"}]},{"in":["insomnio",{"var":"diagnoses"}]}]},
+      "summary": "Revisar hipnóticos-Z (zolpidem, zopiclona, zaleplon) para el insomnio: uso > 2 semanas aumenta el riesgo de caídas y fracturas en personas mayores. (Alerta de revisión de duración.)",
+      "logic": {"and":[{"inDrugClass":["HIPNOTICO_Z",{"var":"medications"}]},{"in":["insomnio",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["HIPNOTICO_Z"]}
     },
     {
@@ -748,8 +748,8 @@
       "id": "STOPP-E1-DIGOXINA-RENAL",
       "type": "STOPP",
       "system": "Sistema renal",
-      "summary": "Digoxina en tratamiento a largo plazo (> 90 días) a dosis mantenidas ≥ 125 μg/día con TFGe < 30 ml/min/1,73 m². Riesgo de intoxicación digitálica si no se monitorizan los niveles plasmáticos.",
-      "logic": {"and":[{"egfrBelow":[30,{"var":""}]},{"digoxinaDosisAlta":[{"var":"medications"}]}]},
+      "summary": "Revisar digoxina con TFGe < 30 ml/min/1,73 m²: dosis mantenidas ≥ 125 μg/día o uso prolongado aumentan el riesgo de intoxicación digitálica si no se monitorizan los niveles plasmáticos. (Alerta de revisión de dosis.)",
+      "logic": {"and":[{"egfrBelow":[30,{"var":""}]},{"inDrugClass":["DIGOXINA",{"var":"medications"}]}]},
       "excludes": {"medications":["Digoxina"],"drugClasses":["DIGOXINA"]}
     },
     {
@@ -836,8 +836,8 @@
       "id": "STOPP-F2-IBP-TRATAMIENTO-PROLONGADO",
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
-      "summary": "IBP a dosis terapéuticas plenas durante más de 8 semanas sin revisión. Valorar reducción de dosis, retirada o mantenimiento con antagonistas H2. (Alerta de revisión de duración e indicación.)",
-      "logic": {"medicationClassDurationAbove":["IBP",56,{"var":"medications"}]},
+      "summary": "IBP a dosis terapéuticas plenas durante más de 8 semanas — verificar duración. Valorar reducción de dosis, retirada o mantenimiento con antagonistas H2. (Alerta de revisión de duración e indicación.)",
+      "logic": {"inDrugClass":["IBP",{"var":"medications"}]},
       "excludes": {"drugClasses":["IBP"]}
     },
     {
@@ -861,7 +861,7 @@
       "type": "STOPP",
       "system": "Sistema gastrointestinal",
       "summary": "Revisar hierro oral: dosis elementales superiores a 200 mg/día no aportan mayor absorción. (Alerta de revisión de dosis.)",
-      "logic": {"medicationClassDoseMgAbove":["HIERRO_ORAL",200,{"var":"medications"}]},
+      "logic": {"inDrugClass":["HIERRO_ORAL",{"var":"medications"}]},
       "excludes": {"drugClasses":["HIERRO_ORAL"]}
     },
     {
@@ -964,8 +964,8 @@
       "id": "STOPP-H4-CORTICOIDE-ARTRITIS-REUMATOIDE",
       "type": "STOPP",
       "system": "Sistema musculoesquelético",
-      "summary": "Evitar corticosteroides a largo plazo (> 3 meses) como monoterapia en la artritis reumatoide. Riesgo de efectos secundarios sistémicos de los corticosteroides. (Alerta de revisión de duración e indicación.)",
-      "logic": {"and":[{"medicationClassDurationAbove":["CORTICOIDE_SISTEMICO",90,{"var":"medications"}]},{"in":["artritis_reumatoide",{"var":"diagnoses"}]}]},
+      "summary": "Revisar corticosteroides como monoterapia en la artritis reumatoide: el uso a largo plazo (> 3 meses) conlleva riesgo de efectos secundarios sistémicos. (Alerta de revisión de duración e indicación.)",
+      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"in":["artritis_reumatoide",{"var":"diagnoses"}]}]},
       "excludes": {"drugClasses":["CORTICOIDE_SISTEMICO"]}
     },
     {
@@ -1309,7 +1309,7 @@
       "type": "STOPP",
       "system": "Sistema musculoesquelético",
       "summary": "Revisar paracetamol en pacientes malnutridos (IMC < 18) o con hepatopatía crónica: dosis ≥ 3 g/día conllevan riesgo de hepatotoxicidad. (Alerta de revisión de dosis.)",
-      "logic": {"and":[{"medicationClassDoseMgAbove":["ANALGESICO_SIMPLE",2999,{"var":"medications"}]},{"or":[{"in":["hepatopatia_cronica",{"var":"diagnoses"}]},{"in":["malnutricion",{"var":"diagnoses"}]}]}]},
+      "logic": {"and":[{"inDrugClass":["ANALGESICO_SIMPLE",{"var":"medications"}]},{"or":[{"in":["hepatopatia_cronica",{"var":"diagnoses"}]},{"in":["malnutricion",{"var":"diagnoses"}]}]}]},
       "excludes": {"medications":["Paracetamol"],"drugClasses":["ANALGESICO_SIMPLE"]}
     },
     {
@@ -1577,8 +1577,8 @@
       "id": "START-H2-BIFOSFONATO-VITAMINA-D-CORTICOIDE",
       "type": "START",
       "system": "Sistema musculoesquelético",
-      "summary": "Considerar añadir bisfosfonato y vitamina D (con calcio) para prevención de osteoporosis inducida por corticosteroides. El paciente recibe corticosteroides orales a largo plazo sin protección ósea.",
-      "logic": {"and":[{"medicationClassDurationAbove":["CORTICOIDE_SISTEMICO",90,{"var":"medications"}]},{"or":[{"!":{"inDrugClass":["BIFOSFONATO",{"var":"medications"}]}},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}]}
+      "summary": "Considerar añadir bisfosfonato y vitamina D (con calcio) para prevención de osteoporosis inducida por corticosteroides. El paciente recibe corticoide sistémico prolongado sin protección ósea. (Alerta de revisión de duración.)",
+      "logic": {"and":[{"inDrugClass":["CORTICOIDE_SISTEMICO",{"var":"medications"}]},{"or":[{"!":{"inDrugClass":["BIFOSFONATO",{"var":"medications"}]}},{"!":{"inDrugClass":["VITAMINA_D",{"var":"medications"}]}}]}]}
     },
     {
       "id": "START-H3-VITAMINA-D-OSTEOPOROSIS",

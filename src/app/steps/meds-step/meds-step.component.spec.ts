@@ -28,8 +28,17 @@ const relevanceWith = (
 ): Relevance => ({
   classesByTab: new Map(Object.entries(classesByTab).map(([k, v]) => [k, new Set(v)])),
   specificClassesByTab: new Map(Object.entries(specificClassesByTab).map(([k, v]) => [k, new Set(v)])),
+  specificClassCriteriaByTab: new Map(),
+  classesByCriterion: new Map(),
+  requiredClassesByCriterion: new Map(),
+  classAlternativesByCriterion: new Map(),
   dxsByTab: new Map(),
   specificDxsByTab: new Map(),
+  specificDxCriteriaByTab: new Map(),
+  dxsByCriterion: new Map(),
+  dxAlternativesByCriterion: new Map(),
+  criteriaByRequiredClass: new Map(),
+  criteriaByDx: new Map(),
 });
 
 const engineStubWithRelevance = (relevance: Relevance) => ({
@@ -121,73 +130,11 @@ describe('MedsStepComponent — conteo de "Otros" con unitarios que afloran por 
   });
 });
 
-describe('MedsStepComponent — datos necesarios para criterios renales', () => {
-  const setup = (): MedsStepComponent => {
-    TestBed.configureTestingModule({
-      imports: [MedsStepComponent],
-      providers: [
-        provideRouter(routes),
-        { provide: CriteriaEngineService, useValue: engineStub() },
-        { provide: ReportService, useValue: {} },
-        { provide: CaseIoService, useValue: {} },
-        { provide: MatSnackBar, useValue: { open: () => undefined } },
-        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
-      ],
-    });
-    return TestBed.createComponent(MedsStepComponent).componentInstance;
-  };
-
-  beforeEach(() => localStorage.clear());
-
-  it('guarda dosis y duración de Digoxina sin mutar el medicamento previo', () => {
-    const component = setup();
-    component.toggleDrug('Digoxina');
-    const original = component.store.meds()[0];
-
-    component.updateMedicationNumber('Digoxina', 'doseMcgDay', '125');
-    component.updateMedicationNumber('Digoxina', 'durationDays', '91');
-
-    expect(component.store.meds()[0]).not.toBe(original);
-    expect(component.store.meds()[0]).toEqual({
-      id: 'Digoxina',
-      drugClasses: ['DIGOXINA'],
-      doseMcgDay: 125,
-      durationDays: 91,
-    });
-  });
-
-  it('guarda dosis de hierro en mg y duración de IBP', () => {
-    const component = setup();
-    component.toggleDrug('Sulfato ferroso');
-    component.toggleDrug('Omeprazol');
-
-    component.updateMedicationNumber('Sulfato ferroso', 'doseMgDay', '201');
-    component.updateMedicationNumber('Omeprazol', 'durationDays', '57');
-
-    expect(component.store.meds().find(m => m.id === 'Sulfato ferroso')?.doseMgDay).toBe(201);
-    expect(component.store.meds().find(m => m.id === 'Omeprazol')?.durationDays).toBe(57);
-  });
-
-  it('guarda dosis de AAS, duración de SNC y dosis de paracetamol', () => {
-    const component = setup();
-    component.toggleDrug('Ácido acetilsalicílico');
-    component.toggleDrug('Lorazepam');
-    component.toggleDrug('Paracetamol');
-
-    component.updateMedicationNumber('Ácido acetilsalicílico', 'doseMgDay', '150');
-    component.updateMedicationNumber('Lorazepam', 'durationDays', '28');
-    component.updateMedicationNumber('Paracetamol', 'doseMgDay', '3000');
-
-    expect(component.store.meds().find(m => m.id === 'Ácido acetilsalicílico')?.doseMgDay).toBe(150);
-    expect(component.store.meds().find(m => m.id === 'Lorazepam')?.durationDays).toBe(28);
-    expect(component.store.meds().find(m => m.id === 'Paracetamol')?.doseMgDay).toBe(3000);
-  });
-});
-
-describe('MedsStepComponent — campos numéricos en el tab donde está el medicamento', () => {
+describe('MedsStepComponent — sin captura de dosis/duración', () => {
   const realRelevance = buildRelevance(ALL_CRITERIA);
 
-  const renderOnTab = (tabId: string) => {
+  beforeEach(() => {
+    localStorage.clear();
     TestBed.configureTestingModule({
       imports: [MedsStepComponent],
       providers: [
@@ -199,58 +146,22 @@ describe('MedsStepComponent — campos numéricos en el tab donde está el medic
         { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
       ],
     });
+  });
+
+  it('no muestra panel de dosis/duración al seleccionar Digoxina, IBP o corticoide', () => {
     const fixture = TestBed.createComponent(MedsStepComponent);
     const component = fixture.componentInstance;
-    component.setCategory(tabId);
+    component.setCategory('cardiovascular');
     fixture.detectChanges();
-    return { fixture, component, host: fixture.nativeElement as HTMLElement };
-  };
 
-  const clinicalLabels = (host: HTMLElement): string[] =>
-    [...host.querySelectorAll('.clinical-data-panel .clinical-field span')]
-      .map(el => el.textContent?.trim() ?? '');
-
-  beforeEach(() => localStorage.clear());
-
-  it('muestra dosis de Digoxina en Cardiovascular, no solo en Renal', () => {
-    const { fixture, component, host } = renderOnTab('cardiovascular');
     component.toggleDrug('Digoxina');
-    fixture.detectChanges();
-
-    expect(clinicalLabels(host)).toContain('Digoxina (µg/día)');
-    expect(clinicalLabels(host)).toContain('Duración (días)');
-  });
-
-  it('muestra duración de corticoide en Respiratorio cuando se marca ahí (C2)', () => {
-    const { fixture, component, host } = renderOnTab('respiratorio');
+    component.toggleDrug('Omeprazol');
     component.toggleDrug('Prednisona');
     fixture.detectChanges();
 
-    expect(clinicalLabels(host)).toContain('Prednisona (días)');
-  });
-
-  it('muestra duración de corticoide en Endocrino cuando se marca ahí', () => {
-    const { fixture, component, host } = renderOnTab('endocrino');
-    component.toggleDrug('Prednisona');
-    fixture.detectChanges();
-
-    expect(clinicalLabels(host)).toContain('Prednisona (días)');
-  });
-
-  it('muestra paracetamol mg/día en Osteo', () => {
-    const { fixture, component, host } = renderOnTab('osteo');
-    component.toggleDrug('Paracetamol');
-    fixture.detectChanges();
-
-    expect(clinicalLabels(host)).toContain('Paracetamol (mg/día)');
-  });
-
-  it('muestra duración de benzo en SNC', () => {
-    const { fixture, component, host } = renderOnTab('snc');
-    component.toggleDrug('Lorazepam');
-    fixture.detectChanges();
-
-    expect(clinicalLabels(host)).toContain('Lorazepam (días)');
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.clinical-data-panel')).toBeNull();
+    expect(component.store.meds().some(m => m.id === 'Digoxina')).toBeTrue();
   });
 });
 

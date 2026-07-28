@@ -88,7 +88,10 @@ personalizados "Otro", y la presentación agrupada de criterios activos.
 **Debe cubrir**: estructura común de ambos componentes (y su duplicación),
 efectos reactivos con `allowSignalWrites`, `groupBuckets` vs
 `groupsVisibleInTab`, la lógica unificada de visibilidad en `group-visibility.ts`,
-captura de dosis/duración por tab visible en `clinical-capture.ts`,
+visibilidad de medicamentos por grupos del tab en `clinical-capture.ts`
+(`medsVisibleInTabGroups`; sin captura UI de dosis/duración — los umbrales
+viven en el `summary` del criterio),
+resaltado de procedencia al marcar un fármaco foráneo en `foreign-provenance.ts`,
 panel fijo de analíticas/constantes en `lab-capture.ts` (todos los campos, siempre; pestaña «Otros» de diagnósticos),
 helpers `isMedGroupChecked`/`isDxGroupChecked`, agrupación `groupBySystem`/`critCode`.
 
@@ -101,6 +104,7 @@ helpers `isMedGroupChecked`/`isDxGroupChecked`, agrupación `groupBySystem`/`cri
 - `src/app/core/criteria-groups.ts`
 - `src/app/core/group-visibility.ts`
 - `src/app/core/clinical-capture.ts`
+- `src/app/core/foreign-provenance.ts`
 - `src/app/core/lab-capture.ts`
 
 ---

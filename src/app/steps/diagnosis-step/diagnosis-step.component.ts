@@ -1,6 +1,6 @@
 // @linked docs/flujo-pasos.md
 // Si cambias la lógica de groupBuckets, dxGroupsVisibleInTab, tabs revisados, dependencias de diagnósticos o ítems "Otro", actualiza el doc enlazado.
-import { Component, ChangeDetectionStrategy, OnInit, computed, signal, effect, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, computed, signal, effect, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,7 @@ import { Crit, Labs } from '../../core/types';
 import { MEDICATIONS } from '../../core/data/medications';
 import { LabKey, labCaptureFields } from '../../core/lab-capture';
 
-import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP } from '../../core/data/diagnoses';
+import { normalizeDiagnosis, DIAGNOSIS_REVERSE_MAP, DIAGNOSIS_MAP } from '../../core/data/diagnoses';
 import { applyMutex } from '../../core/data/diagnosis-variants';
 import { partitionGroupDiagnoses, VariantFamilyView } from '../../core/data/diagnosis-variant-view';
 import { DIAGNOSIS_TABS, DiagnosisTab, DiagnosisGroup } from '../../core/data/diagnoses-taxonomy';
@@ -29,6 +29,18 @@ import { buildCriteriaText } from '../../core/clipboard-text';
 import { groupBySystem, critCode, CritGroup } from '../../core/criteria-groups';
 import { isDxGroupChecked } from '../../core/group-checked';
 import { computeDxGroupBuckets, dxGroupsVisibleInTab, DxGroupBuckets } from '../../core/group-visibility';
+import {
+  resolveForeignDxHighlight,
+  foreignLinksByOwnDx,
+  relatedSelectionLinks,
+  mergeLinkMaps,
+} from '../../core/foreign-provenance';
+
+const HIGHLIGHT_MS = 8000;
+
+const DX_LABELS_BY_CODE: ReadonlyMap<string, string> = new Map(
+  Object.entries(DIAGNOSIS_MAP).map(([label, code]) => [code, label]),
+);
 
 const emptyLabs = (): Labs => ({
   glucosa_mg_dl: null,
@@ -57,7 +69,7 @@ const emptyLabs = (): Labs => ({
   templateUrl: './diagnosis-step.component.html',
   styleUrls: ['./diagnosis-step.component.css'],
 })
-export class DiagnosisStepComponent implements OnInit {
+export class DiagnosisStepComponent implements OnInit, OnDestroy {
   readonly store = inject(CaseStoreService);
   readonly tabs = DIAGNOSIS_TABS;
   readonly OTROS_TAB_ID = 'otros';
@@ -104,6 +116,35 @@ export class DiagnosisStepComponent implements OnInit {
   // (p. ej. B1: PAS/PAD) dependen de constantes de cribado que ninguna selección
   // "activa", así que no pueden condicionarse a un medicamento o diagnóstico.
   readonly labCaptureFields = computed(() => labCaptureFields(this.store.labs()));
+
+  readonly highlightedDxLabels = signal<ReadonlySet<string>>(new Set());
+  readonly highlightedCriterionIds = signal<ReadonlySet<string>>(new Set());
+  private highlightTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // Enlaces persistentes: ver `foreignLinks` en MedsStepComponent.
+  readonly foreignLinks = computed(() => {
+    const buckets = this.groupBuckets();
+    const relevance = this.criteriaEngine.relevance();
+    const selectedDxLabels = this.store.diagnoses().map(code => DX_LABELS_BY_CODE.get(code) ?? code);
+    const sameTab = foreignLinksByOwnDx({
+      selectedDxLabels,
+      tabId: this.activeTabId(),
+      relevance,
+      ownGroups: buckets.ownGroups,
+      foreignGroups: buckets.foreignRelevant,
+    });
+    // Enlaces que cruzan de paso: medicamentos ya marcados en el paso 1 que
+    // esperan a un diagnóstico de esta pestaña (p. ej. Ondansetrón → QTc).
+    const crossStep = relatedSelectionLinks({
+      relevance,
+      selectedMedications: this.store.meds(),
+      selectedDiagnoses: selectedDxLabels,
+      targets: buckets.ownGroups.flatMap(group =>
+        group.diagnoses.map(dx => ({ key: dx, dxCodes: [normalizeDiagnosis(dx)] })),
+      ),
+    });
+    return mergeLinkMaps(sameTab, crossStep);
+  });
 
   @ViewChild('fileInput') private fileInputRef!: ElementRef<HTMLInputElement>;
 
@@ -191,6 +232,94 @@ export class DiagnosisStepComponent implements OnInit {
     this.criteria.set(loaded);
   }
 
+  ngOnDestroy(): void {
+    this.clearHighlightTimer();
+  }
+
+  isDxHighlighted(label: string): boolean {
+    return this.highlightedDxLabels().has(label);
+  }
+
+  /** Diagnósticos foráneos seleccionados que apuntan a este diagnóstico propio. */
+  linkedForeignDxs(label: string): readonly string[] {
+    return this.foreignLinks().get(label) ?? [];
+  }
+
+  linkedForeignDxTooltip(label: string): string {
+    const items = this.linkedForeignDxs(label);
+    if (items.length === 0) return '';
+    const medIds = new Set(this.store.meds().map(m => m.id));
+    const described = items.map(name =>
+      medIds.has(name) ? `${name} (medicamento)` : `${name} (diagnóstico)`,
+    );
+    return items.length === 1
+      ? `Ya has marcado ${described[0]} y necesita este diagnóstico`
+      : `${items.length} elementos ya marcados necesitan este diagnóstico: ${described.join(', ')}`;
+  }
+
+  isCriterionHighlighted(c: Crit): boolean {
+    return this.highlightedCriterionIds().has(c.id);
+  }
+
+  private clearHighlightTimer(): void {
+    if (this.highlightTimer !== null) {
+      clearTimeout(this.highlightTimer);
+      this.highlightTimer = null;
+    }
+  }
+
+  private clearHighlights(): void {
+    this.clearHighlightTimer();
+    this.highlightedDxLabels.set(new Set());
+    this.highlightedCriterionIds.set(new Set());
+  }
+
+  private scheduleHighlightClear(): void {
+    this.clearHighlightTimer();
+    this.highlightTimer = setTimeout(() => {
+      this.highlightedDxLabels.set(new Set());
+      this.highlightedCriterionIds.set(new Set());
+      this.highlightTimer = null;
+    }, HIGHLIGHT_MS);
+  }
+
+  private maybeHighlightForeignDx(label: string): void {
+    const buckets = this.groupBuckets();
+    const isForeign = buckets.foreignRelevant.some(g =>
+      g.diagnoses.some(d => normalizeDiagnosis(d) === normalizeDiagnosis(label) || d === label),
+    );
+    if (!isForeign) return;
+
+    const criteriaById = new Map(this.criteria().map(c => [c.id, c]));
+    const result = resolveForeignDxHighlight({
+      dxLabel: label,
+      tabId: this.activeTabId(),
+      relevance: this.criteriaEngine.relevance(),
+      ownGroups: buckets.ownGroups,
+      applicableCriterionIds: new Set(this.applicableCriteria().map(c => c.id)),
+      selectedMedications: this.store.meds(),
+      selectedDiagnoses: this.store.diagnoses().map(code => DX_LABELS_BY_CODE.get(code) ?? code),
+      criteriaById,
+      dxLabelsByCode: DX_LABELS_BY_CODE,
+    });
+
+    this.highlightedDxLabels.set(new Set(result.dxLabels));
+    this.highlightedCriterionIds.set(new Set(result.criterionIds));
+    if (result.snackMessage) {
+      this.snackBar.open(result.snackMessage, 'Entendido', {
+        duration: HIGHLIGHT_MS,
+        panelClass: 'snack-relacion',
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
+    }
+    if (result.dxLabels.length > 0 || result.criterionIds.length > 0) {
+      this.scheduleHighlightClear();
+    } else {
+      this.clearHighlightTimer();
+    }
+  }
+
   setTab(id: string): void { this.store.activeSystemTab.set(id); }
 
   onLabInput(key: LabKey, event: Event): void {
@@ -266,10 +395,12 @@ export class DiagnosisStepComponent implements OnInit {
     const current = this.store.diagnoses();
     const isAdding = !current.includes(code);
     if (isAdding && !this.isDxEnabled(label)) return;
+    if (!isAdding) this.clearHighlights();
     // applyMutex impone la exclusividad de variantes (P15): al seleccionar una
     // variante de una familia retira a sus hermanas; para diagnósticos sin
     // familia equivale a un toggle simple.
     this.store.diagnoses.set(applyMutex(current, code));
+    if (isAdding) this.maybeHighlightForeignDx(label);
   }
 
   customDxFor(group: DiagnosisGroup): string[] {

@@ -123,6 +123,26 @@ describe('CaseIoService — importFile()', () => {
     }));
   });
 
+  it('carga sin error un caso antiguo con doseMgDay/doseMcgDay/durationDays', async () => {
+    const pc = makePatientCase({
+      medications: [{
+        id: 'Digoxina',
+        drugClasses: ['DIGOXINA'],
+        doseMcgDay: 125,
+        doseMgDay: 0.125,
+        durationDays: 91,
+      }],
+    });
+    await expectAsync(service.importFile(makeFile(makeExportJson(pc)))).toBeResolved();
+    expect(store.loadCase).toHaveBeenCalledWith(jasmine.objectContaining({
+      medications: jasmine.arrayContaining([jasmine.objectContaining({
+        id: 'Digoxina',
+        doseMcgDay: 125,
+        durationDays: 91,
+      })]),
+    }));
+  });
+
   it('rechaza un archivo con JSON malformado', async () => {
     await expectAsync(service.importFile(makeFile('esto no es json')))
       .toBeRejectedWithError(/formato/i);

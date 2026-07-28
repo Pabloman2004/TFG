@@ -14,10 +14,6 @@ const metotrexato   = () => makeMed('Metotrexato',     ['ANTIMETABOLITO', 'INMUN
 // Un medicamento "limpio" sin clases de interés para tests negativos
 const paracetamol = () => makeMed('Paracetamol', ['ANALGESICO_NO_OPIOIDE']);
 
-// Dosis alta de digoxina (para E1)
-const digoxinaDosisAlta = () =>
-  makeMed('Digoxina', ['DIGOXINA'], { doseMcgDay: 250, durationDays: 120 });
-
 describe('Criterios STOPP — Sección E (Sistema renal)', () => {
   let engine: CriteriaEngineService;
 
@@ -28,44 +24,49 @@ describe('Criterios STOPP — Sección E (Sistema renal)', () => {
   describe('E1-DIGOXINA-RENAL', () => {
     const c = crit('STOPP-E1-DIGOXINA-RENAL');
 
-    it('dispara con TFGe < 30 + digoxina dosis alta > 90 días', () => {
+    it('dispara con TFGe < 30 + digoxina sin dosis capturada', () => {
       const p = makeCase({
-        medications: [digoxinaDosisAlta()],
+        medications: [digoxina()],
         labs: makeLabs({ egfr_ml_min_173: 25 }),
       });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('dispara con diagnóstico enfermedad_renal_grave + digoxina dosis alta', () => {
+    it('dispara con diagnóstico enfermedad_renal_grave + digoxina', () => {
       const p = makeCase({
         diagnoses: ['enfermedad_renal_grave'],
-        medications: [digoxinaDosisAlta()],
+        medications: [digoxina()],
       });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
-    it('dispara con diagnóstico insuficiencia_renal_terminal + digoxina dosis alta', () => {
+    it('dispara con diagnóstico insuficiencia_renal_terminal + digoxina', () => {
       const p = makeCase({
         diagnoses: ['insuficiencia_renal_terminal'],
-        medications: [digoxinaDosisAlta()],
+        medications: [digoxina()],
       });
       expect(engine.evaluate(p, [c]).length).toBe(1);
     });
 
     it('no dispara con TFGe ≥ 30', () => {
       const p = makeCase({
-        medications: [digoxinaDosisAlta()],
+        medications: [digoxina()],
         labs: makeLabs({ egfr_ml_min_173: 35 }),
       });
       expect(engine.evaluate(p, [c])).toEqual([]);
     });
 
-    it('no dispara con digoxina a dosis baja', () => {
+    it('no dispara con insuficiencia renal sin digoxina', () => {
       const p = makeCase({
-        medications: [makeMed('Digoxina', ['DIGOXINA'], { doseMcgDay: 62.5, durationDays: 120 })],
+        diagnoses: ['enfermedad_renal_grave'],
         labs: makeLabs({ egfr_ml_min_173: 20 }),
       });
       expect(engine.evaluate(p, [c])).toEqual([]);
+    });
+
+    it('el summary menciona revisar dosis alta con insuficiencia renal', () => {
+      expect(c.summary.toLowerCase()).toMatch(/dosis|125/);
+      expect(c.summary.toLowerCase()).toMatch(/tfge|renal/);
     });
   });
 

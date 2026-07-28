@@ -33,7 +33,7 @@ export const extractDrugClasses = (logic: JsonLogicRule | undefined): Set<string
         continue;
       }
       if (
-        (k === 'inDrugClass' || k === 'medicationClassDurationAbove') &&
+        k === 'inDrugClass' &&
         Array.isArray(v) &&
         typeof v[0] === 'string'
       ) {

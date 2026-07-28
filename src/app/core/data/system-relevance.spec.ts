@@ -101,23 +101,11 @@ describe('extractReferences', () => {
     expect(refs.dxs.size).toBe(0);
   });
 
-  it('extrae la clase de medicationClassDurationAbove (D8/D10/F2)', () => {
+  it('extrae la clase de inDrugClass (D8/D10/F2 tras quitar gates de duración)', () => {
     const refs = extractReferences({
-      medicationClassDurationAbove: ['BENZODIACEPINA', 27, { var: 'medications' }],
+      inDrugClass: ['BENZODIACEPINA', { var: 'medications' }],
     });
     expect([...refs.classes]).toEqual(['BENZODIACEPINA']);
-  });
-
-  it('extrae la clase de medicationClassDoseMgAbove (C1/F4/L6)', () => {
-    const refs = extractReferences({
-      medicationClassDoseMgAbove: ['ANALGESICO_SIMPLE', 2999, { var: 'medications' }],
-    });
-    expect([...refs.classes]).toEqual(['ANALGESICO_SIMPLE']);
-  });
-
-  it('extrae DIGOXINA de digoxinaDosisAlta (E1)', () => {
-    const refs = extractReferences({ digoxinaDosisAlta: [{ var: 'medications' }] });
-    expect([...refs.classes]).toEqual(['DIGOXINA']);
   });
 
   it('extrae la clase de operadores multiple* (A3/C3/M1)', () => {
@@ -331,11 +319,16 @@ describe('buildRelevance', () => {
     expect(cardio.size).toBe(2);
   });
 
-  it('indexa DIGOXINA desde digoxinaDosisAlta sin parche relevance', () => {
+  it('indexa DIGOXINA desde inDrugClass en E1 (sin operador de dosis)', () => {
     const rel = buildRelevance([
       crit({
         system: 'Sistema renal',
-        logic: { digoxinaDosisAlta: [{ var: 'medications' }] },
+        logic: {
+          and: [
+            { egfrBelow: [30, { var: '' }] },
+            { inDrugClass: ['DIGOXINA', { var: 'medications' }] },
+          ],
+        },
       }),
     ]);
 
@@ -343,13 +336,13 @@ describe('buildRelevance', () => {
     expect(rel.specificClassesByTab.get('renal')?.has('DIGOXINA')).toBe(true);
   });
 
-  it('indexa ANALGESICO_SIMPLE desde medicationClassDoseMgAbove (L6)', () => {
+  it('indexa ANALGESICO_SIMPLE desde inDrugClass (L6)', () => {
     const rel = buildRelevance([
       crit({
         system: 'Sistema musculoesquelético',
         logic: {
           and: [
-            { medicationClassDoseMgAbove: ['ANALGESICO_SIMPLE', 2999, { var: 'medications' }] },
+            { inDrugClass: ['ANALGESICO_SIMPLE', { var: 'medications' }] },
             { in: ['hepatopatia_cronica', { var: 'diagnoses' }] },
           ],
         },
@@ -392,5 +385,155 @@ describe('buildRelevance', () => {
     ]);
     expect(rel.classesByTab.size).toBe(0);
     expect(rel.dxsByTab.size).toBe(0);
+  });
+
+  it('rellena specificClassCriteriaByTab con el id del criterio específico', () => {
+    const rel = buildRelevance([
+      crit({
+        id: 'STOPP-B19-TEST',
+        system: 'Sistema cardiovascular',
+        logic: { inDrugClass: ['CORTICOIDE_SISTEMICO', { var: 'medications' }] },
+      }),
+    ]);
+    expect(
+      rel.specificClassCriteriaByTab.get('cardiovascular')?.get('CORTICOIDE_SISTEMICO')?.has('STOPP-B19-TEST'),
+    ).toBe(true);
+    expect(rel.classesByCriterion.get('STOPP-B19-TEST')?.has('CORTICOIDE_SISTEMICO')).toBe(true);
+  });
+
+  it('un criterio transversal no aporta a specificClassCriteriaByTab', () => {
+    const rel = buildRelevance(
+      [
+        crit({
+          id: 'STOPP-K1-TEST',
+          system: 'Riesgo de caídas',
+          logic: { inDrugClass: ['BENZODIACEPINA', { var: 'medications' }] },
+        }),
+      ],
+      ['cardiovascular', 'snc'],
+    );
+    expect(rel.classesByTab.get('cardiovascular')?.has('BENZODIACEPINA')).toBe(true);
+    expect(rel.specificClassCriteriaByTab.get('cardiovascular')?.get('BENZODIACEPINA')).toBeUndefined();
+  });
+
+  it('STOPP con clase solo negada no aparece en specificClassesByTab', () => {
+    const rel = buildRelevance([
+      crit({
+        type: 'STOPP',
+        system: 'Sistema cardiovascular',
+        logic: { '!': { inDrugClass: ['CALCIOANTAGONISTA_DHP', { var: 'medications' }] } },
+      }),
+    ]);
+    expect(rel.specificClassesByTab.get('cardiovascular')?.has('CALCIOANTAGONISTA_DHP')).toBeFalsy();
+  });
+
+  it('START con clase solo negada sí aparece en specificClassesByTab', () => {
+    const rel = buildRelevance([
+      crit({
+        type: 'START',
+        system: 'Sistema cardiovascular',
+        logic: { '!': { inDrugClass: ['HIERRO_IV', { var: 'medications' }] } },
+      }),
+    ]);
+    expect(rel.specificClassesByTab.get('cardiovascular')?.has('HIERRO_IV')).toBe(true);
+  });
+
+  it('HIERRO_IV sigue en cardiovascular con datos reales (START-B11)', () => {
+    const rel = buildRelevance(ALL_CRITERIA);
+    expect(rel.specificClassesByTab.get('cardiovascular')?.has('HIERRO_IV')).toBe(true);
+  });
+
+  it('STOPP con la misma clase en ambas polaridades sí aparece', () => {
+    const rel = buildRelevance([
+      crit({
+        type: 'STOPP',
+        system: 'Sistema cardiovascular',
+        logic: {
+          and: [
+            { inDrugClass: ['AINE', { var: 'medications' }] },
+            { '!': { inDrugClass: ['AINE', { var: 'medications' }] } },
+          ],
+        },
+      }),
+    ]);
+    expect(rel.specificClassesByTab.get('cardiovascular')?.has('AINE')).toBe(true);
+  });
+});
+
+describe('alternativas dentro de un `or`', () => {
+  it('marca como alternativos los diagnósticos de ramas distintas de un mismo or', () => {
+    const rel = buildRelevance([
+      crit({
+        id: 'C1',
+        system: 'Sistema musculoesquelético',
+        logic: {
+          and: [
+            { in: ['deficit_vitamina_d', { var: 'diagnoses' }] },
+            {
+              or: [
+                { in: ['osteopenia', { var: 'diagnoses' }] },
+                { in: ['no_sale_de_casa', { var: 'diagnoses' }] },
+              ],
+            },
+          ],
+        },
+      }),
+    ]);
+    const alts = rel.dxAlternativesByCriterion.get('C1');
+    expect([...(alts?.get('no_sale_de_casa') ?? [])]).toEqual(['osteopenia']);
+    expect([...(alts?.get('osteopenia') ?? [])]).toEqual(['no_sale_de_casa']);
+  });
+
+  it('no marca como alternativo un diagnóstico conjuntivo (fuera del or)', () => {
+    const rel = buildRelevance([
+      crit({
+        id: 'C1',
+        system: 'Sistema musculoesquelético',
+        logic: {
+          and: [
+            { in: ['deficit_vitamina_d', { var: 'diagnoses' }] },
+            {
+              or: [
+                { in: ['osteopenia', { var: 'diagnoses' }] },
+                { in: ['no_sale_de_casa', { var: 'diagnoses' }] },
+              ],
+            },
+          ],
+        },
+      }),
+    ]);
+    const alts = rel.dxAlternativesByCriterion.get('C1');
+    expect(alts?.get('no_sale_de_casa')?.has('deficit_vitamina_d')).toBeFalsy();
+    expect(alts?.get('deficit_vitamina_d')?.size ?? 0).toBe(0);
+  });
+
+  it('marca como alternativas las clases de ramas distintas de un mismo or', () => {
+    const rel = buildRelevance([
+      crit({
+        id: 'C2',
+        system: 'Sistema cardiovascular',
+        logic: {
+          and: [
+            {
+              or: [
+                { inDrugClass: ['IECA', { var: 'medications' }] },
+                { inDrugClass: ['ARA2', { var: 'medications' }] },
+              ],
+            },
+            { inDrugClass: ['DIURETICO_AHORRADOR_POTASIO', { var: 'medications' }] },
+          ],
+        },
+      }),
+    ]);
+    const alts = rel.classAlternativesByCriterion.get('C2');
+    expect([...(alts?.get('IECA') ?? [])]).toEqual(['ARA2']);
+    expect(alts?.get('IECA')?.has('DIURETICO_AHORRADOR_POTASIO')).toBeFalsy();
+  });
+
+  it('START-H5 real: no_sale_de_casa y osteopenia son alternativas, deficit_vitamina_d no', () => {
+    const rel = buildRelevance(ALL_CRITERIA);
+    const alts = rel.dxAlternativesByCriterion.get('START-H5-VITAMINA-D-DEFICIT-CAIDAS-OSTEOPENIA');
+    expect(alts?.get('no_sale_de_casa')?.has('osteopenia')).toBe(true);
+    expect(alts?.get('no_sale_de_casa')?.has('deficit_vitamina_d')).toBe(false);
   });
 });

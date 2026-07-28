@@ -37,14 +37,11 @@ describe('Criterios STOPP — Sección F (Sistema gastrointestinal)', () => {
     expect(engine.evaluate(patient, [crit('STOPP-F1-PROCINETICO-PARKINSONISMO')]).length).toBe(1);
   });
 
-  it('F2 exige más de ocho semanas de IBP', () => {
+  it('F2 dispara al seleccionar IBP sin duración', () => {
     const c = crit('STOPP-F2-IBP-TRATAMIENTO-PROLONGADO');
-    const patient = (durationDays: number) => makeCase({
-      medications: [makeMed('Omeprazol', ['IBP'], { durationDays })],
-    });
-
-    expect(engine.evaluate(patient(56), [c])).toEqual([]);
-    expect(engine.evaluate(patient(57), [c]).length).toBe(1);
+    const patient = makeCase({ medications: [makeMed('Omeprazol', ['IBP'])] });
+    expect(engine.evaluate(patient, [c]).length).toBe(1);
+    expect(c.summary.toLowerCase()).toMatch(/8 semanas|más de 8/);
   });
 
   it('F3 dispara con verapamilo y estreñimiento crónico', () => {
@@ -61,14 +58,11 @@ describe('Criterios STOPP — Sección F (Sistema gastrointestinal)', () => {
     expect(summary).not.toContain('antiácido');
   });
 
-  it('F4 solo dispara por encima de 200 mg diarios de hierro elemental', () => {
+  it('F4 dispara al seleccionar hierro oral sin dosis', () => {
     const c = crit('STOPP-F4-HIERRO-ORAL-DOSIS-ALTA');
-    const patient = (doseMgDay: number) => makeCase({
-      medications: [makeMed('Sulfato ferroso', ['HIERRO_ORAL'], { doseMgDay })],
-    });
-
-    expect(engine.evaluate(patient(200), [c])).toEqual([]);
-    expect(engine.evaluate(patient(201), [c]).length).toBe(1);
+    const patient = makeCase({ medications: [makeMed('Sulfato ferroso', ['HIERRO_ORAL'])] });
+    expect(engine.evaluate(patient, [c]).length).toBe(1);
+    expect(c.summary.toLowerCase()).toContain('200 mg');
   });
 
   it('F5 exige corticoide y antecedente ulceroso o esofagitis erosiva, sin IBP', () => {

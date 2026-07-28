@@ -109,9 +109,6 @@ veces no rompe el comportamiento.
 | Operador | Semántica |
 |---|---|
 | `inDrugClass` | `(drugClass, medications[])` → ¿algún med tiene esa clase? |
-| `digoxinaDosisAlta` | `(medications[])` → ¿hay Digoxina con dosis ≥ 125 mcg/día y duración > 90 días? |
-| `medicationClassDurationAbove` | `(drugClass, days, medications[])` → ¿algún fármaco de la clase supera esa duración? |
-| `medicationClassDoseMgAbove` | `(drugClass, doseMg, medications[])` → ¿algún fármaco de la clase supera esa dosis diaria en mg? |
 | `egfrBelow` | `(threshold, patient)` → ¿TFGe < threshold? Unifica analítica numérica con diagnósticos textuales (`enfermedad_renal_grave` ≡ TFGe < 30, `insuficiencia_renal_terminal` ≡ TFGe < 15) |
 | `multipleNSAIDs` | ¿2+ AINEs presentes? |
 | `multipleLoopDiuretics` | ¿2+ diuréticos de asa? |
@@ -151,10 +148,8 @@ catálogo a uno o más tabs de la UI:
   usan el marcador `TRANSVERSAL = '*'` y se expanden a todos los tabs conocidos.
 
 `buildRelevance(criteria, allTabIds)` recorre cada criterio, extrae mediante
-`extractReferences` las clases farmacológicas (`inDrugClass`,
-`medicationClassDurationAbove`, `medicationClassDoseMgAbove`, mapa
-operador→clase para `digoxinaDosisAlta` y los `multiple*`), códigos de
-diagnóstico (`in [code, {var:"diagnoses"}]`) y los sustitutos diagnósticos de
+`extractReferences` las clases farmacológicas (`inDrugClass` y el mapa
+operador→clase de los `multiple*`), códigos de diagnóstico (`in [code, {var:"diagnoses"}]`) y los sustitutos diagnósticos de
 `egfrBelow` (umbrales ≥30 → `enfermedad_renal_grave`; ≥15 →
 `insuficiencia_renal_terminal`), une opcionalmente las clases declaradas en
 `relevance.medicationClasses` (escape hatch; ya no necesario para E1/F2/F4/L6),
@@ -175,10 +170,12 @@ falta de campo en la interfaz.
 
 Además acumula `specificClassesByTab` y `specificDxsByTab`: referencias de
 criterios cuyo `system` mapea **específicamente** a un tab (los transversales NO
-se vuelcan aquí). `computeMedGroupBuckets` usa `specificClassesByTab` para el
-afloramiento de grupos **unitarios**; `computeDxGroupBuckets` usa
-`specificDxsByTab` para el bloque «Relevantes de otros sistemas» de diagnósticos.
-El bucket foráneo de grupos multi-fármaco sigue usando `classesByTab` completo.
+se vuelcan aquí). `computeMedGroupBuckets` usa `specificClassesByTab` tanto para
+el afloramiento de grupos **unitarios** como para el bucket «Relevantes de otros
+sistemas» de multi-fármaco; `computeDxGroupBuckets` usa `specificDxsByTab` para
+el mismo bloque en diagnósticos. Los sistemas transversales siguen disparando
+criterios en el motor (`evaluate`), pero ya no generan casillas foráneas en tabs
+ajenos: su papel residual es documentar que no aportan relevancia de visibilidad.
 
 El signal `CriteriaEngineService.relevance` se actualiza una sola vez, tras
 la primera carga del catálogo.
@@ -226,10 +223,16 @@ cinco secciones:
 - **json-logic para las reglas**: permite expresar cada criterio clínico como
   dato puro (JSON), sin código compilado por criterio. El árbol es serializable,
   auditable con herramientas externas y reemplazable sin recompilar la app.
-- **Operadores custom en lugar de lógica embebida**: `inDrugClass`, `egfrBelow`,
-  `digoxinaDosisAlta`, los operadores de dosis/duración y los `multiple*` encapsulan semántica clínica que json-logic
-  estándar no puede expresar de forma compacta, manteniendo el JSON de criterios
-  legible.
+- **Operadores custom en lugar de lógica embebida**: `inDrugClass`, `egfrBelow` y
+  los `multiple*` encapsulan semántica clínica que json-logic estándar no puede
+  expresar de forma compacta, manteniendo el JSON de criterios legible.
+- **Sin operadores de dosis ni duración**: los antiguos `digoxinaDosisAlta`,
+  `medicationClassDurationAbove` y `medicationClassDoseMgAbove` se retiraron
+  (2026-07-28). Los umbrales de dosis/duración viven ahora en el `summary` del
+  criterio como juicio clínico: el aviso se notifica por defecto al seleccionar el
+  fármaco y el médico decide si aplica. Los campos `doseMgDay` / `doseMcgDay` /
+  `durationDays` siguen siendo opcionales en `Med` solo por retrocompatibilidad
+  de casos exportados; ninguna lógica los lee.
 - **Excepción por id de fármaco (STOPP-D12)**: cuando STOPP v3 exime fármacos
   concretos dentro de una clase (quetiapina/clozapina en neurolépticos), la
   lógica combina `inDrugClass(NEUROLEPTICO)` —para que `extractReferences` siga
@@ -271,11 +274,10 @@ cinco secciones:
   silenciosamente.
 - Los operadores custom se registran en el constructor, antes de cualquier
   llamada a `evaluate` o `getExcludedMedications`.
-- `extractReferences` reconoce clases en `inDrugClass`,
-  `medicationClassDurationAbove`, `medicationClassDoseMgAbove`, el mapa
-  operador→clase de `digoxinaDosisAlta`/`multiple*`, diagnósticos en
-  `in [string, {var:"diagnoses"}]` y sustitutos de `egfrBelow`; otras formas
-  de referenciar datos en la lógica no se indexan en `Relevance`.
+- `extractReferences` reconoce clases en `inDrugClass`, el mapa operador→clase de
+  los `multiple*`, diagnósticos en `in [string, {var:"diagnoses"}]` y sustitutos
+  de `egfrBelow`; otras formas de referenciar datos en la lógica no se indexan en
+  `Relevance`.
 
 ---
 

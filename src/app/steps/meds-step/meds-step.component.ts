@@ -1,6 +1,6 @@
 // @linked docs/flujo-pasos.md
 // Si cambias la lógica de groupBuckets, groupsVisibleInTab, tabs revisados o ítems "Otro", actualiza el doc enlazado.
-import { Component, ChangeDetectionStrategy, OnInit, computed, signal, effect, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, computed, signal, effect, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,13 +18,25 @@ import { CaseIoService } from '../../core/case-io.service';
 import { Med, Crit } from '../../core/types';
 import { MEDICATIONS } from '../../core/data/medications';
 import { DRUG_CATEGORIES, DrugCategory, DrugGroup } from '../../core/data/medications-taxonomy';
+import { DIAGNOSIS_MAP } from '../../core/data/diagnoses';
 import { ROUTES } from '../../app.routes.constants';
 import { buildCriteriaText } from '../../core/clipboard-text';
 import { groupBySystem, critCode, CritGroup } from '../../core/criteria-groups';
 import { isMedGroupChecked } from '../../core/group-checked';
 import { computeMedGroupBuckets, medGroupsVisibleInTab, MedGroupBuckets, MedForeignGroup } from '../../core/group-visibility';
-import { clinicalCaptureFields, medsVisibleInTabGroups } from '../../core/clinical-capture';
+import {
+  resolveForeignHighlight,
+  foreignLinksByOwnGroup,
+  relatedSelectionLinks,
+  mergeLinkMaps,
+} from '../../core/foreign-provenance';
 import { TooltipDirective } from '../../shared/tooltip.directive';
+
+const HIGHLIGHT_MS = 8000;
+
+const DX_LABELS_BY_CODE: ReadonlyMap<string, string> = new Map(
+  Object.entries(DIAGNOSIS_MAP).map(([label, code]) => [code, label]),
+);
 
 @Component({
   selector: 'app-meds-step',
@@ -34,7 +46,7 @@ import { TooltipDirective } from '../../shared/tooltip.directive';
   templateUrl: './meds-step.component.html',
   styleUrl: './meds-step.component.css',
 })
-export class MedsStepComponent implements OnInit {
+export class MedsStepComponent implements OnInit, OnDestroy {
   readonly store = inject(CaseStoreService);
   readonly categories = DRUG_CATEGORIES;
   readonly OTROS_TAB_ID = 'otros';
@@ -94,12 +106,43 @@ export class MedsStepComponent implements OnInit {
     ),
   );
 
-  readonly clinicalCaptureFields = computed(() => {
-    this.store.meds();
+  readonly highlightedGroupIds = signal<ReadonlySet<string>>(new Set());
+  readonly highlightedCriterionIds = signal<ReadonlySet<string>>(new Set());
+  private highlightTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // Enlaces persistentes: mientras un fármaco foráneo siga marcado, el grupo
+  // propio con el que se relaciona lo muestra en su cabecera. Así se ve que dos
+  // casillas distintas de «Relevantes de otros sistemas» apuntan al mismo grupo.
+  readonly foreignLinks = computed(() => {
     const buckets = this.groupBuckets();
-    const groups = [...buckets.ownAll, ...buckets.foreignRelevant];
-    const visible = medsVisibleInTabGroups(this.store.meds(), groups);
-    return clinicalCaptureFields(visible);
+    const relevance = this.criteriaEngine.relevance();
+    const sameTab = foreignLinksByOwnGroup({
+      selectedDrugIds: this.store.meds().map(m => m.id),
+      tabId: this.activeCategoryId(),
+      relevance,
+      categories: this.categories,
+      medications: MEDICATIONS,
+      ownGroups: buckets.ownAll,
+      foreignGroups: buckets.foreignRelevant,
+    });
+    // Enlaces que cruzan paso o pestaña: diagnósticos ya marcados en el paso 2
+    // (o fármacos de otras pestañas) que esperan a un grupo de esta.
+    const crossStep = relatedSelectionLinks({
+      relevance,
+      selectedMedications: this.store.meds(),
+      selectedDiagnoses: this.store.diagnoses().map(code => DX_LABELS_BY_CODE.get(code) ?? code),
+      // Se cuentan la clase del grupo y las de sus miembros: un diagnóstico como
+      // «Intervalo QTc prolongado» no apunta a ningún grupo llamado así, pero sí
+      // a los grupos que contienen fármacos prolongadores del QTc.
+      targets: buckets.ownAll.map(group => ({
+        key: group.id,
+        drugClasses: [...new Set([
+          ...(group.drugClass ? [group.drugClass] : []),
+          ...group.drugs.flatMap(id => MEDICATIONS.find(m => m.id === id)?.drugClasses ?? []),
+        ])],
+      })),
+    });
+    return mergeLinkMaps(sameTab, crossStep);
   });
 
   constructor(
@@ -184,22 +227,99 @@ export class MedsStepComponent implements OnInit {
     this.criteria.set(loaded);
   }
 
+  ngOnDestroy(): void {
+    this.clearHighlightTimer();
+  }
+
+  isGroupHighlighted(group: DrugGroup): boolean {
+    return this.highlightedGroupIds().has(group.id);
+  }
+
+  /** Fármacos foráneos seleccionados que apuntan a este grupo propio. */
+  linkedForeignDrugs(group: DrugGroup): readonly string[] {
+    return this.foreignLinks().get(group.id) ?? [];
+  }
+
+  linkedForeignTooltip(group: DrugGroup): string {
+    const items = this.linkedForeignDrugs(group);
+    if (items.length === 0) return '';
+    const medIds = new Set(this.store.meds().map(m => m.id));
+    const described = items.map(name =>
+      medIds.has(name) ? `${name} (medicamento)` : `${name} (diagnóstico)`,
+    );
+    return items.length === 1
+      ? `Ya has marcado ${described[0]} y se relaciona con este grupo`
+      : `${items.length} elementos ya marcados se relacionan con este grupo: ${described.join(', ')}`;
+  }
+
+  isCriterionHighlighted(c: Crit): boolean {
+    return this.highlightedCriterionIds().has(c.id);
+  }
+
+  private clearHighlightTimer(): void {
+    if (this.highlightTimer !== null) {
+      clearTimeout(this.highlightTimer);
+      this.highlightTimer = null;
+    }
+  }
+
+  private clearHighlights(): void {
+    this.clearHighlightTimer();
+    this.highlightedGroupIds.set(new Set());
+    this.highlightedCriterionIds.set(new Set());
+  }
+
+  private scheduleHighlightClear(): void {
+    this.clearHighlightTimer();
+    this.highlightTimer = setTimeout(() => {
+      this.highlightedGroupIds.set(new Set());
+      this.highlightedCriterionIds.set(new Set());
+      this.highlightTimer = null;
+    }, HIGHLIGHT_MS);
+  }
+
+  private maybeHighlightForeignDrug(drugId: string): void {
+    const buckets = this.groupBuckets();
+    const isForeign = buckets.foreignRelevant.some(g => g.drugs.includes(drugId));
+    if (!isForeign) return;
+
+    const criteriaById = new Map(this.criteria().map(c => [c.id, c]));
+    const result = resolveForeignHighlight({
+      drugId,
+      tabId: this.activeCategoryId(),
+      relevance: this.criteriaEngine.relevance(),
+      categories: this.categories,
+      medications: MEDICATIONS,
+      ownGroups: buckets.ownAll,
+      applicableCriterionIds: new Set(this.applicableCriteria().map(c => c.id)),
+      selectedDiagnoses: this.store.diagnoses(),
+      selectedMedications: this.store.meds(),
+      criteriaById,
+      dxLabelsByCode: DX_LABELS_BY_CODE,
+    });
+
+    this.highlightedGroupIds.set(new Set(result.groupIds));
+    this.highlightedCriterionIds.set(new Set(result.criterionIds));
+    if (result.snackMessage) {
+      this.snackBar.open(result.snackMessage, 'Entendido', {
+        duration: HIGHLIGHT_MS,
+        panelClass: 'snack-relacion',
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
+    }
+    if (result.groupIds.length > 0 || result.criterionIds.length > 0) {
+      this.scheduleHighlightClear();
+    } else {
+      this.clearHighlightTimer();
+    }
+  }
+
   setCategory(id: string): void { this.store.activeSystemTab.set(id); }
 
   onTabSelectChange(event: Event): void {
     const target = event.target;
     if (target instanceof HTMLSelectElement) this.setCategory(target.value);
-  }
-
-  onClinicalFieldInput(
-    medId: string,
-    field: 'doseMcgDay' | 'doseMgDay' | 'durationDays',
-    event: Event,
-  ): void {
-    const target = event.target;
-    if (target instanceof HTMLInputElement) {
-      this.updateMedicationNumber(medId, field, target.value);
-    }
   }
 
   onReviewedChange(tabId: string, event: Event): void {
@@ -226,39 +346,14 @@ export class MedsStepComponent implements OnInit {
   toggleDrug(name: string): void {
     const current = this.store.meds();
     if (this.isSelected(name)) {
+      this.clearHighlights();
       this.store.meds.set(current.filter(m => m.id !== name));
       return;
     }
     const found = MEDICATIONS.find(m => m.id === name);
     const med: Med = found ?? { id: name, drugClasses: [] };
     this.store.meds.set([...current, med]);
-  }
-
-  updateMedicationNumber(
-    id: string,
-    field: 'doseMcgDay' | 'doseMgDay' | 'durationDays',
-    rawValue: string,
-  ): void {
-    const value = this.optionalNonNegativeNumber(rawValue);
-    this.store.meds.update(medications => medications.map(medication => {
-      if (medication.id !== id) return medication;
-      if (field === 'doseMcgDay') {
-        const { doseMcgDay: _, ...withoutValue } = medication;
-        return value === null ? withoutValue : { ...withoutValue, doseMcgDay: value };
-      }
-      if (field === 'doseMgDay') {
-        const { doseMgDay: _, ...withoutValue } = medication;
-        return value === null ? withoutValue : { ...withoutValue, doseMgDay: value };
-      }
-      const { durationDays: _, ...withoutValue } = medication;
-      return value === null ? withoutValue : { ...withoutValue, durationDays: value };
-    }));
-  }
-
-  private optionalNonNegativeNumber(rawValue: string): number | null {
-    if (rawValue.trim() === '') return null;
-    const value = Number(rawValue);
-    return Number.isFinite(value) && value >= 0 ? value : null;
+    this.maybeHighlightForeignDrug(name);
   }
 
   customDrugsFor(group: DrugGroup): Med[] {
