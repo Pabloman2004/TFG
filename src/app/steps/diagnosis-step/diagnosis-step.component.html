@@ -105,6 +105,9 @@
           </select>
         </div>
 
+        <!-- Tabs + content: lateral rail (vertical) or top bar (horizontal) -->
+        <div class="card-body" [class.card-body--vertical]="tabsVertical()">
+
         <!-- System tabs -->
         <div class="tabs-bar">
           @for (tab of tabs; track trackTab($index, tab)) {
@@ -125,6 +128,8 @@
             </button>
           }
         </div>
+
+        <div class="card-main">
 
         <!-- Reviewed-tab toggle -->
         <div class="reviewed-bar">
@@ -359,6 +364,8 @@
           }
 
         </div>
+        </div><!-- /card-main -->
+        </div><!-- /card-body -->
       </div>
     </div>
 

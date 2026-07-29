@@ -26,6 +26,11 @@ La aplicación STOPP/START guía al clínico en dos pasos secuenciales:
    actualizan inmutablemente `Labs`, compartido con el paso de Medicamentos.
 
 En ambos pasos:
+- Los tabs se muestran en **raíl lateral vertical** (por defecto) o en **barra horizontal**
+  superior, según la preferencia `tabsOrientation` de `DisplaySettingsService` (ver
+  `accesibilidad-ui`). Es el mismo marcado en ambos casos: los componentes exponen
+  `tabsVertical()` y la plantilla aplica `.card-body--vertical`. El raíl vertical cabe
+  entero sin scroll horizontal, que era el problema de la barra superior con 11–13 tabs.
 - Cada tab puede marcarse como "revisado" explícitamente si no tiene selección, para dejar constancia de que el clínico lo revisó y no aplica nada.
 - Dentro de cada tab aparece un "bucket" secundario con ítems de otros sistemas que son relevantes para los criterios del tab activo (calculado por `CriteriaEngineService.relevance()`).
 - Se pueden añadir ítems personalizados ("Otro") que no están en el catálogo.

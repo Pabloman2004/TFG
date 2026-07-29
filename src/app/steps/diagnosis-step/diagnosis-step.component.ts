@@ -12,6 +12,7 @@ import { ConfirmResetDialogComponent } from '../../confirm-reset-dialog.componen
 import { DisplayOptionsDialogComponent } from '../../display-options-dialog.component';
 
 import { CaseStoreService } from '../../core/case-store.service';
+import { DisplaySettingsService } from '../../core/display-settings.service';
 import { CriteriaEngineService } from '../../core/services/criteria-engine.service';
 import { ReportService } from '../../core/report.service';
 import { CaseIoService } from '../../core/case-io.service';
@@ -64,6 +65,10 @@ const emptyLabs = (): Labs => ({
 })
 export class DiagnosisStepComponent implements OnInit, OnDestroy {
   readonly store = inject(CaseStoreService);
+  private readonly displaySettings = inject(DisplaySettingsService);
+  readonly tabsVertical = computed<boolean>(
+    () => this.displaySettings.tabsOrientation() === 'vertical',
+  );
   readonly tabs = DIAGNOSIS_TABS;
   readonly OTROS_TAB_ID = 'otros';
   readonly activeTabId = computed<string>(() => {

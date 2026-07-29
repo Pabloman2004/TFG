@@ -105,6 +105,9 @@
           </select>
         </div>
 
+        <!-- Tabs + content: lateral rail (vertical) or top bar (horizontal) -->
+        <div class="card-body" [class.card-body--vertical]="tabsVertical()">
+
         <!-- Category tabs -->
         <div class="tabs-bar">
           @for (cat of allCategoryTabs; track cat.id) {
@@ -126,6 +129,8 @@
             </button>
           }
         </div>
+
+        <div class="card-main">
 
         <!-- Reviewed-tab toggle -->
         <div class="reviewed-bar">
@@ -275,6 +280,8 @@
           }
 
         </div>
+        </div><!-- /card-main -->
+        </div><!-- /card-body -->
       </div>
     </div>
 

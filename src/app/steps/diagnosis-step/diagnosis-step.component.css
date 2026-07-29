@@ -316,6 +316,69 @@
   flex-shrink: 0;
 }
 
+/* ── Cuerpo de la tarjeta: pestañas + contenido ───────────────────
+   Dos disposiciones sobre el mismo marcado (preferencia en
+   DisplaySettingsService.tabsOrientation):
+   - horizontal: barra de pestañas arriba (comportamiento clásico)
+   - vertical:   raíl lateral que muestra todas las pestañas sin scroll */
+.card-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.card-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body--vertical { flex-direction: row; }
+.card-body--vertical .tabs-bar {
+  flex: 0 0 auto;
+  /* Ancho: etiqueta más larga («Gastrointestinal», 104px a 14.5px/600) + hueco del
+     badge de conteo. Escala con la fuente para que nunca se parta en dos líneas. */
+  width: calc(166px * var(--font-scale, 1));
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  padding: 6px;
+  background: #fafbfc;
+  border-bottom: none;
+  border-right: 1px solid #e6ebf2;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.card-body--vertical .tabs-bar::-webkit-scrollbar { width: 6px; }
+.card-body--vertical .tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-align: left;
+  padding: 8px 9px;
+  border-bottom: none;
+  border-radius: 6px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+.card-body--vertical .tab::after {
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  right: auto;
+  width: 3px;
+  height: auto;
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 200ms;
+}
+.card-body--vertical .tab.on::after { transform: scaleY(1); }
+.card-body--vertical .tab.has-sel:not(.on)::after { transform: scaleY(.4); opacity: .5; }
+.card-body--vertical .tab .tab-check-count { margin-left: auto; }
+
 /* Reviewed toggle bar */
 .reviewed-bar {
   flex-shrink: 0;
@@ -872,6 +935,7 @@
 @media (max-width: 768px) {
   .tabs-bar { display: none; }
   .tabs-select-wrap { display: block; }
+  .card-body--vertical { flex-direction: column; }
 }
 
 @media (max-width: 600px) {

@@ -17,6 +17,7 @@ import { resolveDiagnosisLabel, normalizeDiagnosis } from '../../core/data/diagn
 import { buildRelevance } from '../../core/data/system-relevance';
 import { ALL_CRITERIA } from '../../core/services/criteria-test-helpers';
 import { buildDxDependencies } from '../../core/data/dx-dependencies';
+import { DisplaySettingsService } from '../../core/display-settings.service';
 
 const med = (id: string, drugClasses: string[]): Med => ({ id, drugClasses });
 const TEST_DX_DEPS = buildDxDependencies(ALL_CRITERIA);
@@ -524,5 +525,53 @@ describe('DiagnosisStepComponent — el resaltado no sobrevive al cambio de pest
     component.setTab('renal');
 
     expect(component.highlightedDxLabels().size).toBe(0);
+  });
+});
+
+describe('DiagnosisStepComponent — orientación de las pestañas de sistema', () => {
+  const render = () => {
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    fixture.detectChanges();
+    return fixture;
+  };
+
+  beforeEach(() => localStorage.removeItem('tabs-orientation'));
+
+  it('por defecto muestra las pestañas en la barra lateral vertical', () => {
+    const host: HTMLElement = render().nativeElement;
+
+    expect(host.querySelector('.card-body--vertical')).not.toBeNull();
+  });
+
+  it('con la preferencia horizontal muestra la barra de pestañas superior', () => {
+    const fixture = render();
+    TestBed.inject(DisplaySettingsService).setTabsOrientation('horizontal');
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('.card-body--vertical')).toBeNull();
+  });
+
+  it('muestra un botón de pestaña por sistema en cualquier orientación', () => {
+    const fixture = render();
+    const tabCount = () =>
+      (fixture.nativeElement as HTMLElement).querySelectorAll('.tabs-bar .tab').length;
+
+    expect(tabCount()).toBe(DIAGNOSIS_TABS.length);
+
+    TestBed.inject(DisplaySettingsService).setTabsOrientation('horizontal');
+    fixture.detectChanges();
+
+    expect(tabCount()).toBe(DIAGNOSIS_TABS.length);
   });
 });

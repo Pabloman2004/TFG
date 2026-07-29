@@ -14,6 +14,7 @@ import { Relevance, buildRelevance } from '../../core/data/system-relevance';
 import { Crit } from '../../core/types';
 import { ALL_CRITERIA } from '../../core/services/criteria-test-helpers';
 import { DRUG_CATEGORIES } from '../../core/data/medications-taxonomy';
+import { DisplaySettingsService } from '../../core/display-settings.service';
 
 const ALL_MED_TAB_IDS = DRUG_CATEGORIES.map(c => c.id);
 
@@ -318,5 +319,53 @@ describe('MedsStepComponent — el resaltado no sobrevive al cambio de pestaña'
     component.setCategory('renal');
 
     expect(component.highlightedGroupIds().size).toBe(0);
+  });
+});
+
+describe('MedsStepComponent — orientación de las pestañas de categoría', () => {
+  const render = () => {
+    TestBed.configureTestingModule({
+      imports: [MedsStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(MedsStepComponent);
+    fixture.detectChanges();
+    return fixture;
+  };
+
+  beforeEach(() => localStorage.removeItem('tabs-orientation'));
+
+  it('por defecto muestra las pestañas en la barra lateral vertical', () => {
+    const host: HTMLElement = render().nativeElement;
+
+    expect(host.querySelector('.card-body--vertical')).not.toBeNull();
+  });
+
+  it('con la preferencia horizontal muestra la barra de pestañas superior', () => {
+    const fixture = render();
+    TestBed.inject(DisplaySettingsService).setTabsOrientation('horizontal');
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('.card-body--vertical')).toBeNull();
+  });
+
+  it('muestra todas las categorías más "Otros" en cualquier orientación', () => {
+    const fixture = render();
+    const tabCount = () =>
+      (fixture.nativeElement as HTMLElement).querySelectorAll('.tabs-bar .tab').length;
+
+    expect(tabCount()).toBe(ALL_MED_TAB_IDS.length + 1);
+
+    TestBed.inject(DisplaySettingsService).setTabsOrientation('horizontal');
+    fixture.detectChanges();
+
+    expect(tabCount()).toBe(ALL_MED_TAB_IDS.length + 1);
   });
 });

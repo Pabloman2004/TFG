@@ -6,7 +6,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonToggleModule, MatButtonToggleChange } from '@angular/material/button-toggle';
 
-import { DisplaySettingsService, FontScale } from './core/display-settings.service';
+import {
+  DisplaySettingsService,
+  FontScale,
+  TabsOrientation,
+} from './core/display-settings.service';
 
 @Component({
   selector: 'app-display-options-dialog',
@@ -46,6 +50,35 @@ import { DisplaySettingsService, FontScale } from './core/display-settings.servi
             <span class="prev-lbl">Grande</span>
           </mat-button-toggle>
         </mat-button-toggle-group>
+      </section>
+
+      <section class="opt-section">
+        <h3 class="opt-section-title">Disposición de las pestañas</h3>
+        <mat-button-toggle-group
+          class="tabs-toggle"
+          [value]="tabsOrientation()"
+          (change)="onOrientationChange($event)"
+          aria-label="Disposición de las pestañas"
+        >
+          <mat-button-toggle [value]="orientations[0]">
+            <span class="prev-tabs prev-tabs-vert" aria-hidden="true">
+              <span class="prev-rail"></span>
+              <span class="prev-panel"></span>
+            </span>
+            <span class="prev-lbl">Verticales</span>
+          </mat-button-toggle>
+          <mat-button-toggle [value]="orientations[1]">
+            <span class="prev-tabs prev-tabs-horz" aria-hidden="true">
+              <span class="prev-rail"></span>
+              <span class="prev-panel"></span>
+            </span>
+            <span class="prev-lbl">Horizontales</span>
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+        <p class="opt-hint">
+          Las pestañas verticales muestran todos los sistemas a la vez, sin barra de
+          desplazamiento horizontal.
+        </p>
       </section>
     </mat-dialog-content>
 
@@ -118,6 +151,71 @@ import { DisplaySettingsService, FontScale } from './core/display-settings.servi
         font-weight: 500;
         color: #6b7280;
       }
+
+      .tabs-toggle {
+        display: flex;
+        width: 100%;
+      }
+      .tabs-toggle .mat-button-toggle {
+        flex: 1;
+      }
+      .tabs-toggle .mat-button-toggle-label-content {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 12px 8px !important;
+        line-height: 1.1 !important;
+      }
+      .tabs-toggle .prev-tabs {
+        display: flex;
+        gap: 3px;
+        width: 42px;
+        height: 26px;
+        border: 1px solid #cbd5e1;
+        border-radius: 3px;
+        padding: 3px;
+        background: #fff;
+      }
+      .tabs-toggle .prev-rail {
+        background: #185fa5;
+        border-radius: 2px;
+      }
+      .tabs-toggle .prev-panel {
+        background: #e2e8f0;
+        border-radius: 2px;
+      }
+      .tabs-toggle .prev-tabs-vert {
+        flex-direction: row;
+      }
+      .tabs-toggle .prev-tabs-vert .prev-rail {
+        width: 11px;
+      }
+      .tabs-toggle .prev-tabs-vert .prev-panel {
+        flex: 1;
+      }
+      .tabs-toggle .prev-tabs-horz {
+        flex-direction: column;
+      }
+      .tabs-toggle .prev-tabs-horz .prev-rail {
+        height: 6px;
+      }
+      .tabs-toggle .prev-tabs-horz .prev-panel {
+        flex: 1;
+      }
+      .tabs-toggle .prev-lbl {
+        font-size: 12px;
+        font-weight: 500;
+        color: #6b7280;
+      }
+
+      .opt-hint {
+        margin: 10px 0 0;
+        font-size: 11.5px;
+        line-height: 1.4;
+        color: #6b7280;
+      }
     `,
   ],
 })
@@ -125,8 +223,14 @@ export class DisplayOptionsDialogComponent {
   private readonly settings = inject(DisplaySettingsService);
   readonly scales = this.settings.scales;
   readonly fontScale = this.settings.fontScale;
+  readonly orientations = this.settings.orientations;
+  readonly tabsOrientation = this.settings.tabsOrientation;
 
   onScaleChange(change: MatButtonToggleChange): void {
     this.settings.setFontScale(change.value as FontScale);
+  }
+
+  onOrientationChange(change: MatButtonToggleChange): void {
+    this.settings.setTabsOrientation(change.value as TabsOrientation);
   }
 }

@@ -1,7 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { ApplicationRef } from '@angular/core';
 
-import { DisplaySettingsService, FONT_SCALES } from './display-settings.service';
+import {
+  DisplaySettingsService,
+  FONT_SCALES,
+  TABS_ORIENTATIONS,
+} from './display-settings.service';
 
 describe('DisplaySettingsService', () => {
   beforeEach(() => {
@@ -74,5 +78,51 @@ describe('DisplaySettingsService', () => {
     flush();
     expect(service.fontScale()).toBe(1.15);
     expect(document.documentElement.style.getPropertyValue('--font-scale')).toBe('1.15');
+  });
+
+  describe('orientación de las pestañas', () => {
+    it('expone las orientaciones disponibles', () => {
+      expect(TABS_ORIENTATIONS).toEqual(['vertical', 'horizontal']);
+    });
+
+    it('usa pestañas verticales cuando no hay nada guardado', () => {
+      expect(createService().tabsOrientation()).toBe('vertical');
+    });
+
+    it('usa pestañas verticales cuando el valor guardado no es una orientación conocida', () => {
+      localStorage.setItem('tabs-orientation', 'diagonal');
+      expect(createService().tabsOrientation()).toBe('vertical');
+    });
+
+    it('restaura la orientación guardada al crearse', () => {
+      localStorage.setItem('tabs-orientation', 'horizontal');
+      expect(createService().tabsOrientation()).toBe('horizontal');
+    });
+
+    it('actualiza la orientación al cambiarla', () => {
+      const service = createService();
+      service.setTabsOrientation('horizontal');
+      expect(service.tabsOrientation()).toBe('horizontal');
+    });
+
+    it('persiste la orientación seleccionada en localStorage', () => {
+      const service = createService();
+      service.setTabsOrientation('horizontal');
+      flush();
+      expect(localStorage.getItem('tabs-orientation')).toBe('horizontal');
+    });
+
+    it('si localStorage lanza al leer, arranca con pestañas verticales', () => {
+      spyOn(localStorage, 'getItem').and.throwError('Storage blocked');
+      expect(createService().tabsOrientation()).toBe('vertical');
+    });
+
+    it('si localStorage lanza al escribir, la orientación sigue aplicándose en memoria', () => {
+      const service = createService();
+      spyOn(localStorage, 'setItem').and.throwError('Storage blocked');
+      service.setTabsOrientation('horizontal');
+      flush();
+      expect(service.tabsOrientation()).toBe('horizontal');
+    });
   });
 });
