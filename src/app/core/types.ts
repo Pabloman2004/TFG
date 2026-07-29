@@ -39,15 +39,12 @@ export interface Crit {
   };
 }
 
+// Solo los valores que algún criterio lee. Glucosa, colesterol total,
+// triglicéridos, HDL, LDL, creatinina e INR se retiraron: no alimentaban ningún
+// criterio ni se pedían en el panel de analítica. Los casos antiguos que los
+// llevan siguen importándose (el schema descarta las claves sobrantes).
 export interface Labs {
-  glucosa_mg_dl: number | null;
-  colesterol_total_mg_dl: number | null;
-  trigliceridos_mg_dl: number | null;
-  hdl_mg_dl: number | null;
-  ldl_mg_dl: number | null;
-  creatinina_mg_dl: number | null;
   egfr_ml_min_173: number | null;
-  inr: number | null;
   tsh_uUl: number | null;
   fc_lpm: number | null;         // Frecuencia cardíaca (latidos por minuto)
   qtc_ms: number | null;          // Intervalo QTc corregido (milisegundos)

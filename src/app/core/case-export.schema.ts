@@ -24,15 +24,10 @@ const medSchema = z.object({
   durationDays: z.number().optional(),
 });
 
+// Los casos exportados antes de retirar los labs inertes traen claves extra
+// (glucosa, colesterol, INR…); Zod las descarta y el caso carga igual.
 const labsSchema = z.object({
-  glucosa_mg_dl: nullableNumber,
-  colesterol_total_mg_dl: nullableNumber,
-  trigliceridos_mg_dl: nullableNumber,
-  hdl_mg_dl: nullableNumber,
-  ldl_mg_dl: nullableNumber,
-  creatinina_mg_dl: nullableNumber,
   egfr_ml_min_173: nullableNumber,
-  inr: nullableNumber,
   tsh_uUl: nullableNumber,
   fc_lpm: nullableNumber,
   qtc_ms: nullableNumber,

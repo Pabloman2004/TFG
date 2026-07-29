@@ -43,14 +43,7 @@ const DX_LABELS_BY_CODE: ReadonlyMap<string, string> = new Map(
 );
 
 const emptyLabs = (): Labs => ({
-  glucosa_mg_dl: null,
-  colesterol_total_mg_dl: null,
-  trigliceridos_mg_dl: null,
-  hdl_mg_dl: null,
-  ldl_mg_dl: null,
-  creatinina_mg_dl: null,
   egfr_ml_min_173: null,
-  inr: null,
   tsh_uUl: null,
   fc_lpm: null,
   qtc_ms: null,
@@ -139,7 +132,9 @@ export class DiagnosisStepComponent implements OnInit, OnDestroy {
       relevance,
       selectedMedications: this.store.meds(),
       selectedDiagnoses: selectedDxLabels,
-      targets: buckets.ownGroups.flatMap(group =>
+      // Igual que en medicamentos: también los diagnósticos foráneos, para que
+      // marcar uno propio señale el de otro sistema que lo acompaña.
+      targets: [...buckets.ownGroups, ...buckets.foreignRelevant].flatMap(group =>
         group.diagnoses.map(dx => ({ key: dx, dxCodes: [normalizeDiagnosis(dx)] })),
       ),
     });
@@ -320,7 +315,12 @@ export class DiagnosisStepComponent implements OnInit, OnDestroy {
     }
   }
 
-  setTab(id: string): void { this.store.activeSystemTab.set(id); }
+  setTab(id: string): void {
+    // Ver `setCategory` en MedsStepComponent: el resaltado se identifica por
+    // etiqueta y no debe sobrevivir al cambio de pestaña.
+    this.clearHighlights();
+    this.store.activeSystemTab.set(id);
+  }
 
   onLabInput(key: LabKey, event: Event): void {
     const target = event.target;

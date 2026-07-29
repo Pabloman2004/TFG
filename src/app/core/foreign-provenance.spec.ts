@@ -457,3 +457,183 @@ describe('relatedSelectionLinks — enlaces que cruzan paso y pestaña', () => {
     expect(links.get('Intervalo QTc prolongado')).toBeUndefined();
   });
 });
+
+describe('aviso silenciado cuando todo lo pendiente está a la vista', () => {
+  const highlightOf = (drugId: string) => resolveForeignHighlight({
+    drugId,
+    tabId: 'cardiovascular',
+    relevance,
+    categories: DRUG_CATEGORIES,
+    medications: MEDICATIONS,
+    ownGroups: ownGroupsOf('cardiovascular'),
+    applicableCriterionIds: new Set<string>(),
+    selectedDiagnoses: [],
+    selectedMedications: [],
+    criteriaById,
+    dxLabelsByCode,
+  });
+
+  it('amilorida no avisa: los grupos que le faltan ya están resaltados aquí', () => {
+    const result = highlightOf('Amilorida');
+    expect(result.groupIds.length).toBeGreaterThan(0);
+    expect(result.snackMessage).toBeNull();
+  });
+
+  it('sildenafilo no avisa aunque toque varias variantes de B14', () => {
+    const result = highlightOf('Sildenafilo');
+    expect(result.groupIds.length).toBeGreaterThan(0);
+    expect(result.snackMessage).toBeNull();
+  });
+
+  it('ondansetrón sí avisa: lo que falta es un diagnóstico de otro paso', () => {
+    const result = highlightOf('Ondansetrón');
+    expect(result.snackMessage).not.toBeNull();
+    expect(result.snackMessage).toMatch(/B15/);
+  });
+
+  it('prednisona sí avisa: resalta el grupo pero le falta el diagnóstico', () => {
+    const result = highlightOf('Prednisona');
+    expect(result.groupIds.length).toBeGreaterThan(0);
+    expect(result.snackMessage).not.toBeNull();
+    expect(result.snackMessage).toMatch(/Insuficiencia cardíaca/);
+  });
+
+  it('un requisito de ubicación desconocida no cuenta como visible aquí', () => {
+    // Un diagnóstico que no vive en ninguna pestaña no se puede "estar viendo":
+    // sin ubicación conocida el aviso es la única forma de saber que falta.
+    const criterionId = 'STOPP-ZZ-FICTICIO';
+    const fakeRelevance = {
+      ...relevance,
+      specificClassCriteriaByTab: new Map([
+        ['cardiovascular', new Map([['NITRATO', new Set([criterionId])]])],
+      ]),
+      classesByCriterion: new Map([[criterionId, new Set(['NITRATO'])]]),
+      requiredClassesByCriterion: new Map([[criterionId, new Set(['NITRATO'])]]),
+      dxsByCriterion: new Map([[criterionId, new Set(['diagnostico_inexistente_xyz'])]]),
+      classAlternativesByCriterion: new Map(),
+      dxAlternativesByCriterion: new Map(),
+    };
+    const result = resolveForeignHighlight({
+      drugId: 'Nitroglicerina',
+      tabId: 'cardiovascular',
+      relevance: fakeRelevance,
+      categories: DRUG_CATEGORIES,
+      medications: MEDICATIONS,
+      ownGroups: ownGroupsOf('cardiovascular'),
+      applicableCriterionIds: new Set<string>(),
+      selectedDiagnoses: [],
+      selectedMedications: [],
+      criteriaById: new Map([[criterionId, {
+        id: criterionId, type: 'STOPP' as const, system: 'Sistema cardiovascular', summary: 'x',
+      }]]),
+      dxLabelsByCode,
+    });
+    expect(result.snackMessage).not.toBeNull();
+  });
+});
+
+describe('invariante: callar el aviso nunca deja la casilla muda', () => {
+  it('toda casilla foránea silenciada tiene grupos resaltados', () => {
+    let silenciadas = 0;
+    for (const cat of DRUG_CATEGORIES) {
+      if (cat.id === 'otros') continue;
+      const buckets = computeMedGroupBuckets(cat.id, DRUG_CATEGORIES, relevance, 'otros', MEDICATIONS);
+      for (const drugId of buckets.foreignRelevant.flatMap(g => g.drugs)) {
+        const result = resolveForeignHighlight({
+          drugId,
+          tabId: cat.id,
+          relevance,
+          categories: DRUG_CATEGORIES,
+          medications: MEDICATIONS,
+          ownGroups: buckets.ownAll,
+          applicableCriterionIds: new Set<string>(),
+          selectedDiagnoses: [],
+          selectedMedications: [],
+          criteriaById,
+          dxLabelsByCode,
+        });
+        if (result.snackMessage !== null) continue;
+        silenciadas++;
+        expect(result.groupIds.length)
+          .withContext(`${drugId} en ${cat.id}: aviso callado y nada resaltado`)
+          .toBeGreaterThan(0);
+      }
+    }
+    // Si esto baja a 0 el filtro dejó de aplicarse; si se dispara, algo se coló.
+    expect(silenciadas).toBeGreaterThan(0);
+  });
+});
+
+describe('normalización de diagnósticos seleccionados', () => {
+  // Los dos pasos convierten código → etiqueta antes de llamar a la cascada. El
+  // paso de medicamentos pasaba códigos crudos, y funcionaba solo porque todos
+  // los códigos reales sobreviven a `slug` sin cambios. Este test fija que la
+  // cascada acepta etiquetas, que es su contrato declarado.
+  const highlightWith = (selectedDiagnoses: readonly string[]) => resolveForeignHighlight({
+    drugId: 'Ondansetrón',
+    tabId: 'cardiovascular',
+    relevance,
+    categories: DRUG_CATEGORIES,
+    medications: MEDICATIONS,
+    ownGroups: ownGroupsOf('cardiovascular'),
+    applicableCriterionIds: new Set<string>(),
+    selectedDiagnoses,
+    selectedMedications: [],
+    criteriaById,
+    dxLabelsByCode,
+  });
+
+  it('sin el diagnóstico marcado, el aviso lo pide', () => {
+    expect(highlightWith([]).snackMessage).toMatch(/QTc/i);
+  });
+
+  it('con la ETIQUETA marcada, deja de pedirlo', () => {
+    expect(highlightWith(['Intervalo QTc prolongado']).snackMessage).not.toMatch(/QTc prolongado/);
+  });
+
+  it('todo código real se resuelve a una etiqueta que vuelve al mismo código', () => {
+    // Es lo que sostiene la conversión código → etiqueta de ambos componentes.
+    for (const [label, code] of Object.entries(DIAGNOSIS_MAP)) {
+      const back = dxLabelsByCode.get(code);
+      expect(back).withContext(`código ${code} (de "${label}") sin etiqueta inversa`).toBeDefined();
+      expect(DIAGNOSIS_MAP[back!]).withContext(`ida y vuelta rota en ${code}`).toBe(code);
+    }
+  });
+});
+
+describe('START ya cubierto por el fármaco recién marcado', () => {
+  const hl = (drugId: string) => resolveForeignHighlight({
+    drugId,
+    tabId: 'cardiovascular',
+    relevance,
+    categories: DRUG_CATEGORIES,
+    medications: MEDICATIONS,
+    ownGroups: ownGroupsOf('cardiovascular'),
+    applicableCriterionIds: new Set<string>(),
+    selectedDiagnoses: [],
+    selectedMedications: [],
+    criteriaById,
+    dxLabelsByCode,
+  });
+
+  it('no pide diagnósticos para un START que el propio fármaco ya satisface', () => {
+    const msg = hl('Simvastatina').snackMessage!;
+    expect(msg).toContain('START B2 recomienda iniciar estatina; ya no puede saltar porque el paciente toma Estatinas');
+    expect(msg).not.toMatch(/START B2 requiere/);
+  });
+
+  it('el STOPP del mismo fármaco sigue siendo accionable', () => {
+    expect(hl('Simvastatina').snackMessage).toMatch(/STOPP B16 requiere:/);
+  });
+
+  it('un START en solitario se anuncia como cubierto, no como pendiente', () => {
+    const msg = hl('Hierro carboximaltosa IV').snackMessage!;
+    expect(msg).toBe('Relacionado con START B11 — recomienda hierro intravenoso; ya no puede saltar porque el paciente toma Hierro IV');
+    expect(msg).not.toMatch(/requiere:/);
+  });
+
+  it('un STOPP normal no se ve afectado', () => {
+    expect(hl('Ondansetrón').snackMessage)
+      .toBe('Relacionado con STOPP B15 — requiere: Intervalo QTc prolongado (diagnóstico · paso 2 · Cardiovascular)');
+  });
+});

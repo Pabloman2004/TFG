@@ -13,6 +13,9 @@ import { routes } from '../../app.routes';
 import { Relevance, buildRelevance } from '../../core/data/system-relevance';
 import { Crit } from '../../core/types';
 import { ALL_CRITERIA } from '../../core/services/criteria-test-helpers';
+import { DRUG_CATEGORIES } from '../../core/data/medications-taxonomy';
+
+const ALL_MED_TAB_IDS = DRUG_CATEGORIES.map(c => c.id);
 
 const engineStub = () => ({
   relevance: signal(null),
@@ -243,5 +246,77 @@ describe('MedsStepComponent — copyCriteria / exportPdf errores', () => {
     await component.onExportPdf();
     expect(report.exportCase).toHaveBeenCalled();
     expect(snackBar.open).toHaveBeenCalled();
+  });
+});
+
+describe('MedsStepComponent — chip de enlace hacia grupos foráneos', () => {
+  const setup = () => {
+    TestBed.configureTestingModule({
+      imports: [MedsStepComponent],
+      providers: [
+        provideRouter(routes),
+        {
+          provide: CriteriaEngineService,
+          useValue: engineStubWithRelevance(buildRelevance(ALL_CRITERIA, ALL_MED_TAB_IDS)),
+        },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(MedsStepComponent);
+    fixture.detectChanges();
+    return fixture.componentInstance;
+  };
+
+  it('marcar un diurético de asa enlaza con el grupo foráneo de AINE (B19)', () => {
+    const component = setup();
+    component.store.activeSystemTab.set('cardiovascular');
+    component.store.meds.set([{ id: 'Furosemida', drugClasses: ['DIURETICO_ASA'] }]);
+
+    expect(component.foreignLinks().get('aine')).toContain('Furosemida');
+  });
+
+  it('el enlace inverso sigue funcionando hacia grupos propios', () => {
+    const component = setup();
+    component.store.activeSystemTab.set('cardiovascular');
+    component.store.meds.set([{ id: 'Prednisona', drugClasses: ['CORTICOIDE_SISTEMICO'] }]);
+
+    expect(component.foreignLinks().get('diur_asa')).toContain('Prednisona');
+  });
+});
+
+describe('MedsStepComponent — el resaltado no sobrevive al cambio de pestaña', () => {
+  const setup = () => {
+    TestBed.configureTestingModule({
+      imports: [MedsStepComponent],
+      providers: [
+        provideRouter(routes),
+        {
+          provide: CriteriaEngineService,
+          useValue: engineStubWithRelevance(buildRelevance(ALL_CRITERIA, ALL_MED_TAB_IDS)),
+        },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(MedsStepComponent);
+    fixture.detectChanges();
+    return fixture.componentInstance;
+  };
+
+  it('cambiar de pestaña limpia el resaltado', () => {
+    const component = setup();
+    component.store.activeSystemTab.set('cardiovascular');
+    component.toggleDrug('Prednisona');
+    expect(component.highlightedGroupIds().size).toBeGreaterThan(0);
+
+    // «Diurét. de asa» también existe en Renal: sin limpiar, se vería iluminado allí.
+    component.setCategory('renal');
+
+    expect(component.highlightedGroupIds().size).toBe(0);
   });
 });

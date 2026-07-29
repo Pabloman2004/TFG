@@ -72,19 +72,33 @@ const DX_LOCATIONS = groupLocations(
 
 const MAX_LOCATIONS = 2;
 
+/**
+ * Requisito pendiente ya en texto legible. `visibleHere` señala que el requisito
+ * vive en la pantalla desde la que se marcó la casilla, así que el resaltado y el
+ * chip ya lo están indicando. No es lo mismo que «sin anotar»: un requisito de
+ * ubicación desconocida también sale sin paréntesis, pero al usuario no le consta
+ * en ningún sitio, y ahí el aviso sigue siendo la única pista.
+ */
+interface RequirementDetail {
+  readonly label: string;
+  readonly visibleHere: boolean;
+}
+
 /** Añade «(paso N · Pestaña)» salvo que el requisito ya esté donde el usuario está. */
 const annotate = (
   label: string,
   locations: readonly RequirementLocation[] | undefined,
   current: { readonly step: RequirementStep; readonly tabId: string },
-): string => {
-  if (!locations || locations.length === 0) return label;
-  if (locations.some(l => l.step === current.step && l.tabId === current.tabId)) return label;
+): RequirementDetail => {
+  if (!locations || locations.length === 0) return { label, visibleHere: false };
+  if (locations.some(l => l.step === current.step && l.tabId === current.tabId)) {
+    return { label, visibleHere: true };
+  }
   const shown = locations.slice(0, MAX_LOCATIONS).map(l => l.tabLabel).join(' o ');
   const rest = locations.length - MAX_LOCATIONS;
   const suffix = rest > 0 ? ` (+${rest})` : '';
   const { kind, step } = locations[0];
-  return `${label} (${kind} · paso ${step} · ${shown}${suffix})`;
+  return { label: `${label} (${kind} · paso ${step} · ${shown}${suffix})`, visibleHere: false };
 };
 
 const medicationClasses = (
@@ -242,12 +256,7 @@ const renderCluster = (labels: readonly string[]): string => {
 
 const MAX_CLUSTERS = 3;
 
-/**
- * Requisitos pendientes del criterio, ya en texto legible: diagnósticos que
- * faltan por marcar y clases de fármaco que faltan por seleccionar. Las
- * alternativas de un mismo `or` se colapsan en una sola entrada.
- */
-export const missingRequirements = (opts: {
+interface MissingRequirementsOpts {
   readonly criterionId: string;
   readonly relevance: Relevance | null;
   readonly selectedDiagnoses: readonly string[];
@@ -255,7 +264,16 @@ export const missingRequirements = (opts: {
   readonly dxLabelsByCode: ReadonlyMap<string, string>;
   readonly currentStep?: RequirementStep;
   readonly currentTabId?: string;
-}): readonly string[] => {
+}
+
+/**
+ * Requisitos pendientes del criterio, ya en texto legible: diagnósticos que
+ * faltan por marcar y clases de fármaco que faltan por seleccionar. Las
+ * alternativas de un mismo `or` se colapsan en una sola entrada.
+ */
+const missingRequirementDetails = (
+  opts: MissingRequirementsOpts,
+): readonly RequirementDetail[] => {
   const { criterionId, relevance } = opts;
   if (!relevance) return [];
 
@@ -293,8 +311,68 @@ export const missingRequirements = (opts: {
     ),
   );
 
-  return [...dxs, ...classes].sort((a, b) => ES_COLLATOR.compare(a, b));
+  return [...dxs, ...classes].sort((a, b) => ES_COLLATOR.compare(a.label, b.label));
 };
+
+export const missingRequirements = (
+  opts: MissingRequirementsOpts,
+): readonly string[] => missingRequirementDetails(opts).map(r => r.label);
+
+/**
+ * Un START se modela como «cumple la indicación Y NO toma ya el fármaco», así que
+ * la clase recomendada aparece únicamente negada. Si el usuario acaba de marcar
+ * ese fármaco, el criterio ya no puede dispararse: pedirle los diagnósticos que
+ * faltan sería mandarle a marcar cosas que no van a encender nada. Devuelve la
+ * etiqueta de la clase que lo cubre, o null si no es el caso.
+ */
+const startAlreadyCovered = (opts: {
+  readonly criterionId: string;
+  readonly relevance: Relevance | null;
+  readonly selectedMedications: readonly Med[];
+  readonly criteriaById: ReadonlyMap<string, Crit>;
+}): string | null => {
+  const { criterionId, relevance } = opts;
+  if (!relevance || opts.criteriaById.get(criterionId)?.type !== 'START') return null;
+  const all = relevance.classesByCriterion.get(criterionId);
+  if (!all) return null;
+  const required = relevance.requiredClassesByCriterion.get(criterionId) ?? new Set<string>();
+  const selected = new Set(
+    opts.selectedMedications.flatMap(m => m.drugClasses.map(c => c.toUpperCase())),
+  );
+  for (const cls of all) {
+    const upper = cls.toUpperCase();
+    if (!required.has(cls) && selected.has(upper)) return drugClassLabel(upper);
+  }
+  return null;
+};
+
+/** Longitud máxima de la descripción del criterio dentro del aviso. */
+const MAX_RECOMMENDATION = 70;
+
+/**
+ * Descripción corta de lo que recomienda un START, sacada de su `summary`. Los 52
+ * empiezan por «Considerar …», así que la primera frase sin ese prefijo es ya una
+ * descripción legible («iniciar estatina», «hierro intravenoso»). Se recorta por
+ * palabra para las pocas que se alargan.
+ */
+const startRecommendation = (summary: string): string => {
+  const firstSentence = summary.split(/\.\s/)[0].replace(/\.$/, '');
+  const stripped = firstSentence.replace(/^Considerar\s+/i, '');
+  if (stripped.length <= MAX_RECOMMENDATION) return stripped;
+  const cut = stripped.slice(0, MAX_RECOMMENDATION);
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${(lastSpace > 0 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+};
+
+interface SnackEntry {
+  readonly criterionId: string;
+  readonly missing: readonly RequirementDetail[];
+  readonly coveredBy: string | null;
+}
+
+/** Ordena de más accionable a menos; lo ya cubierto queda siempre al final. */
+const rank = (entry: SnackEntry): number =>
+  entry.coveredBy ? Number.MAX_SAFE_INTEGER : entry.missing.length;
 
 /** Máximo de criterios detallados en un mismo aviso. */
 const MAX_CRITERIA = 3;
@@ -330,39 +408,60 @@ const buildSnackMessage = (opts: {
   // Varios criterios distintos pueden compartir código corto (STOPP-B14 tiene dos
   // variantes). Se agrupan por código y se conserva la vía más corta de cada uno,
   // para no repetir «STOPP B14 y STOPP B14» ni dar dos rutas para el mismo aviso.
-  const byLabel = new Map<string, { criterionId: string; missing: readonly string[] }>();
+  const byLabel = new Map<string, SnackEntry>();
   for (const criterionId of known) {
-    const missing = missingRequirements({ ...opts, criterionId });
-    if (missing.length === 0) continue;
+    const coveredBy = startAlreadyCovered({ ...opts, criterionId });
+    const missing = coveredBy ? [] : missingRequirementDetails({ ...opts, criterionId });
+    if (!coveredBy && missing.length === 0) continue;
     const key = label(criterionId);
     const previous = byLabel.get(key);
-    if (!previous || missing.length < previous.missing.length) {
-      byLabel.set(key, { criterionId, missing });
+    // Un criterio ya cubierto es un callejón sin salida: si otra variante del
+    // mismo código sigue siendo accionable, se prefiere aquélla.
+    if (!previous || rank(previous) > rank({ criterionId, missing, coveredBy })) {
+      byLabel.set(key, { criterionId, missing, coveredBy });
     }
   }
-  const scored = [...byLabel.values()].sort((a, b) => a.missing.length - b.missing.length);
+  // Lo accionable primero; lo ya cubierto es informativo y va al final.
+  const scored = [...byLabel.values()].sort((a, b) => rank(a) - rank(b));
 
   if (scored.length === 0) {
     return `Relacionado con ${joinEs([...new Set(known.map(label))])}`;
   }
+
+  // Si todo lo que falta vive en esta misma pantalla, el resaltado del grupo y el
+  // chip de enlace ya lo están señalando: el aviso solo repetiría en texto lo que
+  // el usuario tiene delante. Se evalúa sobre `scored`, ya deduplicado por código,
+  // porque es la vía más corta de cada criterio la que acaba mostrándose. Un
+  // criterio ya cubierto sí se anuncia: esa información no está en pantalla.
+  const soloVisible = scored.every(entry =>
+    !entry.coveredBy && entry.missing.every(requirement => requirement.visibleHere));
+  if (soloVisible) return null;
 
   const shown = scored.slice(0, MAX_CRITERIA);
   const omitted = scored.length - shown.length;
   const heading = `Relacionado con ${joinEs(shown.map(e => label(e.criterionId)))}` +
     (omitted > 0 ? ` y ${omitted} criterio${omitted > 1 ? 's' : ''} más` : '');
 
-  const renderMissing = (missing: readonly string[]): string => {
-    const list = missing.slice(0, MAX_CLUSTERS).join('; ');
+  const renderMissing = (missing: readonly RequirementDetail[]): string => {
+    const list = missing.slice(0, MAX_CLUSTERS).map(r => r.label).join('; ');
     const rest = missing.length - MAX_CLUSTERS;
     return rest > 0 ? `${list} y ${rest} requisito${rest > 1 ? 's' : ''} más` : list;
   };
 
+  // Un START cubierto no está pendiente de nada: el fármaco recién marcado ES lo
+  // que recomendaba. Se explica qué recomendaba y por qué ya no puede saltar, en
+  // vez de listar requisitos que no encenderían nada.
+  const detail = (entry: SnackEntry): string => {
+    if (!entry.coveredBy) return `requiere: ${renderMissing(entry.missing)}`;
+    const summary = opts.criteriaById.get(entry.criterionId)?.summary ?? '';
+    const what = startRecommendation(summary);
+    return `recomienda ${what}; ya no puede saltar porque el paciente toma ${entry.coveredBy}`;
+  };
+
   if (shown.length === 1) {
-    return `${heading} — requiere: ${renderMissing(shown[0].missing)}`;
+    return `${heading} — ${detail(shown[0])}`;
   }
-  const lines = shown.map(
-    e => `— ${label(e.criterionId)} requiere: ${renderMissing(e.missing)}`,
-  );
+  const lines = shown.map(e => `— ${label(e.criterionId)} ${detail(e)}`);
   return [heading, ...lines].join('\n');
 };
 

@@ -109,6 +109,32 @@ Exporta cuatro funciones puras y sus tipos asociados:
     116 de esas 135 casillas exigen algo del otro paso o de otra pestaña. La ubicación se
     omite cuando el requisito ya está en el paso y la pestaña actuales, y lista hasta dos
     pestañas cuando la clase vive en varias (`SNC o Osteo/Músculo-esq.`).
+  - El chip de enlace es **bidireccional**: apunta tanto a grupos propios como a los del bucket
+    «Relevantes de otros sistemas». Marcar Furosemida (propia de Cardiovascular) señala los AINE
+    y los corticoides, que son foráneos, porque B19 los empareja. Antes solo se veía el sentido
+    foráneo → propio, así que marcar un fármaco propio no producía ninguna señal en su pestaña.
+    Total de enlaces: 62 → 146.
+  - **START ya cubierto por el propio fármaco.** Un START se modela como «cumple la indicación
+    Y NO toma ya el fármaco», así que la clase recomendada aparece solo negada. Si el usuario
+    acaba de marcar ese fármaco, el criterio no puede dispararse y pedirle los diagnósticos
+    pendientes sería mandarle a marcar cosas inertes. En vez de `requiere: …` el aviso explica
+    qué recomendaba el criterio y por qué ya no aplica:
+    `START B2 recomienda iniciar estatina; ya no puede saltar porque el paciente toma Estatinas`.
+    La descripción sale de la primera frase del `summary` sin el prefijo «Considerar» (los 52
+    START lo llevan), recortada por palabra a 70 caracteres. Esos criterios se ordenan al final
+    por ser informativos, no accionables. Afectaba a 29 de las 235 casillas foráneas de medicación (estatinas →
+    START-B2, hierro IV → START-B11, alfabloqueantes → START-B1). **Solo aplica a
+    medicamentos**: marcar un diagnóstico nunca suprime un START, lo habilita.
+  - **El aviso se calla cuando no aporta nada**: si *todos* los requisitos pendientes viven en
+    la pantalla actual, el resaltado del grupo y el chip de enlace ya los están señalando, y el
+    snackbar solo repetiría en texto lo que el usuario tiene delante (marcar amilorida ilumina
+    IECA / ARA-II / antag. aldosterona y encima decía «requiere: Antag. aldosterona»). Afecta a
+    19 de las 235 casillas foráneas de medicación (8%). La condición se evalúa sobre los
+    criterios ya deduplicados por código, no sobre todos los que citan al fármaco: sildenafilo
+    toca dos variantes de B14 y solo se muestra la más corta, así que es esa la que decide.
+    Un requisito de **ubicación desconocida** no cuenta como visible — sale sin paréntesis
+    igual, pero al usuario no le consta en ningún sitio y ahí el aviso sí hace falta.
+    Invariante cubierto por test: una casilla silenciada siempre tiene grupos resaltados.
   - Solo se resaltan **co-requisitos**, nunca **alternativas**. Si el criterio pide
     `A y (B o C)` y el usuario marca `C`, se resalta `A` — no `B`, cuya selección no acercaría
     el criterio a dispararse. Lo resuelven `classAlternativesByCriterion` /

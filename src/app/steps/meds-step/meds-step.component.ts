@@ -134,7 +134,10 @@ export class MedsStepComponent implements OnInit, OnDestroy {
       // Se cuentan la clase del grupo y las de sus miembros: un diagnóstico como
       // «Intervalo QTc prolongado» no apunta a ningún grupo llamado así, pero sí
       // a los grupos que contienen fármacos prolongadores del QTc.
-      targets: buckets.ownAll.map(group => ({
+      // También los grupos foráneos: marcar un fármaco propio debe señalar la
+      // casilla de otro sistema que lo acompaña (Furosemida → AINE, por B19).
+      // Sin esto, el enlace solo se veía en un sentido.
+      targets: [...buckets.ownAll, ...buckets.foreignRelevant].map(group => ({
         key: group.id,
         drugClasses: [...new Set([
           ...(group.drugClass ? [group.drugClass] : []),
@@ -292,7 +295,10 @@ export class MedsStepComponent implements OnInit, OnDestroy {
       medications: MEDICATIONS,
       ownGroups: buckets.ownAll,
       applicableCriterionIds: new Set(this.applicableCriteria().map(c => c.id)),
-      selectedDiagnoses: this.store.diagnoses(),
+      // El store guarda códigos; `resolveForeignHighlight` espera etiquetas y las
+      // normaliza con DIAGNOSIS_MAP. Pasar códigos funciona solo mientras todos
+      // sean estables bajo `slug`, que es una coincidencia, no un contrato.
+      selectedDiagnoses: this.store.diagnoses().map(code => DX_LABELS_BY_CODE.get(code) ?? code),
       selectedMedications: this.store.meds(),
       criteriaById,
       dxLabelsByCode: DX_LABELS_BY_CODE,
@@ -315,7 +321,13 @@ export class MedsStepComponent implements OnInit, OnDestroy {
     }
   }
 
-  setCategory(id: string): void { this.store.activeSystemTab.set(id); }
+  setCategory(id: string): void {
+    // El resaltado se identifica por id de grupo, y 54 ids existen en más de una
+    // pestaña («Diurét. de asa» está en Cardiovascular y en Renal). Sin limpiar,
+    // el pulso de 8 s se vería encendido en la pestaña de destino sin motivo.
+    this.clearHighlights();
+    this.store.activeSystemTab.set(id);
+  }
 
   onTabSelectChange(event: Event): void {
     const target = event.target;

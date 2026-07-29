@@ -324,3 +324,40 @@ describe('CaseIoService — importFile()', () => {
     }
   });
 });
+
+describe('CaseIoService — retrocompatibilidad de labs retirados', () => {
+  let service: CaseIoService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(CaseIoService);
+  });
+
+  it('importa un caso antiguo con analíticas que ya no se usan', async () => {
+    // Estos siete campos nunca alimentaron ningún criterio y se retiraron del
+    // modelo. Un JSON exportado antes del cambio debe seguir cargando.
+    const antiguo = JSON.stringify({
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      patientCase: {
+        info: null,
+        diagnoses: ['hta'],
+        medications: [{ id: 'Ibuprofeno', drugClasses: ['AINE'] }],
+        labs: {
+          glucosa_mg_dl: 110, colesterol_total_mg_dl: 200, trigliceridos_mg_dl: 150,
+          hdl_mg_dl: 45, ldl_mg_dl: 120, creatinina_mg_dl: 1.1, inr: 2.5,
+          egfr_ml_min_173: 55, tsh_uUl: 2, fc_lpm: 70, qtc_ms: 400,
+          potasio_mmol_l: 4, sodio_mmol_l: 140, calcio_corregido_mmol_l: 2.4,
+          pas_mmhg: 130, pad_mmhg: 80,
+        },
+      },
+    });
+
+    await service.importFile(makeFile(antiguo));
+
+    const store = TestBed.inject(CaseStoreService);
+    expect(store.diagnoses()).toEqual(['hta']);
+    expect(store.meds().length).toBe(1);
+    expect(store.labs()?.egfr_ml_min_173).toBe(55);
+  });
+});

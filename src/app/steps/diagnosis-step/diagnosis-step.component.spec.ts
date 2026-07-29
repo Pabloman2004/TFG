@@ -13,7 +13,8 @@ import { CaseIoService } from '../../core/case-io.service';
 import { routes } from '../../app.routes';
 import { Med, PatientCase } from '../../core/types';
 import { DIAGNOSIS_TABS } from '../../core/data/diagnoses-taxonomy';
-import { resolveDiagnosisLabel } from '../../core/data/diagnoses';
+import { resolveDiagnosisLabel, normalizeDiagnosis } from '../../core/data/diagnoses';
+import { buildRelevance } from '../../core/data/system-relevance';
 import { ALL_CRITERIA } from '../../core/services/criteria-test-helpers';
 import { buildDxDependencies } from '../../core/data/dx-dependencies';
 
@@ -456,5 +457,72 @@ describe('DiagnosisStepComponent — panel fijo de analítica en «Otros»', () 
     component.updateLab('pas_mmhg', '');
     expect(store.labs()?.pas_mmhg).toBeNull();
     expect(store.labs()?.egfr_ml_min_173).toBe(29);
+  });
+});
+
+describe('DiagnosisStepComponent — chip de enlace hacia diagnósticos foráneos', () => {
+  const setup = () => {
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        {
+          provide: CriteriaEngineService,
+          useValue: {
+            relevance: signal(buildRelevance(ALL_CRITERIA, DIAGNOSIS_TABS.map(t => t.id))),
+            dxDependencies: signal(TEST_DX_DEPS),
+            evaluate: () => [],
+            loadCriteria: () => Promise.resolve([]),
+          },
+        },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    fixture.detectChanges();
+    return fixture.componentInstance;
+  };
+
+  it('marcar un diagnóstico propio enlaza con el foráneo que lo acompaña', () => {
+    const component = setup();
+    component.store.activeSystemTab.set('cardiovascular');
+    component.store.diagnoses.set([normalizeDiagnosis('Insuficiencia cardíaca con FE reducida')]);
+
+    const enlazados = [...component.foreignLinks().keys()];
+    expect(enlazados).toContain('Déficit de hierro');
+  });
+});
+
+describe('DiagnosisStepComponent — el resaltado no sobrevive al cambio de pestaña', () => {
+  it('cambiar de pestaña limpia el resaltado', () => {
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        {
+          provide: CriteriaEngineService,
+          useValue: {
+            relevance: signal(buildRelevance(ALL_CRITERIA, DIAGNOSIS_TABS.map(t => t.id))),
+            dxDependencies: signal(TEST_DX_DEPS),
+            evaluate: () => [],
+            loadCriteria: () => Promise.resolve([]),
+          },
+        },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const component = TestBed.createComponent(DiagnosisStepComponent).componentInstance;
+    component.store.activeSystemTab.set('cardiovascular');
+    component.highlightedDxLabels.set(new Set(['Déficit de hierro']));
+
+    component.setTab('renal');
+
+    expect(component.highlightedDxLabels().size).toBe(0);
   });
 });
