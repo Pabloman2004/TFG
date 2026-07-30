@@ -11,7 +11,7 @@ import { CriteriaEngineService } from '../../core/services/criteria-engine.servi
 import { ReportService } from '../../core/report.service';
 import { CaseIoService } from '../../core/case-io.service';
 import { routes } from '../../app.routes';
-import { Med, PatientCase } from '../../core/types';
+import { Crit, Med, PatientCase } from '../../core/types';
 import { DIAGNOSIS_TABS } from '../../core/data/diagnoses-taxonomy';
 import { resolveDiagnosisLabel, normalizeDiagnosis } from '../../core/data/diagnoses';
 import { buildRelevance } from '../../core/data/system-relevance';
@@ -324,6 +324,63 @@ describe('DiagnosisStepComponent — badges de cabecera de criterios activados',
   });
 });
 
+describe('DiagnosisStepComponent — la cabecera del panel no se superpone a los criterios', () => {
+  const someCriteria = (type: 'START' | 'STOPP'): Crit[] =>
+    ALL_CRITERIA.filter(c => c.type === type).slice(0, 12);
+
+  const RENDERED_CRITERIA: Crit[] = [...someCriteria('START'), ...someCriteria('STOPP')];
+
+  const engineStubWithCriteria = (crits: Crit[]) => ({
+    relevance: signal(null),
+    dxDependencies: signal(TEST_DX_DEPS),
+    evaluate: (): Crit[] => crits,
+    loadCriteria: () => Promise.resolve([]),
+  });
+
+  const render = (): HTMLElement => {
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    fixture.componentInstance.criteria.set(RENDERED_CRITERIA);
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  };
+
+  const badgeBottomOf = (host: HTMLElement, boxSelector: string): number => {
+    const box = host.querySelector(boxSelector) as HTMLElement;
+    return box.querySelector('.result-badge-corner')!.getBoundingClientRect().bottom;
+  };
+
+  const listTopOf = (host: HTMLElement, boxSelector: string): number => {
+    const box = host.querySelector(boxSelector) as HTMLElement;
+    return box.querySelector('.result-items')!.getBoundingClientRect().top;
+  };
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStubWithCriteria(RENDERED_CRITERIA) },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+  });
+
+  it('el badge START queda por encima del área desplazable', () => {
+    const host = render();
+
+    expect(badgeBottomOf(host, '.start-box')).toBeLessThanOrEqual(listTopOf(host, '.start-box'));
+  });
+
+  it('el badge STOPP queda por encima del área desplazable', () => {
+    const host = render();
+
+    expect(badgeBottomOf(host, '.stopp-box')).toBeLessThanOrEqual(listTopOf(host, '.stopp-box'));
+  });
+});
+
 describe('DiagnosisStepComponent — accesibilidad de filas', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -573,5 +630,104 @@ describe('DiagnosisStepComponent — orientación de las pestañas de sistema', 
     fixture.detectChanges();
 
     expect(tabCount()).toBe(DIAGNOSIS_TABS.length);
+  });
+});
+
+describe('DiagnosisStepComponent — el contenido cabe en anchos reducidos', () => {
+  const render = (): HTMLElement => {
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        { provide: CriteriaEngineService, useValue: engineStub() },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  };
+
+  beforeEach(() => {
+    localStorage.removeItem('tabs-orientation');
+    localStorage.removeItem('font-scale');
+  });
+
+  it('las columnas de diagnósticos se estrechan en vez de recortarse', () => {
+    const host = render();
+    const wrap = host.querySelector('.cols-wrap') as HTMLElement;
+
+    wrap.style.width = '160px';
+
+    expect(wrap.scrollWidth).toBeLessThanOrEqual(wrap.clientWidth);
+  });
+});
+
+describe('DiagnosisStepComponent — el badge de sistema no invade el título del grupo', () => {
+  const render = (): HTMLElement => {
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        {
+          provide: CriteriaEngineService,
+          useValue: {
+            relevance: signal(buildRelevance(ALL_CRITERIA, DIAGNOSIS_TABS.map(t => t.id))),
+            dxDependencies: signal(TEST_DX_DEPS),
+            evaluate: () => [],
+            loadCriteria: () => Promise.resolve([]),
+          },
+        },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.store.activeSystemTab.set('cardiovascular');
+    fixture.componentInstance.store.meds.set([med('Furosemida', ['DIURETICO_ASA'])]);
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  };
+
+  beforeEach(() => {
+    localStorage.removeItem('tabs-orientation');
+    localStorage.removeItem('font-scale');
+  });
+
+  afterEach(() => document.documentElement.style.removeProperty('--font-scale'));
+
+  it('en columnas estrechas el badge se queda dentro de su columna', () => {
+    document.documentElement.style.setProperty('--font-scale', '1.3');
+    const host = render();
+    const wrap = host.querySelector('.cols-wrap') as HTMLElement;
+    wrap.style.width = '150px';
+
+    const desbordan = [...host.querySelectorAll('.drug-col--foreign')]
+      .filter(col => {
+        const badge = col.querySelector('.cross-badge');
+        return !!badge && badge.getBoundingClientRect().right > col.getBoundingClientRect().right;
+      })
+      .map(col => col.querySelector('.col-label')?.textContent?.trim());
+
+    expect(desbordan).toEqual([]);
+  });
+
+  it('en reposo el badge se recorta pero conserva el nombre completo del sistema', () => {
+    document.documentElement.style.setProperty('--font-scale', '1.3');
+    const host = render();
+    (host.querySelector('.cols-wrap') as HTMLElement).style.width = '150px';
+
+    const badge = [...host.querySelectorAll('.cross-badge')].find(
+      b => b.scrollWidth > b.clientWidth,
+    ) as HTMLElement | undefined;
+
+    expect(badge).withContext('ningún badge recortado').toBeDefined();
+    expect(badge!.getAttribute('aria-label')).toContain(badge!.textContent!.trim());
   });
 });

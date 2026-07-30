@@ -151,7 +151,11 @@ body {
 ======================== */
 .cols-flex {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(calc(200px * var(--font-scale, 1)), 1fr));
+  /* El `min(…, 100%)` es lo que evita que una columna más ancha que el contenedor
+     desborde y quede recortada por el `overflow-x: hidden` de .cols-wrap: en
+     pantallas estrechas (o con la fuente ampliada) la columna se estrecha en vez
+     de perder texto por la derecha. */
+  grid-template-columns: repeat(auto-fill, minmax(min(calc(200px * var(--font-scale, 1)), 100%), 1fr));
   align-content: start;
 }
 .drug-col {

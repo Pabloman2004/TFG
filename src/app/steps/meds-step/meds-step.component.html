@@ -243,7 +243,7 @@
                         </span>
                       }
                       <span class="cross-badge"
-                            [title]="'Sistema primario: ' + group.originTabLabel">{{ group.originTabLabel }}</span>
+                            [attr.aria-label]="'Sistema primario: ' + group.originTabLabel">{{ group.originTabLabel }}</span>
                     </div>
                     @for (drug of group.drugs; track trackDrug($index, drug)) {
                       <div class="drug-row"

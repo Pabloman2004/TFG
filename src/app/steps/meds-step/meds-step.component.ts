@@ -466,7 +466,7 @@ export class MedsStepComponent implements OnInit, OnDestroy {
   }
 
   openQuickGuide(): void {
-    this.dialog.open(QuickGuideDialogComponent, { width: '480px', panelClass: 'rounded-xl' });
+    this.dialog.open(QuickGuideDialogComponent, { width: '560px', panelClass: 'rounded-xl' });
   }
 
   openDisplayOptions(): void {

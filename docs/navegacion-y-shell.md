@@ -23,7 +23,9 @@ Cubre tres responsabilidades:
 Los dos diálogos transversales (`ConfirmResetDialogComponent` y
 `QuickGuideDialogComponent`) son componentes standalone sin lógica propia:
 `ConfirmResetDialogComponent` devuelve `true`/`false` mediante
-`[mat-dialog-close]`; `QuickGuideDialogComponent` es solo contenido estático.
+`[mat-dialog-close]`; `QuickGuideDialogComponent` es contenido estático con el
+flujo actual en dos pasos (Medicamentos → Diagnósticos), un resumen de STOPP/START
+y un enlace externo al PDF oficial de criterios v3 (Sacyl).
 
 ## Cómo está implementado
 
@@ -57,8 +59,9 @@ src/app/confirm-reset-dialog.component.ts
   └─ template con [mat-dialog-close]="false/true"
 
 src/app/quick-guide-dialog.component.ts
-  └─ template estático con flujo del asistente y resumen STOPP/START
+  └─ template estático: flujo en 2 pasos, resumen STOPP/START y enlace al PDF oficial
 ```
+
 
 Los dos componentes de pasos (`MedsStepComponent`, `DiagnosisStepComponent`)
 se importan estáticamente en `app.routes.ts` (sin `loadComponent`; no hay
@@ -102,7 +105,10 @@ code-splitting).
 - **Añadir un nuevo provider global**: añadirlo en `app.config.ts`, no en
   `main.ts`.
 - **Tests afectados**: `src/app/app.component.spec.ts`,
-  `src/app/app.routes.spec.ts` y `src/app/confirm-reset-dialog.component.spec.ts`.
+  `src/app/app.routes.spec.ts`, `src/app/confirm-reset-dialog.component.spec.ts`
+  y `src/app/quick-guide-dialog.component.spec.ts`.
+- **Cambiar el contenido o el enlace de la guía rápida**: actualizar
+  `quick-guide-dialog.component.ts` (y su spec) y este documento.
 - **Este documento**: actualizar si se cambia el esquema de providers del
   bootstrap o el rol del shell.
 

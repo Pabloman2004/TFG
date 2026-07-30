@@ -275,7 +275,7 @@
                       }
                       <span class="col-label" [class.col-label-act]="isGroupChecked(group)">{{ group.label }}</span>
                       <span class="cross-badge"
-                            [title]="'Sistema de origen: ' + group.originTabLabel">{{ group.originTabLabel }}</span>
+                            [attr.aria-label]="'Sistema de origen: ' + group.originTabLabel">{{ group.originTabLabel }}</span>
                     </div>
 
                     <div class="dx-list">
