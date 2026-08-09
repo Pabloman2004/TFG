@@ -52,6 +52,14 @@ Thumbs.db
 verify-criteria.js
 *.mf
 
-
+#memoria
+memoria/*.aux
+memoria/*.log
+memoria/*.bbl
+memoria/*.bcf
+memoria/*.out
+memoria/*.toc
+memoria/*.run.xml
+memoria/*.synctex.gz
 
 

@@ -1,0 +1,172 @@
+% =====================================================================
+%  Memoria del Trabajo Fin de Grado
+%  Escola Superior de Enxeñaría Informática (ESEI) - Universidade de Vigo
+%  Estructura segun "Guia para a elaboracion e estrutura da
+%  documentacion do TFG" - TFG Tipo I (con desenvolvemento de software)
+%
+%  Compilar con: XeLaTeX -> Biber -> XeLaTeX x2
+% =====================================================================
+
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ---------- Idioma y codificacion ----------
+\usepackage{polyglossia}
+\setdefaultlanguage{spanish}
+% Si escribes en gallego, cambia la linea anterior por:
+% \setdefaultlanguage{galician}
+
+% ---------- Tipografia ----------
+% Nota: se usan las fuentes del sistema (Times New Roman / Arial), ya que
+% los clones libres "TeX Gyre" no estan instalados como fuentes de Windows
+% (fontspec/XeTeX busca fuentes del sistema operativo, no del arbol texmf).
+% Si prefieres los clones libres, instala los .otf de TeX Gyre en
+% C:\Windows\Fonts y recupera los nombres "TeX Gyre Termes"/"TeX Gyre Heros".
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{DejaVu Sans Mono}[Scale=0.85]
+
+% ---------- Geometria de pagina ----------
+\usepackage[
+  a4paper,
+  left=3cm, right=2.5cm,
+  top=3cm, bottom=2.5cm,
+  headheight=15pt
+]{geometry}
+
+\usepackage{setspace}
+\onehalfspacing
+
+% ---------- Encabezado y pie ----------
+% La guia exige: encabezado con el titulo (minimo) y numeracion en el pie
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape\tituloTFG}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyhead[L]{\small\itshape\tituloTFG}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}
+}
+
+% ---------- Paquetes de contenido ----------
+\usepackage{graphicx}
+\graphicspath{{figuras/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ---------- Codigo fuente ----------
+\usepackage{listings}
+\definecolor{codeGris}{RGB}{245,245,245}
+\definecolor{codeVerde}{RGB}{0,120,60}
+\definecolor{codeAzul}{RGB}{30,60,160}
+\lstset{
+  backgroundcolor=\color{codeGris},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{codeAzul}\bfseries,
+  commentstyle=\color{codeVerde}\itshape,
+  stringstyle=\color{red!60!black},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!40},
+  showstringspaces=false,
+  captionpos=b,
+  tabsize=2
+}
+
+% ---------- Bibliografia (estilo IEEE, admitido por la guia) ----------
+\usepackage[
+  backend=biber,
+  style=ieee,
+  sorting=none
+]{biblatex}
+\addbibresource{referencias.bib}
+
+% ---------- Hiperenlaces (cargar casi al final) ----------
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+
+% =====================================================================
+%  DATOS DEL TRABAJO  --  RELLENA ESTO
+% =====================================================================
+\newcommand{\tituloTFG}{Stopp/start}
+\newcommand{\autorTFG}{Pablo Freire Gullón}
+\newcommand{\tutorTFG}{Martín Pérez Pérez}
+\newcommand{\cotutorTFG}{Raquel Apellido Apellido}
+\newcommand{\gradoTFG}{Grado en Ingenieria Informatica}
+\newcommand{\cursoTFG}{2025--2026}
+\newcommand{\mesTFG}{Xullo}
+\newcommand{\anhoTFG}{2026}
+\newcommand{\numeroTFG}{}                % Lo asigna la Secretaria del centro
+\newcommand{\areaTFG}{Linguaxes e Sistemas Informáticos}
+\newcommand{\departamentoTFG}{Informática}
+
+% =====================================================================
+\begin{document}
+
+% ---------- 5.1 Portada ----------
+\input{capitulos/00-portada}
+
+\pagenumbering{roman}
+
+% ---------- 5.2 y 5.3 Dedicatoria y agradecimientos (opcionales) ----------
+\input{capitulos/00b-agradecimientos}
+
+% ---------- 5.4 Indice de contenidos ----------
+\tableofcontents
+
+% ---------- 5.5 Indice de ilustraciones ----------
+\listoffigures
+
+% ---------- 5.6 Indice de tablas ----------
+\listoftables
+
+\cleardoublepage
+\pagenumbering{arabic}
+
+% =====================================================================
+%  CUERPO DE LA MEMORIA  (max. 50 paginas recomendadas)
+% =====================================================================
+
+\input{capitulos/01-introduccion}          % 5.7
+\input{capitulos/02-objetivos}             % 5.8
+\input{capitulos/03-solucion-metodologia}  % 5.9
+\input{capitulos/04-planificacion}         % 5.10
+\input{capitulos/05-arquitectura}          % 5.11
+\input{capitulos/06-tecnologias}           % 5.12
+\input{capitulos/07-requisitos}            % 5.13
+\input{capitulos/08-diseno}                % 5.14
+\input{capitulos/09-gestion-datos}         % 5.15
+\input{capitulos/10-pruebas}               % 5.16
+\input{capitulos/11-manual-usuario}        % 5.17
+\input{capitulos/12-aportaciones}          % 5.18
+\input{capitulos/13-conclusiones}          % 5.19
+\input{capitulos/14-trabajo-futuro}        % 5.20
+
+% ---------- 5.21 Referencias ----------
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Referencias}
+\printbibliography[title={Referencias}]
+
+% ---------- 5.22 Anexos (opcionales, no cuentan para las 50 paginas) ----------
+\appendix
+\input{capitulos/15-anexos}
+
+\end{document}
