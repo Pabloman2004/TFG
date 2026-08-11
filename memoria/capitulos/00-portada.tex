@@ -1,56 +1,71 @@
 % =====================================================================
-%  PORTADA - Reproduccion del modelo oficial de la ESEI
-%  Original: PortadaTFG-1.doc / .odt / .pdf
-%  El modelo oficial esta redactado en gallego; se mantiene asi.
-%  Coloca el logo de la ESEI en figuras/logo-esei.png
+%  PORTADA - Modelo oficial ESEI (Universidade de Vigo)
+%  Estilo: logo tipografico Uvigo + escudo ESEI + metadatos en pie
 % =====================================================================
 
 \begin{titlepage}
 \thispagestyle{empty}
+\setlength{\parindent}{0pt}
+
 \begin{center}
 
-\vspace*{1.5cm}
+\vspace*{0.6cm}
 
-% --- Logo de la escuela ---
-% Descarga el logo de https://esei.uvigo.es y guardalo como
-% figuras/logo-esei.png ; despues descomenta la linea siguiente:
-% \includegraphics[width=0.45\textwidth]{logo-esei}
+% --- Logo tipografico Universidade de Vigo ---
+\includegraphics[width=0.58\textwidth]{logo-uvigo}
 
-\vspace{0.5cm}
+\vspace{0.4cm}
 
-{\large\scshape Escola Superior de Enxeñaría Informática}\\[0.3cm]
-{\large Universidade de Vigo}
+{\bfseries\large ESCOLA SUPERIOR DE ENXEÑARÍA INFORMÁTICA}
 
-\vspace{2.5cm}
+\vspace{3.0cm}
 
-{\large Memoria do Traballo de Fin de Grao que presenta}\\[0.6cm]
-{\Large\bfseries \autorTFG}\\[0.6cm]
+{\large Memoria do Traballo de Fin de Grao que presenta}
+
+\vspace{0.55cm}
+
+{\Large\bfseries \autorTFG}
+
+\vspace{0.55cm}
+
 {\large para a obtención do Título de\\ Graduado en Enxeñaría Informática}
 
-\vspace{2.5cm}
+\vspace{2.4cm}
 
-\rule{\textwidth}{0.5pt}\\[0.6cm]
-{\huge\bfseries \tituloTFG}\\[0.6cm]
-\rule{\textwidth}{0.5pt}
+{\LARGE\bfseries \tituloTFG}
 
-\vspace{2.5cm}
-
-{\large \mesTFG, \anhoTFG}
+\end{center}
 
 \vfill
 
-\begin{flushleft}
-\large
-\begin{tabular}{@{}ll@{}}
-Traballo de Fin de Grao N.\textsuperscript{o}: & \numeroTFG \\[0.25cm]
-Titor/a:                                       & \tutorTFG \\[0.25cm]
-Cotitor/a:                                     & \cotutorTFG \\[0.25cm]
-Área de coñecemento:                           & \areaTFG \\[0.25cm]
-Departamento:                                  & \departamentoTFG \\
-\end{tabular}
-\end{flushleft}
+% --- Pie: escudo ESEI + metadatos (fecha, tutor, etc.) ---
+\noindent
+\begin{minipage}[t]{0.13\textwidth}
+\vspace{0pt}
+\includegraphics[width=\linewidth]{logo-esei}
+\end{minipage}%
+\hspace{0.035\textwidth}%
+\begin{minipage}[t]{0.80\textwidth}
+\vspace{0pt}
+\raggedright\large
+\mesTFG, \anhoTFG
 
-\vspace{1cm}
+\vspace{0.35cm}
+\textbf{Traballo de Fin de Grao N\textsuperscript{o}:} \numeroTFG
 
-\end{center}
+\vspace{0.12cm}
+\textbf{Titor/a:} \tutorTFG
+
+\vspace{0.12cm}
+\textbf{Cotitor/a:} \cotutorTFG
+
+\vspace{0.12cm}
+\textbf{Área de coñecemento:} \areaTFG
+
+\vspace{0.12cm}
+\textbf{Departamento:} \departamentoTFG
+\end{minipage}
+
+\vspace{0.8cm}
+
 \end{titlepage}

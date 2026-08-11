@@ -9,19 +9,91 @@
 
 \section{Objetivo principal}
 
-% Una formulacion clara y unica.
+Desarrollar una aplicación web de apoyo a la decisión clínica que integre un
+motor de inferencia basado en los criterios STOPP/START v3, de modo que el
+profesional sanitario pueda revisar de forma automatizada la medicación de
+pacientes mayores a partir de los fármacos y diagnósticos del caso.
 
 \section{Objetivos específicos}
 
-% Numerados, cada uno con su alcance explicito. Es buena idea darles
-% identificador (OE1, OE2...) porque el capitulo de Aportaciones debe
-% corresponderse uno a uno con estos objetivos.
+\noindent\textbf{OE1: Formalizar los criterios STOPP/START v3 como reglas
+evaluables de forma automática.}
 
-\begin{description}
-  \item[OE1.] Descripción del objetivo. \emph{Alcance:} qué incluye y qué no.
-  \item[OE2.] Descripción del objetivo. \emph{Alcance:} qué incluye y qué no.
-\end{description}
+\textbf{Alcance:} modelado declarativo de los criterios (STOPP y START) en un
+catálogo estructurado, sin sustituir el criterio clínico del profesional.
 
-\section{Alcance y limitaciones}
+\medskip
+\noindent\textbf{OE2: Implementar un motor de reglas que evalúe el caso
+del paciente frente a dichos criterios.}
 
-% Que queda deliberadamente fuera del TFG y por que.
+\textbf{Alcance:} a partir de medicación y diagnósticos, determinar qué avisos
+STOPP y START se activan; no incluye integración con historias clínicas
+electrónicas externas.
+
+\medskip
+\noindent\textbf{OE3: Diseñar un flujo de captura guiado de datos clínicos
+relevantes.}
+
+\textbf{Alcance:} interfaz para seleccionar medicamentos y diagnósticos (y,
+cuando aplique, datos auxiliares del caso) de forma usable en consulta.
+
+\medskip
+\noindent\textbf{OE4: Incorporar ayudas de interfaz que reduzcan el tiempo de
+uso.}
+
+\textbf{Alcance:} deshabilitar opciones irrelevantes según la selección actual
+y destacar relaciones entre fármacos y diagnósticos; no incluye
+recomendaciones terapéuticas libres fuera de STOPP/START.
+
+\medskip
+\noindent\textbf{OE5: Presentar los resultados de forma clara y accionable.}
+
+\textbf{Alcance:} visualización de criterios activados (STOPP/START), agrupados
+de manera comprensible para la revisión clínica.
+
+\medskip
+\noindent\textbf{OE6: Permitir la generación de un informe y la reutilización
+del caso.}
+
+\textbf{Alcance:} exportación de informe (p.~ej.\ PDF) y guardado/carga del
+caso (p.~ej.\ JSON / persistencia local), sin almacenamiento en servidor.
+
+\medskip
+\noindent\textbf{OE7: Validar el sistema mediante pruebas automáticas y
+revisión clínica.}
+
+\textbf{Alcance:} batería de tests del motor y de la aplicación, más contraste
+con la guía oficial y supervisión de la cotutora clínica; no constituye un
+ensayo clínico.
+
+\section{Fuera del alcance del trabajo}
+
+\label{sec:limitaciones}
+El presente trabajo se centra en la automatización de la evaluación de los
+criterios STOPP/START v3 sobre un caso introducido por el profesional.
+Quedan deliberadamente fuera del alcance, entre otros, los siguientes
+aspectos:
+\begin{itemize}
+  \item \textbf{Integración con la historia clínica electrónica.}
+  La aplicación no se conecta a sistemas hospitalarios ni de atención
+  primaria. En una evolución natural del sistema, la carga del historial
+  permitiría preseleccionar automáticamente diagnósticos y medicaciones,
+  reduciendo aún más el tiempo de uso en consulta.
+  \item \textbf{Sustitución del juicio clínico.}
+  La herramienta actúa como apoyo a la decisión: muestra avisos STOPP y
+  START aplicables al caso, pero la interpretación y la decisión
+  terapéutica final corresponden siempre al profesional sanitario.
+  \item \textbf{Catálogo clínico acotado.}
+  Medicamentos y diagnósticos disponibles son los modelados en la
+  aplicación. No se pretende cubrir la totalidad del arsenal terapéutico
+  ni todos los posibles códigos diagnósticos.
+  \item \textbf{Arquitectura sin servidor.}
+  El sistema opera íntegramente en el navegador, sin backend ni
+  almacenamiento centralizado de pacientes, lo que simplifica la
+  privacidad en el contexto del TFG pero limita escenarios multiusuario
+  o de despliegue institucional.
+  \item \textbf{Validación no clínica experimental.}
+  La comprobación del sistema se basa en pruebas automáticas y en la
+  revisión con la cotutora clínica. No se realiza un ensayo ni un estudio
+  de impacto asistencial sobre pacientes reales.
+\end{itemize}

@@ -38,7 +38,9 @@
 \onehalfspacing
 
 % ---------- Encabezado y pie ----------
-% La guia exige: encabezado con el titulo (minimo) y numeracion en el pie
+% La guia exige: encabezado con el titulo (minimo) y numeracion en el pie.
+% Preliminaries (portada, indices): sin numero.
+% Cuerpo (desde Introduccion hasta el final): arabigo en el pie.
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
@@ -46,11 +48,18 @@
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
+% Estilo de la primera pagina de cada \chapter (report usa "plain")
 \fancypagestyle{plain}{%
   \fancyhf{}
   \fancyhead[L]{\small\itshape\tituloTFG}
   \fancyfoot[C]{\thepage}
   \renewcommand{\headrulewidth}{0.4pt}
+}
+
+% Sin encabezado ni numero (preliminares)
+\fancypagestyle{preliminar}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
 }
 
 % ---------- Paquetes de contenido ----------
@@ -111,7 +120,7 @@
 \newcommand{\cotutorTFG}{Raquel Apellido Apellido}
 \newcommand{\gradoTFG}{Grado en Ingenieria Informatica}
 \newcommand{\cursoTFG}{2025--2026}
-\newcommand{\mesTFG}{Xullo}
+\newcommand{\mesTFG}{Septiembre}
 \newcommand{\anhoTFG}{2026}
 \newcommand{\numeroTFG}{}                % Lo asigna la Secretaria del centro
 \newcommand{\areaTFG}{Linguaxes e Sistemas Informáticos}
@@ -123,6 +132,12 @@
 % ---------- 5.1 Portada ----------
 \input{capitulos/00-portada}
 
+% Preliminaries: sin numeracion visible
+\pagestyle{preliminar}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+}
 \pagenumbering{roman}
 
 % ---------- 5.2 y 5.3 Dedicatoria y agradecimientos (opcionales) ----------
@@ -137,12 +152,19 @@
 % ---------- 5.6 Indice de tablas ----------
 \listoftables
 
-\cleardoublepage
-\pagenumbering{arabic}
-
 % =====================================================================
 %  CUERPO DE LA MEMORIA  (max. 50 paginas recomendadas)
+%  Numeracion arabiga desde Introduccion hasta el final
 % =====================================================================
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyhead[L]{\small\itshape\tituloTFG}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}
+}
 
 \input{capitulos/01-introduccion}          % 5.7
 \input{capitulos/02-objetivos}             % 5.8
