@@ -15,9 +15,8 @@
 
 En las personas mayores de 65 años, la interacción entre medicamentos y su relación con
 enfermedades aumenta el riesgo de reacciones adversas~\cite{maher2014polypharmacy}.
-Ante esta situación surgen los criterios STOPP/START, que ayudan a los profesionales a
-identificar tanto tratamientos potencialmente inapropiados como omisiones de tratamiento
-en pacientes mayores~\cite{omahony2023stopp}.
+Ante esta situación se emplean criterios de cribado como STOPP/START, descritos
+en la sección siguiente~\cite{omahony2023stopp}.
 
 \section{Los criterios STOPP/START}
 
@@ -32,39 +31,30 @@ La versión vigente es la tercera (STOPP/START v3), publicada en 2023, que recog
 133 criterios STOPP y 57 criterios START, hasta un total de 190~\cite{omahony2023stopp}.
 En la práctica clínica habitual, el profesional debe consultar este listado
 ---habitualmente distribuido en formato PDF~\cite{sacyl2023stopp}--- e interpretarlo
-manualmente sobre el caso del paciente, lo que dificulta su aplicación sistemática en
-consultas con elevada carga asistencial.
+manualmente sobre el caso del paciente.
 
 \section{Justificación del trabajo}
 \label{sec:justificacion}
 
 La aplicación sistemática de los 190 criterios STOPP/START v3 resulta laboriosa si se
 realiza de forma manual: el profesional debe contrastar el listado completo con la
-medicación y los diagnósticos de cada paciente. Este TFG responde a esa necesidad
-mediante una herramienta software de apoyo a la decisión clínica que, a partir de los
-fármacos y diagnósticos introducidos, identifica de manera automatizada las
-prescripciones potencialmente inapropiadas (STOPP) y las omisiones de tratamiento
-indicado (START), reduciendo el esfuerzo de la revisión y facilitando una aplicación más
-completa y homogénea de la guía.
+medicación y los diagnósticos de cada paciente, algo poco viable en consultas con
+elevada carga asistencial. Este TFG responde a esa necesidad con una herramienta de
+apoyo a la decisión que automatiza ese contraste y reduce el esfuerzo de la revisión,
+sin sustituir el juicio clínico. El enfoque concreto se describe a continuación.
 
 \section{Cómo se aborda el problema}
 \label{sec:abordaje}
 
 Para abordar el problema descrito en la~\cref{sec:justificacion}, se
-desarrolla una aplicación web de apoyo a la decisión clínica que
-automatiza la evaluación de los criterios STOPP/START v3. El núcleo del
-sistema es un motor de reglas que aplica, sobre la medicación y los
-diagnósticos introducidos, una regla específica por cada criterio,
-de modo que el profesional recibe de forma inmediata los avisos
-STOPP y START aplicables al caso.
-Además de la evaluación automática, la herramienta incorpora
-funcionalidades orientadas a reducir el tiempo de uso en consulta:
-se deshabilitan diagnósticos o fármacos que no pueden activar ningún
-criterio con la selección actual, y se destacan en la interfaz las
-relaciones entre medicamentos y diagnósticos cuando uno de ellos está
-seleccionado. El detalle técnico del motor, de las reglas y de estas
-ayudas de interfaz se desarrolla en los capítulos de arquitectura y
-diseño.
+desarrolla una aplicación web que evalúa de forma automática los criterios
+sobre el caso introducido por el profesional. El núcleo es un motor de reglas:
+una regla por cada criterio, aplicada a la medicación y a los diagnósticos,
+de modo que los avisos aplicables aparecen de forma inmediata.
+Además, se deshabilitan opciones que no pueden activar ningún criterio con la
+selección actual y se destacan las relaciones entre medicamentos y
+diagnósticos. El detalle técnico se desarrolla en los capítulos de
+arquitectura y diseño.
 
 \section{Integración de trabajos previos}
 \label{sec:trabajos-previos}

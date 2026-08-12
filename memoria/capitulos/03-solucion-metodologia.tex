@@ -10,23 +10,213 @@
 
 \section{Visión general de la solución}
 
-% Que se ha construido, en dos o tres paginas, sin entrar en detalle
-% tecnico. El detalle va en Arquitectura y Diseno.
+La solución es una aplicación web de apoyo a la decisión clínica cuyo núcleo
+es un motor de evaluación: las reglas STOPP/START v3 se mantienen aparte del
+mecanismo que las aplica, de modo que los criterios pueden actualizarse sin
+reescribir la lógica de la aplicación. El detalle interno del motor se
+desarrolla en los capítulos de arquitectura y diseño.
+
+El profesional recorre un flujo en dos pestañas. En medicamentos selecciona
+los fármacos del paciente; el motor evalúa el caso y marca cada criterio como
+activo o inactivo. En diagnóstico se completa la comorbilidad y el motor
+vuelve a evaluar, con la misma distinción entre criterio activo e inactivo.
+El resultado final agrupa los avisos STOPP (prescripción potencialmente
+inapropiada) y START (posible omisión de tratamiento indicado).
+La~\cref{fig:flujo-vision} resume este recorrido. La exportación e importación
+del caso se describen en capítulos posteriores.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\footnotesize\sffamily,
+    arr/.style={-{Latex}, thick},
+    paso/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      minimum width=3.8cm, minimum height=0.62cm, inner sep=3pt,
+      fill=gray!6
+    },
+    motor/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      minimum width=3.8cm, minimum height=0.62cm, inner sep=3pt,
+      fill=gray!14
+    },
+    rama/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      minimum width=3.4cm, minimum height=0.55cm, inner sep=3pt,
+      fill=gray!6
+    },
+    decision/.style={
+      diamond, draw, thick, align=center, aspect=2.7,
+      inner sep=0.5pt, fill=gray!6, font=\scriptsize\sffamily
+    },
+    seccion/.style={
+      draw, thick, rounded corners=3pt
+    },
+    seclabel/.style={font=\scriptsize\bfseries\sffamily}
+  ]
+    % --- Usuario (silueta, sin círculo) ---
+    \node[inner sep=0pt, minimum height=0.85cm, minimum width=0.65cm]
+      (user) {};
+    \begin{scope}[shift={(user.center)}]
+      \fill (0,0.26) circle (0.10);
+      \draw[thick, line cap=round]
+        (0,0.16) -- (0,-0.08)
+        (-0.16,0.05) -- (0.16,0.05)
+        (0,-0.08) -- (-0.13,-0.32)
+        (0,-0.08) -- (0.13,-0.32);
+    \end{scope}
+    \node[below=0.04cm of user, align=center,
+      font=\scriptsize\bfseries\sffamily]
+      (userlbl) {Usuario\\[-1pt]{\normalfont\tiny Actor primario}};
+
+    % --- Pestaña Medicamentos ---
+    \node[paso, below=0.65cm of userlbl] (selmeds)
+      {Seleccionar medicamentos};
+    \node[seclabel, above=0.08cm of selmeds] (medslbl)
+      {Pestaña: Medicamentos};
+    \begin{scope}[on background layer]
+      \node[seccion, fit=(medslbl)(selmeds), inner ysep=6pt, inner xsep=9pt]
+        (medsbox) {};
+    \end{scope}
+
+    % --- Motor y decisión (tras medicamentos) ---
+    \node[motor, below=0.5cm of medsbox] (eval)
+      {Analizar con el motor};
+    \node[decision, below=0.42cm of eval] (salta)
+      {¿Salta el\\criterio?};
+    \node[rama, below left=0.5cm and 0.02cm of salta] (si)
+      {Sí (criterio activo)};
+    \node[rama, below right=0.5cm and 0.02cm of salta] (no)
+      {No (criterio inactivo)};
+    \coordinate (join) at ($(si.south)!0.5!(no.south)$);
+    \coordinate (joindown) at ([yshift=-0.48cm]join);
+
+    % --- Pestaña Diagnóstico ---
+    \node[paso, below=1.45cm of joindown] (seldx)
+      {Seleccionar diagnósticos};
+    \node[seclabel, above=0.08cm of seldx] (dxlbl)
+      {Pestaña: Diagnóstico};
+    \begin{scope}[on background layer]
+      \node[seccion, fit=(dxlbl)(seldx), inner ysep=6pt, inner xsep=9pt]
+        (dxbox) {};
+    \end{scope}
+
+    % --- Motor y decisión (tras diagnósticos) ---
+    \node[motor, below=0.5cm of dxbox] (eval2)
+      {Analizar con el motor};
+    \node[decision, below=0.42cm of eval2] (salta2)
+      {¿Salta el\\criterio?};
+    \node[rama, below left=0.5cm and 0.02cm of salta2] (si2)
+      {Sí (criterio activo)};
+    \node[rama, below right=0.5cm and 0.02cm of salta2] (no2)
+      {No (criterio inactivo)};
+    \coordinate (join2) at ($(si2.south)!0.5!(no2.south)$);
+    \coordinate (joindown2) at ([yshift=-0.48cm]join2);
+
+    % --- Resultados ---
+    \node[paso, below=1.45cm of joindown2] (res)
+      {Resultados finales\\STOPP / START};
+
+    % --- Flechas ---
+    \draw[arr] (userlbl.south) -- (medsbox.north);
+    \draw[arr] (medsbox.south) -- (eval.north);
+    \draw[arr] (eval.south) -- (salta.north);
+    \draw[arr] (salta.west) -| node[above, font=\tiny, pos=0.2] {Sí} (si.north);
+    \draw[arr] (salta.east) -| node[above, font=\tiny, pos=0.2] {No} (no.north);
+    \draw[thick] (si.south) |- (joindown);
+    \draw[thick] (no.south) |- (joindown);
+    \draw[arr] (joindown) -- (dxbox.north);
+    \draw[arr] (dxbox.south) -- (eval2.north);
+    \draw[arr] (eval2.south) -- (salta2.north);
+    \draw[arr] (salta2.west) -| node[above, font=\tiny, pos=0.2] {Sí} (si2.north);
+    \draw[arr] (salta2.east) -| node[above, font=\tiny, pos=0.2] {No} (no2.north);
+    \draw[thick] (si2.south) |- (joindown2);
+    \draw[thick] (no2.south) |- (joindown2);
+    \draw[arr] (joindown2) -- (res.north);
+  \end{tikzpicture}
+  \caption{Funcionamiento general de la solución: en cada pestaña el motor
+  evalúa el caso y marca el criterio como activo o inactivo; el resultado
+  final distingue avisos STOPP y START.}
+  \label{fig:flujo-vision}
+\end{figure}
 
 \section{Metodología de desarrollo}
 
-% Desarrollo iterativo e incremental, con rondas de revision con el
-% tutor. Aqui encajan las revisiones V1 y V2.
+El desarrollo ha sido iterativo e incremental: cada cambio entra en
+incrementos pequeños y verificables, y se contrasta en rondas de revisión
+antes de darlo por cerrado. Esta forma de trabajar se justifica por el
+dominio del TFG. Un criterio mal codificado puede silenciar un aviso STOPP
+o START; conviene detectar ese fallo en el mismo incremento en que se
+introduce, contrastando el comportamiento con la guía
+oficial~\cite{omahony2023stopp,sacyl2023stopp}.
+
+En la práctica, el trabajo se organizó en rondas temáticas: revisión
+sistemática de los criterios STOPP y START por sistemas, una ronda de
+corrección del motor y los datos clínicos, y otra de servicios e
+interfaz. El detalle de planificación, horas y desviaciones se recoge
+en el~\cref{cap:planificacion}; la batería de pruebas, en
+el~\cref{cap:pruebas}.
 
 \subsection{Desarrollo dirigido por pruebas (TDD)}
 
-% Ciclo rojo-verde-refactor. Justificar POR QUE en un dominio clinico
-% donde un falso negativo tiene consecuencias sobre el paciente.
+La implementación sigue Test-Driven Development~\cite{beck2002tdd}:
+antes de escribir código de producción se formula una prueba que falla
+(rojo); a continuación se escribe la implementación mínima que la hace
+pasar (verde); después se refactoriza con la suite en verde. El ciclo se
+repite en incrementos pequeños, de modo que el sistema permanece en un
+estado ejecutable y comprobable.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\small\sffamily,
+    caja/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      minimum width=2.7cm, minimum height=0.9cm, inner sep=3pt,
+      fill=gray!6
+    },
+    arr/.style={-{Latex}, thick}
+  ]
+    \node[caja] (rojo) {Rojo:\\prueba que falla};
+    \node[caja, right=0.85cm of rojo] (verde) {Verde:\\implementación mínima};
+    \node[caja, right=0.85cm of verde] (ref) {Refactorizar};
+    \draw[arr] (rojo) -- (verde);
+    \draw[arr] (verde) -- (ref);
+    \draw[arr] (ref.south) -- ++(0,-0.5) -| node[below, font=\scriptsize, pos=0.25]
+      {siguiente incremento} (rojo.south);
+  \end{tikzpicture}
+  \caption{Ciclo rojo--verde--refactor aplicado en el desarrollo.}
+  \label{fig:ciclo-tdd}
+\end{figure}
+
+En este proyecto TDD no es solo una costumbre de código: es la defensa
+principal frente al falso negativo. Si un criterio no salta cuando la
+guía dice que debe saltar, el profesional no ve el aviso y el paciente
+puede permanecer con una prescripción inapropiada o sin un tratamiento
+indicado. Una prueba que describe el caso clínico (medicación,
+diagnósticos y, cuando aplica, constantes) y afirma si el criterio
+debe activarse o no convierte esa expectativa en una especificación
+ejecutable. El mismo esquema cubre el caso contrario ---el criterio no
+debe disparar--- para limitar los falsos positivos, que erosionarían la
+confianza en la herramienta.
+
+Las pruebas se ejecutan con Karma y Jasmine sobre el código TypeScript
+de la aplicación. El criterio de avance de un incremento es que la
+nueva prueba pase y que el resto de la suite no se rompa. El inventario
+de pruebas y sus resultados se detallan en el~\cref{cap:pruebas}.
 
 \subsection{Control de versiones y flujo de trabajo}
 
-% Ramas, criterio para fusionar, propuestas en cuarentena.
+El código se gestiona con Git. Los cambios de entidad ---corrección de
+un conjunto de criterios, de un módulo del motor o de la interfaz--- se
+desarrollan en ramas de trabajo y se fusionan a la línea principal
+cuando la suite de pruebas queda en verde.
 
-\subsection{Validación con perfil clínico}
-
-% El papel de la cotutora clinica en la validacion de los criterios.
+Las ideas que alteran el alcance o la interfaz no se implementan
+directamente en la línea principal. Permanecen en cuarentena hasta que
+hay una decisión explícita de incorporarlas, posponerlas o
+descartarlas. Ejemplos de este filtro son la unificación de la
+orientación visual entre pestañas, dejada fuera del alcance fusionado, y
+el selector jerárquico de variantes diagnósticas, del que solo se
+incorporó la primera iteración (familia de hipertensión). De este modo
+se separa lo que ya está validado de lo que aún es hipótesis de diseño.
