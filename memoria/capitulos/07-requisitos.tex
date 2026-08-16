@@ -9,35 +9,284 @@
 \chapter{Especificación y análisis de requisitos}
 \label{cap:requisitos}
 
+Los requisitos que siguen describen el sistema \emph{tal como está implementado}.
+No se incluyen capacidades deliberadamente fuera de alcance
+(\cref{sec:limitaciones}): integración con la historia clínica electrónica,
+historial de pacientes, paso dedicado de ficha demográfica ni sustitución del
+juicio clínico. Cada requisito funcional es verificable sobre la interfaz o
+sobre el resultado de la evaluación.
+
 \section{Actores del sistema}
+\label{sec:actores}
+
+El actor primario es el \textbf{profesional sanitario} que revisa la
+medicación de una persona mayor ---geriatra, médico clínico o farmacéutico
+asistencial---. Interactúa con la aplicación en consulta: selecciona fármacos
+y diagnósticos, anota analítica cuando procede y examina los avisos STOPP y
+START. El sistema es de \emph{apoyo a la decisión}: muestra criterios
+aplicables, pero no prescribe, no cierra el caso clínico y no sustituye la
+interpretación del profesional~\cite{omahony2023stopp}.
+
+No hay actores secundarios de sistema (servidor, historia clínica, laboratorio
+externo). La persistencia y la evaluación ocurren en el navegador del propio
+profesional, según la visión de la~\cref{cap:solucion}.
 
 \section{Requisitos funcionales}
+\label{sec:rf}
 
-% Identificados (RF1, RF2...), verificables, sin ambiguedad.
+La~\cref{tab:rf} recoge los requisitos funcionales con identificador estable,
+prioridad y descripción sin ambigüedad. La prioridad \emph{Alta} corresponde a
+capacidades sin las cuales el flujo de revisión no se completa; \emph{Media},
+a ayudas de captura, accesibilidad o reutilización del caso.
 
-\begin{longtable}{@{}llp{8cm}@{}}
+{\small
+\begin{longtable}{@{}llp{9.2cm}@{}}
+  \caption{Requisitos funcionales del sistema implementado.}
+  \label{tab:rf} \\
+  \toprule
+  \textbf{ID} & \textbf{Prioridad} & \textbf{Descripción} \\
+  \midrule
+  \endfirsthead
+  \caption[]{Requisitos funcionales del sistema implementado (cont.).} \\
   \toprule
   \textbf{ID} & \textbf{Prioridad} & \textbf{Descripción} \\
   \midrule
   \endhead
-  RF1 &  &  \\
-  RF2 &  &  \\
   \bottomrule
-  \caption{Requisitos funcionales.}
-  \label{tab:rf}
+  \endfoot
+  RF01 & Alta & El profesional podrá seleccionar y deseleccionar medicamentos
+    del catálogo, organizados por categoría terapéutica (pestañas
+    cardiovascular, anticoagulantes, SNC, renal, gastrointestinal,
+    respiratorio, endocrino, urológico, osteoarticular, antiinfecciosos y
+    «Otros»). Cada fármaco marcado formará parte del caso y podrá
+    desmarcarse en cualquier momento. \\
+  RF02 & Alta & El profesional podrá seleccionar y deseleccionar diagnósticos
+    del catálogo, organizados por sistema. En las familias con variantes
+    mutuamente excluyentes ---en la implementación actual, la hipertensión
+    arterial: HTA sin especificar, no complicada, moderada o grave---
+    marcar una variante retirará las hermanas. Los diagnósticos que
+    dependen de una medicación habilitante permanecerán no seleccionables
+    hasta que dicha medicación esté en el caso. \\
+  RF03 & Alta & En la pestaña «Otros» del paso de diagnósticos, el profesional
+    podrá introducir, modificar o dejar vacíos los parámetros de analítica y
+    constantes que algún criterio lee: TFGe, TSH, frecuencia cardíaca, QTc,
+    potasio, sodio, calcio corregido, PAS y PAD. El panel será fijo (no
+    condicionado a la selección). \\
+  RF04 & Alta & Tras cada cambio de medicación, diagnóstico o analítica, el
+    sistema evaluará automáticamente el caso frente al catálogo STOPP/START
+    y actualizará los avisos aplicables en el propio paso, sin petición
+    explícita ni ida y vuelta a un servidor. \\
+  RF05 & Alta & El sistema identificará los medicamentos del catálogo que, de
+    añadirse al caso actual, dispararían un criterio con campo
+    \texttt{excludes} (exclusión proactiva), simulando su inclusión sobre
+    el contexto ya capturado. \\
+  RF06 & Alta & En la pestaña activa, el sistema mostrará un bloque
+    «Relevantes de otros sistemas» con fármacos o diagnósticos de otras
+    pestañas que participan en criterios del sistema en revisión, de modo
+    que el profesional no deba abandonar la pestaña para marcarlos. \\
+  RF07 & Media & El profesional podrá marcar una pestaña como revisada cuando
+    no tenga selección, para dejar constancia de que la ha examinado y no
+    aplica nada. Si añade una selección, el marcador se retirará. Una
+    pestaña con selección no podrá marcarse como revisada. \\
+  RF08 & Alta & El sistema mostrará los criterios aplicables agrupados por
+    tipo (STOPP y START) y, dentro de cada tipo, por sistema orgánico,
+    con código de sección y texto del aviso. \\
+  RF09 & Alta & El profesional podrá descargar un informe PDF del caso con
+    cabecera institucional, fecha, diagnósticos, medicaciones y tablas de
+    criterios STOPP y START aplicables. \\
+  RF10 & Media & El profesional podrá copiar al portapapeles un texto plano
+    con los criterios aplicables, agrupados por sistema. Si no hay
+    avisos, el texto será «Sin criterios aplicables.». \\
+  RF11 & Alta & El profesional podrá exportar el caso completo a un fichero
+    JSON versionado e importar un fichero del mismo formato. Un JSON que
+    no supere la validación se rechazará sin alterar el caso en curso. \\
+  RF12 & Media & El profesional podrá reiniciar el caso. El sistema pedirá
+    confirmación explícita; solo si se confirma se vaciarán medicaciones,
+    diagnósticos, analítica y marcadores de revisión. \\
+  RF13 & Media & El profesional podrá elegir la escala de fuente (pequeño,
+    mediano o grande) y la orientación de las pestañas (raíl vertical u
+    horizontal). Ambas preferencias se conservarán entre recargas. \\
+  RF14 & Media & El profesional podrá abrir una guía rápida que explique STOPP
+    y START, el flujo en dos pasos y el enlace al PDF oficial de la
+    guía~\cite{sacyl2023stopp}. \\
+  RF15 & Media & El profesional podrá añadir, en un grupo del catálogo, un
+    ítem «Otro» que no figura como fármaco o diagnóstico nominado, de modo
+    que la clase o el grupo participe en la evaluación aunque el principio
+    activo concreto no esté listado. \\
 \end{longtable}
+}
 
 \section{Requisitos no funcionales}
+\label{sec:rnf}
 
-% Usabilidad, rendimiento, accesibilidad, mantenibilidad, privacidad.
-% En una herramienta clinica, la privacidad de los datos del paciente
-% es un requisito no funcional de primer orden: justifica donde se
-% almacenan los datos y por que.
+Los requisitos no funcionales se alinean con características del modelo de
+calidad del producto de ISO/IEC~25010~\cite{iso25010}. No se pretenden
+umbrales de laboratorio industrial, sino condiciones observables en el
+contexto de una herramienta de consulta, sin servidor.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}llp{8.6cm}@{}}
+    \toprule
+    \textbf{ID} & \textbf{Característica} & \textbf{Descripción} \\
+    \midrule
+    RNF01 & Usabilidad & El flujo se completará en dos pasos
+      (medicamentos y diagnósticos) con avisos visibles en la misma
+      pantalla, de modo que la revisión quepa en una consulta sin
+      cambiar de aplicación. \\
+    RNF02 & Eficiencia de desempeño & La evaluación de criterios se
+      ejecutará íntegramente en el cliente. Un cambio de selección
+      actualizará los avisos en la misma interacción, sin espera de red
+      atribuible al motor. \\
+    RNF03 & Usabilidad / accesibilidad & Existirán al menos tres escalas
+      de fuente ($1$, $1{,}15$ y $1{,}3$) aplicables a toda la interfaz,
+      para lectura en consulta. \\
+    RNF04 & Mantenibilidad & Las reglas clínicas residirán en un catálogo
+      JSON independiente del código de la interfaz, de forma que un
+      criterio pueda corregirse o añadirse sin reescribir el motor. \\
+    RNF05 & Seguridad / privacidad & El caso no se enviará a un servidor
+      de aplicación. Medicación, diagnósticos y analítica permanecerán
+      en el navegador del profesional (\cref{cap:datos}). \\
+    \bottomrule
+  \end{tabular}
+  \caption{Requisitos no funcionales, referidos al modelo de calidad
+  ISO/IEC~25010.}
+  \label{tab:rnf}
+\end{table}
 
 \section{Casos de uso}
+\label{sec:casos-uso}
+
+Los casos de uso se describen al estilo de Cockburn~\cite{cockburn2001}:
+meta del actor, sistema como caja negra y relaciones \texttt{include} para
+subobjetivos que ocurren siempre. El caso de uso principal es \emph{revisar
+la medicación de un paciente con apoyo STOPP/START}. De él se desprenden la
+captura (RF01--RF03, RF15), la consulta de avisos (RF08) y las salidas
+(RF09--RF11). Dos subcasos se incluyen desde varios de ellos:
+\textbf{evaluar criterios}, disparado en cada cambio del caso (RF04, RF05),
+y \textbf{persistir el caso}, que reescribe el estado local sin acción
+explícita de «guardar» (salvo la exportación JSON, que es una copia
+portable). La~\cref{fig:casos-uso} resume el diagrama.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    actor/.style={align=center},
+    uc/.style={
+      ellipse, draw, thick, align=center,
+      minimum width=2.55cm, minimum height=0.72cm,
+      inner sep=1.5pt, fill=gray!6
+    },
+    ucinc/.style={
+      ellipse, draw, thick, align=center,
+      minimum width=2.35cm, minimum height=0.68cm,
+      inner sep=1.5pt, fill=gray!16
+    },
+    arr/.style={-{Latex}, thick},
+    inc/.style={-{Latex}, thick, dashed}
+  ]
+    \node[actor] (act) {};
+    \begin{scope}[shift={(act.center)}]
+      \fill (0,0.28) circle (0.09);
+      \draw[thick, line cap=round]
+        (0,0.19) -- (0,-0.06)
+        (-0.15,0.08) -- (0.15,0.08)
+        (0,-0.06) -- (-0.12,-0.28)
+        (0,-0.06) -- (0.12,-0.28);
+    \end{scope}
+    \node[below=0.02cm of act, align=center, font=\scriptsize\bfseries\sffamily]
+      (actlbl) {Profesional\\[-1pt]{\normalfont\tiny sanitario}};
+
+    \node[draw, thick, rounded corners=3pt, inner sep=8pt,
+      minimum width=9.6cm, minimum height=6.35cm,
+      right=1.35cm of actlbl, anchor=west] (sys) {};
+    \node[font=\scriptsize\bfseries\sffamily, above=0.08cm of sys.north]
+      {Sistema STOPP/START};
+
+    \node[uc] at ([shift={(-2.15,2.35)}]sys.center) (ucmed) {Seleccionar\\medicación};
+    \node[uc] at ([shift={(2.15,2.35)}]sys.center) (ucdx) {Seleccionar\\diagnósticos};
+    \node[uc] at ([shift={(-2.15,1.15)}]sys.center) (uclab) {Introducir\\analítica};
+    \node[uc] at ([shift={(2.15,1.15)}]sys.center) (ucver) {Revisar avisos\\STOPP / START};
+    \node[ucinc] at ([shift={(-2.15,-0.05)}]sys.center) (uceval) {Evaluar\\criterios};
+    \node[ucinc] at ([shift={(2.15,-0.05)}]sys.center) (ucpers) {Persistir\\caso};
+    \node[uc] at ([shift={(-2.15,-1.25)}]sys.center) (ucexp) {Exportar informe\\(PDF / texto / JSON)};
+    \node[uc] at ([shift={(2.15,-1.25)}]sys.center) (ucges) {Reiniciar caso\\/ importar JSON};
+    \node[uc] at ([shift={(-2.15,-2.4)}]sys.center) (ucvis) {Ajustar\\visualización};
+    \node[uc] at ([shift={(2.15,-2.4)}]sys.center) (ucguia) {Consultar\\guía rápida};
+
+    \draw[arr] (actlbl.east) -- (ucmed.west);
+    \draw[arr] (actlbl.east) -- (ucdx.west);
+    \draw[arr] (actlbl.east) -- (uclab.west);
+    \draw[arr] (actlbl.east) -- (ucver.west);
+    \draw[arr] (actlbl.east) -- (ucexp.west);
+    \draw[arr] (actlbl.east) -- (ucges.west);
+    \draw[arr] (actlbl.east) -- (ucvis.west);
+    \draw[arr] (actlbl.east) -- (ucguia.west);
+
+    \draw[inc] (ucmed.south) -- node[right, font=\tiny, pos=0.45] {\texttt{include}} (uceval.north);
+    \draw[inc] (ucdx.south) -- (uceval.north);
+    \draw[inc] (uclab.east) -- (uceval.west);
+    \draw[inc] (ucmed.south east) -- (ucpers.north west);
+    \draw[inc] (ucdx.south) -- node[right, font=\tiny, pos=0.55] {\texttt{include}} (ucpers.north);
+    \draw[inc] (uclab.east) -- (ucpers.west);
+  \end{tikzpicture}
+  \caption{Diagrama de casos de uso. Los óvalos sombreados
+  (\texttt{evaluar}, \texttt{persistir}) se incluyen desde la captura del
+  caso; el actor no los invoca por separado.}
+  \label{fig:casos-uso}
+\end{figure}
 
 \section{Análisis}
+\label{sec:analisis}
 
-% Modelo del dominio, entidades y relaciones. La rubrica distingue
-% entre "incluir los requisitos" y "describir el analisis realizado":
-% son dos cosas y hay que hacer las dos.
+El análisis de dominio distingue el \textbf{caso clínico} ---agregado que el
+motor evalúa--- del \textbf{catálogo de criterios}, que no forma parte del
+estado de sesión. El agregado \texttt{PatientCase} agrupa: una ficha
+opcional \texttt{PatientInfo} (nombre, edad, sexo y campos demográficos
+auxiliares; el tipo existe y viaja en el JSON, pero la interfaz no ofrece un
+paso de captura de paciente); una lista de \texttt{Med} (identificador del
+fármaco y clases farmacológicas); una lista de códigos de diagnóstico; un
+bloque opcional \texttt{Labs} con los nueve parámetros numéricos del
+panel de analítica; y los conjuntos de pestañas marcadas como revisadas.
+Un \texttt{Crit} del catálogo se relaciona con el caso por evaluación: dado
+un \texttt{PatientCase}, el criterio resulta aplicable o no. Varios
+\texttt{Med} pueden compartir clase; un diagnóstico pertenece a una pestaña
+de sistema; \texttt{Labs} es único por caso. La~\cref{fig:modelo-dominio}
+resume estas relaciones. El diseño de clases, señales y secuencia de
+evaluación se detalla en el~\cref{cap:diseno}; no se reproduce aquí.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    ent/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      minimum width=2.35cm, minimum height=0.72cm,
+      inner sep=3pt, fill=gray!6
+    },
+    agg/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      minimum width=2.6cm, minimum height=0.85cm,
+      inner sep=3pt, fill=gray!16
+    },
+    arr/.style={-{Latex}, thick}
+  ]
+    \node[agg] (pc) {PatientCase};
+    \node[ent, above left=0.85cm and 0.15cm of pc] (info) {PatientInfo};
+    \node[ent, above right=0.85cm and 0.15cm of pc] (med) {Med};
+    \node[ent, below left=0.85cm and 0.15cm of pc] (dx) {Diagnóstico};
+    \node[ent, below=0.85cm of pc] (labs) {Labs};
+    \node[ent, below right=0.85cm and 0.15cm of pc] (crit) {Crit};
+    \draw[arr] (pc) -- node[above, font=\tiny, sloped] {0..1} (info);
+    \draw[arr] (pc) -- node[above, font=\tiny, sloped] {$*$} (med);
+    \draw[arr] (pc) -- node[below, font=\tiny, sloped] {$*$} (dx);
+    \draw[arr] (pc) -- node[right, font=\tiny] {0..1} (labs);
+    \draw[arr] (crit) -- node[above, font=\tiny, sloped, pos=0.4]
+      {se evalúa frente a} (pc);
+  \end{tikzpicture}
+  \caption{Entidades del dominio y cardinalidades. \texttt{Crit} pertenece
+  al catálogo; el resto constituye el caso de sesión.}
+  \label{fig:modelo-dominio}
+\end{figure}

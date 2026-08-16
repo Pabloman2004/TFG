@@ -4,14 +4,24 @@
 \contentsline {figure}{\numberline {3.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Funcionamiento general de la solución: en cada pestaña el motor evalúa el caso y marca el criterio como activo o inactivo; el resultado final distingue avisos STOPP y START.}}{6}{figure.caption.5}%
 \contentsline {figure}{\numberline {3.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Ciclo rojo--verde--refactor aplicado en el desarrollo.}}{7}{figure.caption.6}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Planificación inicial del proyecto.}}{9}{figure.caption.7}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Cronograma del proyecto (marzo--agosto de 2026): barras claras, planificación inicial; barras oscuras, ejecución real. La fase de pruebas se solapa con la implementación. El tramo discontinuo de la memoria indica trabajo aún no cerrado.}}{9}{figure.caption.7}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Arquitectura de cajas: la UI escribe en el almacén; el motor evalúa el caso con catálogos y \texttt {criteria.json}; las salidas leen una instantánea. El navegador sostiene persistencia y carga de activos.}}{13}{figure.caption.9}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Dependencias lógicas: los pasos orquestan; el motor no depende de la UI; las salidas leen el almacén y no al revés.}}{15}{figure.caption.16}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {7.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Diagrama de casos de uso. Los óvalos sombreados (\texttt {evaluar}, \texttt {persistir}) se incluyen desde la captura del caso; el actor no los invoca por separado.}}{24}{figure.caption.24}%
+\contentsline {figure}{\numberline {7.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Entidades del dominio y cardinalidades. \texttt {Crit} pertenece al catálogo; el resto constituye el caso de sesión.}}{24}{figure.caption.25}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {8.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Modelo de dominio simplificado. \texttt {Crit} no se persiste con el caso: el motor lo produce al evaluar.}}{26}{figure.caption.26}%
+\contentsline {figure}{\numberline {8.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Secuencia al marcar una medicación: el almacén cambia, el motor evalúa y la UI actualiza criterios y exclusiones. Las flechas discontinuas marcan el contrato de contraindicación proactiva.}}{27}{figure.caption.28}%
+\contentsline {figure}{\numberline {8.3}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Secuencia de exportación a PDF: evaluación al vuelo y composición en el cliente.}}{28}{figure.caption.29}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
+\contentsline {figure}{\numberline {11.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Pantalla de medicamentos: pestañas de sistema, lista de fármacos en dos cubos y panel de criterios con acciones PDF/JSON.}}{43}{figure.caption.46}%
+\contentsline {figure}{\numberline {11.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Pantalla de diagnósticos: pestaña «Otros» con el panel fijo de analítica y el mismo panel de criterios a la derecha.}}{44}{figure.caption.47}%
+\contentsline {figure}{\numberline {11.3}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Panel de resultados STOPP/START, agrupado por sistema, visible en ambas pestañas del flujo.}}{45}{figure.caption.48}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }

@@ -2,21 +2,30 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Comparación entre dedicación estimada y real.}}{9}{table.caption.8}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Comparación entre la dedicación estimada y la real, en horas, por fase. La fila de la memoria está en curso y su valor real es un corte, no un cierre.}}{10}{table.caption.8}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Directorios relevantes de la aplicación.}}{13}{table.caption.10}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Productos de terceros y versión del manifiesto.}}{18}{table.caption.21}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Licencias de los productos de terceros usados en tiempo de ejecución.}}{19}{table.caption.22}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {7.1}{\ignorespaces Requisitos funcionales del sistema implementado.}}{21}{table.7.1}%
+\contentsline {table}{\numberline {7.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Requisitos no funcionales, referidos al modelo de calidad ISO/IEC~25010.}}{23}{table.caption.23}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {8.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Campos de \texttt {Crit} a nivel de tipo.}}{26}{table.caption.27}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {9.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Parámetros de \texttt {Labs} capturados en la pestaña «Otros» de diagnósticos.}}{32}{table.caption.39}%
+\contentsline {table}{\numberline {9.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Campos de una entrada de \texttt {criteria.json}.}}{32}{table.caption.40}%
+\contentsline {table}{\numberline {9.3}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Claves de \texttt {localStorage} vigentes.}}{34}{table.caption.41}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {10.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Resumen de la batería de pruebas (conteo de cláusulas \texttt {it(} en los \texttt {*.spec.ts}). El script \texttt {audit-criteria.cjs} no forma parte de este total.}}{39}{table.caption.45}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {6.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Productos de terceros integrados en el sistema.}}{11}{table.caption.9}%
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {7.1}{\ignorespaces Requisitos funcionales.}}{12}{table.7.1}%
+\contentsline {table}{\numberline {12.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Correspondencia entre los objetivos específicos (\cref {cap:objetivos}) y las aportaciones del trabajo.}}{46}{table.caption.53}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {10.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Resumen de la batería de pruebas.}}{15}{table.caption.10}%
+\contentsline {table}{\numberline {A.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Comandos de instalación, ejecución, prueba y auditoría.}}{54}{table.caption.56}%
 \addvspace {10\p@ }
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {12.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Correspondencia entre objetivos y aportaciones.}}{17}{table.caption.11}%
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
+\contentsline {table}{\numberline {B.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Reglas implementadas por sistema clínico (catálogo \texttt {criteria.json}).}}{55}{table.caption.57}%
 \addvspace {10\p@ }

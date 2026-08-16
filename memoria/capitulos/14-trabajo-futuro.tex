@@ -8,17 +8,49 @@
 \chapter{Vías de trabajo futuro}
 \label{cap:futuro}
 
-\section{Ampliación de la cobertura de criterios}
+Las líneas siguientes convierten el fuera de alcance del~\cref{cap:objetivos}
+en trabajo posterior concreto: qué falta, por qué importa y qué haría falta.
 
-\section{Generalización de las dependencias entre diagnósticos}
+\section{Paso de datos del paciente en la interfaz}
 
-% El trabajo pendiente de extender a todos los sistemas. Explicar que
-% requiere primero generalizar la arquitectura y despues criterio
-% clinico para rellenar los datos: eso lo hace concreto.
+Falta un paso de captura de edad y sexo. El modelo ya los admite y la
+analítica se introduce en «Otros», pero sin ficha demográfica los
+criterios geriátricos (p.~ej.\ STOPP-B16) no se activan desde la UI.
+Haría falta un \texttt{patient-info-step} como primer paso de la ruta y
+pruebas de los umbrales de edad de la guía.
 
-\section{Entrada en lenguaje natural y normalización con SNOMED CT}
+\section{Generalización de variantes y dependencias diagnósticas}
 
-% Linea de mayor recorrido. Explicar la idea, que aportaria y que
-% dificultades tiene.
+Falta extender a todos los sistemas el tratamiento de variantes y de
+dependencias diagnóstico--medicación, hoy curado sobre todo en
+cardiovascular e hipertensión. Sin eso, otras pestañas muestran opciones
+que no pueden disparar ningún criterio. Haría falta generalizar el
+mecanismo y, después, criterio clínico para rellenar cada sistema.
 
-\section{Otras mejoras identificadas}
+\section{Integración con la historia clínica electrónica}
+
+Falta la conexión con la HCE: el profesional introduce a mano fármacos y
+diagnósticos, cuello de botella en consulta. Preseleccionar desde el
+historial es el escenario excluido en la~\cref{sec:limitaciones}. Haría
+falta un convenio asistencial, un adaptador de identificadores y una
+política de minimización compatible con el diseño sin servidor.
+
+\section{Normalización con SNOMED CT y entrada en lenguaje natural}
+
+Falta abandonar el catálogo cerrado como única vía de entrada. Un texto
+libre debería resolverse contra SNOMED~CT y, desde ahí, contra las
+reglas, para no omitir avisos por no dar con la etiqueta interna. Haría
+falta un mapa SNOMED~$\leftrightarrow$ catálogo, búsqueda, y validación
+humana antes de evaluar si se aspira al lenguaje natural.
+
+\section{Validación profesional, dudas clínicas y catálogo}
+
+Faltan tres cierres que el OE7 dejó fuera (\cref{cap:objetivos,cap:pruebas}).
+Una validación con profesionales ---sesiones de casos, no un ensayo---
+para medir comprensión y falsos positivos; harían falta protocolo y, si
+hay datos reales, marco ético. Resolver con la cotutora las dudas ya
+documentadas: fragilidad como indicador de esperanza de vida en
+STOPP-B16, antiarrítmicos de clase~Ia ausentes del catálogo, y
+unificación de las variantes de insuficiencia cardíaca. Ampliar los
+fármacos poco usados en España pero citados en la guía, con clases y
+tests, sin crear clases huérfanas.

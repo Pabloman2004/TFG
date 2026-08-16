@@ -10,10 +10,65 @@
 
 \section{Conclusiones técnicas}
 
-% Que has aprendido sobre el problema y sobre construir software para
-% resolverlo. Que decisiones tecnicas resultaron acertadas y cuales no.
+Tres decisiones de diseño se han revelado acertadas. La primera es
+mantener las reglas clínicas fuera del código: el motor aplica
+\texttt{criteria.json} en lugar de codificar STOPP/START v3 como
+ramas de programa. Esa separación, descrita en
+el~\cref{cap:arquitectura}, hizo posible auditar el cardiovascular
+contra la guía~\cite{omahony2023stopp,sacyl2023stopp} y eliminar
+criterios inventados o redundantes sin reescribir el evaluador.
+
+La segunda es usar los tests como especificación clínica, no solo como
+red de seguridad del software~\cite{beck2002tdd}. Un falso negativo ---un
+aviso que debería saltar y no salta--- es el riesgo dominante en este
+dominio; formular el caso y el resultado esperado antes de implementar
+la regla convirtió esa expectativa en un contrato ejecutable. El detalle
+de la batería está en el~\cref{cap:pruebas}.
+
+La tercera es la arquitectura de página única sin servidor. En el
+contexto de un TFG que maneja datos de salud, evaluar y persistir el
+caso solo en el navegador evita un backend de pacientes y reduce la
+superficie de privacidad. El coste, aceptado en
+el~\cref{cap:objetivos}, es no cubrir escenarios multiusuario ni
+despliegue institucional.
+
+Los límites técnicos son igual de concretos. El catálogo de fármacos y
+diagnósticos está acotado a lo modelado: no cubre el arsenal terapéutico
+completo. El modelo de datos admite edad y sexo, pero la interfaz no
+ofrece un paso de ficha demográfica: esos campos solo llegan por
+importación JSON. La analítica sí se captura en la pestaña «Otros» del
+paso de diagnósticos; lo que no puede activarse a mano es, sobre todo,
+lo que depende de la edad. El recuento del catálogo (218 subcriterios
+en \texttt{criteria.json}) no coincide 1:1 con los 190 enunciados de la
+guía: algunos se desglosan en varias reglas y otros no se reflejan con
+la misma granularidad. Por último, las dependencias diagnósticas y las
+familias de variantes se curaron en profundidad en cardiovascular e
+hipertensión; el resto de sistemas no tiene el mismo grado de
+especialización.
 
 \section{Conclusiones personales}
 
-% Tu valoracion del proceso: la gestion del proyecto, el trabajo con
-% dos perfiles de tutor distintos, lo que harias diferente.
+El trabajo se desarrolló con dos perfiles de tutoría distintos: el
+tutor del área informática y la cotutora clínica. Esa dualidad obligó a
+traducir de forma continua entre restricciones de software (alcance,
+tests, interfaz) y matices de la guía. Cuando una duda clínica no
+bloqueaba el desarrollo, se documentó y se siguió con la parte técnica;
+cuando una petición de interfaz amenazaba el calendario, se dejó en
+cuarentena en lugar de fusionarla. Ejemplos de ese filtro son el
+historial de casos ---implementado y después eliminado--- y el selector
+jerárquico de variantes, del que solo se incorporó la familia de
+hipertensión.
+
+Haría dos cosas de otro modo. La primera: registrar las horas desde el
+primer día. La dedicación se ha reconstruido a posteriori a partir del
+histórico de Git y de las rondas de trabajo, y esa reconstrucción es
+menos precisa que un registro contemporáneo. La segunda: anteponer el
+paso de datos del paciente (edad, sexo y constantes) a refinamientos de
+la taxonomía. Varios criterios del motor ya dependían de esos campos
+mientras la UI aún no permitía introducirlos; corregir ese desajuste
+antes habría alineado antes el modelo, las pruebas y el uso en consulta.
+
+En conjunto, el proyecto enseña que el valor de una herramienta de
+apoyo no está en acumular funciones, sino en acotar el alcance, hacer
+comprobables las reglas y dejar fuera ---de forma explícita--- lo que
+aún no puede defenderse.

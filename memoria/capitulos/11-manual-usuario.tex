@@ -9,25 +9,255 @@
 
 \section{Requisitos mínimos}
 
-% Navegador, resolucion, conectividad.
+La aplicación es una página web que se ejecuta por completo en el
+navegador. No requiere cuenta, ni instalación de cliente, ni un servidor
+propio una vez servidos los ficheros estáticos. El profesional necesita:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=0.2em]
+  \item Un navegador de escritorio o tableta actual (Chrome, Edge o
+  Firefox en su versión vigente) con JavaScript activado.
+  \item Resolución de tableta o escritorio. Por encima de 1024\,px el
+  diseño muestra dos columnas (captura a la izquierda, criterios a la
+  derecha); entre 768 y 1024\,px los resultados pasan debajo; por debajo
+  de 768\,px las pestañas de sistema se sustituyen por un selector. El
+  uso previsto es consulta en tableta apaisada o en ordenador, no en un
+  teléfono de gama estrecha.
+  \item Conectividad solo para cargar la página y el catálogo de
+  criterios. El caso no se envía a ningún servidor.
+\end{itemize}
+
+Para ejecutar o modificar el proyecto en local se requiere, además,
+Node.js 20.19 o superior (requisito de Angular 20) y npm. No hace falta
+base de datos ni ningún servicio en segundo plano.
 
 \section{Instalación y puesta en marcha}
 
-% Pasos reproducibles. Si es una aplicacion web, como desplegarla y
-% como ejecutarla en local.
+Desde la raíz del repositorio:
+
+\begin{lstlisting}[numbers=none]
+npm install
+npx ng serve --host 127.0.0.1 --port 4200
+\end{lstlisting}
+
+El servidor de desarrollo queda en \texttt{http://127.0.0.1:4200}. El
+navegador abre la pestaña de medicamentos. La configuración de
+desarrollo es la predeterminada de \texttt{ng serve}; no se utiliza la
+compilación de producción para trabajar.
+
+Otras órdenes útiles:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=0.2em]
+  \item Compilación de desarrollo:
+  \texttt{npx ng build -{}-configuration development}.
+  \item Batería de pruebas, una sola pasada, Chrome sin ventana:
+  \texttt{npx ng test -{}-watch=false -{}-browsers=ChromeHeadless}.
+\end{itemize}
+
+La persistencia del caso en curso vive en el \texttt{localStorage} del
+origen (\texttt{127.0.0.1:4200} en local). Borrar los datos del sitio
+equivale a reiniciar el caso.
 
 \section{Guía de uso}
 
-% Recorrido completo por el asistente, con capturas.
+El flujo tiene dos pasos y un panel de resultados siempre visible. No
+hay pantalla de datos demográficos ni historial de casos: se seleccionan
+medicamentos, se completan diagnósticos y, si procede, las constantes de
+la pestaña «Otros»; los avisos STOPP y START se actualizan al vuelo. Las
+figuras de esta sección son esquemas de interfaz (wireframes), no
+capturas.
 
-\subsection{Datos del paciente}
+El recorrido habitual es: (1)~marcar los fármacos activos; (2)~leer los
+avisos que ya puedan dispararse solo con medicación; (3)~pasar a
+diagnósticos; (4)~rellenar la analítica en «Otros» cuando un criterio
+dependa de TFGe, presión arterial, iones u otras constantes; (5)~exportar
+PDF, copiar el texto, guardar el JSON o reiniciar.
 
-\subsection{Diagnósticos}
+\subsection{Pantalla de medicamentos}
 
-\subsection{Analítica}
+La~\cref{fig:wire-meds} resume el primer paso. La cabecera alterna entre
+Medicamentos y Diagnósticos y ofrece \emph{Visualización} (orientación
+de las pestañas de sistema) y \emph{Exportar PDF}. La barra de herramientas
+permite guardar el caso en JSON, cargar uno previo, abrir la guía rápida
+y reiniciar ---esta última acción pide confirmación---.
 
-\subsection{Medicación}
+A la izquierda, un raíl de sistemas (Cardiovascular, Neurológico, Renal,
+etc., más «Otros») filtra el catálogo. Dentro de cada sistema hay dos
+bloques: los grupos propios de esa pestaña y, debajo, los
+\emph{relevantes de otros sistemas}, que la aplicación muestra porque
+algún criterio de la pestaña activa los cita. Marcar un fármaco en el
+bloque foráneo no duplica la selección: el mismo identificador se
+comparte entre pestañas. Si el principio activo no está listado, la
+opción \emph{Otro} del grupo añade un ítem con la clase farmacológica
+del grupo, de modo que los criterios que miran esa clase puedan
+disparar.
+
+A la derecha, el panel \emph{Criterios activados} se actualiza al
+marcar o desmarcar. Un contador en la barra resume medicaciones y
+diagnósticos ya elegidos. Cada pestaña puede marcarse como revisada
+cuando no hay selección, para dejar constancia de que se miró y no
+aplica nada.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    caja/.style={draw, thick, inner sep=3pt, fill=gray!5, align=left},
+    tit/.style={font=\scriptsize\bfseries\sffamily}
+  ]
+    \node[caja, text width=14.0cm] (hdr)
+      {STOPP/START\quad [Medicamentos] Diagnósticos
+       \hfill Visualización\quad Exportar PDF};
+    \node[caja, below=0.12cm of hdr, text width=14.0cm] (bar)
+      {Guardar\quad Cargar\quad Guía\quad Reiniciar
+       \hfill 3 medicaciones $\vert$ 1 diagnóstico};
+    \node[caja, below=0.12cm of bar, text width=7.9cm, minimum height=5.0cm,
+      anchor=north west] (izq) at ([yshift=-0.12cm]bar.south west)
+      {\textbf{Sistemas:} Cardiovascular (activa), SNC, Renal \ldots{} Otros\\[4pt]
+       \textbf{Del sistema}\\
+       IECA \quad Betabloqueantes \quad Diurét.\ de asa\\
+       $\square$ Enalapril \quad $\square$ Ramipril\\
+       $\boxtimes$ Bisoprolol \quad $\boxtimes$ Furosemida\\[4pt]
+       \textbf{Relevantes de otros sistemas}\\
+       AINE (Osteo/músculo-esq.)\\
+       $\square$ Ibuprofeno \quad $\square$ Naproxeno\\
+       $\square$ Otro};
+    \node[caja, below=0.12cm of bar, text width=5.5cm, minimum height=5.0cm,
+      anchor=north east] (der) at ([yshift=-0.12cm]bar.south east)
+      {\textbf{Criterios activados}\hfill Copiar\\[4pt]
+       \textbf{START} 1\\
+       B8 --- Considerar iSGLT2\\
+       {\tiny en IC con FE reducida}\\[6pt]
+       \textbf{STOPP} 1\\
+       B19 --- Evitar AINE\\
+       {\tiny en IC con diurético de asa}};
+  \end{tikzpicture}
+  \caption{Pantalla de medicamentos: pestañas de sistema, lista de
+  fármacos en dos cubos y panel de criterios con acciones PDF/JSON.}
+  \label{fig:wire-meds}
+\end{figure}
+
+\subsection{Pantalla de diagnósticos y analítica}
+
+La~\cref{fig:wire-dx} muestra el segundo paso, con la misma cabecera y
+el mismo panel de criterios. Las pestañas corresponden a sistemas
+diagnósticos (Cardiovascular, Neurológico, \ldots). Dentro de cada una
+vuelven a aparecer el cubo propio y el de diagnósticos relevantes de
+otros sistemas. Algunas familias ---la hipertensión--- se presentan como
+opciones excluyentes: marcar «HTA grave» desmarca «HTA moderada».
+
+No hay un paso aparte de datos del paciente. La analítica y las
+constantes (TFGe, presión arterial sistólica y diastólica, frecuencia,
+QTc, potasio, sodio, calcio corregido, TSH) viven en un panel fijo de la
+pestaña \emph{Otros}. El panel no depende de lo que esté marcado: un
+START como el de antihipertensivo ante PAS/PAD elevadas se evalúa por la
+ausencia de fármaco, y ninguna casilla «activaría» esos campos. Si un
+valor no se rellena, los criterios que lo leen no disparan.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    caja/.style={draw, thick, inner sep=3pt, fill=gray!5, align=left},
+    tit/.style={font=\scriptsize\bfseries\sffamily}
+  ]
+    \node[caja, text width=14.0cm] (hdr)
+      {STOPP/START\quad Medicamentos\quad [Diagnósticos]
+       \hfill Visualización\quad Exportar PDF};
+    \node[caja, below=0.12cm of hdr, text width=7.9cm, minimum height=5.3cm,
+      anchor=north west] (izq) at ([yshift=-0.12cm]hdr.south west)
+      {\textbf{Sistemas:} \ldots{} Urológico, \textbf{Otros} (activa)\\[4pt]
+       \textbf{Analítica y constantes}\\
+       TFGe (ml/min/1,73\,m$^2$) [\,42\,] \quad PAS (mmHg) [\,158\,]\\
+       PAD (mmHg) [\,92\,] \quad K$^+$ (mmol/l) [\,4,1\,]\\
+       QTc (ms) [\,\phantom{00}\,] \quad TSH (µU/ml) [\,\phantom{00}\,]\\[6pt]
+       \textbf{Diagnósticos (Otros / Geriátrico)}\\
+       $\boxtimes$ Caídas de repetición\\
+       $\square$ Fragilidad \quad $\square$ Otro};
+    \node[caja, below=0.12cm of hdr, text width=5.5cm, minimum height=5.3cm,
+      anchor=north east] (der) at ([yshift=-0.12cm]hdr.south east)
+      {\textbf{Criterios activados}\\[4pt]
+       START 1 --- B1 antihipertensivo\\
+       {\tiny (PAS $>$ 140 o PAD $>$ 90 y sin tratamiento)}\\[6pt]
+       STOPP 1 --- K1 benzodiacepina\\
+       {\tiny y caídas de repetición}};
+  \end{tikzpicture}
+  \caption{Pantalla de diagnósticos: pestaña «Otros» con el panel fijo
+  de analítica y el mismo panel de criterios a la derecha.}
+  \label{fig:wire-dx}
+\end{figure}
 
 \subsection{Resultados y generación del informe}
 
+El panel derecho (\cref{fig:wire-resultados}) es el resultado: no hay
+una tercera pantalla. Los avisos START (omisión de tratamiento indicado)
+van encima; los STOPP (prescripción potencialmente inapropiada), debajo.
+Cada bloque muestra un contador y agrupa las tarjetas por sistema
+orgánico, plegables. El texto de cada tarjeta es el \texttt{summary} del
+criterio, con umbrales de dosis o duración cuando la guía los menciona
+---el profesional juzga si aplican; la interfaz no pide esos datos.
+
+Desde cualquier paso se puede:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=0.2em]
+  \item \textbf{Exportar PDF:} informe del caso y de los criterios
+  activados, generado en el navegador.
+  \item \textbf{Copiar criterios:} texto plano al portapapeles, útil
+  para pegarlo en la historia clínica.
+  \item \textbf{Guardar / Cargar:} fichero JSON versión 1.0 (medicación,
+  diagnósticos, analítica). Un JSON ajeno o de versión distinta se
+  rechaza con un mensaje comprensible.
+  \item \textbf{Reiniciar:} vacía el caso de \texttt{localStorage} tras
+  confirmar.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    caja/.style={draw, thick, inner sep=4pt, fill=gray!5, align=left}
+  ]
+    \node[font=\scriptsize\bfseries\sffamily, text width=11.4cm] (t)
+      {Criterios activados \hfill Copiar criterios};
+    \node[caja, fill=gray!14, below=0.15cm of t, text width=11.4cm] (st) {%
+      \textbf{START} 2\\[2pt]
+      Sistema cardiovascular\\
+      B1 --- Considerar antihipertensivo (PAS $>$ 140\,mmHg / PAD $>$ 90\,mmHg)\\
+      B8 --- Considerar iSGLT2 en insuficiencia cardíaca
+    };
+    \node[caja, fill=gray!10, below=0.18cm of st, text width=11.4cm] (sp) {%
+      \textbf{STOPP} 2\\[2pt]
+      Sistema cardiovascular\\
+      B19 --- Evitar AINE o corticoide en IC con diurético de asa\\[2pt]
+      Riesgo de caídas\\
+      K1 --- Evitar benzodiacepina si hay caídas de repetición
+    };
+  \end{tikzpicture}
+  \caption{Panel de resultados STOPP/START, agrupado por sistema, visible
+  en ambas pestañas del flujo.}
+  \label{fig:wire-resultados}
+\end{figure}
+
 \section{Preguntas frecuentes}
+
+\paragraph{¿Esta herramienta sustituye al juicio clínico?}
+No. Es un cribado: señala criterios STOPP/START que \emph{podrían}
+aplicar al caso introducido. La decisión de deprescribir, iniciar o
+mantener un tratamiento es siempre del profesional, a la luz de la
+situación concreta y de la guía~\cite{omahony2023stopp,sacyl2023stopp}.
+
+\paragraph{¿Dónde se guardan los datos?}
+En el \texttt{localStorage} del navegador, en el origen desde el que se
+sirve la página. No hay servidor de aplicación ni cuenta de usuario. El
+contenido no sale del equipo salvo que se exporte un JSON o un PDF.
+
+\paragraph{¿Puedo cargar un caso ya revisado?}
+Sí. \emph{Guardar} descarga un JSON v1.0; \emph{Cargar} lo restaura
+(medicación, diagnósticos y analítica). El fichero debe ser una
+exportación de esta aplicación; un documento arbitrario se rechaza.
+
+\paragraph{¿Y si el fármaco o el diagnóstico no está en el catálogo?}
+En el grupo correspondiente se marca \emph{Otro}. El ítem hereda la
+clase del grupo (medicamentos) o un código asociado al grupo
+(diagnósticos), de forma que los criterios que razonan por clase o por
+familia puedan evaluarse. No inventa un principio activo nuevo en el
+catálogo maestro.

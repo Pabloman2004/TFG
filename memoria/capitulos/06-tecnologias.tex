@@ -1,42 +1,160 @@
 % =====================================================================
 %  5.12 TECNOLOGIAS E INTEGRACION DE PRODUCTOS DE TERCEROS
 %  Rubrica: describirlas PORMENORIZADAMENTE y justificarlas CON DETALLE.
-%  Ojo: hay que describir explicitamente lo que NO es de tu autoria y
-%  justificar por que lo has usado.
+%  Hay que describir explicitamente lo que NO es de autoria propia y
+%  justificar por que se ha usado.
 % =====================================================================
 
 \chapter{Tecnologías y productos de terceros}
 \label{cap:tecnologias}
 
-\section{Lenguaje y framework}
+Este capítulo describe el lenguaje, el marco, las bibliotecas y las
+herramientas, y deja explícito qué no es de autoría propia: Angular y sus
+dependencias, las bibliotecas de reglas, validación y PDF, y la fuente
+clínica STOPP/START v3. La autoría del TFG se limita a la aplicación que
+las integra. La organización interna se trata en el~\cref{cap:arquitectura}.
 
-% Version concreta y motivo de la eleccion.
+\section{Lenguaje y framework}
+\label{sec:lenguaje-framework}
+
+El sistema está escrito en TypeScript 5.9 y se ejecuta como una aplicación
+de una sola página (SPA) sobre Angular 20~\cite{angular2026}. La elección
+de una SPA de cliente ---sin servidor de aplicación--- responde al alcance
+del TFG: el profesional introduce el caso, el motor lo evalúa en el
+navegador y el resultado no sale de esa sesión salvo que se exporte. Un
+backend habría exigido autenticación, almacenamiento remoto y un
+despliegue que el trabajo no contempla, como ya se delimita en
+el~\cref{cap:objetivos}. Angular cubre ese escenario con enrutado, plantillas
+y un ciclo de vida de componentes suficiente para un flujo de dos pestañas,
+sin introducir una API propia.
+
+TypeScript en modo estricto no es un adorno de estilo. El dominio maneja
+identificadores de fármacos, diagnósticos y criterios que deben
+conservarse de un extremo a otro; un tipado laxo permitiría mezclarlos
+sin que el compilador protestara. En la frontera del JSON importado el
+tipado estático no basta, y por eso se recurre a Zod, más abajo.
+
+Angular 20 se eligió, además, por el modelo de componentes independientes
+(\textit{standalone}) y por las señales (\textit{signals}). Los componentes
+independientes declaran sus propias importaciones y evitan el andamiaje de
+módulos \texttt{NgModule}, desproporcionado para una sola aplicación. Las
+señales permiten expresar el estado del caso ---medicación, diagnósticos,
+resultado de la evaluación--- como valores que la plantilla consume de
+forma síncrona, sin convertir cada cambio en una tubería de observables.
+RxJS sigue presente porque Angular lo requiere; no se ha construido la
+interfaz alrededor de él. Material~\cite{material} cubre pestañas, listas y
+controles con foco, teclado y estados deshabilitados ya resueltos, de modo
+que el esfuerzo se concentra en el flujo clínico.
 
 \section{Bibliotecas de terceros}
+\label{sec:bibliotecas}
+
+Las bibliotecas de la~\cref{tab:terceros} se toman de \texttt{package.json}.
+Ninguna es de autoría propia. Las versiones son las declaradas en ese
+fichero (rango mayor.menor cuando el manifiesto usa circunflejo u onda).
 
 \begin{table}[H]
   \centering
-  \begin{tabular}{@{}llp{6cm}@{}}
+  \small
+  \begin{tabularx}{\textwidth}{@{}llX@{}}
     \toprule
     \textbf{Producto} & \textbf{Versión} & \textbf{Uso y justificación} \\
     \midrule
-     &  &  \\
-     &  &  \\
+    Angular            & 20.3   & SPA: componentes, enrutado y plantillas. \\
+    Angular Material   & 20.2   & Pestañas, listas y campos de interfaz. \\
+    json-logic-js      & 2.0.5  & Evalúa reglas JSON. Alternativa: criterios en código. \\
+    pdfmake            & 0.2.20 & PDF declarativo en el navegador. Alternativa: jsPDF. \\
+    zod                & 4.4.3  & Valida el JSON importado en tiempo de ejecución. \\
+    RxJS               & 7.8    & Dependencia reactiva de Angular; no modela el estado. \\
+    zone.js            & 0.15   & Detección de cambios por defecto de Angular. \\
     \bottomrule
-  \end{tabular}
-  \caption{Productos de terceros integrados en el sistema.}
+  \end{tabularx}
+  \caption{Productos de terceros y versión del manifiesto.}
   \label{tab:terceros}
 \end{table}
 
-\section{Herramientas de desarrollo}
+json-logic-js~\cite{jsonlogic} evalúa las reglas del catálogo, serializadas
+como JSON. La alternativa ---incrustar cada criterio en TypeScript--- acopla
+el texto clínico al programa: corregir un aviso exigiría tocar código de
+producción. El evaluador JSON invierte esa dependencia; extender operadores
+se paga una vez, no por cada criterio.
 
-% Control de versiones, entorno, linters, CI si la hay.
+pdfmake~\cite{pdfmake} genera el informe en el navegador. Se prefirió a
+jsPDF porque este construye la página de forma imperativa, mientras que
+pdfmake parte de un objeto de definición ---bloques, tablas, estilos---
+más cercano a un informe de avisos STOPP y START.
+
+Zod~\cite{zod} valida el JSON importado antes de cargarlo: el compilador no
+ve ese fichero. No sustituye el tipado estático ni modela el catálogo
+interno. RxJS~\cite{rxjs} y zone.js viajan con Angular ---biblioteca reactiva
+y detección de cambios--- y no son un diseño propio del autor.
+
+\section{Herramientas de desarrollo}
+\label{sec:herramientas}
+
+El código se versiona con Git. El~\cref{cap:solucion} describe el flujo de
+ramas; aquí Git es la herramienta de registro, la misma que alimenta el
+seguimiento de horas del~\cref{cap:planificacion}.
+
+Angular CLI (\texttt{ng serve}, \texttt{ng test}, \texttt{ng build}) es el
+entorno de desarrollo y de construcción. No hay integración continua propia:
+la verificación se ejecuta en local con la CLI y el compilador de TypeScript,
+que comprueba los tipos. El proyecto no añade un linter como criterio de
+entrega más allá del andamiaje de Angular.
+
+Las pruebas automáticas se ejecutan con Karma y Jasmine. Karma lanza el
+navegador; Jasmine expresa los casos. La estrategia, los conteos y la
+validación frente a la guía corresponden al~\cref{cap:pruebas}.
 
 \section{Fuentes de datos clínicos}
+\label{sec:fuente-clinica}
 
-% La guia STOPP/START v3 como fuente. Importante dejar clara la
-% procedencia y que no es de autoria propia.
+El contenido clínico no es de autoría propia. Los criterios implementados
+derivan de STOPP/START versión~3, publicados por O'Mahony y
+colaboradores~\cite{omahony2023stopp}. Esa fuente define 133 criterios STOPP
+y 57 START (190 en total) y es el referente de corrección: un aviso de la
+aplicación debe corresponder a un criterio de la guía, no a una regla
+inventada.
+
+La redacción en español sigue la traducción de la Gerencia Regional de
+Salud de Castilla y León (SACYL)~\cite{sacyl2023stopp}. El TFG no produce
+una nueva traducción ni una nueva versión de los criterios; una divergencia
+respecto de esas fuentes es un defecto del sistema, no una propuesta
+clínica. Medicamentos y diagnósticos del desplegable son un catálogo de
+trabajo acotado, no un tesauro oficial; su persistencia se trata en
+el~\cref{cap:datos}. El enunciado de cada criterio pertenece a STOPP/START
+v3 y a su traducción; el TFG aporta la formalización ejecutable.
 
 \section{Licencias}
+\label{sec:licencias}
 
-% Licencia de cada producto de terceros y compatibilidad entre ellas.
+Las dependencias de tiempo de ejecución relevantes y su licencia se
+resumen en la~\cref{tab:licencias}. Angular, Angular Material, json-logic-js,
+pdfmake, Zod y zone.js se distribuyen bajo MIT. RxJS se distribuye bajo
+Apache~2.0~\cite{rxjs}.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    \textbf{Producto} & \textbf{Licencia} \\
+    \midrule
+    Angular 20            & MIT \\
+    Angular Material      & MIT \\
+    json-logic-js         & MIT \\
+    pdfmake               & MIT \\
+    Zod                   & MIT \\
+    zone.js               & MIT \\
+    RxJS                  & Apache-2.0 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Licencias de los productos de terceros usados en tiempo de
+  ejecución.}
+  \label{tab:licencias}
+\end{table}
+
+MIT y Apache-2.0 son permisivas: permiten usar, modificar y redistribuir
+con atribución, sin copyleft. No obligan a publicar el código propio ni a
+abrir el TFG por enlazarlas. No hay en el manifiesto dependencias GPL, LGPL
+ni AGPL. Las licencias son compatibles entre sí y con un trabajo académico
+que integra terceros sin ceder la autoría de la aplicación.

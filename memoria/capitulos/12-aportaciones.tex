@@ -7,25 +7,84 @@
 \chapter{Principales aportaciones}
 \label{cap:aportaciones}
 
-\section{Cumplimiento de los objetivos}
+Este capítulo pone en correspondencia cada objetivo específico
+del~\cref{cap:objetivos} con un resultado comprobable del sistema.
+No se reclama una validación clínica experimental: la comprobación se
+limita a pruebas automáticas y al contraste con la guía
+oficial~\cite{omahony2023stopp,sacyl2023stopp}, tal como delimita el
+OE7.
 
-% Tabla o recorrido explicito objetivo por objetivo. Es la forma mas
-% directa de demostrar la correspondencia que pide la rubrica.
+\section{Cumplimiento de los objetivos}
 
 \begin{table}[H]
   \centering
-  \begin{tabular}{@{}lp{9cm}@{}}
+  \small
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
     \toprule
-    \textbf{Objetivo} & \textbf{Aportación que lo cubre} \\
+    \textbf{Objetivo} & \textbf{Aportación concreta} \\
     \midrule
-    OE1 &  \\
-    OE2 &  \\
+    OE1 &
+      Catálogo declarativo en \texttt{criteria.json}: los criterios
+      STOPP/START v3 se expresan como reglas evaluables, no como ramas
+      embebidas en el código del motor. \\
+    OE2 &
+      Motor de inferencia sobre \texttt{json-logic-js} con operadores
+      clínicos propios; a partir de medicación y diagnósticos determina
+      qué avisos STOPP y START se activan. \\
+    OE3 &
+      Flujo guiado en dos pestañas (medicaciones y diagnósticos), con
+      captura auxiliar de analítica en la pestaña «Otros», usable en
+      consulta sobre un catálogo acotado. \\
+    OE4 &
+      Relevancia automática derivada del catálogo (grupos propios frente
+      a relevantes de otros sistemas), exclusiones proactivas de
+      fármacos y deshabilitado de diagnósticos que no pueden activar
+      ningún criterio con la selección actual. \\
+    OE5 &
+      Presentación de los criterios activados, agrupados por sistema, en
+      las propias pestañas de trabajo, con el enunciado del aviso listo
+      para la revisión. \\
+    OE6 &
+      Informe PDF, exportación e importación del caso en JSON
+      versionado, copia en texto plano y persistencia local en el
+      navegador, sin almacenamiento en servidor. \\
+    OE7 &
+      Batería de pruebas automáticas (TDD) y contraste con la guía v3,
+      reforzada con guardas de integridad del catálogo; no constituye
+      ensayo clínico ni revisión con perfil asistencial. \\
     \bottomrule
-  \end{tabular}
-  \caption{Correspondencia entre objetivos y aportaciones.}
+  \end{tabularx}
+  \caption{Correspondencia entre los objetivos específicos
+    (\cref{cap:objetivos}) y las aportaciones del trabajo.}
   \label{tab:objetivos-aportaciones}
 \end{table}
 
 \section{Aportaciones técnicas}
 
+La decisión de mantener las reglas fuera del código ---detallada en
+el~\cref{cap:arquitectura}--- permite auditar, corregir o ampliar un
+criterio editando el catálogo, sin reescribir el evaluador. Sobre esa
+base, la relevancia por pestaña y las exclusiones de medicamentos se
+calculan a partir de las propias reglas, de modo que la interfaz no
+exige un mapa manual paralelo que se desalinearía con la guía.
+
+El segundo pilar técnico es tratar los tests como especificación
+clínica ejecutable~\cite{beck2002tdd}: cada regla relevante dispone de
+casos que afirman si el aviso debe activarse o no. Las guardas de
+catálogo (consistencia entre criterios, fármacos y diagnósticos)
+cierran el círculo frente a referencias huérfanas. El inventario y los
+hallazgos de esa batería se recogen en el~\cref{cap:pruebas}.
+
 \section{Aportaciones al ámbito clínico}
+
+La aportación clínica del trabajo es operativizar STOPP/START v3 en el
+tiempo de una consulta: el profesional introduce el caso y obtiene los
+avisos aplicables, en lugar de contrastar a mano el listado de 190
+enunciados~\cite{omahony2023stopp}. La herramienta no prescribe ni
+sustituye el juicio clínico; muestra candidatos a prescripción
+potencialmente inapropiada y a omisión de tratamiento indicado.
+
+El alcance permanece el declarado en el~\cref{cap:objetivos}: catálogo
+acotado, sin historia clínica electrónica y sin ensayo sobre pacientes
+reales. Lo que se aporta es un apoyo a la decisión reproducible, no una
+evidencia de impacto asistencial.

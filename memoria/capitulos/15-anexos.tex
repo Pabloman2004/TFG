@@ -2,13 +2,112 @@
 %  5.22 ANEXOS (OPCIONALES)
 %  No cuentan para el limite de 50 paginas: es el sitio para todo el
 %  material voluminoso que en el cuerpo estorbaria.
+%  main.tex ya ejecuta \appendix antes de este input.
 % =====================================================================
 
-\chapter{Listado completo de criterios implementados}
-\label{anexo:criterios}
+\chapter{Comandos de operación}
+\label{anexo:comandos}
 
-\chapter{Casos de prueba clínicos}
-\label{anexo:casos}
+Este anexo resume los comandos necesarios para instalar, ejecutar,
+comprobar y auditar el prototipo desde la raíz del repositorio. El
+recorrido de uso se describe en el~\cref{cap:manual}; aquí solo se
+documenta la operación técnica. El servidor de desarrollo debe lanzarse
+con la configuración \texttt{development}; no se emplea la
+compilación de producción como entorno de trabajo.
 
-\chapter{Capturas adicionales de la interfaz}
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\ttfamily}p{7.4cm}X@{}}
+    \toprule
+    \textbf{\normalfont Comando} & \textbf{Propósito} \\
+    \midrule
+    npm install &
+      Instala las dependencias declaradas en \texttt{package.json}. \\
+    npx ng serve
+    --host 127.0.0.1 --port 4200 &
+      Arranca el servidor de desarrollo (configuración
+      \texttt{development}) en el puerto 4200. \\
+    npx ng test --watch=false
+    --browsers=ChromeHeadless &
+      Ejecuta la batería Karma + Jasmine en Chrome sin interfaz, una
+      sola pasada. \\
+    npx ng build
+    --configuration development &
+      Genera el artefacto de desarrollo (comprobación de tipos incluida). \\
+    bash scripts/check-links.sh &
+      Verifica el patrón de documentación enlazada (\texttt{@linked}):
+      enlaces rotos, documentos huérfanos y ficheros fuera del mapa. \\
+    node scripts/audit-criteria.cjs &
+      Audita la consistencia entre \texttt{criteria.json}, el catálogo
+      de fármacos y el de diagnósticos (clases y códigos huérfanos). \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Comandos de instalación, ejecución, prueba y auditoría.}
+  \label{tab:comandos-operacion}
+\end{table}
+
+El script \texttt{scripts/check-links.sh} existe en el repositorio y
+debe terminar con código de salida 0. Las líneas de consola del tipo
+«Error evaluando criterio» que puedan aparecer durante
+\texttt{ng test} corresponden a una especificación deliberada de manejo
+de errores, no a un fallo de la suite: el veredicto es la línea final
+de totales.
+
+\chapter{Sistemas clínicos y recuento de criterios}
+\label{anexo:sistemas}
+
+La guía STOPP/START v3 formula 190 enunciados (133 STOPP y 57
+START)~\cite{omahony2023stopp}. El catálogo de la aplicación no los
+reproduce 1:1: algunos enunciados se desglosan en varias reglas
+(subcriterios) y otros se agrupan. La~\cref{tab:sistemas-criterios}
+resume, por los 13 sistemas del fichero \texttt{criteria.json}, cuántas
+reglas STOPP y START hay implementadas. No se listan los textos
+completos: el volumen duplicaría la memoria sin añadir información de
+diseño.
+
+Los recuentos corresponden a la versión del catálogo utilizada al
+cerrar esta memoria (218 reglas: 166 STOPP y 52 START). Son cifras de
+implementación, no un censo de la guía impresa~\cite{sacyl2023stopp}.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    \textbf{Sistema clínico} & \textbf{STOPP} & \textbf{START} & \textbf{Total} \\
+    \midrule
+    Indicación de la medicación                    &   8 &  0 &   8 \\
+    Sistema cardiovascular                         &  35 & 11 &  46 \\
+    Anticoagulantes/Antiagregantes                 &  19 &  2 &  21 \\
+    Sistema nervioso central                       &  31 &  7 &  38 \\
+    Sistema renal                                  &  10 &  4 &  14 \\
+    Sistema gastrointestinal                       &   9 &  7 &  16 \\
+    Sistema respiratorio                           &   4 &  3 &   7 \\
+    Sistema musculoesquelético                     &  11 &  9 &  20 \\
+    Sistema urogenital                             &   8 &  5 &  13 \\
+    Sistema endocrino                              &  11 &  1 &  12 \\
+    Riesgo de caídas                               &  14 &  0 &  14 \\
+    Analgésicos                                    &   5 &  3 &   8 \\
+    Carga antimuscarínica/anticolinérgica          &   1 &  0 &   1 \\
+    \midrule
+    \textbf{Total}                                 & \textbf{166} & \textbf{52} & \textbf{218} \\
+    \bottomrule
+  \end{tabular}
+  \caption{Reglas implementadas por sistema clínico (catálogo
+    \texttt{criteria.json}).}
+  \label{tab:sistemas-criterios}
+\end{table}
+
+\chapter{Material gráfico complementario}
 \label{anexo:capturas}
+
+Este anexo queda reservado para capturas de pantalla de la interfaz y
+para diagramas que, por tamaño o por ser reiterativos respecto a las
+figuras del cuerpo, no caben en los capítulos de arquitectura, diseño o
+manual de usuario (\cref{cap:arquitectura,cap:diseno,cap:manual}).
+
+Mientras no se incorporen esas láminas, el anexo documenta únicamente
+la intención: ilustrar el flujo real de las dos pestañas, el panel de
+analítica y un ejemplo de informe, sin sustituir los wireframes ni las
+descripciones ya presentes en el texto principal.

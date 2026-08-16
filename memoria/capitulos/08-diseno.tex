@@ -6,29 +6,344 @@
 \chapter{Diseño del software}
 \label{cap:diseno}
 
-\section{Diseño estático}
+Este capítulo concreta la arquitectura del~\cref{cap:arquitectura} en
+dos vistas. La estática fija los tipos del dominio y la forma de un
+criterio; la dinámica muestra cómo un cambio en el caso se propaga
+hasta la interfaz y hasta el PDF. Las decisiones de presentación ---y
+su evolución con el tutor--- cierran el capítulo. El esquema de
+fichero y la persistencia con implicaciones de privacidad se tratan en
+el~\cref{cap:datos}.
 
-% Diagramas de clases, modelo de datos, estructura de tipos.
+\section{Diseño estático}
 
 \subsection{Modelo de dominio}
 
-\subsection{Estructura de los criterios}
+El agregado evaluable es \texttt{PatientCase}. Agrupa la ficha
+opcional del paciente (\texttt{PatientInfo}: nombre, edad, sexo y
+campos demográficos auxiliares), la lista de diagnósticos como códigos
+normalizados, las medicaciones activas y la analítica. Un
+\texttt{Med} lleva identificador, clases farmacológicas y, en el
+modelo, dosis y duración; esos umbrales no se editan en la interfaz
+---viven en el texto del criterio---, pero el tipo los conserva para
+casos JSON antiguos. \texttt{Labs} reúne solo las constantes que
+algún criterio lee (filtración, iones, presión, frecuencia, QTc, TSH).
+El caso también anota qué pestañas de medicación y de diagnóstico se
+marcaron como revisadas.
 
-% Como se representa un criterio y por que en ese formato.
+\texttt{Crit} no forma parte del agregado persistido. Es el tipo del
+aviso: identidad, clase STOPP o START, sistema, resumen y, cuando
+aplica, lógica, relevancia y exclusiones. Los resultados no se
+guardan en el almacén; se recalculan. La~\cref{fig:diseno-dominio}
+muestra estas relaciones. No hay entidad de historial: esa pieza se
+eliminó y el intercambio queda en el JSON versionado, descrito en
+el~\cref{cap:datos}.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    cls/.style={
+      draw, thick, rounded corners=2pt, align=left,
+      inner sep=5pt, fill=gray!6, text width=3.55cm
+    },
+    agg/.style={
+      draw, thick, rounded corners=2pt, align=left,
+      inner sep=5pt, fill=gray!14, text width=3.55cm
+    },
+    arr/.style={-{Latex}, thick}
+  ]
+    \node[agg] (pc) {\textbf{PatientCase}\\[2pt]
+      info\\
+      diagnoses : string[]\\
+      medications : Med[]\\
+      labs\\
+      reviewedMedTabs?\\
+      reviewedDxTabs?};
+
+    \node[cls, left=0.55cm of pc] (info) {\textbf{PatientInfo}\\[2pt]
+      name, age, sex\\
+      mrn?, weightKg?\\
+      heightCm?, notes?};
+
+    \node[cls, right=0.55cm of pc] (med) {\textbf{Med}\\[2pt]
+      id\\
+      drugClasses : string[]\\
+      doseMcgDay?\\
+      doseMgDay?\\
+      durationDays?};
+
+    \node[cls, below=0.7cm of pc] (labs) {\textbf{Labs}\\[2pt]
+      TFGe, TSH, FC, QTc\\
+      K$^+$, Na$^+$, Ca$^{2+}$\\
+      PAS, PAD};
+
+    \node[cls, right=0.55cm of labs] (crit) {\textbf{Crit}\\[2pt]
+      id, type, system\\
+      summary\\
+      logic?\\
+      relevance?\\
+      excludes?};
+
+    \draw[arr] (pc.west) -- (info.east) node[midway, above, font=\tiny] {info};
+    \draw[arr] (pc.east) -- (med.west) node[midway, above, font=\tiny] {1..*};
+    \draw[arr] (pc.south) -- (labs.north) node[midway, left, font=\tiny] {labs};
+    \draw[arr, dashed] (pc.south east) -- (crit.north)
+      node[midway, right, font=\tiny] {evalúa};
+  \end{tikzpicture}
+  \caption{Modelo de dominio simplificado. \texttt{Crit} no se persiste
+  con el caso: el motor lo produce al evaluar.}
+  \label{fig:diseno-dominio}
+\end{figure}
+
+\texttt{CaseStoreService} materializa el agregado como señales y
+expone \texttt{patientCase} como proyección. \texttt{CaseIoService} y
+\texttt{ReportService} consumen esa proyección; los pasos la mutan
+campo a campo. \texttt{PatientInfo} existe en el modelo para el
+informe y el JSON, pero no hay pantalla de captura demográfica.
+
+\subsection{Estructura de un criterio}
+
+Un criterio, en tanto tipo, tiene siete piezas. La~\cref{tab:diseno-crit}
+las enumera. No se describe aquí el esquema del fichero ---eso es
+materia del~\cref{cap:datos}--- sino qué significa cada campo para el
+diseño.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}lp{10.2cm}@{}}
+    \toprule
+    \textbf{Campo} & \textbf{Papel} \\
+    \midrule
+    \texttt{id} &
+      Identidad estable (p.~ej.\ un subcriterio STOPP-B). \\
+    \texttt{type} &
+      \texttt{STOPP} (prescripción inapropiada) o \texttt{START}
+      (omisión). \\
+    \texttt{system} &
+      Sistema fisiológico; alinea el aviso con las pestañas. \\
+    \texttt{summary} &
+      Texto clínico del aviso, incluidos umbrales de dosis o duración. \\
+    \texttt{logic} &
+      Árbol JSON~Logic que el motor aplica al caso. \\
+    \texttt{excludes} &
+      Fármacos o clases que el criterio contraindica si se cumple. \\
+    \texttt{relevance} &
+      Clases que la UI debe destacar cuando el índice automático no
+      basta. \\
+    \bottomrule
+  \end{tabular}
+  \caption{Campos de \texttt{Crit} a nivel de tipo.}
+  \label{tab:diseno-crit}
+\end{table}
+
+JSON~Logic se eligió porque la regla es un valor serializable: el
+mismo árbol viaja en el catálogo, entra en la prueba y se evalúa sin
+compilar una función TypeScript por criterio~\cite{jsonlogic}. El
+motor registra operadores de dominio en un solo punto; el tipo
+\texttt{Crit} no necesita conocerlos.
+
+El catálogo implementa 218 subcriterios ---variantes evaluables de los
+190 enunciados oficiales~\cite{omahony2023stopp}--- agrupados en
+trece sistemas. Esa cifra no cambia el tipo: un subcriterio sigue
+siendo un \texttt{Crit}.
 
 \section{Diseño dinámico}
 
-% Diagramas de secuencia, maquinas de estados, flujos de interaccion.
-
 \subsection{Ciclo de evaluación}
+
+El flujo crítico es el que sigue a marcar o desmarcar un fármaco. La
+\cref{fig:diseno-secuencia} lo descompone. El clínico pulsa una
+casilla; \texttt{MedsStepComponent.toggleDrug} escribe en
+\texttt{store.meds} una lista nueva (añade el \texttt{Med} del
+catálogo o lo retira). Esa escritura invalida el
+\textit{computed} \texttt{applicableCriteria}, que llama a
+\texttt{evaluate} con la instantánea del caso. El motor normaliza
+diagnósticos y medicaciones y devuelve los \texttt{Crit} que se
+cumplen. La plantilla reparte el resultado en paneles STOPP y START.
+
+En el mismo ciclo el motor puede calcular
+\texttt{getExcludedMedications}: para cada criterio con
+\texttt{excludes}, simula añadir el fármaco candidato y comprueba si
+la regla dispararía. El índice \texttt{relevance}, ya construido en
+el arranque, alimenta el cubo «relevantes de otros sistemas» y, si el
+fármaco marcado era foráneo, el resaltado de grupos y avisos
+relacionados.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
+    arr/.style={-{Latex}, thick},
+    dasharr/.style={-{Latex}, thick, dashed}
+  ]
+    \node[actor] (c) {Clínico};
+    \node[actor, right=1.55cm of c] (ui) {MedsStep};
+    \node[actor, right=1.55cm of ui] (st) {CaseStore};
+    \node[actor, right=1.55cm of st] (en) {Motor};
+
+    \foreach \x in {c, ui, st, en} {
+      \draw[gray!50, thick] (\x.south) -- ++(0,-6.15);
+    }
+
+    \draw[arr] ([yshift=-0.45cm]c.south) --
+      node[above, font=\tiny] {marca fármaco} ([yshift=-0.45cm]ui.south);
+    \draw[arr] ([yshift=-1.15cm]ui.south) --
+      node[above, font=\tiny] {\texttt{meds.set(...)}} ([yshift=-1.15cm]st.south);
+
+    \draw[arr] ([yshift=-1.95cm]ui.south) --
+      node[above, font=\tiny] {\texttt{evaluate(caso)}} ([yshift=-1.95cm]en.south);
+    \draw[arr] ([yshift=-2.65cm]en.south) --
+      node[above, font=\tiny] {\texttt{Crit[]} aplicables} ([yshift=-2.65cm]ui.south);
+
+    \draw[dasharr] ([yshift=-3.45cm]ui.south) --
+      node[above, font=\tiny] {\texttt{getExcludedMedications}} ([yshift=-3.45cm]en.south);
+    \draw[dasharr] ([yshift=-4.15cm]en.south) --
+      node[above, font=\tiny] {mapa de exclusiones} ([yshift=-4.15cm]ui.south);
+
+    \draw[arr] ([yshift=-4.95cm]en.south) --
+      node[above, font=\tiny] {\texttt{relevance} / cubos} ([yshift=-4.95cm]ui.south);
+    \draw[arr] ([yshift=-5.65cm]ui.south) --
+      node[above, font=\tiny] {paneles STOPP/START} ([yshift=-5.65cm]c.south);
+  \end{tikzpicture}
+  \caption{Secuencia al marcar una medicación: el almacén cambia, el
+  motor evalúa y la UI actualiza criterios y exclusiones. Las flechas
+  discontinuas marcan el contrato de contraindicación proactiva.}
+  \label{fig:diseno-secuencia}
+\end{figure}
+
+El paso de diagnósticos replica el mismo esquema
+(\texttt{toggleDiagnosis} $\rightarrow$ \texttt{diagnoses} $\rightarrow$
+\texttt{evaluate}), con dos matices: las variantes de una familia
+(p.~ej.\ hipertensión) son mutuamente excluyentes, y un diagnóstico
+puede deshabilitarse si falta la medicación que lo habilita.
+
+\subsection{Variante: exportar PDF}
+
+La~\cref{fig:diseno-pdf} resume la exportación. El clínico pide el
+informe; el paso vuelve a evaluar el caso ---no reutiliza un caché---
+y entrega paciente, diagnósticos, medicaciones y \texttt{Crit[]} a
+\texttt{ReportService}. Este compone el documento con
+pdfmake~\cite{pdfmake} y el navegador descarga el fichero. Un error
+de generación se comunica con un \textit{snackbar}; no se escribe
+nada en el almacén.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
+    arr/.style={-{Latex}, thick}
+  ]
+    \node[actor] (c) {Clínico};
+    \node[actor, right=1.7cm of c] (ui) {MedsStep};
+    \node[actor, right=1.7cm of ui] (en) {Motor};
+    \node[actor, right=1.7cm of en] (rp) {ReportService};
+
+    \foreach \x in {c, ui, en, rp} {
+      \draw[gray!50, thick] (\x.south) -- ++(0,-3.35);
+    }
+
+    \draw[arr] ([yshift=-0.45cm]c.south) --
+      node[above, font=\tiny] {exportar PDF} ([yshift=-0.45cm]ui.south);
+    \draw[arr] ([yshift=-1.15cm]ui.south) --
+      node[above, font=\tiny] {\texttt{evaluate}} ([yshift=-1.15cm]en.south);
+    \draw[arr] ([yshift=-1.85cm]en.south) --
+      node[above, font=\tiny] {\texttt{Crit[]}} ([yshift=-1.85cm]ui.south);
+    \draw[arr] ([yshift=-2.55cm]ui.south) --
+      node[above, font=\tiny] {\texttt{exportCase(...)}} ([yshift=-2.55cm]rp.south);
+    \draw[arr] ([yshift=-3.15cm]rp.south) --
+      node[above, font=\tiny] {descarga} ([yshift=-3.15cm]c.south);
+  \end{tikzpicture}
+  \caption{Secuencia de exportación a PDF: evaluación al vuelo y
+  composición en el cliente.}
+  \label{fig:diseno-pdf}
+\end{figure}
+
+\subsection{Ciclo de persistencia}
+
+El almacén rehidrata cada señal en el constructor ---lectura de
+\texttt{localStorage}, o valor vacío si la clave no existe o el
+parseo falla--- y registra un \textit{effect} que serializa el valor
+en cada cambio. Si la escritura falla (cuota, modo incógnito), el
+error se silencia y la sesión sigue en memoria. Las claves legado
+(\texttt{results}, \texttt{historial}) se borran al arrancar. El
+tratamiento de esos datos como información de salud se razona en
+el~\cref{cap:datos}.
 
 \section{Diseño de la interfaz}
 
-% Decisiones de UX. Aqui es donde encajan de forma natural las
-% iteraciones de revision con el tutor: cada cambio de interfaz fue
-% una decision de diseno con una motivacion detras.
+La interfaz no es un listado de 218 avisos: es un espacio de captura
+en el que los criterios aparecen al lado de lo que el profesional está
+marcando. Cinco decisiones de presentación sostienen ese encaje. Las
+decisiones de plataforma (SPA, JSON, señales) no se reiteran; están
+en el~\cref{cap:arquitectura}.
+
+\paragraph{Dos cubos por pestaña.}
+Cada pestaña muestra primero los grupos que le son propios y, debajo,
+un cubo de ítems de otros sistemas que algún criterio de la pestaña
+activa hace relevantes. Así un AINE puede aflorar en cardiovascular
+sin obligar a saltar de pestaña, y el profesional ve por qué está
+ahí. La relevancia transversal (analgésicos, caídas, anticolinérgicos)
+no genera casillas foráneas: solo dispara avisos.
+
+\paragraph{Pestañas verticales.}
+Con once a trece categorías, una barra horizontal exigía desplazamiento
+lateral y ocultaba el sistema activo. El raíl vertical ---orientación
+por defecto, reversible en opciones--- cabe entero, reserva ancho
+según la etiqueta más larga de cada paso y escala con la fuente.
+
+\paragraph{Escala de fuente.}
+Tres factores (1, 1,15 y 1,3) se aplican como variable CSS
+\texttt{--font-scale} y se persisten. El clínico agranda el texto sin
+que el raíl parta etiquetas ni el panel de avisos pierda jerarquía.
+
+\paragraph{Analítica fija en «Otros».}
+No hay paso de laboratorio. El panel vive en la pestaña «Otros» de
+diagnósticos y muestra siempre todos los campos que algún criterio
+puede leer. Varios START se disparan por la \emph{ausencia} de un
+fármaco ante una constante alterada: si el campo solo apareciera
+«cuando toca», ese aviso sería inalcanzable.
+
+\paragraph{Umbrales en el \texttt{summary}.}
+Dosis y duración (AAS por encima de 100~mg/día, benzodiacepina más de
+cuatro semanas) no se piden en la casilla. El criterio salta al
+marcar el fármaco ---y el diagnóstico, si aplica--- y el umbral queda
+escrito en el aviso, como juicio que el profesional confirma. Pedir
+esos números en cada fila alargaría la captura sin mejorar el cribado
+en consulta.
 
 \subsection{Iteraciones de diseño con el tutor}
 
-% Presentar como evolucion razonada del diseno, no como lista de
-% tareas cerradas. Antes/despues con captura y motivo.
+La interfaz actual no nació en un solo trazo. Las rondas con el tutor
+informático fueron correcciones de encaje, no una lista de tickets.
+
+En mayo se cerró el layout de dos columnas ---captura a la izquierda,
+avisos a la derecha--- y el flujo en dos pasos. Un asistente más
+largo habría separado la pregunta de la respuesta; el tutor insistió
+en que el criterio debía verse en el mismo gesto de marcar. Esa
+decisión es la que todavía organiza la pantalla.
+
+En junio la revisión de UI afinó el estado de cada pestaña: badges de
+conteo, el conmutador «revisada» cuando no hay selección, y la
+distinción visual entre panel vacío, panel con avisos y pestaña ya
+recorrida. Sin esos estados, el profesional no sabía si una categoría
+estaba limpia o simplemente no la había abierto.
+
+En julio las pestañas pasaron a raíl vertical. La barra superior no
+escalaba: al crecer el catálogo, el sistema activo desaparecía del
+viewport. El raíl lateral resolvió el problema de un golpe y dejó la barra
+horizontal como preferencia, no como omisión.
+
+Más adelante se añadieron los \textit{snackbars} de relación y el
+resaltado bidireccional entre cubos. Marcar un fármaco foráneo ---o
+uno propio emparejado con otro sistema--- debía enseñar \emph{qué}
+falta y \emph{dónde} está, no solo encender un aviso. El snackbar
+nombra el criterio y el hueco; el pulso visual señala el grupo
+compañero. Ese refuerzo nace de usar la herramienta en voz alta con
+el tutor: el enlace clínico existía en el motor y no se veía.
+
+Cada cambio redujo un roce concreto ---respuesta lejos de la
+pregunta, pestaña muda, sistema fuera de pantalla, relación
+invisible--- y dejó el flujo de dos pasos intacto.

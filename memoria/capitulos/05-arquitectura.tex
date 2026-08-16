@@ -6,28 +6,289 @@
 \chapter{Arquitectura}
 \label{cap:arquitectura}
 
+Este capítulo describe las piezas del sistema y cómo se relacionan. El
+comportamiento interno de tipos y secuencias se desarrolla en
+el~\cref{cap:diseno}; el esquema de ficheros y la persistencia, en
+el~\cref{cap:datos}. La visión de uso ya se adelantó en
+el~\cref{cap:solucion}.
+
 \section{Visión general}
 
-% Diagrama de la arquitectura completa.
+La aplicación es una SPA Angular~20 que se ejecuta por completo en el
+navegador~\cite{angular2026}. No hay servidor de aplicación ni API
+propia: el conocimiento clínico viaja como activos estáticos y el caso
+permanece en el cliente. El profesional recorre dos rutas ---
+\texttt{/medicaciones} y \texttt{/diagnosticos}--- cuyos componentes
+escriben en un almacén reactivo; el motor evalúa ese almacén contra el
+catálogo y la interfaz muestra los avisos aplicables.
 
-\section{Capas y responsabilidades}
+La~\cref{fig:arq-cajas} resume el encaje. La capa de presentación
+(\texttt{MedsStepComponent}, \texttt{DiagnosisStepComponent} y los
+diálogos de guía, reinicio y opciones de visualización) no calcula
+reglas: muta el \texttt{CaseStoreService}, cuyos \textit{signals}
+exponen el caso. El \texttt{CriteriaEngineService} carga
+\texttt{criteria.json} por HTTP desde \texttt{assets}, combina ese
+catálogo con los listados de fármacos y diagnósticos, y ofrece tres
+salidas: criterios que se cumplen, contraindicaciones proactivas e
+índice de relevancia por pestaña. Las salidas de caso ---informe PDF y
+fichero JSON--- las construyen \texttt{ReportService} y
+\texttt{CaseIoService} a partir de una instantánea del almacén. El
+navegador aporta dos servicios de plataforma: \texttt{localStorage}
+para el caso y \texttt{HttpClient} para los activos.
 
-% Componentes, servicios, separacion de responsabilidades.
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    caja/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      inner sep=4pt, fill=gray!6
+    },
+    nucleo/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      inner sep=4pt, fill=gray!14
+    },
+    plat/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      inner sep=4pt, fill=gray!22
+    },
+    arr/.style={-{Latex}, thick},
+    seclabel/.style={font=\scriptsize\bfseries\sffamily}
+  ]
+    \node[caja, minimum width=12.2cm, minimum height=1.15cm] (ui)
+      {\textbf{Presentación}\\[1pt]
+       \texttt{MedsStep} \quad \texttt{DiagnosisStep} \quad
+       diálogos (guía, reinicio, visualización)};
 
-\section{Flujo de la aplicación}
+    \node[nucleo, below=0.42cm of ui, minimum width=12.2cm, minimum height=0.72cm] (store)
+      {\textbf{Estado de sesión} --- \texttt{CaseStoreService} (\textit{signals})};
 
-% El recorrido del asistente por pasos y como se propaga el estado.
+    \node[nucleo, below=0.55cm of store, minimum width=4.3cm, minimum height=1.35cm] (eng)
+      {\textbf{Motor}\\[1pt]
+       \texttt{CriteriaEngine}\\
+       \texttt{evaluate} / exclusiones\\
+       \textit{relevance}};
+    \node[caja, left=0.35cm of eng, minimum width=3.5cm, minimum height=1.35cm] (cat)
+      {\textbf{Catálogos}\\[1pt]
+       fármacos, dx,\\
+       taxonomías};
+    \node[caja, right=0.35cm of eng, minimum width=3.5cm, minimum height=1.35cm] (out)
+      {\textbf{Salidas}\\[1pt]
+       \texttt{ReportService}\\
+       \texttt{CaseIoService}};
 
-\section{Gestión del estado}
+    \node[plat, below=0.42cm of eng, minimum width=4.3cm] (json)
+      {\texttt{criteria.json}};
+    \node[plat, below=0.55cm of json, minimum width=12.2cm, minimum height=0.55cm] (nav)
+      {Navegador: \texttt{localStorage} (caso) \quad+\quad HTTP GET de \texttt{assets}};
 
-% Estado centralizado, reactividad, persistencia.
+    \draw[arr] (ui) -- (store);
+    \draw[arr] (store) -- (eng);
+    \draw[arr] (store.south) -- ++(0,-0.12) -| (out.north);
+    \draw[arr] (cat) -- (eng);
+    \draw[arr] (json) -- (eng);
+    \draw[arr] (eng) -- (out);
+  \end{tikzpicture}
+  \caption{Arquitectura de cajas: la UI escribe en el almacén; el motor
+  evalúa el caso con catálogos y \texttt{criteria.json}; las salidas
+  leen una instantánea. El navegador sostiene persistencia y carga de
+  activos.}
+  \label{fig:arq-cajas}
+\end{figure}
 
-\section{Motor de evaluación de criterios}
+Los componentes son \textit{standalone}: no hay \texttt{NgModule} de
+negocio. Los «módulos» de este capítulo son agrupaciones lógicas de
+ficheros con una responsabilidad, no módulos del compilador Angular.
 
-% El nucleo del sistema: como se cargan, evaluan y filtran los criterios.
-% Merece su propia seccion por ser la pieza central del TFG.
+\section{Estructura de directorios}
+
+El código de aplicación vive bajo \texttt{src/app}. La~\cref{tab:arq-directorios}
+recoge las carpetas que importan para entender el resto del capítulo.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}lp{9.6cm}@{}}
+    \toprule
+    \textbf{Ruta} & \textbf{Contenido} \\
+    \midrule
+    \texttt{src/app/core} &
+      Tipos de dominio, almacén, motor, catálogos, informes e
+      importación/exportación. \\
+    \texttt{src/app/core/data} &
+      Listados y taxonomías de fármacos y diagnósticos; índice de
+      relevancia y dependencias diagnóstico--medicación. \\
+    \texttt{src/app/core/services} &
+      \texttt{CriteriaEngineService} y ayudas de prueba del motor. \\
+    \texttt{src/app/steps} &
+      Los dos pasos del flujo: medicación y diagnóstico. \\
+    \texttt{src/assets/data} &
+      \texttt{criteria.json}: 218 subcriterios evaluables frente a los
+      190 de la guía oficial~\cite{omahony2023stopp}. \\
+    \bottomrule
+  \end{tabular}
+  \caption{Directorios relevantes de la aplicación.}
+  \label{tab:arq-directorios}
+\end{table}
+
+El arranque (\texttt{main.ts}, \texttt{app.config.ts},
+\texttt{app.routes.ts}) monta un \texttt{router-outlet} y declara dos
+rutas más un comodín que redirige a medicaciones. No existe ruta de
+historial ni paso dedicado a los datos demográficos del paciente.
+
+\section{Módulos y responsabilidades}
+
+\paragraph{Dominio y almacén.}
+\texttt{types.ts} declara el agregado \texttt{PatientCase} ---información
+del paciente, diagnósticos, medicaciones y analítica--- y el tipo
+\texttt{Crit} del criterio evaluable. \texttt{CaseStoreService} es el
+único dueño del estado de sesión: un \textit{signal} por campo, un
+\textit{getter} \texttt{patientCase} que construye la instantánea
+inmutable y operaciones \texttt{reset} / \texttt{loadCase}. Los
+resultados del motor no se cachean en el almacén: cada paso los
+recalcula. El constructor rehidrata desde \texttt{localStorage}; un
+\textit{effect} por señal vuelve a persistir el valor. El detalle de
+claves y el tratamiento de datos personales se pospone al~\cref{cap:datos}.
+
+\paragraph{Catálogo clínico.}
+Los módulos bajo \texttt{core/data} materializan el vocabulario que la
+UI y el motor comparten: fármacos con clases, diagnósticos
+normalizados, pestañas y grupos, y el mapa de dependencias que habilita
+o deshabilita un diagnóstico según la medicación. Sin este vocabulario
+común, una regla no podría referirse a «IECA» ni la interfaz agrupar
+casillas por sistema.
+
+\paragraph{Motor.}
+\texttt{CriteriaEngineService} carga el catálogo una vez
+(\texttt{loadCriteria}, promesa cacheada), registra los operadores que
+JSON~Logic no trae de serie~\cite{jsonlogic} y evalúa el caso. No
+conoce Angular Material ni las rutas: recibe un \texttt{PatientCase} y
+una lista de \texttt{Crit}, y devuelve criterios aplicables, un mapa de
+fármacos contraindicados y el índice de relevancia. Esa separación
+permite probar el motor sin montar la interfaz.
+
+\paragraph{Pasos.}
+\texttt{MedsStepComponent} y \texttt{DiagnosisStepComponent} son la
+única cara del flujo. Cada uno inyecta almacén, motor y servicios de
+salida; en \texttt{ngOnInit} pide \texttt{loadCriteria} y, a partir de
+ahí, \textit{computed} y plantilla reaccionan a las señales. Los
+diálogos ---guía rápida, confirmación de reinicio y opciones de
+visualización--- se abren desde la barra de cada paso, no desde el
+componente raíz.
+
+\paragraph{Informes e intercambio.}
+\texttt{ReportService} compone el PDF del caso; \texttt{CaseIoService}
+serializa y valida el JSON versionado (v1.0) y lo reinyecta en el
+almacén. Ambos leen \texttt{patientCase}; ninguno evalúa reglas por su
+cuenta. El texto plano para el portapapeles es una función pura
+auxiliar. La composición del PDF se detalla en el~\cref{cap:datos}.
+
+\section{Dependencias entre módulos}
+
+La~\cref{fig:arq-deps} muestra quién usa a quién. Las flechas van del
+cliente al proveedor. Los pasos dependen de todos los servicios
+core; el motor depende de \texttt{HttpClient} y de los catálogos; las
+salidas dependen del almacén. No hay ciclo: el almacén no importa el
+motor ni los pasos.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    caja/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      minimum width=2.55cm, minimum height=0.72cm, inner sep=3pt,
+      fill=gray!6
+    },
+    nucleo/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      minimum width=2.55cm, minimum height=0.72cm, inner sep=3pt,
+      fill=gray!14
+    },
+    arr/.style={-{Latex}, thick}
+  ]
+    \node[caja] (steps) {Pasos + diálogos};
+    \node[nucleo, below=1.15cm of steps] (store) {Almacén};
+    \node[nucleo, left=0.85cm of store] (eng) {Motor};
+    \node[caja, right=0.85cm of store] (io) {Informes / IO};
+    \node[caja, below=0.85cm of eng] (cat) {Catálogos};
+    \node[caja, below=0.85cm of store] (http) {HTTP + \texttt{assets}};
+
+    \draw[arr] (steps) -- (store);
+    \draw[arr] (steps.south) -- ++(0,-0.28) -| (eng.north);
+    \draw[arr] (steps.south) -- ++(0,-0.28) -| (io.north);
+    \draw[arr] (eng) -- (cat);
+    \draw[arr] (eng) -- (http);
+    \draw[arr] (io) -- (store);
+  \end{tikzpicture}
+  \caption{Dependencias lógicas: los pasos orquestan; el motor no
+  depende de la UI; las salidas leen el almacén y no al revés.}
+  \label{fig:arq-deps}
+\end{figure}
+
+\section{Pipeline de evaluación}
+
+Al montar un paso, \texttt{loadCriteria} obtiene \texttt{criteria.json},
+construye el índice de relevancia y el mapa de dependencias
+diagnóstico--medicación, y guarda la lista de criterios en una señal
+local. A partir de ese instante el pipeline es reactivo y no vuelve a
+pedir el fichero.
+
+Cada vez que cambian medicación, diagnósticos o analítica, un
+\textit{computed} del paso llama a \texttt{evaluate} con la instantánea
+\texttt{patientCase}. El motor normaliza el caso y filtra los criterios
+cuya lógica se cumple; la plantilla parte el resultado en grupos STOPP
+y START. En paralelo, \texttt{getExcludedMedications} calcula qué
+fármacos del catálogo dispararían un criterio con campo
+\texttt{excludes} si se añadieran al caso ---es el contrato de
+contraindicación proactiva del motor--- y la señal \texttt{relevance}
+alimenta los dos cubos de cada pestaña (ítems propios e ítems
+relevantes de otros sistemas). El detalle de operadores y del árbol
+JSON se reserva al~\cref{cap:diseno} y al~\cref{cap:datos}.
 
 \section{Decisiones arquitectónicas}
 
-% Alternativas consideradas y por que se descarto cada una. Esto es lo
-% que separa un "se describe" de un "se describe y se justifica".
+Las cuatro decisiones que siguen fijan la forma del sistema. En cada
+una se indica la alternativa descartada y el motivo.
+
+\paragraph{SPA sin backend frente a aplicación con API.}
+Una arquitectura clásica cliente--servidor habría colocado el motor y
+el almacenamiento en un servidor, con autenticación e integración
+futura a una historia clínica. Se descartó porque el TFG no contempla
+esa integración (\cref{cap:objetivos}) y porque un servidor propio
+introduciría un tratamiento de datos de salud que el alcance no
+justifica. La SPA deja el caso en el navegador y el motor junto a la
+interfaz: no hay canal de red con fichas de paciente. El coste es la
+ausencia de multiusuario y de despliegue institucional; ambos quedan
+fuera de alcance.
+
+\paragraph{Reglas declarativas en JSON frente a \texttt{if}/\texttt{else}
+en TypeScript.}
+Codificar cada criterio como ramas en el código acoplaría la guía al
+ciclo de compilación: un matiz clínico exigiría tocar funciones y
+reescribir pruebas a medida. JSON~Logic permite expresar la regla como
+dato~\cite{jsonlogic}: el catálogo se actualiza sin recompilar el
+motor, y una prueba puede cargar el mismo fichero que la aplicación.
+La contrapartida ---operadores de dominio que el estándar no trae--- se
+concentra en un único registro, no en 218 funciones.
+
+\paragraph{\textit{Signals} frente a un almacén RxJS.}
+El estado es local, síncrono y de un solo usuario. Un almacén basado
+en observables~\cite{rxjs} habría añadido suscripciones,
+\textit{subjects} y cancelación para un modelo que no espera eventos
+de red ni hilos concurrentes. Las señales de Angular, con
+\textit{computed} y \textit{effect}, cubren lectura, derivación y
+persistencia sin esa maquinaria~\cite{angular2026}. RxJS permanece en
+el proyecto solo donde el propio framework lo exige (por ejemplo,
+\texttt{HttpClient}).
+
+\paragraph{Dos pasos frente a un asistente de cinco pantallas.}
+Un asistente largo ---paciente, analítica, medicación, diagnóstico,
+resultados--- fragmentaría un acto que en consulta es único. Medicación
+y diagnóstico bastan para disparar la mayoría de los criterios; la
+analítica cabe en la pestaña «Otros» del segundo paso, porque varios
+avisos START dependen de constantes que ninguna casilla «activa». No
+hay paso de ficha demográfica ni pantalla final de resultados: los
+avisos viven en el propio paso, a la vista mientras se marca. El
+historial de casos, que llegó a implementarse, se eliminó: duplicaba
+el JSON exportable y sugería un archivo clínico que el sistema no es.

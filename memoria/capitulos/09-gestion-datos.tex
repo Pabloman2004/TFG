@@ -6,24 +6,255 @@
 \chapter{Gestión de datos e información}
 \label{cap:datos}
 
-\section{Datos manejados por el sistema}
+Este capítulo describe qué datos maneja la aplicación, cómo se representa el
+catálogo de criterios, dónde persiste el caso de sesión y cómo se componen
+los informes. El algoritmo de evaluación y los operadores del motor se
+tratan en los~\cref{cap:arquitectura,cap:diseno}; aquí solo importa la
+información que entra, se guarda y sale.
 
-% Datos del paciente, diagnosticos, medicacion, analitica.
+\section{Datos manejados por el sistema}
+\label{sec:datos-manejados}
+
+El objeto evaluable es el \texttt{PatientCase}. Agrupa cuatro bloques
+clínicos y metadatos de progreso de revisión.
+
+\paragraph{Paciente.}
+El tipo \texttt{PatientInfo} contempla nombre, edad, sexo (\texttt{F}/\texttt{M}),
+número de historia, peso, talla y notas. Ese modelo viaja en la exportación
+JSON y puede rehidratarse al importar un caso. La interfaz, sin embargo, no
+incluye un paso de ficha demográfica: la captura cotidiana se limita a
+medicación, diagnósticos y analítica. Los campos de \texttt{PatientInfo}
+quedan, en uso normal, a \texttt{null}; un JSON antiguo o elaborado a mano
+puede traerlos y el sistema los conserva.
+
+\paragraph{Medicación.}
+Cada \texttt{Med} tiene un identificador (nombre del fármaco en el catálogo,
+o un código \texttt{otro\_\_} seguido del identificador de grupo para el ítem
+personalizado) y una lista
+de clases farmacológicas. Los campos opcionales de dosis y duración existen
+solo por compatibilidad con casos exportados; la interfaz no los edita y
+ningún criterio vigente los lee. Los umbrales de dosis o duración, cuando
+la guía los menciona, viven en el texto del aviso para que el profesional
+juzgue si aplican.
+
+\paragraph{Diagnósticos.}
+Se almacenan como códigos normalizados (\texttt{string[]}), no como texto
+libre de la etiqueta visible. Las variantes de una familia ---p.~ej.\ las
+cuatro de hipertensión--- son códigos distintos y mutuamente excluyentes en
+la interfaz.
+
+\paragraph{Analítica y constantes.}
+\texttt{Labs} contiene únicamente los parámetros que algún criterio lee. La
+glucosa, el perfil lipídico, la creatinina aislada y el INR se retiraron
+porque no alimentaban ninguna regla ni se pedían en el panel. La~\cref{tab:labs}
+lista el conjunto actual, coincidente con \texttt{lab-capture.ts}. Todos los
+campos son numéricos anulables: un valor ausente no se inventa.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Campo} & \textbf{Etiqueta en la UI} & \textbf{Uso típico} \\
+    \midrule
+    \texttt{egfr\_ml\_min\_173} & TFGe (ml/min/1,73~m$^2$) & Umbrales renales STOPP/START \\
+    \texttt{tsh\_uUl} & TSH ($\mu$U/ml) & Criterios tiroideos \\
+    \texttt{fc\_lpm} & Frecuencia cardíaca (lpm) & Bradicardia / frecuencia \\
+    \texttt{qtc\_ms} & Intervalo QTc (ms) & STOPP-B15 y afines \\
+    \texttt{potasio\_mmol\_l} & Potasio (mmol/l) & Hiperpotasemia (p.~ej.\ B12) \\
+    \texttt{sodio\_mmol\_l} & Sodio (mmol/l) & Electrolitos (tiazidas) \\
+    \texttt{calcio\_corregido\_mmol\_l} & Calcio corregido (mmol/l) & STOPP renales / metabólicos \\
+    \texttt{pas\_mmhg} & Presión arterial sistólica (mmHg) & START-B1, STOPP-B14 \\
+    \texttt{pad\_mmhg} & Presión arterial diastólica (mmHg) & START-B1 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Parámetros de \texttt{Labs} capturados en la pestaña «Otros» de
+  diagnósticos.}
+  \label{tab:labs}
+\end{table}
+
+El caso incluye además \texttt{reviewedMedTabs} y \texttt{reviewedDxTabs}:
+identificadores de pestañas marcadas como revisadas sin selección
+(\cref{sec:rf}, RF07).
 
 \section{Modelo de datos de los criterios}
+\label{sec:modelo-criterios}
 
-% Estructura del fichero de criterios, campos, normalizacion.
+Las reglas clínicas no están compiladas en TypeScript: residen en
+\texttt{src/assets/data/criteria.json}, un array de objetos \texttt{Crit}.
+Cada entrada tiene los campos de la~\cref{tab:campos-criterio}.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}lp{10.2cm}@{}}
+    \toprule
+    \textbf{Campo} & \textbf{Significado} \\
+    \midrule
+    \texttt{id} & Identificador estable (\texttt{STOPP-B1-DIGOXINA}, \ldots). \\
+    \texttt{type} & \texttt{STOPP} o \texttt{START}. \\
+    \texttt{system} & Uno de los trece sistemas del catálogo. \\
+    \texttt{summary} & Texto del aviso mostrado al profesional. \\
+    \texttt{logic} & Árbol json-logic ejecutable (operadores estándar y
+      personalizados). \\
+    \texttt{excludes} & Fármacos o clases a considerar contraindicados si el
+      criterio se cumple o se cumpliría al añadirlos (opcional). \\
+    \texttt{relevance} & Clases extra para el índice de visibilidad cuando no
+      se infieren de la lógica (opcional). \\
+    \bottomrule
+  \end{tabular}
+  \caption{Campos de una entrada de \texttt{criteria.json}.}
+  \label{tab:campos-criterio}
+\end{table}
+
+La guía oficial STOPP/START v3 enumera 190 criterios (133 STOPP y
+57 START)~\cite{omahony2023stopp,sacyl2023stopp}. El fichero implementado
+contiene \textbf{218 entradas ejecutables} (166 STOPP y 52 START). La
+diferencia no es un segundo listado clínico: varios ítems oficiales se
+desglosan en subcriterios cuando la guía agrupa fármacos o situaciones que,
+en reglas, deben evaluarse por separado. Ejemplos: STOPP-B12 se parte en
+variantes IECA y ARA-II; STOPP-B13, en tres combinaciones de ahorradores de
+potasio; STOPP-B14, en hipotensión frente a nitratos; STOPP-B19, en AINE
+frente a corticoide. El identificador conserva el código de sección de la
+guía, de modo que el profesional reconoce B12 o B14 en la columna de
+avisos.
+
+Los trece valores de \texttt{system} coinciden con los de la guía: indicación
+de la medicación, cardiovascular, anticoagulantes/antiagregantes, sistema
+nervioso central, renal, gastrointestinal, respiratorio, musculoesquelético,
+urogenital, endocrino, riesgo de caídas, analgésicos y carga
+antimuscarínica/anticolinérgica.
+
+El~\cref{lst:criterio-b1} muestra una entrada real. STOPP-B1 se activa si el
+paciente toma un fármaco de clase \texttt{DIGOXINA} y tiene el diagnóstico
+\texttt{ic\_funcion\_sistolica\_conservada}; \texttt{excludes} indica qué
+marcaría el motor como contraindicado en ese contexto.
+
+\begin{lstlisting}[
+  caption={Entrada real de \texttt{criteria.json}: STOPP-B1.},
+  label={lst:criterio-b1},
+  basicstyle=\ttfamily\scriptsize,
+  numbers=none,
+  frame=single,
+  breaklines=true
+]
+{
+  "id": "STOPP-B1-DIGOXINA",
+  "type": "STOPP",
+  "system": "Sistema cardiovascular",
+  "summary": "Evitar digoxina en pacientes con insuficiencia
+    cardiaca con funcion sistolica ventricular conservada.",
+  "logic": {
+    "and": [
+      {"inDrugClass": ["DIGOXINA", {"var": "medications"}]},
+      {"in": ["ic_funcion_sistolica_conservada",
+             {"var": "diagnoses"}]}
+    ]
+  },
+  "excludes": {
+    "medications": ["Digoxina"],
+    "drugClasses": ["DIGOXINA"]
+  }
+}
+\end{lstlisting}
 
 \section{Persistencia}
+\label{sec:persistencia}
 
-% Donde se guarda el estado y por que ahi.
+No hay base de datos ni API de pacientes. El estado de la sesión se serializa
+en \texttt{localStorage} del origen de la aplicación, porque el sistema es
+una SPA sin backend (\cref{cap:arquitectura}). Cada señal de dominio tiene
+su clave; un efecto escribe el JSON en cada cambio y, si el valor es nulo,
+borra la clave. Al arrancar, el almacén rehidrata las señales con
+\texttt{JSON.parse}; un error de lectura deja el valor por defecto y la
+aplicación sigue utilizable. Los fallos de escritura (cuota, modo incógnito)
+se silencian: el caso permanece en memoria durante la sesión.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}llp{7.4cm}@{}}
+    \toprule
+    \textbf{Clave} & \textbf{Contenido} & \textbf{Notas} \\
+    \midrule
+    \texttt{patient} & \texttt{PatientInfo} o ausente & Ficha; habitualmente vacía. \\
+    \texttt{diagnoses} & Array de códigos & Siempre array al rehidratar. \\
+    \texttt{meds} & Array de \texttt{Med} & Siempre array al rehidratar. \\
+    \texttt{labs} & Objeto \texttt{Labs} o ausente & Panel de analítica. \\
+    \texttt{reviewedMedTabs} & Array de ids & En memoria es un \texttt{Set}. \\
+    \texttt{reviewedDxTabs} & Array de ids & Igual que la anterior. \\
+    \texttt{activeSystemTab} & Cadena & Pestaña activa; no es dato clínico. \\
+    \texttt{font-scale} & \texttt{1} / \texttt{1.15} / \texttt{1.3} & Preferencia de visualización. \\
+    \texttt{tabs-orientation} & \texttt{vertical} / \texttt{horizontal} & Preferencia de visualización. \\
+    \bottomrule
+  \end{tabular}
+  \caption{Claves de \texttt{localStorage} vigentes.}
+  \label{tab:persistencia}
+\end{table}
+
+Al iniciar se eliminan claves legado (\texttt{results}, \texttt{activeSystem},
+\texttt{historial}) de versiones que cacheaban resultados o guardaban un
+historial de pacientes, funcionalidad retirada. \texttt{collapsedSections} es
+estado efímero de interfaz y no se persiste.
+
+La rehidratación no valida el esquema Zod: ese contrato se aplica al
+\emph{importar} un fichero (frontera de confianza). El \texttt{localStorage}
+se considera almacenamiento del propio navegador, no un documento intercambiado.
 
 \section{Privacidad y protección de datos}
+\label{sec:privacidad}
 
-% Al tratarse de datos de salud, conviene razonar sobre el RGPD aunque
-% el sistema no llegue a almacenar datos identificativos. Argumentar
-% que el diseno evita el problema es una aportacion en si misma.
+Medicación, diagnósticos y analítica son datos de salud y, por tanto,
+categoría especial en el sentido del art.~9 del Reglamento
+(UE)~2016/679~\cite{rgpd2016,aepdsalud}. El diseño del TFG no crea un
+fichero de pacientes en un servidor ni transmite el caso a un encargado de
+tratamiento: no hay cuenta de usuario, no hay API y la evaluación no sale del
+navegador. El PDF y el JSON se generan en el cliente y solo abandonan el
+equipo si el profesional los guarda o los envía por sus propios medios.
+
+Ese planteamiento \textbf{evita el tratamiento en servidor}: no hay
+comunicación a un tercero por el mero hecho de usar la herramienta, ni
+almacenamiento centralizado sobre el que la aplicación ejerciera de
+responsable. El profesional sigue siendo quien introduce el caso y quien
+decide si exporta un informe.
+
+El riesgo residual reside en el \textbf{dispositivo}: quien tenga acceso al
+perfil del navegador (equipo compartido, copia de seguridad del perfil, hurto)
+puede leer \texttt{localStorage}. La aplicación no cifra esas claves. El
+reinicio del caso (RF12) borra las claves clínicas; cerrar el navegador no
+basta, porque la persistencia está pensada para recuperar la sesión. No se
+envían datos de pacientes al abrir la guía rápida: el enlace al PDF de
+Sacyl~\cite{sacyl2023stopp} es un documento público, sin parámetros del caso.
 
 \section{Generación de informes}
+\label{sec:informes}
 
-% El PDF de salida: que informacion contiene y como se compone.
+Hay tres salidas independientes, disparadas por el profesional. La secuencia
+de construcción se detalla en el~\cref{cap:diseno}; aquí se describe el
+contenido.
+
+\paragraph{PDF.}
+El informe incluye: cabecera con logotipo (si el recurso está disponible) y
+marca «STOPP/START --- Optimización terapéutica»; título «Informe
+STOPP/START» y fecha; dos columnas con diagnósticos (etiquetas) y
+medicaciones; y la sección «Criterios aplicables», con una tabla STOPP y
+otra START. Cada tabla tiene columnas ID, sistema y descripción
+(\texttt{summary}). El pie recuerda que se trata de una herramienta de apoyo
+y que el criterio clínico es imprescindible. El nombre de fichero sigue
+\texttt{stopp-start\_<nombre>.pdf} (o \texttt{paciente} si no hay nombre).
+
+\paragraph{JSON versionado.}
+La exportación construye un objeto \texttt{CaseExport} con
+\texttt{version} igual a la literal \texttt{1.0}, \texttt{exportedAt} en ISO
+y el \texttt{patientCase} completo. La importación parsea el fichero y lo
+valida con un esquema Zod: versión distinta de \texttt{1.0}, tipos
+incorrectos o \texttt{Labs} vacío como objeto sin las nueve claves se
+rechazan y el caso en curso no se sustituye. Las claves de analítica
+retiradas en casos antiguos se descartan y el resto carga. El fichero se
+nombra \texttt{stopp-start\_<nombre>\_<fecha>.json}.
+
+\paragraph{Texto plano.}
+La copia al portapapeles agrupa los avisos por sistema, con líneas
+\texttt{STOPP B1 ---} (o \texttt{START}) seguidas del \texttt{summary}. No
+incluye ficha ni medicación: es un recordatorio de criterios, no un informe
+completo.
