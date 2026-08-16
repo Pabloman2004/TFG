@@ -66,8 +66,8 @@ reglas STOPP y START hay implementadas. No se listan los textos
 completos: el volumen duplicaría la memoria sin añadir información de
 diseño.
 
-Los recuentos corresponden a la versión del catálogo utilizada al
-cerrar esta memoria (218 reglas: 166 STOPP y 52 START). Son cifras de
+Los recuentos corresponden a la versión del catálogo presente en el corte
+documental del 16 de agosto de 2026 (218 reglas: 166 STOPP y 52 START). Son cifras de
 implementación, no un censo de la guía impresa~\cite{sacyl2023stopp}.
 
 \begin{table}[H]
@@ -99,15 +99,173 @@ implementación, no un censo de la guía impresa~\cite{sacyl2023stopp}.
   \label{tab:sistemas-criterios}
 \end{table}
 
-\chapter{Material gráfico complementario}
-\label{anexo:capturas}
+\chapter{Trazabilidad entre requisitos y evidencia}
+\label{anexo:trazabilidad}
 
-Este anexo queda reservado para capturas de pantalla de la interfaz y
-para diagramas que, por tamaño o por ser reiterativos respecto a las
-figuras del cuerpo, no caben en los capítulos de arquitectura, diseño o
-manual de usuario (\cref{cap:arquitectura,cap:diseno,cap:manual}).
+La~\cref{tab:trazabilidad-requisitos} enlaza cada requisito con evidencia
+localizada en el repositorio. «Localizada» significa que existe una
+especificación automática que expresa ese comportamiento; no significa que
+la suite se haya ejecutado con éxito para esta edición de la memoria.
+«Parcial» identifica requisitos cuya dimensión completa exige medición,
+auditoría o prueba de uso adicional. Salvo las rutas que comienzan por
+\texttt{src/}, los nombres de fichero se refieren a \texttt{src/app/}.
 
-Mientras no se incorporen esas láminas, el anexo documenta únicamente
-la intención: ilustrar el flujo real de las dos pestañas, el panel de
-analítica y un ejemplo de informe, sin sustituir los wireframes ni las
-descripciones ya presentes en el texto principal.
+{\scriptsize
+\begin{longtable}{@{}p{0.7cm}p{3.4cm}p{6.0cm}p{2.7cm}@{}}
+  \caption{Matriz requisitos--evidencia del repositorio.}
+  \label{tab:trazabilidad-requisitos} \\
+  \toprule
+  \textbf{ID} & \textbf{Comportamiento trazado} &
+  \textbf{Evidencia localizada} & \textbf{Estado documental} \\
+  \midrule
+  \endfirsthead
+  \caption[]{Matriz requisitos--evidencia del repositorio (cont.).} \\
+  \toprule
+  \textbf{ID} & \textbf{Comportamiento trazado} &
+  \textbf{Evidencia localizada} & \textbf{Estado documental} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  RF01 & Seleccionar y deseleccionar medicamentos &
+    \texttt{steps/meds-step/meds-step.component.spec.ts};
+    \texttt{core/group-checked.spec.ts} &
+    Localizada; ejecución final no registrada \\
+  RF02 & Seleccionar diagnósticos y variantes excluyentes &
+    \texttt{steps/diagnosis-step/diagnosis-step.component.spec.ts};
+    \texttt{core/data/diagnosis-variants.spec.ts} &
+    Localizada; ejecución final no registrada \\
+  RF03 & Capturar analítica y constantes &
+    \texttt{core/lab-capture.spec.ts};
+    \texttt{steps/diagnosis-step/diagnosis-step.component.spec.ts} &
+    Localizada; ejecución final no registrada \\
+  RF04 & Reevaluar tras cambios del caso &
+    \texttt{core/services/criteria-engine.service.spec.ts};
+    especificaciones de ambos pasos &
+    Localizada; ejecución final no registrada \\
+  RF05 & Calcular advertencias preventivas de medicación &
+    \texttt{core/services/criteria-engine.service.spec.ts} &
+    Solo motor; no integrado en la interfaz; ejecución final no registrada \\
+  RF06 & Mostrar elementos relevantes de otros sistemas &
+    \texttt{core/data/system-relevance.spec.ts};
+    \texttt{core/group-visibility.spec.ts} &
+    Localizada; ejecución final no registrada \\
+  RF07 & Marcar pestañas revisadas y persistir el estado &
+    \texttt{core/case-store.service.spec.ts} &
+    Localizada; ejecución final no registrada \\
+  RF08 & Agrupar resultados por tipo y sistema &
+    \texttt{core/criteria-groups.spec.ts};
+    especificaciones de ambos pasos &
+    Localizada; ejecución final no registrada \\
+  RF09 & Generar y descargar el informe PDF &
+    \texttt{core/report.service.spec.ts} &
+    Localizada; no se adjunta PDF ejecutado \\
+  RF10 & Copiar criterios como texto plano &
+    \texttt{core/clipboard-text.spec.ts};
+    especificaciones de ambos pasos &
+    Localizada; ejecución final no registrada \\
+  RF11 & Exportar e importar JSON validado &
+    \texttt{core/case-io.service.spec.ts} &
+    Localizada; no se adjunta JSON ejecutado \\
+  RF12 & Reiniciar solo tras confirmación &
+    \texttt{confirm-reset-dialog.component.spec.ts};
+    \texttt{core/case-store.service.spec.ts} &
+    Localizada; ejecución final no registrada \\
+  RF13 & Escala de fuente y orientación persistentes &
+    \texttt{core/display-settings.service.spec.ts};
+    especificaciones de ambos pasos &
+    Localizada; ejecución final no registrada \\
+  RF14 & Guía rápida y enlace a la guía oficial &
+    \texttt{quick-guide-dialog.component.spec.ts} &
+    Localizada; ejecución final no registrada \\
+  RF15 & Opción «Otro» por grupo &
+    \texttt{core/group-checked.spec.ts};
+    especificaciones de ambos pasos &
+    Localizada; ejecución final no registrada \\
+  RNF01 & Flujo en dos pasos con resultados junto a la captura &
+    \texttt{app.routes.spec.ts}; especificaciones de ambos pasos &
+    Parcial: estructura localizada; usabilidad no evaluada \\
+  RNF02 & Evaluación en cliente en la misma interacción &
+    \texttt{core/services/criteria-engine.service.spec.ts};
+    especificaciones de ambos pasos &
+    Parcial: sin medición de latencia \\
+  RNF03 & Tres escalas de fuente &
+    \texttt{core/display-settings.service.spec.ts} &
+    Parcial: sin auditoría de accesibilidad \\
+  RNF04 & Catálogo JSON separado del motor &
+    \texttt{src/assets/data/criteria.json};
+    \texttt{core/data/criteria-data-integrity.spec.ts} &
+    Estructura localizada; ejecución final no registrada \\
+  RNF05 & Persistencia local del caso &
+    \texttt{core/case-store.service.spec.ts};
+    \texttt{core/case-io.service.spec.ts} &
+    Parcial: persistencia localizada; privacidad no auditada \\
+\end{longtable}
+}
+
+\chapter{Cobertura demostrable del catálogo de criterios}
+\label{anexo:cobertura-criterios}
+
+El catálogo contiene 218 reglas JSON, distribuidas como muestra la
+\cref{tab:sistemas-criterios}. Ese recuento se obtiene directamente de
+\texttt{src/assets/data/criteria.json}. Las especificaciones
+\texttt{criteria-a.spec.ts} a \texttt{criteria-m.spec.ts} contienen casos
+por secciones del catálogo, y
+\texttt{criteria-data-integrity.spec.ts} expresa guardas entre reglas y
+catálogos.
+
+La~\cref{tab:cobertura-catalogo} es deliberadamente una matriz de
+\emph{evidencia del repositorio}, no una matriz de equivalencia clínica.
+La presencia de un fichero por sección tampoco demuestra por sí sola que
+cada una de sus reglas tenga casos positivo y negativo ejecutados.
+No se ha validado una correspondencia criterio por criterio entre los 190
+enunciados de la guía (133 STOPP y 57 START) y las 218 reglas. Una regla
+puede desglosar parte de un enunciado, varias reglas pueden agruparse o un
+criterio puede necesitar datos no capturados. Por tanto, ningún recuento de
+esta tabla demuestra cobertura completa de la guía.
+
+{\scriptsize
+\begin{longtable}{@{}p{4.5cm}rrp{3.0cm}p{3.0cm}@{}}
+  \caption{Matriz de cobertura demostrable del catálogo, sin equivalencia
+  190$\rightarrow$218.}
+  \label{tab:cobertura-catalogo} \\
+  \toprule
+  \textbf{Sistema del catálogo} & \textbf{STOPP} & \textbf{START} &
+  \textbf{Especificación localizada} & \textbf{Correspondencia con guía} \\
+  \midrule
+  \endfirsthead
+  \caption[]{Matriz de cobertura demostrable del catálogo (cont.).} \\
+  \toprule
+  \textbf{Sistema del catálogo} & \textbf{STOPP} & \textbf{START} &
+  \textbf{Especificación localizada} & \textbf{Correspondencia con guía} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  Indicación de la medicación & 8 & 0 & \texttt{criteria-a.spec.ts} & No validada \\
+  Sistema cardiovascular & 35 & 11 & \texttt{criteria-b.spec.ts} & No validada \\
+  Anticoagulantes/Antiagregantes & 19 & 2 & \texttt{criteria-c.spec.ts} & No validada \\
+  Sistema nervioso central & 31 & 7 & \texttt{criteria-d.spec.ts} & No validada \\
+  Sistema renal & 10 & 4 & \texttt{criteria-e.spec.ts} & No validada \\
+  Sistema gastrointestinal & 9 & 7 & \texttt{criteria-f.spec.ts} & No validada \\
+  Sistema respiratorio & 4 & 3 & \texttt{criteria-g.spec.ts} & No validada \\
+  Sistema musculoesquelético & 11 & 9 & \texttt{criteria-h.spec.ts} & No validada \\
+  Sistema urogenital & 8 & 5 & \texttt{criteria-i.spec.ts} & No validada \\
+  Sistema endocrino & 11 & 1 & \texttt{criteria-j.spec.ts} & No validada \\
+  Riesgo de caídas & 14 & 0 & \texttt{criteria-k.spec.ts} & No validada \\
+  Analgésicos & 5 & 3 & \texttt{criteria-l.spec.ts} & No validada \\
+  Carga antimuscarínica/anticolinérgica & 1 & 0 &
+    \texttt{criteria-m.spec.ts} & No validada \\
+  \midrule
+  \textbf{Total del catálogo} & \textbf{166} & \textbf{52} &
+    \textbf{Especificaciones localizadas; ejecución final no registrada} &
+    \textbf{No validada} \\
+\end{longtable}
+}
+
+Para convertir esta matriz en una acreditación de cobertura clínica falta
+una revisión independiente que enumere los 190 criterios oficiales y, para
+cada uno, identifique reglas, datos necesarios, caso positivo, caso
+negativo y estado (completo, parcial, manual, no evaluable o no
+implementado). Esa correspondencia no puede inferirse de los totales y no
+se inventa en esta memoria.

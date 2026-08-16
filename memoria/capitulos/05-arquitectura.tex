@@ -29,10 +29,13 @@ reglas: muta el \texttt{CaseStoreService}, cuyos \textit{signals}
 exponen el caso. El \texttt{CriteriaEngineService} carga
 \texttt{criteria.json} por HTTP desde \texttt{assets}, combina ese
 catálogo con los listados de fármacos y diagnósticos, y ofrece tres
-salidas: criterios que se cumplen, contraindicaciones proactivas e
-índice de relevancia por pestaña. Las salidas de caso ---informe PDF y
+salidas: criterios que se cumplen, un cálculo interno de candidatos que
+activarían reglas con \texttt{excludes} e índice de relevancia por pestaña.
+El cálculo de candidatos está probado como capacidad del motor, pero la
+interfaz actual no lo presenta. Las salidas de caso ---informe PDF y
 fichero JSON--- las construyen \texttt{ReportService} y
-\texttt{CaseIoService} a partir de una instantánea del almacén. El
+\texttt{CaseIoService}; los pasos entregan una instantánea al primero y el
+segundo accede al almacén. El
 navegador aporta dos servicios de plataforma: \texttt{localStorage}
 para el caso y \texttt{HttpClient} para los activos.
 
@@ -53,6 +56,7 @@ para el caso y \texttt{HttpClient} para los activos.
       inner sep=4pt, fill=gray!22
     },
     arr/.style={-{Latex}, thick},
+    biarr/.style={{Latex}-{Latex}, thick},
     seclabel/.style={font=\scriptsize\bfseries\sffamily}
   ]
     \node[caja, minimum width=12.2cm, minimum height=1.15cm] (ui)
@@ -79,8 +83,12 @@ para el caso y \texttt{HttpClient} para los activos.
 
     \node[plat, below=0.42cm of eng, minimum width=4.3cm] (json)
       {\texttt{criteria.json}};
-    \node[plat, below=0.55cm of json, minimum width=12.2cm, minimum height=0.55cm] (nav)
-      {Navegador: \texttt{localStorage} (caso) \quad+\quad HTTP GET de \texttt{assets}};
+    \node[plat, below left=0.55cm and 0.35cm of json,
+      minimum width=5.7cm, minimum height=0.55cm] (local)
+      {Navegador: \texttt{localStorage} (caso)};
+    \node[plat, below right=0.55cm and 0.35cm of json,
+      minimum width=5.7cm, minimum height=0.55cm] (http)
+      {Navegador: HTTP GET de \texttt{assets}};
 
     \draw[arr] (ui) -- (store);
     \draw[arr] (store) -- (eng);
@@ -88,11 +96,14 @@ para el caso y \texttt{HttpClient} para los activos.
     \draw[arr] (cat) -- (eng);
     \draw[arr] (json) -- (eng);
     \draw[arr] (eng) -- (out);
+    \draw[biarr] (local.west) -- ++(-0.25,0) |- (store.west);
+    \draw[arr] (http.north west) -- node[above, font=\tiny, sloped] {GET} (json.south east);
   \end{tikzpicture}
   \caption{Arquitectura de cajas: la UI escribe en el almacén; el motor
   evalúa el caso con catálogos y \texttt{criteria.json}; las salidas
-  leen una instantánea. El navegador sostiene persistencia y carga de
-  activos.}
+  leen una instantánea. \texttt{CaseStoreService} lee y escribe el caso
+  en \texttt{localStorage}, mientras \texttt{HttpClient} obtiene el
+  activo mediante HTTP GET.}
   \label{fig:arq-cajas}
 \end{figure}
 
@@ -123,8 +134,8 @@ recoge las carpetas que importan para entender el resto del capítulo.
     \texttt{src/app/steps} &
       Los dos pasos del flujo: medicación y diagnóstico. \\
     \texttt{src/assets/data} &
-      \texttt{criteria.json}: 218 subcriterios evaluables frente a los
-      190 de la guía oficial~\cite{omahony2023stopp}. \\
+      Catálogo declarativo \texttt{criteria.json}; su esquema y recuento
+      se documentan en el~\cref{cap:datos}. \\
     \bottomrule
   \end{tabular}
   \caption{Directorios relevantes de la aplicación.}
@@ -164,7 +175,8 @@ casillas por sistema.
 JSON~Logic no trae de serie~\cite{jsonlogic} y evalúa el caso. No
 conoce Angular Material ni las rutas: recibe un \texttt{PatientCase} y
 una lista de \texttt{Crit}, y devuelve criterios aplicables, un mapa de
-fármacos contraindicados y el índice de relevancia. Esa separación
+fármacos que activarían advertencias de posible prescripción inapropiada
+y el índice de relevancia. Esa separación
 permite probar el motor sin montar la interfaz.
 
 \paragraph{Pasos.}
@@ -177,19 +189,20 @@ visualización--- se abren desde la barra de cada paso, no desde el
 componente raíz.
 
 \paragraph{Informes e intercambio.}
-\texttt{ReportService} compone el PDF del caso; \texttt{CaseIoService}
-serializa y valida el JSON versionado (v1.0) y lo reinyecta en el
-almacén. Ambos leen \texttt{patientCase}; ninguno evalúa reglas por su
-cuenta. El texto plano para el portapapeles es una función pura
-auxiliar. La composición del PDF se detalla en el~\cref{cap:datos}.
+\texttt{ReportService} compone el PDF a partir de los datos que le entrega
+el componente; no inyecta el almacén. \texttt{CaseIoService} sí accede al
+\texttt{CaseStoreService}: serializa el caso y valida el JSON versionado
+(v1.0) antes de reinyectarlo. Ninguno evalúa reglas por su cuenta. El texto
+plano para el portapapeles es una función pura auxiliar. La composición del
+PDF se detalla en el~\cref{cap:datos}.
 
 \section{Dependencias entre módulos}
 
 La~\cref{fig:arq-deps} muestra quién usa a quién. Las flechas van del
 cliente al proveedor. Los pasos dependen de todos los servicios
 core; el motor depende de \texttt{HttpClient} y de los catálogos; las
-salidas dependen del almacén. No hay ciclo: el almacén no importa el
-motor ni los pasos.
+operaciones JSON dependen del almacén y el informe recibe sus datos desde
+los pasos. No hay ciclo: el almacén no importa el motor ni los pasos.
 
 \begin{figure}[H]
   \centering
@@ -219,10 +232,12 @@ motor ni los pasos.
     \draw[arr] (steps.south) -- ++(0,-0.28) -| (io.north);
     \draw[arr] (eng) -- (cat);
     \draw[arr] (eng) -- (http);
-    \draw[arr] (io) -- (store);
+    \draw[arr] (io) -- (store)
+      node[midway, above, sloped, font=\tiny] {solo IO};
   \end{tikzpicture}
   \caption{Dependencias lógicas: los pasos orquestan; el motor no
-  depende de la UI; las salidas leen el almacén y no al revés.}
+  depende de la UI; solo el servicio de intercambio JSON accede
+  directamente al almacén.}
   \label{fig:arq-deps}
 \end{figure}
 
@@ -238,10 +253,12 @@ Cada vez que cambian medicación, diagnósticos o analítica, un
 \textit{computed} del paso llama a \texttt{evaluate} con la instantánea
 \texttt{patientCase}. El motor normaliza el caso y filtra los criterios
 cuya lógica se cumple; la plantilla parte el resultado en grupos STOPP
-y START. En paralelo, \texttt{getExcludedMedications} calcula qué
+y START. El método \texttt{getExcludedMedications}, invocado en pruebas
+del motor pero no conectado a la plantilla, calcula qué
 fármacos del catálogo dispararían un criterio con campo
-\texttt{excludes} si se añadieran al caso ---es el contrato de
-contraindicación proactiva del motor--- y la señal \texttt{relevance}
+\texttt{excludes} si se añadieran al caso ---es el contrato técnico de
+advertencia preventiva del motor, no una prohibición clínica
+absoluta---. Por su parte, la señal \texttt{relevance}
 alimenta los dos cubos de cada pestaña (ítems propios e ítems
 relevantes de otros sistemas). El detalle de operadores y del árbol
 JSON se reserva al~\cref{cap:diseno} y al~\cref{cap:datos}.
@@ -266,11 +283,11 @@ fuera de alcance.
 en TypeScript.}
 Codificar cada criterio como ramas en el código acoplaría la guía al
 ciclo de compilación: un matiz clínico exigiría tocar funciones y
-reescribir pruebas a medida. JSON~Logic permite expresar la regla como
+adaptar pruebas específicas. JSON~Logic permite expresar la regla como
 dato~\cite{jsonlogic}: el catálogo se actualiza sin recompilar el
 motor, y una prueba puede cargar el mismo fichero que la aplicación.
 La contrapartida ---operadores de dominio que el estándar no trae--- se
-concentra en un único registro, no en 218 funciones.
+concentra en un único registro, no en una función por regla.
 
 \paragraph{\textit{Signals} frente a un almacén RxJS.}
 El estado es local, síncrono y de un solo usuario. Un almacén basado

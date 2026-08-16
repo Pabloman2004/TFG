@@ -53,7 +53,7 @@ campos son numéricos anulables: un valor ausente no se inventa.
 \begin{table}[H]
   \centering
   \small
-  \begin{tabular}{@{}lll@{}}
+  \begin{tabularx}{\textwidth}{@{}p{4.2cm}p{4.8cm}X@{}}
     \toprule
     \textbf{Campo} & \textbf{Etiqueta en la UI} & \textbf{Uso típico} \\
     \midrule
@@ -67,7 +67,7 @@ campos son numéricos anulables: un valor ausente no se inventa.
     \texttt{pas\_mmhg} & Presión arterial sistólica (mmHg) & START-B1, STOPP-B14 \\
     \texttt{pad\_mmhg} & Presión arterial diastólica (mmHg) & START-B1 \\
     \bottomrule
-  \end{tabular}
+  \end{tabularx}
   \caption{Parámetros de \texttt{Labs} capturados en la pestaña «Otros» de
   diagnósticos.}
   \label{tab:labs}
@@ -77,12 +77,23 @@ El caso incluye además \texttt{reviewedMedTabs} y \texttt{reviewedDxTabs}:
 identificadores de pestañas marcadas como revisadas sin selección
 (\cref{sec:rf}, RF07).
 
+La existencia de un campo en el modelo no implica que esté disponible en
+la captura ordinaria. Medicaciones, diagnósticos y los nueve valores de
+\texttt{Labs} se introducen en la UI; \texttt{PatientInfo} y los campos
+heredados de dosis y duración solo pueden llegar mediante un JSON; los
+umbrales que figuran únicamente en \texttt{summary} requieren revisión
+manual. En consecuencia, una regla dependiente de edad o sexo puede ser
+evaluable con un JSON que aporte esos datos y, a la vez, ser inaccesible
+desde la interfaz. Tampoco se considera automática una comprobación de
+dosis o duración que el profesional deba confirmar leyendo el aviso.
+
 \section{Modelo de datos de los criterios}
 \label{sec:modelo-criterios}
 
 Las reglas clínicas no están compiladas en TypeScript: residen en
-\texttt{src/assets/data/criteria.json}, un array de objetos \texttt{Crit}.
-Cada entrada tiene los campos de la~\cref{tab:campos-criterio}.
+\texttt{src/assets/data/criteria.json}, un objeto cuya propiedad
+\texttt{criteria} contiene el array de objetos \texttt{Crit}. Cada entrada
+tiene los campos de la~\cref{tab:campos-criterio}.
 
 \begin{table}[H]
   \centering
@@ -97,8 +108,9 @@ Cada entrada tiene los campos de la~\cref{tab:campos-criterio}.
     \texttt{summary} & Texto del aviso mostrado al profesional. \\
     \texttt{logic} & Árbol json-logic ejecutable (operadores estándar y
       personalizados). \\
-    \texttt{excludes} & Fármacos o clases a considerar contraindicados si el
-      criterio se cumple o se cumpliría al añadirlos (opcional). \\
+    \texttt{excludes} & Fármacos o clases cuya adición activaría una
+      advertencia de prescripción potencialmente inapropiada (opcional).
+      Se conserva \texttt{excludes} como nombre técnico del campo. \\
     \texttt{relevance} & Clases extra para el índice de visibilidad cuando no
       se infieren de la lógica (opcional). \\
     \bottomrule
@@ -119,6 +131,11 @@ frente a corticoide. El identificador conserva el código de sección de la
 guía, de modo que el profesional reconoce B12 o B14 en la columna de
 avisos.
 
+El recuento de entradas no acredita por sí solo correspondencia completa
+con los 190 enunciados: un enunciado puede estar desglosado, requerir datos
+no capturables en la UI o precisar confirmación manual. Este capítulo
+describe el catálogo almacenado, no aporta una matriz de cobertura clínica.
+
 Los trece valores de \texttt{system} coinciden con los de la guía: indicación
 de la medicación, cardiovascular, anticoagulantes/antiagregantes, sistema
 nervioso central, renal, gastrointestinal, respiratorio, musculoesquelético,
@@ -128,7 +145,8 @@ antimuscarínica/anticolinérgica.
 El~\cref{lst:criterio-b1} muestra una entrada real. STOPP-B1 se activa si el
 paciente toma un fármaco de clase \texttt{DIGOXINA} y tiene el diagnóstico
 \texttt{ic\_funcion\_sistolica\_conservada}; \texttt{excludes} indica qué
-marcaría el motor como contraindicado en ese contexto.
+marcaría el motor como medicación potencialmente inapropiada en ese
+contexto. No equivale a una prohibición clínica absoluta.
 
 \begin{lstlisting}[
   caption={Entrada real de \texttt{criteria.json}: STOPP-B1.},
@@ -198,8 +216,11 @@ historial de pacientes, funcionalidad retirada. \texttt{collapsedSections} es
 estado efímero de interfaz y no se persiste.
 
 La rehidratación no valida el esquema Zod: ese contrato se aplica al
-\emph{importar} un fichero (frontera de confianza). El \texttt{localStorage}
-se considera almacenamiento del propio navegador, no un documento intercambiado.
+\emph{importar} un fichero. En \texttt{localStorage}, un JSON que no pueda
+parsearse cae al valor por defecto, pero un valor sintácticamente válido con
+estructura inesperada puede entrar en memoria. Por ello el almacenamiento
+del navegador no se considera una frontera de confianza ni aporta garantía
+de integridad.
 
 \section{Privacidad y protección de datos}
 \label{sec:privacidad}
@@ -212,19 +233,49 @@ tratamiento: no hay cuenta de usuario, no hay API y la evaluación no sale del
 navegador. El PDF y el JSON se generan en el cliente y solo abandonan el
 equipo si el profesional los guarda o los envía por sus propios medios.
 
-Ese planteamiento \textbf{evita el tratamiento en servidor}: no hay
-comunicación a un tercero por el mero hecho de usar la herramienta, ni
-almacenamiento centralizado sobre el que la aplicación ejerciera de
-responsable. El profesional sigue siendo quien introduce el caso y quien
-decide si exporta un informe.
+Ese planteamiento \textbf{evita el tratamiento en un servidor de
+aplicación}, pero no garantiza por sí solo confidencialidad, integridad ni
+borrado. El profesional sigue siendo quien introduce el caso y decide si
+exporta una copia.
 
-El riesgo residual reside en el \textbf{dispositivo}: quien tenga acceso al
-perfil del navegador (equipo compartido, copia de seguridad del perfil, hurto)
-puede leer \texttt{localStorage}. La aplicación no cifra esas claves. El
-reinicio del caso (RF12) borra las claves clínicas; cerrar el navegador no
-basta, porque la persistencia está pensada para recuperar la sesión. No se
-envían datos de pacientes al abrir la guía rápida: el enlace al PDF de
-Sacyl~\cite{sacyl2023stopp} es un documento público, sin parámetros del caso.
+\paragraph{Confidencialidad y copias.}
+Quien acceda al perfil del navegador ---por uso compartido del equipo,
+hurto, sincronización o copia de seguridad del perfil--- puede leer
+\texttt{localStorage}, que la aplicación no cifra. PDF y JSON también se
+generan sin cifrado: al descargarlos quedan fuera del control de la
+aplicación y pueden permanecer en descargas, copias de seguridad, correo u
+otros destinos elegidos por el profesional. El texto copiado queda sujeto
+al comportamiento del portapapeles y del sistema operativo.
+
+\paragraph{Integridad y corrupción.}
+Un actor con acceso al perfil o a las herramientas del navegador puede
+manipular las claves locales. El JSON ilegible se sustituye por el valor por
+defecto, pero la rehidratación no aplica Zod y no detecta necesariamente un
+objeto parseable con tipos o códigos alterados. Esto puede cambiar el caso
+evaluado o provocar un comportamiento no previsto. En cambio, los ficheros
+importados sí se validan antes de llamar a \texttt{loadCase}; esa validación
+estructural no acredita que los datos clínicos sean verdaderos.
+
+\paragraph{Retención y borrado.}
+No existe caducidad automática: cerrar el navegador no elimina el caso. La
+retención dura hasta confirmar «reiniciar», borrar los datos del sitio o
+retirar el perfil. El reinicio sustituye el contenido clínico restaurable
+por un caso vacío; los efectos de persistencia pueden conservar claves
+técnicas con arrays o valores vacíos. La aplicación no puede verificar el
+borrado físico interno del navegador ni retirar copias sincronizadas,
+respaldos o ficheros ya exportados. Estos últimos deben gestionarse y
+eliminarse en sus respectivos destinos.
+
+\paragraph{Uso previsto y riesgo residual.}
+Al abrir la guía rápida no se adjuntan datos del caso: el enlace al PDF de
+Sacyl~\cite{sacyl2023stopp} es público y no lleva parámetros clínicos. Aun
+así, por la persistencia sin cifrado, la falta de validación de integridad
+al rehidratar y la ausencia de control sobre exportaciones y copias, esta
+implementación de TFG no debe emplearse con datos reales identificables sin
+una evaluación organizativa y técnica adicional. El riesgo residual incluye
+acceso local no autorizado, manipulación silenciosa, retención superior a
+la prevista y divulgación de una exportación; la ausencia de backend reduce
+la superficie de exposición, pero no elimina esos riesgos.
 
 \section{Generación de informes}
 \label{sec:informes}

@@ -36,21 +36,53 @@ manualmente sobre el caso del paciente.
 \section{Justificación del trabajo}
 \label{sec:justificacion}
 
-La aplicación sistemática de los 190 criterios STOPP/START v3 resulta laboriosa si se
-realiza de forma manual: el profesional debe contrastar el listado completo con la
-medicación y los diagnósticos de cada paciente, algo poco viable en consultas con
-elevada carga asistencial. Este TFG responde a esa necesidad con una herramienta de
-apoyo a la decisión que automatiza ese contraste y reduce el esfuerzo de la revisión,
-sin sustituir el juicio clínico. El enfoque concreto se describe a continuación.
+La aplicación manual de STOPP/START v3 exige contrastar los criterios con la
+información disponible de cada paciente. Este TFG explora la automatización de parte
+de ese contraste mediante una herramienta de apoyo a la decisión, sin sustituir el
+juicio clínico. No se ha medido el tiempo ahorrado ni la utilidad en consulta; el
+enfoque concreto y sus límites se describen a continuación.
+
+\section{Estado del arte}
+\label{sec:estado-arte}
+
+La automatización de la revisión farmacológica en personas mayores no parte
+de cero. Una revisión sistemática de 16 estudios sobre sistemas
+informatizados encontró reducciones de prescripciones potencialmente
+inapropiadas en distintos contextos, pero señaló que la heterogeneidad de
+las intervenciones y la evidencia limitada sobre resultados clínicos
+impiden atribuirles un beneficio asistencial general~\cite{monteiro2019cdss}.
+
+Entre los antecedentes que aplican STOPP/START está SENATOR, que generaba
+recomendaciones individualizadas para pacientes hospitalizados. Su ensayo
+multicéntrico no redujo las reacciones adversas y registró una adopción baja
+de las recomendaciones por los profesionales~\cite{omahony2020senator}.
+El proyecto OPERAM empleó STRIPA, una aplicación web de apoyo a una revisión
+estructurada realizada por personal médico y farmacéutico. La intervención
+redujo prescripción inapropiada, pero no mostró una reducción significativa
+de los ingresos relacionados con medicamentos~\cite{blum2021operam}.
+
+Estos trabajos tienen un alcance mayor que este TFG: integran más datos
+clínicos, intervención profesional estructurada y evaluación con pacientes.
+También muestran que generar avisos no equivale a mejorar resultados. La
+aportación aquí es más acotada: un prototipo sin servidor, explicable y
+reproducible que formaliza parte de STOPP/START v3 y hace visibles sus reglas
+durante la captura manual. No se presenta como sustituto de esos sistemas ni
+como herramienta clínicamente validada.
 
 \section{Cómo se aborda el problema}
 \label{sec:abordaje}
 
 Para abordar el problema descrito en la~\cref{sec:justificacion}, se
-desarrolla una aplicación web que evalúa de forma automática los criterios
-sobre el caso introducido por el profesional. El núcleo es un motor de reglas:
-una regla por cada criterio, aplicada a la medicación y a los diagnósticos,
-de modo que los avisos aplicables aparecen de forma inmediata.
+desarrolla una aplicación web que evalúa reglas derivadas de STOPP/START con
+los datos presentes en el caso. La interfaz permite introducir medicación,
+diagnósticos y determinados valores analíticos; la edad y el sexo solo pueden
+llegar mediante la importación de un caso JSON, y de ambos el catálogo actual
+solo consulta la edad. Los umbrales de dosis y duración no se evalúan
+automáticamente, sino que se muestran en el aviso para su confirmación manual.
+Por tanto, una regla puede evaluarse con las entradas disponibles, requerir esa
+confirmación o no ser evaluable desde la interfaz. No se afirma una
+correspondencia completa entre las reglas del catálogo y los 190 criterios
+oficiales.
 Además, se deshabilitan opciones que no pueden activar ningún criterio con la
 selección actual y se destacan las relaciones entre medicamentos y
 diagnósticos. El detalle técnico se desarrolla en los capítulos de

@@ -85,7 +85,7 @@ el~\cref{cap:datos}.
       excludes?};
 
     \draw[arr] (pc.west) -- (info.east) node[midway, above, font=\tiny] {info};
-    \draw[arr] (pc.east) -- (med.west) node[midway, above, font=\tiny] {1..*};
+    \draw[arr] (pc.east) -- (med.west) node[midway, above, font=\tiny] {0..*};
     \draw[arr] (pc.south) -- (labs.north) node[midway, left, font=\tiny] {labs};
     \draw[arr, dashed] (pc.south east) -- (crit.north)
       node[midway, right, font=\tiny] {evalúa};
@@ -96,9 +96,10 @@ el~\cref{cap:datos}.
 \end{figure}
 
 \texttt{CaseStoreService} materializa el agregado como señales y
-expone \texttt{patientCase} como proyección. \texttt{CaseIoService} y
-\texttt{ReportService} consumen esa proyección; los pasos la mutan
-campo a campo. \texttt{PatientInfo} existe en el modelo para el
+expone \texttt{patientCase} como proyección. \texttt{CaseIoService}
+consume esa proyección directamente; los pasos la mutan campo a campo y
+entregan a \texttt{ReportService} los datos necesarios para el informe.
+\texttt{PatientInfo} existe en el modelo para el
 informe y el JSON, pero no hay pantalla de captura demográfica.
 
 \subsection{Estructura de un criterio}
@@ -127,7 +128,9 @@ diseño.
     \texttt{logic} &
       Árbol JSON~Logic que el motor aplica al caso. \\
     \texttt{excludes} &
-      Fármacos o clases que el criterio contraindica si se cumple. \\
+      Fármacos o clases cuya adición activaría una advertencia de
+      prescripción potencialmente inapropiada. El nombre se conserva
+      por ser parte del contrato técnico. \\
     \texttt{relevance} &
       Clases que la UI debe destacar cuando el índice automático no
       basta. \\
@@ -143,11 +146,6 @@ compilar una función TypeScript por criterio~\cite{jsonlogic}. El
 motor registra operadores de dominio en un solo punto; el tipo
 \texttt{Crit} no necesita conocerlos.
 
-El catálogo implementa 218 subcriterios ---variantes evaluables de los
-190 enunciados oficiales~\cite{omahony2023stopp}--- agrupados en
-trece sistemas. Esa cifra no cambia el tipo: un subcriterio sigue
-siendo un \texttt{Crit}.
-
 \section{Diseño dinámico}
 
 \subsection{Ciclo de evaluación}
@@ -162,10 +160,11 @@ catálogo o lo retira). Esa escritura invalida el
 diagnósticos y medicaciones y devuelve los \texttt{Crit} que se
 cumplen. La plantilla reparte el resultado en paneles STOPP y START.
 
-En el mismo ciclo el motor puede calcular
-\texttt{getExcludedMedications}: para cada criterio con
-\texttt{excludes}, simula añadir el fármaco candidato y comprueba si
-la regla dispararía. El índice \texttt{relevance}, ya construido en
+El motor también expone \texttt{getExcludedMedications}: para cada criterio
+con \texttt{excludes}, simula añadir el fármaco candidato y comprueba si
+la regla dispararía. Esta capacidad está cubierta por pruebas, pero
+\texttt{MedsStepComponent} no la invoca y la plantilla no muestra ese
+resultado. El índice \texttt{relevance}, ya construido en
 el arranque, alimenta el cubo «relevantes de otros sistemas» y, si el
 fármaco marcado era foráneo, el resaltado de grupos y avisos
 relacionados.
@@ -175,8 +174,7 @@ relacionados.
   \begin{tikzpicture}[
     font=\scriptsize\sffamily,
     actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
-    arr/.style={-{Latex}, thick},
-    dasharr/.style={-{Latex}, thick, dashed}
+    arr/.style={-{Latex}, thick}
   ]
     \node[actor] (c) {Clínico};
     \node[actor, right=1.55cm of c] (ui) {MedsStep};
@@ -197,19 +195,14 @@ relacionados.
     \draw[arr] ([yshift=-2.65cm]en.south) --
       node[above, font=\tiny] {\texttt{Crit[]} aplicables} ([yshift=-2.65cm]ui.south);
 
-    \draw[dasharr] ([yshift=-3.45cm]ui.south) --
-      node[above, font=\tiny] {\texttt{getExcludedMedications}} ([yshift=-3.45cm]en.south);
-    \draw[dasharr] ([yshift=-4.15cm]en.south) --
-      node[above, font=\tiny] {mapa de exclusiones} ([yshift=-4.15cm]ui.south);
-
     \draw[arr] ([yshift=-4.95cm]en.south) --
       node[above, font=\tiny] {\texttt{relevance} / cubos} ([yshift=-4.95cm]ui.south);
     \draw[arr] ([yshift=-5.65cm]ui.south) --
       node[above, font=\tiny] {paneles STOPP/START} ([yshift=-5.65cm]c.south);
   \end{tikzpicture}
-  \caption{Secuencia al marcar una medicación: el almacén cambia, el
-  motor evalúa y la UI actualiza criterios y exclusiones. Las flechas
-  discontinuas marcan el contrato de contraindicación proactiva.}
+  \caption{Secuencia implementada al marcar una medicación: el almacén
+  cambia, el motor evalúa y la UI actualiza criterios y relevancia. El
+  cálculo auxiliar de \texttt{excludes} no está integrado en este flujo.}
   \label{fig:diseno-secuencia}
 \end{figure}
 
@@ -310,9 +303,10 @@ fármaco ante una constante alterada: si el campo solo apareciera
 Dosis y duración (AAS por encima de 100~mg/día, benzodiacepina más de
 cuatro semanas) no se piden en la casilla. El criterio salta al
 marcar el fármaco ---y el diagnóstico, si aplica--- y el umbral queda
-escrito en el aviso, como juicio que el profesional confirma. Pedir
-esos números en cada fila alargaría la captura sin mejorar el cribado
-en consulta.
+escrito en el aviso para revisión manual del profesional. Por tanto,
+el sistema no verifica automáticamente que se supere dicho umbral; la
+interfaz prioriza una captura breve, pero no se ha medido su efecto en
+el tiempo de consulta ni en la usabilidad.
 
 \subsection{Iteraciones de diseño con el tutor}
 

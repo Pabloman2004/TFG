@@ -50,14 +50,20 @@
 \raggedright\large
 \mesTFG, \anhoTFG
 
+\ifx\numeroTFG\valorVacio
+\else
 \vspace{0.35cm}
 \textbf{Traballo de Fin de Grao N\textsuperscript{o}:} \numeroTFG
+\fi
 
 \vspace{0.12cm}
 \textbf{Titor/a:} \tutorTFG
 
+\ifx\cotutorTFG\valorVacio
+\else
 \vspace{0.12cm}
 \textbf{Cotitor/a:} \cotutorTFG
+\fi
 
 \vspace{0.12cm}
 \textbf{Área de coñecemento:} \areaTFG

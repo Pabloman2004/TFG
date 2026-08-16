@@ -10,25 +10,29 @@
 
 \section{Conclusiones técnicas}
 
-Tres decisiones de diseño se han revelado acertadas. La primera es
-mantener las reglas clínicas fuera del código: el motor aplica
+Tres decisiones de diseño facilitaron el desarrollo documentado. La primera es
+mantener las reglas de decisión fuera del código: el motor aplica
 \texttt{criteria.json} en lugar de codificar STOPP/START v3 como
 ramas de programa. Esa separación, descrita en
 el~\cref{cap:arquitectura}, hizo posible auditar el cardiovascular
 contra la guía~\cite{omahony2023stopp,sacyl2023stopp} y eliminar
 criterios inventados o redundantes sin reescribir el evaluador.
 
-La segunda es usar los tests como especificación clínica, no solo como
-red de seguridad del software~\cite{beck2002tdd}. Un falso negativo ---un
-aviso que debería saltar y no salta--- es el riesgo dominante en este
-dominio; formular el caso y el resultado esperado antes de implementar
-la regla convirtió esa expectativa en un contrato ejecutable. El detalle
-de la batería está en el~\cref{cap:pruebas}.
+La segunda es usar los tests como especificación ejecutable de la
+interpretación realizada, no solo como red de seguridad del
+software~\cite{beck2002tdd}. Formular un caso y su resultado esperado antes de
+implementar la regla convirtió esa expectativa en un contrato comprobable. El
+capítulo de pruebas separa el inventario estático de 985 cláusulas de su
+resultado: la suite actual no se ha podido ejecutar en el entorno de cierre y,
+por tanto, no se presenta como superada. También recoge las amenazas derivadas
+de compartir interpretación entre regla y prueba y de no disponer de revisión
+independiente completa.
 
 La tercera es la arquitectura de página única sin servidor. En el
 contexto de un TFG que maneja datos de salud, evaluar y persistir el
 caso solo en el navegador evita un backend de pacientes y reduce la
-superficie de privacidad. El coste, aceptado en
+exposición asociada a ese componente, aunque no elimina los riesgos del
+almacenamiento local. El coste, aceptado en
 el~\cref{cap:objetivos}, es no cubrir escenarios multiusuario ni
 despliegue institucional.
 
@@ -36,15 +40,18 @@ Los límites técnicos son igual de concretos. El catálogo de fármacos y
 diagnósticos está acotado a lo modelado: no cubre el arsenal terapéutico
 completo. El modelo de datos admite edad y sexo, pero la interfaz no
 ofrece un paso de ficha demográfica: esos campos solo llegan por
-importación JSON. La analítica sí se captura en la pestaña «Otros» del
-paso de diagnósticos; lo que no puede activarse a mano es, sobre todo,
-lo que depende de la edad. El recuento del catálogo (218 subcriterios
-en \texttt{criteria.json}) no coincide 1:1 con los 190 enunciados de la
-guía: algunos se desglosan en varias reglas y otros no se reflejan con
-la misma granularidad. Por último, las dependencias diagnósticas y las
-familias de variantes se curaron en profundidad en cardiovascular e
-hipertensión; el resto de sistemas no tiene el mismo grado de
-especialización.
+importación JSON. La analítica sí se captura en la pestaña «Otros» del paso de
+diagnósticos. Así, la evaluación automática desde la UI se limita a
+medicación, diagnósticos y esos valores; la importación JSON añade los datos
+demográficos, aunque el catálogo actual solo consulta la edad; las condiciones
+de dosis y duración exigen confirmación manual; y los criterios dependientes
+de otros datos quedan sin evaluar. El recuento del catálogo (218 subcriterios
+en \texttt{criteria.json}) no coincide 1:1 con los
+190 enunciados de la guía: algunos se desglosan en varias reglas y no existe
+una matriz que demuestre la correspondencia completa. Por último, las
+dependencias diagnósticas y las familias de variantes se modelaron con mayor
+detalle en cardiovascular e hipertensión; el resto de sistemas no tiene el
+mismo grado de especialización.
 
 \section{Conclusiones personales}
 
@@ -66,9 +73,10 @@ menos precisa que un registro contemporáneo. La segunda: anteponer el
 paso de datos del paciente (edad, sexo y constantes) a refinamientos de
 la taxonomía. Varios criterios del motor ya dependían de esos campos
 mientras la UI aún no permitía introducirlos; corregir ese desajuste
-antes habría alineado antes el modelo, las pruebas y el uso en consulta.
+antes habría alineado el modelo, las pruebas y el flujo de entrada.
 
-En conjunto, el proyecto enseña que el valor de una herramienta de
-apoyo no está en acumular funciones, sino en acotar el alcance, hacer
-comprobables las reglas y dejar fuera ---de forma explícita--- lo que
-aún no puede defenderse.
+En conjunto, el proyecto muestra la importancia de acotar el alcance, hacer
+comprobables las reglas y declarar de forma explícita lo que la evidencia
+disponible todavía no permite sostener. Sin pacientes, revisión clínica
+independiente completa ni evaluación formal de usabilidad, no se concluye
+utilidad clínica ni mejora del trabajo en consulta.

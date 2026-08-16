@@ -11,35 +11,41 @@
 
 Desarrollar una aplicación web de apoyo a la decisión clínica que integre un
 motor de inferencia basado en los criterios STOPP/START v3, de modo que el
-profesional sanitario pueda revisar de forma automatizada la medicación de
-pacientes mayores a partir de los fármacos y diagnósticos del caso.
+profesional sanitario pueda obtener avisos a partir de los datos disponibles
+en el caso, distinguiendo la evaluación automática de la información que
+requiere confirmación manual.
 
 \section{Objetivos específicos}
 
-\noindent\textbf{OE1: Formalizar los criterios STOPP/START v3 como reglas
-evaluables de forma automática.}
+\noindent\textbf{OE1: Formalizar como reglas los criterios STOPP/START v3
+representables con el modelo de datos de la aplicación.}
 
-\textbf{Alcance:} modelado declarativo de los criterios (STOPP y START) en un
-catálogo estructurado, sin sustituir el criterio clínico del profesional.
+\textbf{Alcance:} catálogo declarativo de reglas STOPP y START. Su número y
+granularidad no acreditan por sí solos la cobertura de los 190 criterios
+oficiales; los aspectos que dependen de datos no capturados se conservan, cuando
+procede, como texto para la valoración del profesional.
 
 \medskip
 \noindent\textbf{OE2: Implementar un motor de reglas que evalúe el caso
-del paciente frente a dichos criterios.}
+del paciente frente a dichas reglas.}
 
-\textbf{Alcance:} a partir de medicación y diagnósticos, determinar qué avisos
-STOPP y START se activan; no incluye integración con historias clínicas
-electrónicas externas.
+\textbf{Alcance:} a partir de medicación, diagnósticos, analítica y los datos
+importados que cada regla consulte, determinar qué avisos STOPP y START se
+activan. El catálogo actual solo consulta la edad entre los datos demográficos;
+el sexo se conserva en el caso, pero no interviene en la lógica. No incluye
+integración con historias clínicas electrónicas externas ni inferencia de datos
+ausentes.
 
 \medskip
 \noindent\textbf{OE3: Diseñar un flujo de captura guiado de datos clínicos
 relevantes.}
 
-\textbf{Alcance:} interfaz para seleccionar medicamentos y diagnósticos (y,
-cuando aplique, datos auxiliares del caso) de forma usable en consulta.
+\textbf{Alcance:} interfaz para seleccionar medicamentos y diagnósticos e
+introducir los valores analíticos implementados. La interfaz no captura edad,
+sexo, dosis ni duración; edad y sexo solo pueden proceder de un JSON importado.
 
 \medskip
-\noindent\textbf{OE4: Incorporar ayudas de interfaz que reduzcan el tiempo de
-uso.}
+\noindent\textbf{OE4: Incorporar ayudas de interfaz para guiar la revisión.}
 
 \textbf{Alcance:} deshabilitar opciones irrelevantes según la selección actual
 y destacar relaciones entre fármacos y diagnósticos; no incluye
@@ -59,18 +65,22 @@ del caso.}
 caso (p.~ej.\ JSON / persistencia local), sin almacenamiento en servidor.
 
 \medskip
-\noindent\textbf{OE7: Validar el sistema mediante pruebas automáticas y
+\noindent\textbf{OE7: Verificar el sistema mediante pruebas automáticas y
 contraste con la guía oficial.}
 
-\textbf{Alcance:} batería de tests del motor y de la aplicación, más
-comprobación de que los criterios se comportan según el texto de la guía;
-no constituye un ensayo clínico ni una validación con perfil clínico.
+\textbf{Alcance:} inventario de tests del motor y de la aplicación y
+comprobación de conformidad de las reglas con la interpretación realizada de
+la guía. No constituye un ensayo clínico, una revisión independiente completa,
+una validación con pacientes ni una evaluación formal de usabilidad.
 
 \section{Fuera del alcance del trabajo}
 
 \label{sec:limitaciones}
-El presente trabajo se centra en la automatización de la evaluación de los
-criterios STOPP/START v3 sobre un caso introducido por el profesional.
+El presente trabajo se centra en evaluar las reglas STOPP/START v3 que pueden
+resolverse con la información disponible en el caso. Según la regla, esa
+información procede de la interfaz o de un JSON importado; los umbrales de dosis
+y duración quedan para confirmación manual, y una regla que dependa de datos no
+disponibles no es evaluable por esa vía.
 Quedan deliberadamente fuera del alcance, entre otros, los siguientes
 aspectos:
 \begin{itemize}
@@ -92,8 +102,9 @@ aspectos:
   almacenamiento centralizado de pacientes, lo que simplifica la
   privacidad en el contexto del TFG pero limita escenarios multiusuario
   o de despliegue institucional.
-  \item \textbf{Validación no clínica experimental.}
+  \item \textbf{Verificación sin validación clínica experimental.}
   La comprobación del sistema se basa en pruebas automáticas y en el
-  contraste con la guía oficial. No se realiza revisión con perfil clínico,
-  ni un ensayo, ni un estudio de impacto asistencial sobre pacientes reales.
+  contraste con la guía oficial. No se realiza una revisión independiente
+  completa con perfil clínico, ni un ensayo, ni un estudio de impacto
+  asistencial sobre pacientes reales, ni una evaluación formal de usabilidad.
 \end{itemize}

@@ -10,7 +10,8 @@
 Este capítulo pone en correspondencia cada objetivo específico
 del~\cref{cap:objetivos} con un resultado comprobable del sistema.
 No se reclama una validación clínica experimental: la comprobación se
-limita a pruebas automáticas y al contraste con la guía
+limita al inventario de pruebas automáticas y a la verificación de conformidad
+con la guía
 oficial~\cite{omahony2023stopp,sacyl2023stopp}, tal como delimita el
 OE7.
 
@@ -24,22 +25,27 @@ OE7.
     \textbf{Objetivo} & \textbf{Aportación concreta} \\
     \midrule
     OE1 &
-      Catálogo declarativo en \texttt{criteria.json}: los criterios
-      STOPP/START v3 se expresan como reglas evaluables, no como ramas
-      embebidas en el código del motor. \\
+      Catálogo declarativo en \texttt{criteria.json}: las situaciones
+      STOPP/START v3 modeladas se expresan como reglas, no como ramas
+      embebidas en el código del motor. Las 218 entradas no acreditan por
+      sí solas la cobertura de los 190 criterios oficiales. \\
     OE2 &
       Motor de inferencia sobre \texttt{json-logic-js} con operadores
-      clínicos propios; a partir de medicación y diagnósticos determina
-      qué avisos STOPP y START se activan. \\
+      de dominio; evalúa los avisos con medicación, diagnósticos, analítica
+      y los datos importados consultados por cada regla. En el catálogo
+      actual, solo la edad se lee entre los datos demográficos; dosis y
+      duración requieren confirmación manual. \\
     OE3 &
       Flujo guiado en dos pestañas (medicaciones y diagnósticos), con
-      captura auxiliar de analítica en la pestaña «Otros», usable en
-      consulta sobre un catálogo acotado. \\
+      captura auxiliar de analítica en la pestaña «Otros», sobre un
+      catálogo acotado. No incluye ficha demográfica ni captura de dosis
+      o duración. \\
     OE4 &
       Relevancia automática derivada del catálogo (grupos propios frente
-      a relevantes de otros sistemas), exclusiones proactivas de
-      fármacos y deshabilitado de diagnósticos que no pueden activar
-      ningún criterio con la selección actual. \\
+      a relevantes de otros sistemas) y deshabilitado de diagnósticos que
+      no pueden activar ningún criterio con la selección actual. El motor
+      incluye un cálculo auxiliar basado en \texttt{excludes}, pero no se
+      expone en la interfaz. \\
     OE5 &
       Presentación de los criterios activados, agrupados por sistema, en
       las propias pestañas de trabajo, con el enunciado del aviso listo
@@ -49,9 +55,10 @@ OE7.
       versionado, copia en texto plano y persistencia local en el
       navegador, sin almacenamiento en servidor. \\
     OE7 &
-      Batería de pruebas automáticas (TDD) y contraste con la guía v3,
-      reforzada con guardas de integridad del catálogo; no constituye
-      ensayo clínico ni revisión con perfil asistencial. \\
+      Inventario de pruebas automáticas (TDD) y casos de conformidad con la
+      guía v3, reforzado con guardas de integridad del catálogo. La suite
+      actual no se ha ejecutado en el cierre documental; no constituye
+      ensayo clínico ni revisión independiente con perfil asistencial. \\
     \bottomrule
   \end{tabularx}
   \caption{Correspondencia entre los objetivos específicos
@@ -64,27 +71,30 @@ OE7.
 La decisión de mantener las reglas fuera del código ---detallada en
 el~\cref{cap:arquitectura}--- permite auditar, corregir o ampliar un
 criterio editando el catálogo, sin reescribir el evaluador. Sobre esa
-base, la relevancia por pestaña y las exclusiones de medicamentos se
+base, la relevancia por pestaña y las advertencias sobre medicamentos se
 calculan a partir de las propias reglas, de modo que la interfaz no
 exige un mapa manual paralelo que se desalinearía con la guía.
 
 El segundo pilar técnico es tratar los tests como especificación
-clínica ejecutable~\cite{beck2002tdd}: cada regla relevante dispone de
-casos que afirman si el aviso debe activarse o no. Las guardas de
+ejecutable de la interpretación realizada~\cite{beck2002tdd}: la batería
+contiene casos que afirman si determinados avisos deben activarse o no. Las
+guardas de
 catálogo (consistencia entre criterios, fármacos y diagnósticos)
-cierran el círculo frente a referencias huérfanas. El inventario y los
+detectan referencias huérfanas. El inventario, su estado de ejecución y los
 hallazgos de esa batería se recogen en el~\cref{cap:pruebas}.
 
 \section{Aportaciones al ámbito clínico}
 
-La aportación clínica del trabajo es operativizar STOPP/START v3 en el
-tiempo de una consulta: el profesional introduce el caso y obtiene los
-avisos aplicables, en lugar de contrastar a mano el listado de 190
-enunciados~\cite{omahony2023stopp}. La herramienta no prescribe ni
-sustituye el juicio clínico; muestra candidatos a prescripción
-potencialmente inapropiada y a omisión de tratamiento indicado.
+La aportación al ámbito clínico es un prototipo que transforma en avisos las
+reglas STOPP/START evaluables con los datos disponibles. La interfaz aporta
+medicación, diagnósticos y determinados valores analíticos; un JSON importado
+puede aportar edad y sexo; y los umbrales de dosis o duración permanecen en el
+texto para confirmación manual. Las reglas que requieren otros datos no son
+evaluables por esas vías. La herramienta no prescribe ni sustituye el juicio
+clínico; muestra posibles prescripciones potencialmente inapropiadas y
+omisiones de tratamientos indicados.
 
 El alcance permanece el declarado en el~\cref{cap:objetivos}: catálogo
 acotado, sin historia clínica electrónica y sin ensayo sobre pacientes
 reales. Lo que se aporta es un apoyo a la decisión reproducible, no una
-evidencia de impacto asistencial.
+evidencia de impacto asistencial, utilidad o usabilidad.

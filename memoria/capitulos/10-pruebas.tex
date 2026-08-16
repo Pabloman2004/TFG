@@ -11,12 +11,12 @@
 \section{Estrategia de pruebas}
 \label{sec:estrategia-pruebas}
 
-La batería de pruebas tiene un propósito clínico antes que uno meramente
-técnico: demostrar que cada criterio STOPP/START se activa cuando la guía
-oficial lo exige y permanece inactivo cuando no debe hacerlo.
+La batería de pruebas comprueba el comportamiento técnico de las reglas frente
+a casos derivados de la interpretación de la guía: una regla debe activarse en
+el escenario positivo descrito y permanecer inactiva en el negativo.
 El método de desarrollo dirigido por pruebas ya se justificó en
 el~\cref{cap:solucion}; este capítulo describe \emph{qué} se comprueba y
-por qué ese recorte basta para argumentar corrección.
+qué evidencia aporta, sin equipararla a una validación clínica.
 
 Se distinguen cuatro niveles. Las \emph{pruebas unitarias} cubren funciones
 puras (agrupación, visibilidad de grupos, procedencia de ítems foráneos),
@@ -26,8 +26,9 @@ genérico (operadores, normalización, exclusión preventiva). Las de
 esquema Zod de importación y las guardas de integridad entre reglas y
 catálogo. Las de \emph{interfaz} cubren los dos pasos de captura
 (\texttt{MedsStep} y \texttt{DiagnosisStep}): selección, cubos propios y
-foráneos, navegación y acciones de salida. La \emph{validación clínica},
-tratada en sección propia, es el argumento fuerte: cada especificación
+foráneos, navegación y acciones de salida. La \emph{verificación de
+conformidad con la guía}, tratada en sección propia, reúne casos en los que
+cada especificación
 describe un caso (medicación, diagnósticos y, cuando aplica, constantes)
 y afirma si el criterio debe disparar.
 
@@ -43,8 +44,9 @@ comprueba \texttt{evaluate} con reglas sintéticas: coincidencia de
 diagnósticos sin distinguir mayúsculas, filtros que dejan fuera lo que no
 aplica, umbrales de analítica, tolerancia a lógica ausente o mal formada, y
 los operadores \texttt{inDrugClass} y \texttt{multiple*}. También cubre
-\texttt{getExcludedMedications}: un fármaco queda bloqueado si, al
-simularlo sobre el caso, el criterio dispararía.
+\texttt{getExcludedMedications}: el motor devuelve un fármaco candidato si,
+al simularlo sobre el caso, el criterio dispararía. Esta capacidad no está
+integrada en la interfaz actual.
 
 Los helpers puros evitan duplicar esa lógica en los componentes. Se
 verifica que \texttt{groupBySystem} conserva el orden de primera aparición,
@@ -93,13 +95,13 @@ desconocidos, referencias por nombre en lugar de por clase).
 
 Los pasos de medicamentos y diagnósticos se prueban montando el
 componente, no simulando su plantilla a mano. En medicamentos (20 casos)
-se comprueba la selección compartida de un fármaco multiclasse entre su
+se comprueba la selección compartida de un fármaco multiclase entre su
 pestaña principal y otra relevante, que un unitario que aflora por
 relevancia no se cuenta además en «Otros», la ausencia de panel de
 dosis/duración, la navegación por teclado, los cubos y el enlace B19
 (diurético de asa $\leftrightarrow$ AINE), y que un fallo al copiar o al
 exportar PDF muestra un aviso. En diagnósticos (32 casos) se cubre la
-familia mutex de HTA (una sola variante activa), el conteo de «Otro» sin
+familia mutuamente excluyente de HTA (una sola variante activa), el conteo de «Otro» sin
 fila fantasma, el panel fijo de analítica siempre visible en la pestaña
 «Otros» ---independiente de cualquier selección---, la escritura y el
 borrado de una constante sin pisar las demás, y la misma dualidad de
@@ -107,11 +109,12 @@ orientación de pestañas (raíl vertical por defecto, barra superior si se
 elige). El cascarón (rutas, diálogo de reinicio, guía rápida, tooltip)
 añade 12 casos de contrato de navegación y accesibilidad.
 
-\section{Validación clínica de los criterios}
+\section{Verificación de conformidad con la guía STOPP/START}
 \label{sec:validacion-clinica}
 
-Este nivel no es una prueba de software al uso: cada caso es una
-afirmación extraída de la guía STOPP/START v3~\cite{omahony2023stopp,sacyl2023stopp}.
+Cada caso expresa una interpretación de la guía STOPP/START
+v3~\cite{omahony2023stopp,sacyl2023stopp}; comprueba la conformidad entre
+esa interpretación y la regla implementada, pero no su validez clínica.
 El patrón es uniforme. Se construye un \texttt{PatientCase} con fábricas
 compartidas (\texttt{aine()}, \texttt{digoxina()}, \texttt{makeLabs()},
 etc.), se localiza el criterio real por identificador estable
@@ -125,7 +128,9 @@ Hay un fichero por sección fisiológica (\texttt{criteria-a.spec.ts} \ldots\
 \texttt{criteria-m.spec.ts}), 544 casos en total. La densidad no es
 uniforme ---B, C, D, E y K concentran más escenarios; F, G y M son más
 delgadas---, pero las trece secciones STOPP y los START asociados tienen
-especificación propia. Eso cierra el hueco que una revisión intermedia
+especificación propia. Esta distribución no demuestra por sí sola una
+correspondencia completa con los 190 criterios oficiales. Sí cierra el hueco
+que una revisión intermedia
 señaló: I, J, K y M carecían de spec y agrupaban varios de los defectos
 A2, A6, A9 y A14 descritos más adelante.
 
@@ -134,16 +139,17 @@ reproducía el defecto se escribió primero; la regla en
 \texttt{criteria.json} se ajustó después; la misma prueba impide
 reintroducir el falso positivo o el falso negativo.
 
-\section{Cobertura y resultados}
+\section{Inventario estático y estado de ejecución}
 
-El recuento de la~\cref{tab:pruebas} procede de las cláusulas
-\texttt{it(} en \texttt{src/**/*.spec.ts} (985 en total). No se ha
-vuelto a ejecutar Karma en la redacción de este capítulo; la
-documentación operativa del repositorio cita una suite en verde de
-alrededor de 807 especificaciones, cifra de un instante anterior a las
-rondas que añadieron las secciones I--M, las guardas de catálogo y las
-pruebas de interfaz. No hay \texttt{xit}/\texttt{fit}: todas las
-cláusulas están activas. Por módulo, el desglose es: criterios A--M, 544;
+El recuento de la~\cref{tab:pruebas} es un inventario estático de las
+cláusulas \texttt{it(} presentes en \texttt{src/**/*.spec.ts}: 985 en
+total. No es el resultado de una ejecución. No se ha registrado una
+ejecución final de Karma para el estado documentado. La documentación
+operativa del repositorio cita una ejecución anterior de alrededor de 807 especificaciones,
+previa a varias ampliaciones, pero ese antecedente no permite atribuir un
+resultado a las 985 cláusulas actuales. El inventario no encontró
+\texttt{xit}/\texttt{fit}. Por módulo, el desglose estático es: criterios
+A--M, 544;
 motor genérico, 22; catálogo y taxonomías (incluida integridad), 195;
 ayudas de agrupación y visibilidad, 98; almacén y preferencias, 28;
 entrada/salida (JSON, PDF, portapapeles), 34; pasos de captura, 52;
@@ -153,27 +159,43 @@ cascarón de interfaz, 12.
   \centering
   \begin{tabular}{@{}lrr@{}}
     \toprule
-    \textbf{Tipo de prueba} & \textbf{N.\textsuperscript{o}} & \textbf{Resultado} \\
+    \textbf{Tipo de prueba} & \textbf{N.\textsuperscript{o}} & \textbf{Estado} \\
     \midrule
-    Validación clínica (criterios A--M) & 544 & Superada \\
-    Unitarias (motor, helpers, catálogo, almacén) & 338 & Superada \\
-    Integración (integridad, Zod, informes) & 39 & Superada \\
-    Interfaz (pasos y cascarón) & 64 & Superada \\
+    Conformidad con la guía (criterios A--M) & 544 & No ejecutada actualmente \\
+    Unitarias (motor, helpers, catálogo, almacén) & 338 & No ejecutada actualmente \\
+    Integración (integridad, Zod, informes) & 39 & No ejecutada actualmente \\
+    Interfaz (pasos y cascarón) & 64 & No ejecutada actualmente \\
     \midrule
-    \textbf{Total} & \textbf{985} & \textbf{Superada} \\
+    \textbf{Total inventariado} & \textbf{985} & \textbf{Resultado no disponible} \\
     \bottomrule
   \end{tabular}
-  \caption{Resumen de la batería de pruebas (conteo de cláusulas
-  \texttt{it(} en los \texttt{*.spec.ts}). El script
+  \caption{Inventario estático de la batería (conteo de cláusulas
+  \texttt{it(} en los \texttt{*.spec.ts}), sin resultado de ejecución
+  actual. El script
   \texttt{audit-criteria.cjs} no forma parte de este total.}
   \label{tab:pruebas}
 \end{table}
 
+\section{Amenazas a la validez}
+
+La guía fue interpretada principalmente por el autor al traducir sus
+enunciados a datos, reglas y casos de prueba. Una misma interpretación
+incorrecta puede quedar reflejada tanto en la regla como en su test y producir
+un resultado coherente entre ambos, pero no conforme con la guía. No se dispone
+de una revisión clínica independiente completa de la correspondencia entre los
+190 criterios oficiales y las 218 entradas del catálogo.
+
+Tampoco se han realizado pruebas con pacientes ni una evaluación formal con
+profesionales. Por ello, esta batería no permite concluir utilidad clínica,
+impacto asistencial, comprensión de los avisos ni usabilidad. Además, al no
+haber una ejecución actual de la suite, el inventario estático no demuestra que
+las pruebas compilen o terminen satisfactoriamente en el estado documentado.
+
 \section{Errores detectados y corregidos}
 \label{sec:errores-detectados}
 
-La batería no es ornamental: destapó defectos que habrían llegado a
-consulta como aviso erróneo o como silencio. Dos campañas lo ilustran.
+Durante el desarrollo, la batería permitió detectar reglas que producían un
+aviso distinto del esperado en los casos modelados. Dos campañas lo ilustran.
 
 La auditoría de STOPP cardiovascular contra la guía eliminó nueve
 subcriterios que no existen en STOPP/START v3 o que duplicaban un
@@ -190,16 +212,17 @@ caso asociado desapareció.
 
 Una revisión posterior del motor (hallazgos A3--A14) corrigió lógica que
 sí correspondía a un criterio oficial pero estaba mal formalizada. Se
-resumen cinco por impacto clínico, todos cubiertos hoy por un caso
-positivo y otro negativo:
+resumen cinco por su efecto sobre el aviso generado. El código contiene
+para ellos un caso positivo y otro negativo, cuyo resultado actual queda
+pendiente de ejecutar:
 
 \begin{itemize}[leftmargin=1.4em,itemsep=0.25em]
   \item \textbf{B20 (A3).} La lógica solo exigía antihipertensivo
   \emph{central}; diuréticos y alfabloqueantes figuraban en el resumen y
   en las exclusiones, pero no disparaban. Un paciente con estenosis
   aórtica grave y furosemida no veía el STOPP. La regla es ahora una
-  disyunción de las cuatro clases; el test dispara con furosemida y con
-  doxazosina.
+  disyunción de las cuatro clases; los casos esperan activación con
+  furosemida y con doxazosina.
   \item \textbf{C16 (A5).} El AAS en prevención primaria no negaba
   \texttt{cardiopatia\_isquemica} ni \texttt{ictus\_previo}. Un ictus
   previo con AAS ---prevención secundaria correcta--- generaba el aviso
@@ -212,8 +235,9 @@ positivo y otro negativo:
   con quetiapina sola y el disparo si se añade haloperidol.
   \item \textbf{J3 (A6).} Se usaba la clase \texttt{BETABLOQUEANTE}
   completa en un criterio de no cardioselectivos: bisoprolol disparaba.
-  Hoy la lógica cita \texttt{BETABLOQUEANTE\_NO\_CARDIOSELECTIVO}; la
-  spec distingue bisoprolol (no dispara) de carvedilol y propranolol.
+  La lógica actual cita \texttt{BETABLOQUEANTE\_NO\_CARDIOSELECTIVO}; la
+  especificación distingue bisoprolol (no activa la regla) de carvedilol y
+  propranolol.
   \item \textbf{C12 (A1).} El STOPP de ISRS con anticoagulante y
   antecedentes de sangrado no exigía el ISRS: cualquier anticoagulado
   con esos antecedentes recibía «evitar ISRS». Se añadió
@@ -224,6 +248,6 @@ Otros ajustes del mismo lote ---B6 acotado a amiodarona (clase III), I7
 restringido a duloxetina en lugar de toda la clase ISRN, unificación de
 códigos de caídas en la sección K--- siguen el mismo patrón: el test
 nombra el fármaco o el diagnóstico que la guía distingue y falla si la
-regla vuelve a generalizar. Ese es el criterio de que la batería sirve:
-no cuenta líneas cubiertas, sino avisos que un clínico habría visto
-mal o no habría visto.
+regla vuelve a generalizar. Estos casos expresan resultados funcionales
+observables, no solo líneas cubiertas; su conformidad final queda sujeta a las
+amenazas a la validez descritas.

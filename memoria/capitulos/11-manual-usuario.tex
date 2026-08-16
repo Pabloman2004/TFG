@@ -10,27 +10,30 @@
 \section{Requisitos mínimos}
 
 La aplicación es una página web que se ejecuta por completo en el
-navegador. No requiere cuenta, ni instalación de cliente, ni un servidor
-propio una vez servidos los ficheros estáticos. El profesional necesita:
+navegador. No requiere cuenta ni instalación de cliente una vez servidos
+los ficheros estáticos. No se ha aportado una URL de despliegue público;
+por ello, este manual solo documenta la puesta en marcha local verificable
+desde el repositorio. El profesional necesita:
 
 \begin{itemize}[leftmargin=1.4em,itemsep=0.2em]
-  \item Un navegador de escritorio o tableta actual (Chrome, Edge o
-  Firefox en su versión vigente) con JavaScript activado.
-  \item Resolución de tableta o escritorio. Por encima de 1024\,px el
-  diseño muestra dos columnas (captura a la izquierda, criterios a la
-  derecha); entre 768 y 1024\,px los resultados pasan debajo; por debajo
-  de 768\,px las pestañas de sistema se sustituyen por un selector. El
-  uso previsto es consulta en tableta apaisada o en ordenador, no en un
-  teléfono de gama estrecha.
+  \item Un navegador compatible con la compilación de Angular 20 y con
+  JavaScript activado. No se documenta una matriz de navegadores ensayada,
+  por lo que no se afirma compatibilidad certificada con versiones
+  concretas.
+  \item Una pantalla que permita manejar el formulario y el panel de
+  resultados. El código incluye adaptaciones de disposición, pero no se
+  aporta una campaña de pruebas por resolución; la respuesta visual debe
+  comprobarse en el entorno de uso antes de emplear la herramienta.
   \item Conectividad solo para cargar la página y el catálogo de
   criterios. El caso no se envía a ningún servidor.
 \end{itemize}
 
 Para ejecutar o modificar el proyecto en local se requiere, además,
-Node.js 20.19 o superior (requisito de Angular 20) y npm. No hace falta
-base de datos ni ningún servicio en segundo plano.
+una versión de Node.js compatible con Angular 20
+(\texttt{\^{}20.19.0}, \texttt{\^{}22.12.0} o \texttt{\^{}24.0.0}) y npm.
+No hace falta base de datos ni ningún servicio en segundo plano.
 
-\section{Instalación y puesta en marcha}
+\section{Puesta en marcha local para evaluación}
 
 Desde la raíz del repositorio:
 
@@ -39,7 +42,9 @@ npm install
 npx ng serve --host 127.0.0.1 --port 4200
 \end{lstlisting}
 
-El servidor de desarrollo queda en \texttt{http://127.0.0.1:4200}. El
+Estas órdenes levantan un \textbf{servidor de desarrollo}; no constituyen
+una instalación de producción ni acreditan un despliegue final. El servidor
+queda en \texttt{http://127.0.0.1:4200}. El
 navegador abre la pestaña de medicamentos. La configuración de
 desarrollo es la predeterminada de \texttt{ng serve}; no se utiliza la
 compilación de producción para trabajar.
@@ -59,18 +64,76 @@ equivale a reiniciar el caso.
 
 \section{Guía de uso}
 
-El flujo tiene dos pasos y un panel de resultados siempre visible. No
+El flujo tiene dos pasos y un panel de resultados visible junto a la
+captura en la disposición descrita por la interfaz. No
 hay pantalla de datos demográficos ni historial de casos: se seleccionan
 medicamentos, se completan diagnósticos y, si procede, las constantes de
 la pestaña «Otros»; los avisos STOPP y START se actualizan al vuelo. Las
-figuras de esta sección son esquemas de interfaz (wireframes), no
-capturas.
+figuras de esta sección son esquemas de interfaz (\textit{wireframes}), no
+capturas. En el momento del cierre documental no se aportaron capturas
+reales ni un registro de ejecución manual; las conductas descritas se
+contrastan con el código y las especificaciones automáticas localizadas en
+el repositorio, cuya ejecución final debe registrarse por separado.
 
 El recorrido habitual es: (1)~marcar los fármacos activos; (2)~leer los
 avisos que ya puedan dispararse solo con medicación; (3)~pasar a
 diagnósticos; (4)~rellenar la analítica en «Otros» cuando un criterio
 dependa de TFGe, presión arterial, iones u otras constantes; (5)~exportar
 PDF, copiar el texto, guardar el JSON o reiniciar.
+
+\subsection{Caso ficticio reproducible}
+\label{sec:caso-manual}
+
+El siguiente caso no representa a una persona real ni es una recomendación
+terapéutica. Su finalidad es permitir que otra persona reproduzca un
+recorrido mínimo y compare el resultado con una regla concreta del
+catálogo:
+
+\begin{enumerate}[leftmargin=1.7em,itemsep=0.25em]
+  \item Pulsar \emph{Reiniciar} y confirmar \emph{Limpiar} para partir de un
+  caso vacío.
+  \item Mantener vacía la selección de medicamentos.
+  \item En \emph{Diagnósticos}, abrir el sistema cardiovascular y el grupo
+  \emph{Hipertensión}; marcar \emph{HTA (sin especificar)}.
+  \item Comprobar que el panel muestra el criterio
+  \texttt{START-B1-ANTIHIPERTENSIVO-HTA}, que propone considerar un
+  antihipertensivo cuando hay HTA y no consta uno en el caso.
+  \item Volver a \emph{Medicamentos}, seleccionar \emph{Amlodipino} y
+  comprobar que ese criterio deja de resultar aplicable.
+\end{enumerate}
+
+El resultado de los pasos 3--5 se deduce de
+\texttt{criteria.json} y de los casos positivo y negativo de
+\texttt{criteria-b.spec.ts}. No se presenta como una ejecución manual
+fechada. Para conservar evidencia de una ejecución real deberán anotarse
+fecha, versión, navegador y resultado observado, y adjuntarse las capturas
+o exportaciones producidas.
+
+\paragraph{Salidas esperadas antes de seleccionar amlodipino.}
+\emph{Copiar criterios} debe producir texto que incluya \texttt{START}, el
+sistema cardiovascular, el código \texttt{B1} y el resumen del criterio.
+El PDF debe titularse «Informe STOPP/START» e incluir el diagnóstico y la
+tabla START. \emph{Guardar} debe descargar un JSON versión~1.0 cuya parte
+relevante tenga esta forma (la fecha de exportación y los campos de revisión
+dependen de la sesión):
+
+\begin{lstlisting}[numbers=none]
+{
+  "version": "1.0",
+  "exportedAt": "<fecha ISO de la ejecución>",
+  "patientCase": {
+    "info": null,
+    "diagnoses": ["hta"],
+    "medications": [],
+    "labs": null
+  }
+}
+\end{lstlisting}
+
+Estos ejemplos describen formato y contenido esperado según
+\texttt{case-io.service.spec.ts}, \texttt{clipboard-text.spec.ts} y
+\texttt{report.service.spec.ts}; no sustituyen los ficheros generados en
+una ejecución documentada.
 
 \subsection{Pantalla de medicamentos}
 
@@ -236,6 +299,54 @@ Desde cualquier paso se puede:
   en ambas pestañas del flujo.}
   \label{fig:wire-resultados}
 \end{figure}
+
+\section{Resolución de errores}
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{@{}p{3.8cm}XX@{}}
+    \toprule
+    \textbf{Síntoma} & \textbf{Comprobación} & \textbf{Acción} \\
+    \midrule
+    No abre la página local &
+      Revisar la consola de \texttt{ng serve} y que el puerto 4200 no esté
+      ocupado. &
+      Corregir el error mostrado o elegir otro puerto; abrir exactamente la
+      dirección indicada por la CLI. \\
+    La interfaz abre sin catálogo &
+      En las herramientas del navegador, comprobar la petición a
+      \texttt{assets/data/criteria.json}. &
+      Servir la aplicación desde su raíz; no abrir directamente
+      \texttt{index.html} como fichero local. \\
+    El JSON no se carga &
+      Confirmar que procede de \emph{Guardar}, que contiene
+      \texttt{version: "1.0"} y un \texttt{patientCase} válido. &
+      No editarlo a mano; volver a exportarlo. Un rechazo no debe reemplazar
+      el caso que ya estaba abierto. \\
+    No se copia el texto &
+      El navegador puede denegar el portapapeles por permisos o contexto. &
+      Conceder permiso si la política local lo permite o seleccionar el
+      contenido por otro medio; la interfaz debe mostrar el fallo. \\
+    Falla la descarga PDF &
+      Comprobar permisos de descarga y mensajes del navegador. &
+      Reintentar tras habilitar descargas. Como alternativa temporal, usar
+      \emph{Copiar criterios} o \emph{Guardar} JSON. \\
+    El caso reaparece o desaparece &
+      El estado pertenece al \texttt{localStorage} del origen actual. &
+      Usar siempre el mismo origen para recuperarlo; \emph{Reiniciar} o
+      borrar los datos del sitio lo elimina. Exportar JSON antes de borrar. \\
+    No aparece un criterio esperado &
+      Revisar fármacos, diagnósticos y analítica, y leer los umbrales del
+      aviso. Edad, sexo, dosis y duración no se capturan en la interfaz. &
+      No forzar una conclusión clínica. Contrastar con la guía y registrar
+      el caso para revisión; algunos criterios requieren confirmación manual
+      o datos no disponibles. \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Comprobaciones ante incidencias de uso y exportación.}
+  \label{tab:errores-manual}
+\end{table}
 
 \section{Preguntas frecuentes}
 

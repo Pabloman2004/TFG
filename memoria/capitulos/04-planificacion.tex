@@ -37,7 +37,9 @@ clínico hace poco realista un diseño en cascada cerrado. Un criterio mal
 entendido en análisis reaparece en implementación; un cambio de interfaz
 pedido en una ronda de revisión obliga a retocar diseño y código a la vez.
 La~\cref{fig:gantt-inicial} muestra el cronograma previsto (barras claras) y
-el ejecutado (barras oscuras). El método de trabajo que justifica ese
+la actividad reconstruida hasta el 16 de agosto de 2026 (barras oscuras).
+Esta última procede del historial de cambios y no equivale a un registro
+horario. El método de trabajo que justifica ese
 solapamiento se describe en el~\cref{cap:solucion}; este capítulo se limita
 al calendario y a la dedicación.
 
@@ -62,7 +64,7 @@ al calendario y a la dedicación.
     \node[font=\scriptsize\sffamily] at (5.5, 0.55) {ago.};
     \node[font=\scriptsize\sffamily] at (3.0, -0.35) {2026};
 
-    % --- Análisis (est 0.00--1.70; real 0.00--1.45) ---
+    % --- Análisis (plan 0.00--1.70; actividad 0.00--1.45) ---
     \node[anchor=east, align=right, font=\scriptsize\sffamily]
       at (-0.12, 3.35) {Análisis y documentación};
     \fill[gray!18] (0.00, 2.55) rectangle (1.70, 3.25);
@@ -70,7 +72,7 @@ al calendario y a la dedicación.
     \fill[gray!55] (0.00, 3.45) rectangle (1.45, 4.15);
     \draw[gray!70, thick] (0.00, 3.45) rectangle (1.45, 4.15);
 
-    % --- Diseño (est 1.20--3.00; real 1.20--5.00) ---
+    % --- Diseño (plan 1.20--3.00; actividad 1.20--5.00) ---
     \node[anchor=east, font=\scriptsize\sffamily]
       at (-0.12, 6.35) {Diseño};
     \fill[gray!18] (1.20, 5.55) rectangle (3.00, 6.25);
@@ -78,7 +80,7 @@ al calendario y a la dedicación.
     \fill[gray!55] (1.20, 6.45) rectangle (5.00, 7.15);
     \draw[gray!70, thick] (1.20, 6.45) rectangle (5.00, 7.15);
 
-    % --- Implementación (est 2.00--4.50; real 2.00--5.05) ---
+    % --- Implementación (plan 2.00--4.50; actividad 2.00--5.05) ---
     \node[anchor=east, font=\scriptsize\sffamily]
       at (-0.12, 9.35) {Implementación};
     \fill[gray!18] (2.00, 8.55) rectangle (4.50, 9.25);
@@ -86,7 +88,7 @@ al calendario y a la dedicación.
     \fill[gray!55] (2.00, 9.45) rectangle (5.05, 10.15);
     \draw[gray!70, thick] (2.00, 9.45) rectangle (5.05, 10.15);
 
-    % --- Pruebas (est 3.00--5.00; real 2.20--5.20) ---
+    % --- Pruebas (plan 3.00--5.00; actividad 2.20--5.20) ---
     \node[anchor=east, font=\scriptsize\sffamily]
       at (-0.12, 12.35) {Pruebas};
     \fill[gray!18] (3.00, 11.55) rectangle (5.00, 12.25);
@@ -94,71 +96,72 @@ al calendario y a la dedicación.
     \fill[gray!55] (2.20, 12.45) rectangle (5.20, 13.15);
     \draw[gray!70, thick] (2.20, 12.45) rectangle (5.20, 13.15);
 
-    % --- Memoria (est 4.00--6.00; real 4.85--5.55, en curso) ---
+    % --- Memoria (plan 4.00--6.00; actividad observada hasta el corte) ---
     \node[anchor=east, font=\scriptsize\sffamily]
       at (-0.12, 15.35) {Redacción de la memoria};
     \fill[gray!18] (4.00, 14.55) rectangle (6.00, 15.25);
     \draw[gray!60, thick] (4.00, 14.55) rectangle (6.00, 15.25);
     \fill[gray!55] (4.85, 15.45) rectangle (5.55, 16.15);
     \draw[gray!70, thick] (4.85, 15.45) rectangle (5.55, 16.15);
-    \draw[gray!70, thick, dashed] (5.55, 15.45) rectangle (6.00, 16.15);
-
     % Leyenda
     \fill[gray!18] (0.00, 17.55) rectangle (0.45, 18.15);
     \draw[gray!60, thick] (0.00, 17.55) rectangle (0.45, 18.15);
-    \node[anchor=west, font=\scriptsize\sffamily] at (0.55, 17.85) {Estimado};
+    \node[anchor=west, font=\scriptsize\sffamily] at (0.55, 17.85) {Plan};
     \fill[gray!55] (2.10, 17.55) rectangle (2.55, 18.15);
     \draw[gray!70, thick] (2.10, 17.55) rectangle (2.55, 18.15);
-    \node[anchor=west, font=\scriptsize\sffamily] at (2.65, 17.85) {Real};
-    \draw[gray!70, thick, dashed] (3.95, 17.55) rectangle (4.40, 18.15);
-    \node[anchor=west, font=\scriptsize\sffamily] at (4.50, 17.85)
-      {Memoria pendiente};
+    \node[anchor=west, font=\scriptsize\sffamily] at (2.65, 17.85)
+      {Actividad hasta 16/08};
   \end{tikzpicture}
   \caption{Cronograma del proyecto (marzo--agosto de 2026): barras claras,
-  planificación inicial; barras oscuras, ejecución real. La fase de pruebas
-  se solapa con la implementación. El tramo discontinuo de la memoria indica
-  trabajo aún no cerrado.}
+  planificación inicial; barras oscuras, actividad reconstruida mediante Git
+  hasta el 16 de agosto. La fase de pruebas se solapa con la implementación.
+  La redacción no se presenta como cerrada en esa fecha.}
   \label{fig:gantt-inicial}
 \end{figure}
 
-\section{Seguimiento: dedicación real}
+\section{Seguimiento: estimación retrospectiva de dedicación}
 \label{sec:seguimiento}
 
-Las horas reales de la~\cref{tab:seguimiento} no proceden de un parte de
-tiempos diario. Se han reconstruido a partir del histórico de Git ---densidad
-y naturaleza de los cambios por mes--- y de la carga de 12~ECTS (300~h) que
-fijó la estimación. Marzo corresponde al arranque del repositorio; abril, a
-la primera reunión de seguimiento; mayo, al esqueleto de la aplicación;
-junio, a la interfaz y a las pruebas de cada incremento; julio, a la
-auditoría del catálogo STOPP/START; agosto, a la memoria. La reconstrucción
-es una aproximación calibrada para que el plan sume 300~h. La redacción de
-la memoria sigue en curso: la cifra real de esa fila es un corte a la fecha
-de este capítulo, no el cierre de la fase.
+No se mantuvo un parte diario de tiempos. La~\cref{tab:seguimiento} ofrece,
+por tanto, una \textbf{estimación retrospectiva}, no horas reales medidas.
+Se reconstruyó a partir de la densidad y naturaleza de los cambios del
+histórico de Git y se contrastó con la carga prevista de 12~ECTS (300~h).
+Git acredita actividad, pero no la duración de cada tarea; las cifras deben
+leerse como aproximaciones. Marzo corresponde al arranque del repositorio;
+abril, a la primera reunión de seguimiento; mayo, al esqueleto de la
+aplicación; junio, a la interfaz y a las pruebas de cada incremento; julio,
+a la auditoría del catálogo STOPP/START; y agosto, a la memoria.
+
+El corte documental es el 16 de agosto de 2026. En esa fecha la redacción
+seguía abierta, por lo que ni su fila ni el total constituyen el cierre
+definitivo del proyecto.
 
 \begin{table}[H]
   \centering
-  \begin{tabular}{@{}lrrr@{}}
+  \small
+  \begin{tabularx}{\textwidth}{@{}Xrrr@{}}
     \toprule
-    \textbf{Fase} & \textbf{Estimado (h)} & \textbf{Real (h)} & \textbf{Desviación} \\
+    \textbf{Fase} & \textbf{Plan (h)} & \textbf{Est. retrospectiva (h)} & \textbf{Diferencia estimada} \\
     \midrule
-    Análisis y documentación & 40  & 35  & $-5$  \\
-    Diseño                   & 45  & 62  & $+17$ \\
-    Implementación           & 120 & 148 & $+28$ \\
-    Pruebas                  & 50  & 72  & $+22$ \\
-    Redacción de la memoria  & 45  & 28  & $-17$ \\
+    Análisis y documentación & 40  & $\sim35$  & $\sim-5$  \\
+    Diseño                   & 45  & $\sim62$  & $\sim+17$ \\
+    Implementación           & 120 & $\sim148$ & $\sim+28$ \\
+    Pruebas                  & 50  & $\sim72$  & $\sim+22$ \\
+    Redacción de la memoria (al corte) & 45 & $\sim28$ & $\sim-17$ \\
     \midrule
-    \textbf{Total}           & \textbf{300} & \textbf{345} & \textbf{$+45$} \\
+    \textbf{Total al corte}  & \textbf{300} & \textbf{$\sim345$} & \textbf{$\sim+45$} \\
     \bottomrule
-  \end{tabular}
-  \caption{Comparación entre la dedicación estimada y la real, en horas, por
-  fase. La fila de la memoria está en curso y su valor real es un corte, no
-  un cierre.}
+  \end{tabularx}
+  \caption{Comparación entre el plan y la estimación retrospectiva de
+  dedicación hasta el 16 de agosto de 2026. No es un registro de horas ni
+  el cierre definitivo del proyecto.}
   \label{tab:seguimiento}
 \end{table}
 
-El total ejecutado (345~h) supera en 45~h la previsión de 300~h. El exceso
-se concentra en diseño, implementación y pruebas; análisis y memoria quedan
-por debajo, esta última porque aún no ha terminado.
+La estimación acumulada al corte es de aproximadamente 345~h, unas 45~h por
+encima de la previsión de 300~h. La diferencia estimada se concentra en
+diseño, implementación y pruebas. La cifra de memoria queda por debajo del
+plan porque esa fase aún no había terminado.
 
 \section{Desviaciones y su justificación}
 \label{sec:desviaciones}
@@ -173,7 +176,8 @@ el Gantt inicial como un bloque de iteración, sino como un diseño
 relativamente estable a partir de mayo. Cada ronda exigió reabrir decisiones
 de presentación y de flujo ya implementadas, de modo que el diseño se
 extendió hasta julio y arrastró retrabajo de implementación. Esa es la
-principal explicación de las $+17$~h de diseño. El detalle de las
+principal explicación de las aproximadamente 17~h adicionales atribuidas a
+diseño. El detalle de las
 iteraciones de interfaz corresponde al~\cref{cap:diseno}.
 
 La segunda causa es la auditoría del catálogo STOPP/START, concentrada en
@@ -182,8 +186,8 @@ inventados o redundantes en la sección~B de STOPP y obligó a una revisión
 completa de STOPP y de START, no a un arreglo local. El trabajo recayó a la
 vez sobre implementación (corregir y completar reglas) y sobre pruebas
 (fijar el comportamiento esperado frente al texto de la guía). Es la
-contribución mayor a las $+28$~h de implementación y una parte de las
-$+22$~h de pruebas. Los fallos concretos hallados en el catálogo se
+contribución mayor a la diferencia estimada en implementación y a una parte
+de la estimada en pruebas. Los fallos concretos hallados en el catálogo se
 recogen en el~\cref{cap:pruebas}; aquí basta constatar que una auditoría de
 ese alcance no estaba prevista como un mes entero de calendario.
 
@@ -196,15 +200,15 @@ exceso de implementación y, en menor medida, del de pruebas.
 La cuarta causa es el mantenimiento de una batería de pruebas junto con
 guardas sobre el catálogo a lo largo de toda la implementación, no solo al
 final. Esa disciplina ---descrita en el~\cref{cap:solucion}--- alarga cada
-incremento, explica el resto de las $+22$~h de pruebas y adelanta el inicio
-real de esa fase a mayo (\cref{fig:gantt-inicial}). El inventario pertenece
+incremento, explica el resto de la diferencia estimada en pruebas y sitúa el
+inicio observado de esa fase en mayo (\cref{fig:gantt-inicial}). El inventario pertenece
 al~\cref{cap:pruebas}.
 
-Las desviaciones negativas tienen justificación simétrica. El análisis
-cerró cinco horas por debajo porque el dominio venía acotado por una guía
-publicada. La memoria lleva diecisiete horas menos porque julio se destinó
-a la auditoría y a las rondas de interfaz, y la redacción se desplazó a
-agosto, donde todavía continúa.
+Las diferencias negativas tienen una explicación simétrica. El análisis se
+estima por debajo del plan porque el dominio venía acotado por una guía
+publicada. La memoria también queda por debajo en el corte porque julio se
+destinó a la auditoría y a las rondas de interfaz, y la redacción se desplazó
+a agosto, donde todavía continuaba el 16 de agosto.
 
 \section{Puntos críticos identificados}
 \label{sec:puntos-criticos}

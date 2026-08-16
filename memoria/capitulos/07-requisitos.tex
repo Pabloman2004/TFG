@@ -14,7 +14,10 @@ No se incluyen capacidades deliberadamente fuera de alcance
 (\cref{sec:limitaciones}): integración con la historia clínica electrónica,
 historial de pacientes, paso dedicado de ficha demográfica ni sustitución del
 juicio clínico. Cada requisito funcional es verificable sobre la interfaz o
-sobre el resultado de la evaluación.
+sobre el resultado de la evaluación. Los criterios de aceptación indican
+qué debe observarse para considerarlo satisfecho; no presuponen que la
+prueba se haya ejecutado ni sustituyen la evidencia del
+\cref{cap:pruebas}.
 
 \section{Actores del sistema}
 \label{sec:actores}
@@ -76,10 +79,10 @@ a ayudas de captura, accesibilidad o reutilización del caso.
     sistema evaluará automáticamente el caso frente al catálogo STOPP/START
     y actualizará los avisos aplicables en el propio paso, sin petición
     explícita ni ida y vuelta a un servidor. \\
-  RF05 & Alta & El sistema identificará los medicamentos del catálogo que, de
-    añadirse al caso actual, dispararían un criterio con campo
-    \texttt{excludes} (exclusión proactiva), simulando su inclusión sobre
-    el contexto ya capturado. \\
+  RF05 & Baja & El motor ofrecerá un cálculo auxiliar de los medicamentos
+    del catálogo que, de añadirse al caso actual, dispararían una regla con
+    campo \texttt{excludes}. Esta capacidad no se presenta en la interfaz
+    actual y queda disponible para una integración posterior. \\
   RF06 & Alta & En la pestaña activa, el sistema mostrará un bloque
     «Relevantes de otros sistemas» con fármacos o diagnósticos de otras
     pestañas que participan en criterios del sistema en revisión, de modo
@@ -116,38 +119,104 @@ a ayudas de captura, accesibilidad o reutilización del caso.
 \end{longtable}
 }
 
-\section{Requisitos no funcionales}
-\label{sec:rnf}
+\subsection{Criterios de aceptación de los requisitos funcionales}
 
-Los requisitos no funcionales se alinean con características del modelo de
-calidad del producto de ISO/IEC~25010~\cite{iso25010}. No se pretenden
-umbrales de laboratorio industrial, sino condiciones observables en el
-contexto de una herramienta de consulta, sin servidor.
+Para evitar repetir cada descripción, la~\cref{tab:aceptacion-rf} agrupa
+requisitos que comparten procedimiento. La comprobación parte de un caso
+vacío salvo que el propio escenario requiera datos previos.
 
 \begin{table}[H]
   \centering
   \small
-  \begin{tabular}{@{}llp{8.6cm}@{}}
+  \begin{tabular}{@{}lp{11.1cm}@{}}
     \toprule
-    \textbf{ID} & \textbf{Característica} & \textbf{Descripción} \\
+    \textbf{Requisitos} & \textbf{Criterio de aceptación observable} \\
     \midrule
-    RNF01 & Usabilidad & El flujo se completará en dos pasos
-      (medicamentos y diagnósticos) con avisos visibles en la misma
-      pantalla, de modo que la revisión quepa en una consulta sin
-      cambiar de aplicación. \\
+    RF01--RF03, RF07, RF13 y RF15 &
+      Tras realizar la acción descrita desde la interfaz, el valor visible
+      y el caso en memoria reflejan la selección, deselección, captura,
+      revisión o preferencia; al ejecutar la acción inversa se recupera el
+      estado anterior. Las preferencias de RF13 se conservan tras recargar. \\
+    RF04 y RF08 &
+      Al cambiar una entrada que hace aplicable o deja de hacer aplicable
+      una regla conocida, los paneles STOPP/START se actualizan sin pulsar
+      un botón de cálculo ni enviar el caso a un servidor. \\
+    RF05 &
+      Una prueba directa del motor devuelve un fármaco ausente cuyo añadido
+      satisfaría una regla con \texttt{excludes} y omite un candidato que no
+      la satisfaría. No se exige una representación en la interfaz. \\
+    RF06 &
+      Un ítem de otra pestaña que participa en una regla del sistema activo
+      aparece en «Relevantes de otros sistemas» y puede seleccionarse desde
+      ese bloque. \\
+    RF09 y RF10 &
+      La acción genera, respectivamente, una descarga PDF o texto de
+      portapapeles con los datos y criterios aplicables descritos; el caso
+      sin avisos produce el mensaje especificado en RF10. \\
+    RF11 &
+      Exportar e importar el fichero generado restaura el caso. Un fichero
+      malformado, de versión distinta o que incumpla el esquema muestra un
+      rechazo y deja intacto el caso previo. \\
+    RF12 &
+      Cancelar la confirmación conserva el caso; confirmarla vacía sus
+      campos y marcadores persistidos. \\
+    RF14 &
+      La guía rápida se abre desde la interfaz, contiene las tres materias
+      indicadas y ofrece el enlace al documento oficial. \\
+    \bottomrule
+  \end{tabular}
+  \caption{Criterios de aceptación de los requisitos funcionales.}
+  \label{tab:aceptacion-rf}
+\end{table}
+
+\section{Requisitos no funcionales}
+\label{sec:rnf}
+
+Los requisitos no funcionales se alinean con características del modelo de
+calidad del producto de ISO/IEC~25010~\cite{iso25010}. Se formulan como
+condiciones observables. No se fija una latencia máxima ni se afirma que el
+flujo quepa en el tiempo de una consulta, porque no se realizó una medición
+en un equipo de referencia ni una evaluación formal con profesionales.
+
+\begin{table}[H]
+  \centering
+  \scriptsize
+  \begin{tabular}{@{}lp{2.6cm}p{5.1cm}p{4.3cm}@{}}
+    \toprule
+    \textbf{ID} & \textbf{Característica} & \textbf{Requisito} &
+      \textbf{Criterio de aceptación} \\
+    \midrule
+    RNF01 & Usabilidad & El flujo tendrá dos pasos
+      (medicamentos y diagnósticos) y mostrará los avisos en la misma
+      vista que la captura. &
+      Se recorren las dos rutas y en ambas se puede seleccionar una
+      entrada y observar sus avisos sin abrir una tercera pantalla. \\
     RNF02 & Eficiencia de desempeño & La evaluación de criterios se
-      ejecutará íntegramente en el cliente. Un cambio de selección
-      actualizará los avisos en la misma interacción, sin espera de red
-      atribuible al motor. \\
-    RNF03 & Usabilidad / accesibilidad & Existirán al menos tres escalas
+      ejecutará en el cliente. Después de cargar los activos, un cambio
+      del caso no requerirá una petición de red del motor. &
+      Con el catálogo ya cargado, una prueba cambia una entrada y
+      observa la actualización; la inspección de red no muestra una
+      petición nueva asociada a evaluar el caso. No se evalúa latencia. \\
+    RNF03 & Adaptabilidad visual & Existirán tres escalas
       de fuente ($1$, $1{,}15$ y $1{,}3$) aplicables a toda la interfaz,
-      para lectura en consulta. \\
+      con persistencia de la elección. &
+      Cada opción cambia la variable de escala global y el valor elegido
+      permanece tras recargar. Este requisito no acredita por sí solo
+      conformidad WCAG ni usabilidad clínica. \\
     RNF04 & Mantenibilidad & Las reglas clínicas residirán en un catálogo
       JSON independiente del código de la interfaz, de forma que un
-      criterio pueda corregirse o añadirse sin reescribir el motor. \\
+      criterio pueda corregirse o añadirse sin reescribir el motor. &
+      El motor carga una regla válida desde el catálogo o una prueba y la
+      evalúa sin una rama específica para su identificador; los operadores
+      de dominio siguen siendo código cuando la expresión los necesita. \\
     RNF05 & Seguridad / privacidad & El caso no se enviará a un servidor
-      de aplicación. Medicación, diagnósticos y analítica permanecerán
-      en el navegador del profesional (\cref{cap:datos}). \\
+      de aplicación; la persistencia será local y el reinicio permitirá
+      retirar los valores clínicos del estado persistido
+      (\cref{cap:datos}). &
+      La inspección de red durante captura y evaluación no contiene el
+      caso; tras confirmar el reinicio el estado restaurable es un caso
+      vacío, aunque puedan persistir claves técnicas con valores vacíos.
+      Un JSON de importación inválido se rechaza sin sustituir el caso. \\
     \bottomrule
   \end{tabular}
   \caption{Requisitos no funcionales, referidos al modelo de calidad
@@ -164,7 +233,7 @@ subobjetivos que ocurren siempre. El caso de uso principal es \emph{revisar
 la medicación de un paciente con apoyo STOPP/START}. De él se desprenden la
 captura (RF01--RF03, RF15), la consulta de avisos (RF08) y las salidas
 (RF09--RF11). Dos subcasos se incluyen desde varios de ellos:
-\textbf{evaluar criterios}, disparado en cada cambio del caso (RF04, RF05),
+\textbf{evaluar criterios}, disparado en cada cambio del caso (RF04),
 y \textbf{persistir el caso}, que reescribe el estado local sin acción
 explícita de «guardar» (salvo la exportación JSON, que es una copia
 portable). La~\cref{fig:casos-uso} resume el diagrama.
@@ -241,21 +310,28 @@ portable). La~\cref{fig:casos-uso} resume el diagrama.
 \section{Análisis}
 \label{sec:analisis}
 
-El análisis de dominio distingue el \textbf{caso clínico} ---agregado que el
-motor evalúa--- del \textbf{catálogo de criterios}, que no forma parte del
-estado de sesión. El agregado \texttt{PatientCase} agrupa: una ficha
-opcional \texttt{PatientInfo} (nombre, edad, sexo y campos demográficos
-auxiliares; el tipo existe y viaja en el JSON, pero la interfaz no ofrece un
-paso de captura de paciente); una lista de \texttt{Med} (identificador del
-fármaco y clases farmacológicas); una lista de códigos de diagnóstico; un
-bloque opcional \texttt{Labs} con los nueve parámetros numéricos del
-panel de analítica; y los conjuntos de pestañas marcadas como revisadas.
-Un \texttt{Crit} del catálogo se relaciona con el caso por evaluación: dado
-un \texttt{PatientCase}, el criterio resulta aplicable o no. Varios
-\texttt{Med} pueden compartir clase; un diagnóstico pertenece a una pestaña
-de sistema; \texttt{Labs} es único por caso. La~\cref{fig:modelo-dominio}
-resume estas relaciones. El diseño de clases, señales y secuencia de
-evaluación se detalla en el~\cref{cap:diseno}; no se reproduce aquí.
+El análisis de dominio distingue el \textbf{caso clínico} que evalúa el
+motor del \textbf{catálogo de criterios}, que no forma parte del estado de
+sesión. Para interpretar el alcance se separan tres niveles de información:
+
+\begin{itemize}
+  \item \textbf{Disponible en la interfaz:} medicaciones, diagnósticos, los
+    nueve parámetros de analítica y constantes, y marcadores de pestañas
+    revisadas.
+  \item \textbf{Disponible solo mediante el JSON del caso:} la ficha
+    \texttt{PatientInfo} (incluidos edad y sexo) y los campos heredados de
+    dosis y duración de \texttt{Med}; la interfaz no permite capturarlos.
+  \item \textbf{Sujeta a revisión manual:} condiciones expresadas solo en
+    el texto del aviso, como determinados umbrales de dosis o duración. El
+    motor puede mostrar el aviso, pero no comprobar automáticamente esa
+    condición con la captura ordinaria.
+\end{itemize}
+
+Esta clasificación no demuestra cuántos de los 190 enunciados oficiales
+son evaluables en cada nivel. Un \texttt{Crit} se relaciona con el caso por
+evaluación: dado un \texttt{PatientCase}, resulta aplicable o no. La
+\cref{fig:modelo-dominio} conserva únicamente entidades y cardinalidades;
+los atributos y la secuencia se detallan en el~\cref{cap:diseno}.
 
 \begin{figure}[H]
   \centering
@@ -280,8 +356,8 @@ evaluación se detalla en el~\cref{cap:diseno}; no se reproduce aquí.
     \node[ent, below=0.85cm of pc] (labs) {Labs};
     \node[ent, below right=0.85cm and 0.15cm of pc] (crit) {Crit};
     \draw[arr] (pc) -- node[above, font=\tiny, sloped] {0..1} (info);
-    \draw[arr] (pc) -- node[above, font=\tiny, sloped] {$*$} (med);
-    \draw[arr] (pc) -- node[below, font=\tiny, sloped] {$*$} (dx);
+    \draw[arr] (pc) -- node[above, font=\tiny, sloped] {0..*} (med);
+    \draw[arr] (pc) -- node[below, font=\tiny, sloped] {0..*} (dx);
     \draw[arr] (pc) -- node[right, font=\tiny] {0..1} (labs);
     \draw[arr] (crit) -- node[above, font=\tiny, sloped, pos=0.4]
       {se evalúa frente a} (pc);
