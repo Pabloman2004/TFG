@@ -38,7 +38,7 @@ entendido en análisis reaparece en implementación; un cambio de interfaz
 pedido en una ronda de revisión obliga a retocar diseño y código a la vez.
 La~\cref{fig:gantt-inicial} muestra el cronograma previsto (barras claras) y
 la actividad reconstruida hasta el 16 de agosto de 2026 (barras oscuras).
-Esta última procede del historial de cambios y no equivale a un registro
+Esta última procede del histórico de Git y no equivale a un registro
 horario. El método de trabajo que justifica ese
 solapamiento se describe en el~\cref{cap:solucion}; este capítulo se limita
 al calendario y a la dedicación.
@@ -166,7 +166,7 @@ plan porque esa fase aún no había terminado.
 \section{Desviaciones y su justificación}
 \label{sec:desviaciones}
 
-Cuatro hechos explican el grueso de las desviaciones positivas. Ninguno de
+Tres hechos explican el grueso de las desviaciones positivas. Ninguno de
 ellos era un error de cómputo puntual: alteraron el calendario de más de una
 fase a la vez.
 
@@ -191,13 +191,7 @@ de la estimada en pruebas. Los fallos concretos hallados en el catálogo se
 recogen en el~\cref{cap:pruebas}; aquí basta constatar que una auditoría de
 ese alcance no estaba prevista como un mes entero de calendario.
 
-La tercera causa es una funcionalidad de historial de casos que llegó a
-implementarse y después se eliminó. Consumió diseño, código y pruebas de un
-recorrido que no forma parte del flujo fusionado. El coste no se recupera
-al borrar la feature: el tiempo ya se había empleado. Forma parte del
-exceso de implementación y, en menor medida, del de pruebas.
-
-La cuarta causa es el mantenimiento de una batería de pruebas junto con
+La tercera causa es el mantenimiento de una batería de pruebas junto con
 guardas sobre el catálogo a lo largo de toda la implementación, no solo al
 final. Esa disciplina ---descrita en el~\cref{cap:solucion}--- alarga cada
 incremento, explica el resto de la diferencia estimada en pruebas y sitúa el

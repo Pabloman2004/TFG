@@ -12,12 +12,11 @@
 Los requisitos que siguen describen el sistema \emph{tal como está implementado}.
 No se incluyen capacidades deliberadamente fuera de alcance
 (\cref{sec:limitaciones}): integración con la historia clínica electrónica,
-historial de pacientes, paso dedicado de ficha demográfica ni sustitución del
-juicio clínico. Cada requisito funcional es verificable sobre la interfaz o
-sobre el resultado de la evaluación. Los criterios de aceptación indican
-qué debe observarse para considerarlo satisfecho; no presuponen que la
-prueba se haya ejecutado ni sustituyen la evidencia del
-\cref{cap:pruebas}.
+paso dedicado de ficha demográfica ni sustitución del juicio clínico. Cada
+requisito funcional es verificable sobre la interfaz o sobre el resultado de
+la evaluación. Los criterios de aceptación indican qué debe observarse para
+considerarlo satisfecho; no presuponen que la prueba se haya ejecutado ni
+sustituyen la evidencia del~\cref{cap:pruebas}.
 
 \section{Actores del sistema}
 \label{sec:actores}
@@ -32,7 +31,7 @@ interpretación del profesional~\cite{omahony2023stopp}.
 
 No hay actores secundarios de sistema (servidor, historia clínica, laboratorio
 externo). La persistencia y la evaluación ocurren en el navegador del propio
-profesional, según la visión de la~\cref{cap:solucion}.
+profesional, según la visión del~\cref{cap:solucion}.
 
 \section{Requisitos funcionales}
 \label{sec:rf}
@@ -172,16 +171,17 @@ vacío salvo que el propio escenario requiera datos previos.
 \section{Requisitos no funcionales}
 \label{sec:rnf}
 
-Los requisitos no funcionales se alinean con características del modelo de
-calidad del producto de ISO/IEC~25010~\cite{iso25010}. Se formulan como
-condiciones observables. No se fija una latencia máxima ni se afirma que el
-flujo quepa en el tiempo de una consulta, porque no se realizó una medición
-en un equipo de referencia ni una evaluación formal con profesionales.
+La~\cref{tab:rnf} fija cinco condiciones de calidad, cada una con un
+criterio observable. Se toman como referencia las características de
+ISO/IEC~25010~\cite{iso25010}: usabilidad del flujo, ejecución en el
+cliente, adaptación visual, mantenibilidad de las reglas y tratamiento
+local del caso. No se incluye un tiempo máximo de respuesta porque no se
+realizó ninguna medición.
 
 \begin{table}[H]
   \centering
   \scriptsize
-  \begin{tabular}{@{}lp{2.6cm}p{5.1cm}p{4.3cm}@{}}
+  \begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{2.3cm}XX@{}}
     \toprule
     \textbf{ID} & \textbf{Característica} & \textbf{Requisito} &
       \textbf{Criterio de aceptación} \\
@@ -218,7 +218,7 @@ en un equipo de referencia ni una evaluación formal con profesionales.
       vacío, aunque puedan persistir claves técnicas con valores vacíos.
       Un JSON de importación inválido se rechaza sin sustituir el caso. \\
     \bottomrule
-  \end{tabular}
+  \end{tabularx}
   \caption{Requisitos no funcionales, referidos al modelo de calidad
   ISO/IEC~25010.}
   \label{tab:rnf}
@@ -227,83 +227,109 @@ en un equipo de referencia ni una evaluación formal con profesionales.
 \section{Casos de uso}
 \label{sec:casos-uso}
 
-Los casos de uso se describen al estilo de Cockburn~\cite{cockburn2001}:
-meta del actor, sistema como caja negra y relaciones \texttt{include} para
-subobjetivos que ocurren siempre. El caso de uso principal es \emph{revisar
-la medicación de un paciente con apoyo STOPP/START}. De él se desprenden la
-captura (RF01--RF03, RF15), la consulta de avisos (RF08) y las salidas
-(RF09--RF11). Dos subcasos se incluyen desde varios de ellos:
-\textbf{evaluar criterios}, disparado en cada cambio del caso (RF04),
-y \textbf{persistir el caso}, que reescribe el estado local sin acción
-explícita de «guardar» (salvo la exportación JSON, que es una copia
-portable). La~\cref{fig:casos-uso} resume el diagrama.
+El actor principal es el profesional sanitario. Los casos de uso describen
+sus objetivos sobre el sistema, tratado como caja negra: no importan las
+clases internas, sino lo que el profesional puede hacer. El caso de uso
+principal es revisar la medicación de un paciente con apoyo STOPP/START.
+De él se desprenden la captura (RF01--RF03, RF15), la consulta de avisos
+(RF08) y las salidas (RF09--RF11). Dos subcasos ocurren siempre que cambia
+el caso, sin que el profesional los invoque aparte: \textbf{evaluar
+criterios} (RF04) y \textbf{persistir el caso} en el navegador. La
+exportación JSON sí es una acción explícita. La~\cref{fig:casos-uso}
+resume estas relaciones.
 
 \begin{figure}[H]
   \centering
+  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    actor/.style={align=center},
+    font=\small\sffamily,
     uc/.style={
       ellipse, draw, thick, align=center,
-      minimum width=2.55cm, minimum height=0.72cm,
-      inner sep=1.5pt, fill=gray!6
+      minimum width=3.55cm, minimum height=0.92cm,
+      inner sep=1pt, fill=gray!6
     },
     ucinc/.style={
       ellipse, draw, thick, align=center,
-      minimum width=2.35cm, minimum height=0.68cm,
-      inner sep=1.5pt, fill=gray!16
+      minimum width=3.15cm, minimum height=0.92cm,
+      inner sep=1pt, fill=gray!16
     },
-    arr/.style={-{Latex}, thick},
+    assoc/.style={thick},
     inc/.style={-{Latex}, thick, dashed}
   ]
-    \node[actor] (act) {};
+    % System boundary (origin)
+    \node[
+      draw, thick, inner sep=0pt,
+      minimum width=11.6cm, minimum height=10.6cm
+    ] (sys) {};
+    \node[font=\small\bfseries\sffamily, fill=white, inner sep=3pt]
+      at (sys.north) {Sistema STOPP/START};
+
+    % Actor, vertically centered with the system
+    \node[inner sep=0pt, minimum width=0.7cm, minimum height=1.15cm,
+      left=1.35cm of sys] (act) {};
     \begin{scope}[shift={(act.center)}]
-      \fill (0,0.28) circle (0.09);
+      \fill (0,0.40) circle (0.11);
       \draw[thick, line cap=round]
-        (0,0.19) -- (0,-0.06)
-        (-0.15,0.08) -- (0.15,0.08)
-        (0,-0.06) -- (-0.12,-0.28)
-        (0,-0.06) -- (0.12,-0.28);
+        (0,0.29) -- (0,-0.10)
+        (-0.20,0.16) -- (0.20,0.16)
+        (0,-0.10) -- (-0.16,-0.42)
+        (0,-0.10) -- (0.16,-0.42);
     \end{scope}
-    \node[below=0.02cm of act, align=center, font=\scriptsize\bfseries\sffamily]
-      (actlbl) {Profesional\\[-1pt]{\normalfont\tiny sanitario}};
+    \node[below=0.08cm of act, align=center, font=\small\bfseries\sffamily]
+      (actlbl) {Profesional\\[-1pt]{\normalfont\scriptsize sanitario}};
 
-    \node[draw, thick, rounded corners=3pt, inner sep=8pt,
-      minimum width=9.6cm, minimum height=6.35cm,
-      right=1.35cm of actlbl, anchor=west] (sys) {};
-    \node[font=\scriptsize\bfseries\sffamily, above=0.08cm of sys.north]
-      {Sistema STOPP/START};
+    % Primary use cases (left column, actor-facing)
+    \node[uc] at ([shift={(-2.95, 4.45)}]sys.center) (ucmed)
+      {Seleccionar\\medicación};
+    \node[uc] at ([shift={(-2.95, 3.20)}]sys.center) (ucdx)
+      {Seleccionar\\diagnósticos};
+    \node[uc] at ([shift={(-2.95, 1.95)}]sys.center) (uclab)
+      {Introducir\\analítica};
+    \node[uc] at ([shift={(-2.95, 0.70)}]sys.center) (ucver)
+      {Consultar avisos\\STOPP / START};
+    \node[uc] at ([shift={(-2.95,-0.55)}]sys.center) (ucexp)
+      {Exportar informe};
+    \node[uc] at ([shift={(-2.95,-1.80)}]sys.center) (ucges)
+      {Importar o\\reiniciar el caso};
+    \node[uc] at ([shift={(-2.95,-3.05)}]sys.center) (ucvis)
+      {Ajustar\\visualización};
+    \node[uc] at ([shift={(-2.95,-4.30)}]sys.center) (ucguia)
+      {Consultar\\guía rápida};
 
-    \node[uc] at ([shift={(-2.15,2.35)}]sys.center) (ucmed) {Seleccionar\\medicación};
-    \node[uc] at ([shift={(2.15,2.35)}]sys.center) (ucdx) {Seleccionar\\diagnósticos};
-    \node[uc] at ([shift={(-2.15,1.15)}]sys.center) (uclab) {Introducir\\analítica};
-    \node[uc] at ([shift={(2.15,1.15)}]sys.center) (ucver) {Revisar avisos\\STOPP / START};
-    \node[ucinc] at ([shift={(-2.15,-0.05)}]sys.center) (uceval) {Evaluar\\criterios};
-    \node[ucinc] at ([shift={(2.15,-0.05)}]sys.center) (ucpers) {Persistir\\caso};
-    \node[uc] at ([shift={(-2.15,-1.25)}]sys.center) (ucexp) {Exportar informe\\(PDF / texto / JSON)};
-    \node[uc] at ([shift={(2.15,-1.25)}]sys.center) (ucges) {Reiniciar caso\\/ importar JSON};
-    \node[uc] at ([shift={(-2.15,-2.4)}]sys.center) (ucvis) {Ajustar\\visualización};
-    \node[uc] at ([shift={(2.15,-2.4)}]sys.center) (ucguia) {Consultar\\guía rápida};
+    % Included use cases (right column)
+    \node[ucinc] at ([shift={(3.05, 3.20)}]sys.center) (uceval)
+      {Evaluar\\criterios};
+    \node[ucinc] at ([shift={(3.05, 1.95)}]sys.center) (ucpers)
+      {Persistir\\el caso};
 
-    \draw[arr] (actlbl.east) -- (ucmed.west);
-    \draw[arr] (actlbl.east) -- (ucdx.west);
-    \draw[arr] (actlbl.east) -- (uclab.west);
-    \draw[arr] (actlbl.east) -- (ucver.west);
-    \draw[arr] (actlbl.east) -- (ucexp.west);
-    \draw[arr] (actlbl.east) -- (ucges.west);
-    \draw[arr] (actlbl.east) -- (ucvis.west);
-    \draw[arr] (actlbl.east) -- (ucguia.west);
+    % Actor associations: bus vertical y líneas horizontales
+    \draw[thick] (act.east |- ucmed.west) -- (act.east |- ucguia.west);
+    \draw[assoc] (act.east |- ucmed.west) -- (ucmed.west);
+    \draw[assoc] (act.east |- ucdx.west) -- (ucdx.west);
+    \draw[assoc] (act.east |- uclab.west) -- (uclab.west);
+    \draw[assoc] (act.east |- ucver.west) -- (ucver.west);
+    \draw[assoc] (act.east |- ucexp.west) -- (ucexp.west);
+    \draw[assoc] (act.east |- ucges.west) -- (ucges.west);
+    \draw[assoc] (act.east |- ucvis.west) -- (ucvis.west);
+    \draw[assoc] (act.east |- ucguia.west) -- (ucguia.west);
 
-    \draw[inc] (ucmed.south) -- node[right, font=\tiny, pos=0.45] {\texttt{include}} (uceval.north);
-    \draw[inc] (ucdx.south) -- (uceval.north);
-    \draw[inc] (uclab.east) -- (uceval.west);
-    \draw[inc] (ucmed.south east) -- (ucpers.north west);
-    \draw[inc] (ucdx.south) -- node[right, font=\tiny, pos=0.55] {\texttt{include}} (ucpers.north);
-    \draw[inc] (uclab.east) -- (ucpers.west);
-  \end{tikzpicture}
-  \caption{Diagrama de casos de uso. Los óvalos sombreados
-  (\texttt{evaluar}, \texttt{persistir}) se incluyen desde la captura del
-  caso; el actor no los invoca por separado.}
+    % Include: captura → evaluar / persistir (etiquetas sobre las líneas)
+    \coordinate (capjoin) at ([shift={(0.15, 2.58)}]sys.center);
+    \draw[inc] (ucmed.east) -- ++(0.45,0) |- (capjoin);
+    \draw[inc] (ucdx.east) -- ++(0.45,0) |- (capjoin);
+    \draw[inc] (uclab.east) -- ++(0.45,0) |- (capjoin);
+    \draw[inc] (capjoin) --
+      node[above, font=\scriptsize] {«include»}
+      (uceval.west);
+    \draw[inc] (capjoin) --
+      node[below, font=\scriptsize] {«include»}
+      (ucpers.west);
+  \end{tikzpicture}%
+  }
+  \caption{Diagrama de casos de uso. Las líneas continuas asocian al
+  actor con cada objetivo. Las discontinuas marcan la relación
+  \texttt{include}: evaluar y persistir se ejecutan siempre que cambia
+  la captura, sin invocación aparte.}
   \label{fig:casos-uso}
 \end{figure}
 
@@ -335,34 +361,51 @@ los atributos y la secuencia se detallan en el~\cref{cap:diseno}.
 
 \begin{figure}[H]
   \centering
+  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
+    font=\small\sffamily,
     ent/.style={
       draw, thick, rounded corners=2pt, align=center,
-      minimum width=2.35cm, minimum height=0.72cm,
+      minimum width=2.6cm, minimum height=0.85cm,
       inner sep=3pt, fill=gray!6
     },
     agg/.style={
       draw, thick, rounded corners=2pt, align=center,
-      minimum width=2.6cm, minimum height=0.85cm,
+      minimum width=2.8cm, minimum height=0.95cm,
       inner sep=3pt, fill=gray!16
-    },
-    arr/.style={-{Latex}, thick}
+    }
   ]
     \node[agg] (pc) {PatientCase};
-    \node[ent, above left=0.85cm and 0.15cm of pc] (info) {PatientInfo};
-    \node[ent, above right=0.85cm and 0.15cm of pc] (med) {Med};
-    \node[ent, below left=0.85cm and 0.15cm of pc] (dx) {Diagnóstico};
-    \node[ent, below=0.85cm of pc] (labs) {Labs};
-    \node[ent, below right=0.85cm and 0.15cm of pc] (crit) {Crit};
-    \draw[arr] (pc) -- node[above, font=\tiny, sloped] {0..1} (info);
-    \draw[arr] (pc) -- node[above, font=\tiny, sloped] {0..*} (med);
-    \draw[arr] (pc) -- node[below, font=\tiny, sloped] {0..*} (dx);
-    \draw[arr] (pc) -- node[right, font=\tiny] {0..1} (labs);
-    \draw[arr] (crit) -- node[above, font=\tiny, sloped, pos=0.4]
-      {se evalúa frente a} (pc);
-  \end{tikzpicture}
-  \caption{Entidades del dominio y cardinalidades. \texttt{Crit} pertenece
-  al catálogo; el resto constituye el caso de sesión.}
+    \node[ent, above left=1.15cm and 1.15cm of pc] (info) {PatientInfo};
+    \node[ent, above right=1.15cm and 1.15cm of pc] (med) {Med};
+    \node[ent, below left=1.15cm and 1.15cm of pc] (dx) {Diagnóstico};
+    \node[ent, below=1.35cm of pc] (labs) {Labs};
+    \node[ent, below right=1.15cm and 1.15cm of pc] (crit) {Crit};
+
+    \draw[thick] (pc) -- (info)
+      node[pos=0.12, left, font=\scriptsize] {1}
+      node[midway, above, sloped, font=\scriptsize] {ficha}
+      node[pos=0.88, right, font=\scriptsize] {0..1};
+    \draw[thick] (pc) -- (med)
+      node[pos=0.12, right, font=\scriptsize] {1}
+      node[midway, above, sloped, font=\scriptsize] {medicaciones}
+      node[pos=0.88, left, font=\scriptsize] {0..*};
+    \draw[thick] (pc) -- (dx)
+      node[pos=0.12, left, font=\scriptsize] {1}
+      node[midway, above, sloped, font=\scriptsize] {diagnósticos}
+      node[pos=0.88, right, font=\scriptsize] {0..*};
+    \draw[thick] (pc) -- (labs)
+      node[pos=0.12, left, font=\scriptsize] {1}
+      node[midway, left, font=\scriptsize] {analítica}
+      node[pos=0.88, left, font=\scriptsize] {0..1};
+    \draw[thick, dashed] (crit) -- (pc)
+      node[midway, above, sloped, font=\scriptsize] {se evalúa frente a}
+      node[pos=0.12, right, font=\scriptsize] {*}
+      node[pos=0.88, right, font=\scriptsize] {1};
+  \end{tikzpicture}%
+  }
+  \caption{Entidades del dominio, con el nombre de cada relación sobre la
+  línea y las multiplicidades en los extremos. \texttt{Crit} pertenece al
+  catálogo; el resto constituye el caso de sesión.}
   \label{fig:modelo-dominio}
 \end{figure}

@@ -33,13 +33,13 @@ marcaron como revisadas.
 \texttt{Crit} no forma parte del agregado persistido. Es el tipo del
 aviso: identidad, clase STOPP o START, sistema, resumen y, cuando
 aplica, lógica, relevancia y exclusiones. Los resultados no se
-guardan en el almacén; se recalculan. La~\cref{fig:diseno-dominio}
-muestra estas relaciones. No hay entidad de historial: esa pieza se
-eliminó y el intercambio queda en el JSON versionado, descrito en
-el~\cref{cap:datos}.
+guardan en el estado de sesión; se recalculan. La~\cref{fig:diseno-dominio}
+muestra estas relaciones. El intercambio entre sesiones queda en el JSON
+versionado, descrito en el~\cref{cap:datos}.
 
 \begin{figure}[H]
   \centering
+  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
     font=\scriptsize\sffamily,
     cls/.style={
@@ -84,12 +84,22 @@ el~\cref{cap:datos}.
       relevance?\\
       excludes?};
 
-    \draw[arr] (pc.west) -- (info.east) node[midway, above, font=\tiny] {info};
-    \draw[arr] (pc.east) -- (med.west) node[midway, above, font=\tiny] {0..*};
-    \draw[arr] (pc.south) -- (labs.north) node[midway, left, font=\tiny] {labs};
+    \draw[arr] (pc.west) -- (info.east)
+      node[midway, above, font=\scriptsize] {ficha}
+      node[pos=0.12, below, font=\tiny] {1}
+      node[pos=0.88, below, font=\tiny] {0..1};
+    \draw[arr] (pc.east) -- (med.west)
+      node[midway, above, font=\scriptsize] {medicaciones}
+      node[pos=0.12, below, font=\tiny] {1}
+      node[pos=0.88, below, font=\tiny] {0..*};
+    \draw[arr] (pc.south) -- (labs.north)
+      node[midway, left, font=\scriptsize] {analítica}
+      node[pos=0.15, right, font=\tiny] {1}
+      node[pos=0.85, right, font=\tiny] {0..1};
     \draw[arr, dashed] (pc.south east) -- (crit.north)
-      node[midway, right, font=\tiny] {evalúa};
-  \end{tikzpicture}
+      node[midway, right, font=\scriptsize] {evalúa};
+  \end{tikzpicture}%
+  }
   \caption{Modelo de dominio simplificado. \texttt{Crit} no se persiste
   con el caso: el motor lo produce al evaluar.}
   \label{fig:diseno-dominio}
@@ -171,6 +181,7 @@ relacionados.
 
 \begin{figure}[H]
   \centering
+  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
     font=\scriptsize\sffamily,
     actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
@@ -199,9 +210,10 @@ relacionados.
       node[above, font=\tiny] {\texttt{relevance} / cubos} ([yshift=-4.95cm]ui.south);
     \draw[arr] ([yshift=-5.65cm]ui.south) --
       node[above, font=\tiny] {paneles STOPP/START} ([yshift=-5.65cm]c.south);
-  \end{tikzpicture}
-  \caption{Secuencia implementada al marcar una medicación: el almacén
-  cambia, el motor evalúa y la UI actualiza criterios y relevancia. El
+  \end{tikzpicture}%
+  }
+  \caption{Secuencia implementada al marcar una medicación: el estado de
+  sesión cambia, el motor evalúa y la UI actualiza criterios y relevancia. El
   cálculo auxiliar de \texttt{excludes} no está integrado en este flujo.}
   \label{fig:diseno-secuencia}
 \end{figure}
@@ -220,10 +232,11 @@ y entrega paciente, diagnósticos, medicaciones y \texttt{Crit[]} a
 \texttt{ReportService}. Este compone el documento con
 pdfmake~\cite{pdfmake} y el navegador descarga el fichero. Un error
 de generación se comunica con un \textit{snackbar}; no se escribe
-nada en el almacén.
+nada en el estado de sesión.
 
 \begin{figure}[H]
   \centering
+  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
     font=\scriptsize\sffamily,
     actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
@@ -248,7 +261,8 @@ nada en el almacén.
       node[above, font=\tiny] {\texttt{exportCase(...)}} ([yshift=-2.55cm]rp.south);
     \draw[arr] ([yshift=-3.15cm]rp.south) --
       node[above, font=\tiny] {descarga} ([yshift=-3.15cm]c.south);
-  \end{tikzpicture}
+  \end{tikzpicture}%
+  }
   \caption{Secuencia de exportación a PDF: evaluación al vuelo y
   composición en el cliente.}
   \label{fig:diseno-pdf}
@@ -256,12 +270,12 @@ nada en el almacén.
 
 \subsection{Ciclo de persistencia}
 
-El almacén rehidrata cada señal en el constructor ---lectura de
+El servicio de sesión rehidrata cada señal en el constructor ---lectura de
 \texttt{localStorage}, o valor vacío si la clave no existe o el
 parseo falla--- y registra un \textit{effect} que serializa el valor
 en cada cambio. Si la escritura falla (cuota, modo incógnito), el
-error se silencia y la sesión sigue en memoria. Las claves legado
-(\texttt{results}, \texttt{historial}) se borran al arrancar. El
+error se silencia y la sesión sigue en memoria. Las claves de versiones
+anteriores que ya no se usan se eliminan al arrancar. El
 tratamiento de esos datos como información de salud se razona en
 el~\cref{cap:datos}.
 

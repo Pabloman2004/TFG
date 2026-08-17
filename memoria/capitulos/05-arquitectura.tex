@@ -19,8 +19,10 @@ navegador~\cite{angular2026}. No hay servidor de aplicación ni API
 propia: el conocimiento clínico viaja como activos estáticos y el caso
 permanece en el cliente. El profesional recorre dos rutas ---
 \texttt{/medicaciones} y \texttt{/diagnosticos}--- cuyos componentes
-escriben en un almacén reactivo; el motor evalúa ese almacén contra el
-catálogo y la interfaz muestra los avisos aplicables.
+actualizan el estado de sesión; el motor evalúa ese estado contra el
+catálogo y la interfaz muestra los avisos aplicables. Ese estado vive en
+memoria y se copia en el \texttt{localStorage} del navegador: no hay
+base de datos.
 
 La~\cref{fig:arq-cajas} resume el encaje. La capa de presentación
 (\texttt{MedsStepComponent}, \texttt{DiagnosisStepComponent} y los
@@ -35,12 +37,13 @@ El cálculo de candidatos está probado como capacidad del motor, pero la
 interfaz actual no lo presenta. Las salidas de caso ---informe PDF y
 fichero JSON--- las construyen \texttt{ReportService} y
 \texttt{CaseIoService}; los pasos entregan una instantánea al primero y el
-segundo accede al almacén. El
+segundo accede al estado de sesión. El
 navegador aporta dos servicios de plataforma: \texttt{localStorage}
-para el caso y \texttt{HttpClient} para los activos.
+para la copia del caso y \texttt{HttpClient} para los activos.
 
 \begin{figure}[H]
   \centering
+  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
     font=\scriptsize\sffamily,
     caja/.style={
@@ -59,36 +62,36 @@ para el caso y \texttt{HttpClient} para los activos.
     biarr/.style={{Latex}-{Latex}, thick},
     seclabel/.style={font=\scriptsize\bfseries\sffamily}
   ]
-    \node[caja, minimum width=12.2cm, minimum height=1.15cm] (ui)
+    \node[caja, minimum width=11.6cm, minimum height=1.15cm] (ui)
       {\textbf{Presentación}\\[1pt]
        \texttt{MedsStep} \quad \texttt{DiagnosisStep} \quad
        diálogos (guía, reinicio, visualización)};
 
-    \node[nucleo, below=0.42cm of ui, minimum width=12.2cm, minimum height=0.72cm] (store)
+    \node[nucleo, below=0.42cm of ui, minimum width=11.6cm, minimum height=0.72cm] (store)
       {\textbf{Estado de sesión} --- \texttt{CaseStoreService} (\textit{signals})};
 
-    \node[nucleo, below=0.55cm of store, minimum width=4.3cm, minimum height=1.35cm] (eng)
+    \node[nucleo, below=0.55cm of store, minimum width=3.9cm, minimum height=1.35cm] (eng)
       {\textbf{Motor}\\[1pt]
        \texttt{CriteriaEngine}\\
        \texttt{evaluate} / exclusiones\\
        \textit{relevance}};
-    \node[caja, left=0.35cm of eng, minimum width=3.5cm, minimum height=1.35cm] (cat)
+    \node[caja, left=0.30cm of eng, minimum width=3.4cm, minimum height=1.35cm] (cat)
       {\textbf{Catálogos}\\[1pt]
        fármacos, dx,\\
        taxonomías};
-    \node[caja, right=0.35cm of eng, minimum width=3.5cm, minimum height=1.35cm] (out)
+    \node[caja, right=0.30cm of eng, minimum width=3.4cm, minimum height=1.35cm] (out)
       {\textbf{Salidas}\\[1pt]
        \texttt{ReportService}\\
        \texttt{CaseIoService}};
 
-    \node[plat, below=0.42cm of eng, minimum width=4.3cm] (json)
+    \node[plat, below=0.42cm of eng, minimum width=3.9cm] (json)
       {\texttt{criteria.json}};
-    \node[plat, below left=0.55cm and 0.35cm of json,
-      minimum width=5.7cm, minimum height=0.55cm] (local)
-      {Navegador: \texttt{localStorage} (caso)};
-    \node[plat, below right=0.55cm and 0.35cm of json,
-      minimum width=5.7cm, minimum height=0.55cm] (http)
-      {Navegador: HTTP GET de \texttt{assets}};
+    \node[plat, below=0.55cm of json, xshift=-3.05cm,
+      minimum width=5.5cm, minimum height=0.55cm] (local)
+      {\texttt{localStorage} (copia del caso)};
+    \node[plat, below=0.55cm of json, xshift=3.05cm,
+      minimum width=5.5cm, minimum height=0.55cm] (http)
+      {HTTP GET de \texttt{assets}};
 
     \draw[arr] (ui) -- (store);
     \draw[arr] (store) -- (eng);
@@ -96,14 +99,15 @@ para el caso y \texttt{HttpClient} para los activos.
     \draw[arr] (cat) -- (eng);
     \draw[arr] (json) -- (eng);
     \draw[arr] (eng) -- (out);
-    \draw[biarr] (local.west) -- ++(-0.25,0) |- (store.west);
-    \draw[arr] (http.north west) -- node[above, font=\tiny, sloped] {GET} (json.south east);
-  \end{tikzpicture}
-  \caption{Arquitectura de cajas: la UI escribe en el almacén; el motor
-  evalúa el caso con catálogos y \texttt{criteria.json}; las salidas
-  leen una instantánea. \texttt{CaseStoreService} lee y escribe el caso
-  en \texttt{localStorage}, mientras \texttt{HttpClient} obtiene el
-  activo mediante HTTP GET.}
+    \draw[biarr] (local.north) -- (store.south west);
+    \draw[arr] (http.north) -- node[right, font=\tiny, pos=0.45] {GET} (json.south east);
+  \end{tikzpicture}%
+  }
+  \caption{Arquitectura de cajas: la UI actualiza el estado de sesión; el
+  motor evalúa el caso con catálogos y \texttt{criteria.json}; las salidas
+  leen una instantánea. El estado vive en memoria; \texttt{localStorage}
+  guarda una copia en el navegador, no en una base de datos.
+  \texttt{HttpClient} obtiene los activos mediante HTTP GET.}
   \label{fig:arq-cajas}
 \end{figure}
 
@@ -119,47 +123,47 @@ recoge las carpetas que importan para entender el resto del capítulo.
 \begin{table}[H]
   \centering
   \small
-  \begin{tabular}{@{}lp{9.6cm}@{}}
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
     \toprule
     \textbf{Ruta} & \textbf{Contenido} \\
     \midrule
     \texttt{src/app/core} &
-      Tipos de dominio, almacén, motor, catálogos, informes e
+      Tipos de dominio, estado de sesión, motor, catálogos, informes e
       importación/exportación. \\
     \texttt{src/app/core/data} &
       Listados y taxonomías de fármacos y diagnósticos; índice de
       relevancia y dependencias diagnóstico--medicación. \\
     \texttt{src/app/core/services} &
-      \texttt{CriteriaEngineService} y ayudas de prueba del motor. \\
+      Motor de criterios y ayudas de prueba. \\
     \texttt{src/app/steps} &
       Los dos pasos del flujo: medicación y diagnóstico. \\
     \texttt{src/assets/data} &
       Catálogo declarativo \texttt{criteria.json}; su esquema y recuento
       se documentan en el~\cref{cap:datos}. \\
     \bottomrule
-  \end{tabular}
+  \end{tabularx}
   \caption{Directorios relevantes de la aplicación.}
   \label{tab:arq-directorios}
 \end{table}
 
 El arranque (\texttt{main.ts}, \texttt{app.config.ts},
 \texttt{app.routes.ts}) monta un \texttt{router-outlet} y declara dos
-rutas más un comodín que redirige a medicaciones. No existe ruta de
-historial ni paso dedicado a los datos demográficos del paciente.
+rutas más un comodín que redirige a medicaciones. No existe paso
+dedicado a los datos demográficos del paciente.
 
 \section{Módulos y responsabilidades}
 
-\paragraph{Dominio y almacén.}
-\texttt{types.ts} declara el agregado \texttt{PatientCase} ---información
-del paciente, diagnósticos, medicaciones y analítica--- y el tipo
-\texttt{Crit} del criterio evaluable. \texttt{CaseStoreService} es el
-único dueño del estado de sesión: un \textit{signal} por campo, un
-\textit{getter} \texttt{patientCase} que construye la instantánea
-inmutable y operaciones \texttt{reset} / \texttt{loadCase}. Los
-resultados del motor no se cachean en el almacén: cada paso los
-recalcula. El constructor rehidrata desde \texttt{localStorage}; un
-\textit{effect} por señal vuelve a persistir el valor. El detalle de
-claves y el tratamiento de datos personales se pospone al~\cref{cap:datos}.
+\paragraph{Dominio y estado de sesión.}
+El fichero de tipos declara el agregado del caso ---paciente,
+diagnósticos, medicaciones y analítica--- y el tipo del criterio
+evaluable. Un único servicio de sesión es dueño de ese estado: una
+señal por campo, una instantánea inmutable del caso y operaciones de
+reinicio y carga. Los resultados del motor no se guardan: cada paso los
+recalcula. Al arrancar se recupera la copia guardada en el
+\texttt{localStorage} del navegador; cada cambio vuelve a escribirse
+ahí. Ese mecanismo no es una base de datos: es memoria de la sesión más
+una copia local del navegador. El detalle de claves y el tratamiento de
+datos personales se pospone al~\cref{cap:datos}.
 
 \paragraph{Catálogo clínico.}
 Los módulos bajo \texttt{core/data} materializan el vocabulario que la
@@ -170,60 +174,64 @@ común, una regla no podría referirse a «IECA» ni la interfaz agrupar
 casillas por sistema.
 
 \paragraph{Motor.}
-\texttt{CriteriaEngineService} carga el catálogo una vez
-(\texttt{loadCriteria}, promesa cacheada), registra los operadores que
-JSON~Logic no trae de serie~\cite{jsonlogic} y evalúa el caso. No
-conoce Angular Material ni las rutas: recibe un \texttt{PatientCase} y
-una lista de \texttt{Crit}, y devuelve criterios aplicables, un mapa de
-fármacos que activarían advertencias de posible prescripción inapropiada
-y el índice de relevancia. Esa separación
-permite probar el motor sin montar la interfaz.
+El servicio del motor carga el catálogo una vez, registra los operadores
+que JSON~Logic no trae de serie~\cite{jsonlogic} y evalúa el caso. No
+conoce Angular Material ni las rutas: recibe el caso y la lista de
+criterios, y devuelve los avisos aplicables, un mapa de fármacos que
+activarían advertencias de posible prescripción inapropiada y el índice
+de relevancia. Esa separación permite probar el motor sin montar la
+interfaz.
 
 \paragraph{Pasos.}
-\texttt{MedsStepComponent} y \texttt{DiagnosisStepComponent} son la
-única cara del flujo. Cada uno inyecta almacén, motor y servicios de
-salida; en \texttt{ngOnInit} pide \texttt{loadCriteria} y, a partir de
-ahí, \textit{computed} y plantilla reaccionan a las señales. Los
-diálogos ---guía rápida, confirmación de reinicio y opciones de
-visualización--- se abren desde la barra de cada paso, no desde el
-componente raíz.
+Los dos componentes de paso son la única cara del flujo. Cada uno
+inyecta el estado de sesión, el motor y los servicios de salida; al
+iniciar pide la carga del catálogo y, a partir de ahí, señales
+derivadas y plantilla reaccionan a los cambios. Los diálogos ---guía
+rápida, confirmación de reinicio y opciones de visualización--- se
+abren desde la barra de cada paso, no desde el componente raíz.
 
 \paragraph{Informes e intercambio.}
-\texttt{ReportService} compone el PDF a partir de los datos que le entrega
-el componente; no inyecta el almacén. \texttt{CaseIoService} sí accede al
-\texttt{CaseStoreService}: serializa el caso y valida el JSON versionado
-(v1.0) antes de reinyectarlo. Ninguno evalúa reglas por su cuenta. El texto
-plano para el portapapeles es una función pura auxiliar. La composición del
-PDF se detalla en el~\cref{cap:datos}.
+El servicio de informe compone el PDF a partir de los datos que le
+entrega el componente; no lee el estado de sesión. El servicio de
+intercambio sí lo hace: serializa el caso y valida el JSON versionado
+(v1.0) antes de reinyectarlo. Ninguno evalúa reglas por su cuenta. El
+texto plano para el portapapeles es una función pura auxiliar. La
+composición del PDF se detalla en el~\cref{cap:datos}.
 
 \section{Dependencias entre módulos}
 
 La~\cref{fig:arq-deps} muestra quién usa a quién. Las flechas van del
-cliente al proveedor. Los pasos dependen de todos los servicios
-core; el motor depende de \texttt{HttpClient} y de los catálogos; las
-operaciones JSON dependen del almacén y el informe recibe sus datos desde
-los pasos. No hay ciclo: el almacén no importa el motor ni los pasos.
+cliente al proveedor. Los pasos dependen de los servicios de núcleo; el
+motor depende de HTTP y de los catálogos; el intercambio JSON lee el
+estado de sesión y el informe recibe sus datos desde los pasos. No hay
+ciclo: el estado de sesión no importa el motor ni los pasos.
+
+El bloque central no es una base de datos ni la caché HTTP del
+navegador. Es el estado del caso en curso, en memoria, con una copia en
+el \texttt{localStorage} del origen de la aplicación: un almacén
+clave--valor del propio navegador, limitado a esa sesión y a ese sitio.
 
 \begin{figure}[H]
   \centering
+  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
     font=\scriptsize\sffamily,
     caja/.style={
       draw, thick, rounded corners=2pt, align=center,
-      minimum width=2.55cm, minimum height=0.72cm, inner sep=3pt,
+      minimum width=2.7cm, minimum height=0.78cm, inner sep=3pt,
       fill=gray!6
     },
     nucleo/.style={
       draw, thick, rounded corners=2pt, align=center,
-      minimum width=2.55cm, minimum height=0.72cm, inner sep=3pt,
+      minimum width=2.7cm, minimum height=0.78cm, inner sep=3pt,
       fill=gray!14
     },
     arr/.style={-{Latex}, thick}
   ]
     \node[caja] (steps) {Pasos + diálogos};
-    \node[nucleo, below=1.15cm of steps] (store) {Almacén};
-    \node[nucleo, left=0.85cm of store] (eng) {Motor};
-    \node[caja, right=0.85cm of store] (io) {Informes / IO};
+    \node[nucleo, below=1.15cm of steps] (store) {Estado de sesión};
+    \node[nucleo, left=0.7cm of store] (eng) {Motor};
+    \node[caja, right=0.7cm of store] (io) {Informes / IO};
     \node[caja, below=0.85cm of eng] (cat) {Catálogos};
     \node[caja, below=0.85cm of store] (http) {HTTP + \texttt{assets}};
 
@@ -234,10 +242,11 @@ los pasos. No hay ciclo: el almacén no importa el motor ni los pasos.
     \draw[arr] (eng) -- (http);
     \draw[arr] (io) -- (store)
       node[midway, above, sloped, font=\tiny] {solo IO};
-  \end{tikzpicture}
+  \end{tikzpicture}%
+  }
   \caption{Dependencias lógicas: los pasos orquestan; el motor no
   depende de la UI; solo el servicio de intercambio JSON accede
-  directamente al almacén.}
+  directamente al estado de sesión. Ese estado no es una base de datos.}
   \label{fig:arq-deps}
 \end{figure}
 
@@ -289,15 +298,15 @@ motor, y una prueba puede cargar el mismo fichero que la aplicación.
 La contrapartida ---operadores de dominio que el estándar no trae--- se
 concentra en un único registro, no en una función por regla.
 
-\paragraph{\textit{Signals} frente a un almacén RxJS.}
-El estado es local, síncrono y de un solo usuario. Un almacén basado
+\paragraph{\textit{Signals} frente a un estado basado en RxJS.}
+El estado es local, síncrono y de un solo usuario. Un modelo basado
 en observables~\cite{rxjs} habría añadido suscripciones,
-\textit{subjects} y cancelación para un modelo que no espera eventos
+\textit{subjects} y cancelación para un flujo que no espera eventos
 de red ni hilos concurrentes. Las señales de Angular, con
 \textit{computed} y \textit{effect}, cubren lectura, derivación y
-persistencia sin esa maquinaria~\cite{angular2026}. RxJS permanece en
-el proyecto solo donde el propio framework lo exige (por ejemplo,
-\texttt{HttpClient}).
+copia en \texttt{localStorage} sin esa maquinaria~\cite{angular2026}.
+RxJS permanece en el proyecto solo donde el propio framework lo exige
+(por ejemplo, \texttt{HttpClient}).
 
 \paragraph{Dos pasos frente a un asistente de cinco pantallas.}
 Un asistente largo ---paciente, analítica, medicación, diagnóstico,
@@ -306,6 +315,4 @@ y diagnóstico bastan para disparar la mayoría de los criterios; la
 analítica cabe en la pestaña «Otros» del segundo paso, porque varios
 avisos START dependen de constantes que ninguna casilla «activa». No
 hay paso de ficha demográfica ni pantalla final de resultados: los
-avisos viven en el propio paso, a la vista mientras se marca. El
-historial de casos, que llegó a implementarse, se eliminó: duplicaba
-el JSON exportable y sugería un archivo clínico que el sistema no es.
+avisos viven en el propio paso, a la vista mientras se marca.

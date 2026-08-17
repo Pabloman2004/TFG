@@ -50,8 +50,8 @@ auditoría específica.
 \section{Bibliotecas de terceros}
 \label{sec:bibliotecas}
 
-Las bibliotecas de la~\cref{tab:terceros} se toman de \texttt{package.json}.
-Ninguna es de autoría propia. Las versiones concretas son las resueltas en
+La~\cref{tab:terceros} resume los productos usados en tiempo de ejecución
+y el motivo de cada uno. Las versiones son las resueltas en
 \texttt{package-lock.json}, no solo los rangos del manifiesto.
 
 \begin{table}[H]
@@ -121,42 +121,8 @@ La redacción en español sigue la traducción de la Gerencia Regional de
 Salud de Castilla y León (SACYL)~\cite{sacyl2023stopp}. El TFG no produce
 una nueva traducción ni una nueva versión de los criterios; una divergencia
 respecto de esas fuentes es un defecto del sistema, no una propuesta
-clínica. Medicamentos y diagnósticos del desplegable son un catálogo de
-trabajo acotado, no un tesauro oficial; su persistencia se trata en
-el~\cref{cap:datos}. El enunciado de cada criterio pertenece a STOPP/START
-v3 y a su traducción; el TFG aporta la formalización ejecutable.
-
-\section{Licencias}
-\label{sec:licencias}
-
-Las dependencias directas de tiempo de ejecución relevantes y los
-identificadores de licencia declarados para las versiones resueltas se
-resumen en la~\cref{tab:licencias}. La comprobación se apoya tanto en
-\texttt{package-lock.json} como en las fichas específicas del registro npm;
-no se extrapola la licencia de una biblioteca a las demás.
-
-\begin{table}[H]
-  \centering
-  \begin{tabular}{@{}ll@{}}
-    \toprule
-    \textbf{Producto} & \textbf{Licencia} \\
-    \midrule
-    Angular 20.3.4        & MIT~\cite{npmAngularCore2034} \\
-    Angular Material 20.2.8 & MIT~\cite{npmAngularMaterial2028} \\
-    json-logic-js 2.0.5   & MIT~\cite{npmJsonLogic205} \\
-    pdfmake 0.2.20        & MIT~\cite{npmPdfmake0220} \\
-    Zod 4.4.3             & MIT~\cite{npmZod443} \\
-    zone.js 0.15.1        & MIT~\cite{npmZone0151} \\
-    RxJS 7.8.2            & Apache-2.0~\cite{npmRxjs782} \\
-    \bottomrule
-  \end{tabular}
-  \caption{Licencias de los productos de terceros usados en tiempo de
-  ejecución.}
-  \label{tab:licencias}
-\end{table}
-
-La tabla se limita a dependencias directas y al identificador publicado por
-cada paquete. No constituye una auditoría jurídica del árbol transitivo ni
-una afirmación sobre obligaciones de redistribución: para distribuir el
-artefacto deben conservarse y revisarse los textos de licencia incluidos en
-los paquetes y las licencias de sus dependencias transitivas.
+clínica. Los medicamentos y diagnósticos de la interfaz son el subconjunto
+modelado para evaluar las reglas de este trabajo: no cubren el vademécum
+completo ni todos los diagnósticos posibles. El enunciado de cada criterio
+pertenece a STOPP/START v3 y a su traducción; el TFG aporta la
+formalización ejecutable.

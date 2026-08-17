@@ -1,11 +1,13 @@
 # Estado de revisión documental del TFG
 
-**Fecha de revisión:** 16 de agosto de 2026
+**Fecha de revisión:** 17 de agosto de 2026
 **Objeto:** memoria del TFG Tipo I
 **Criterio:** no atribuir al producto resultados, cobertura o validaciones sin
 evidencia reproducible.
 
-## Correcciones incorporadas
+## Correcciones de contenido (16 de agosto)
+
+Ya están en el texto de la memoria:
 
 - El alcance se limita a los criterios evaluables con los datos disponibles.
   Se distinguen la captura desde la interfaz, los datos que solo llegan por
@@ -32,14 +34,30 @@ evidencia reproducible.
   `localStorage`, retención, exportaciones, copias y riesgo residual.
 - Se añadió un estado del arte con sistemas informatizados comparables y
   resultados publicados.
-- Las licencias se respaldan con referencias específicas de las versiones
-  empleadas.
 - El manual incluye un caso ficticio reproducible, salidas esperadas y
   resolución de incidencias, sin inventar un despliegue ni capturas.
 - Se retiraron los agradecimientos de relleno y los campos administrativos
   vacíos no se imprimen en la portada.
 - Se corrigieron términos como `multiclasse`, «familia mutex», `Stopp/start`
   e «Ingenieria Informatica».
+
+## Correcciones de revisión (17 de agosto, caps. 1--8)
+
+- Diagramas y tablas se ajustan al ancho de texto (`\textwidth`); cleveref
+  nombra las tablas como «tabla», no «cuadro».
+- El estado de sesión no se presenta como base de datos ni como caché HTTP:
+  es memoria de la sesión más una copia en `localStorage`.
+- Se eliminó del PDF la funcionalidad retirada de historial de casos. Donde
+  correspondía, «historial» pasó a historia clínica electrónica o a
+  histórico de Git.
+- Se retiró la frase redundante de la tabla de bibliotecas y la sección de
+  licencias.
+- El catálogo de fármacos y diagnósticos se describe como subconjunto
+  modelado para este trabajo, no como tesauro.
+- Se reescribió la introducción de los requisitos no funcionales.
+- Los casos de uso se explican sin jerga de Cockburn. El diagrama lleva
+  asociaciones horizontales, relaciones «include» etiquetadas en las líneas
+  y el modelo de dominio, multiplicidades en los extremos.
 
 ## Evidencia obtenida
 

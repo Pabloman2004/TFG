@@ -183,7 +183,7 @@ No hay base de datos ni API de pacientes. El estado de la sesión se serializa
 en \texttt{localStorage} del origen de la aplicación, porque el sistema es
 una SPA sin backend (\cref{cap:arquitectura}). Cada señal de dominio tiene
 su clave; un efecto escribe el JSON en cada cambio y, si el valor es nulo,
-borra la clave. Al arrancar, el almacén rehidrata las señales con
+borra la clave. Al arrancar, el servicio de sesión rehidrata las señales con
 \texttt{JSON.parse}; un error de lectura deja el valor por defecto y la
 aplicación sigue utilizable. Los fallos de escritura (cuota, modo incógnito)
 se silencian: el caso permanece en memoria durante la sesión.
@@ -210,9 +210,8 @@ se silencian: el caso permanece en memoria durante la sesión.
   \label{tab:persistencia}
 \end{table}
 
-Al iniciar se eliminan claves legado (\texttt{results}, \texttt{activeSystem},
-\texttt{historial}) de versiones que cacheaban resultados o guardaban un
-historial de pacientes, funcionalidad retirada. \texttt{collapsedSections} es
+Al iniciar se eliminan claves de versiones anteriores que ya no se usan
+(\texttt{results}, \texttt{activeSystem}). \texttt{collapsedSections} es
 estado efímero de interfaz y no se persiste.
 
 La rehidratación no valida el esquema Zod: ese contrato se aplica al
