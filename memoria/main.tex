@@ -37,29 +37,40 @@
 \usepackage{setspace}
 \onehalfspacing
 
+% Datos del trabajo (antes de fancyhdr: el encabezado usa \tituloTFG)
+\newcommand{\tituloTFG}{STOPP/START}
+\newcommand{\autorTFG}{Pablo Freire Gullón}
+\newcommand{\tutorTFG}{Martín Pérez Pérez}
+\newcommand{\cotutorTFG}{}
+\newcommand{\gradoTFG}{Grado en Ingeniería Informática}
+\newcommand{\cursoTFG}{2025--2026}
+\newcommand{\mesTFG}{Septiembre}
+\newcommand{\anhoTFG}{2026}
+\newcommand{\valorVacio}{}
+\newcommand{\numeroTFG}{}                % Lo asigna la Secretaria del centro
+\newcommand{\areaTFG}{Linguaxes e Sistemas Informáticos}
+\newcommand{\departamentoTFG}{Informática}
+
 % ---------- Encabezado y pie ----------
 % La guia exige: encabezado con el titulo (minimo) y numeracion en el pie.
 % Preliminaries (portada, indices): sin numero.
-% Cuerpo (desde Introduccion hasta el final): arabigo en el pie.
+% Cuerpo (desde Introduccion hasta el final, incluida la 1.a de cada
+% capitulo): arabigo en el pie. No redefinir \fancypagestyle{plain} con
+% \fancyhf{} antes del cuerpo: en fancyhdr eso vacia tambien el estilo
+% fancy y deja las paginas interiores sin encabezado ni numero.
 \usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\small\itshape\tituloTFG}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
-
-% Estilo de la primera pagina de cada \chapter (report usa "plain")
-\fancypagestyle{plain}{%
-  \fancyhf{}
-  \fancyhead[L]{\small\itshape\tituloTFG}
-  \fancyfoot[C]{\thepage}
-  \renewcommand{\headrulewidth}{0.4pt}
+\newcommand{\estiloCuerpoTFG}{%
+  \fancyhf{}%
+  \fancyhead[L]{\small\itshape\tituloTFG}%
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{0.4pt}%
 }
-
-% Sin encabezado ni numero (preliminares)
+\estiloCuerpoTFG
+\pagestyle{fancy}
+\fancypagestyle{cuerpo}{\estiloCuerpoTFG}
 \fancypagestyle{preliminar}{%
-  \fancyhf{}
-  \renewcommand{\headrulewidth}{0pt}
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
 }
 
 % ---------- Paquetes de contenido ----------
@@ -126,32 +137,17 @@
 \setlength{\emergencystretch}{3em}
 
 % =====================================================================
-%  DATOS DEL TRABAJO
-% =====================================================================
-\newcommand{\tituloTFG}{STOPP/START}
-\newcommand{\autorTFG}{Pablo Freire Gullón}
-\newcommand{\tutorTFG}{Martín Pérez Pérez}
-\newcommand{\cotutorTFG}{}
-\newcommand{\gradoTFG}{Grado en Ingeniería Informática}
-\newcommand{\cursoTFG}{2025--2026}
-\newcommand{\mesTFG}{Septiembre}
-\newcommand{\anhoTFG}{2026}
-\newcommand{\valorVacio}{}
-\newcommand{\numeroTFG}{}                % Lo asigna la Secretaria del centro
-\newcommand{\areaTFG}{Linguaxes e Sistemas Informáticos}
-\newcommand{\departamentoTFG}{Informática}
-
-% =====================================================================
 \begin{document}
 
 % ---------- 5.1 Portada ----------
 \input{capitulos/00-portada}
 
-% Preliminaries: sin numeracion visible
+% Preliminaries: sin numeracion visible (plain vacio solo aqui:
+% \chapter* de los indices usa \thispagestyle{plain}).
 \pagestyle{preliminar}
 \fancypagestyle{plain}{%
-  \fancyhf{}
-  \renewcommand{\headrulewidth}{0pt}
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
 }
 \pagenumbering{roman}
 
@@ -170,13 +166,13 @@
 % =====================================================================
 \clearpage
 \pagenumbering{arabic}
+% Restaurar fancy tras el plain vacio de preliminares y hacer que la
+% primera pagina de cada \chapter (plain) use el mismo encabezado/pie.
+\estiloCuerpoTFG
 \pagestyle{fancy}
-\fancypagestyle{plain}{%
-  \fancyhf{}
-  \fancyhead[L]{\small\itshape\tituloTFG}
-  \fancyfoot[C]{\thepage}
-  \renewcommand{\headrulewidth}{0.4pt}
-}
+\fancypagestyle{plain}{\estiloCuerpoTFG}
+\estiloCuerpoTFG
+\pagestyle{fancy}
 
 \input{capitulos/01-introduccion}          % 5.7
 \input{capitulos/02-objetivos}             % 5.8

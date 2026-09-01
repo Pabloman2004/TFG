@@ -302,51 +302,11 @@ Desde cualquier paso se puede:
 
 \section{Resolución de errores}
 
-\begin{table}[H]
-  \centering
-  \small
-  \begin{tabularx}{\textwidth}{@{}p{3.8cm}XX@{}}
-    \toprule
-    \textbf{Síntoma} & \textbf{Comprobación} & \textbf{Acción} \\
-    \midrule
-    No abre la página local &
-      Revisar la consola de \texttt{ng serve} y que el puerto 4200 no esté
-      ocupado. &
-      Corregir el error mostrado o elegir otro puerto; abrir exactamente la
-      dirección indicada por la CLI. \\
-    La interfaz abre sin catálogo &
-      En las herramientas del navegador, comprobar la petición a
-      \texttt{assets/data/criteria.json}. &
-      Servir la aplicación desde su raíz; no abrir directamente
-      \texttt{index.html} como fichero local. \\
-    El JSON no se carga &
-      Confirmar que procede de \emph{Guardar}, que contiene
-      \texttt{version: "1.0"} y un \texttt{patientCase} válido. &
-      No editarlo a mano; volver a exportarlo. Un rechazo no debe reemplazar
-      el caso que ya estaba abierto. \\
-    No se copia el texto &
-      El navegador puede denegar el portapapeles por permisos o contexto. &
-      Conceder permiso si la política local lo permite o seleccionar el
-      contenido por otro medio; la interfaz debe mostrar el fallo. \\
-    Falla la descarga PDF &
-      Comprobar permisos de descarga y mensajes del navegador. &
-      Reintentar tras habilitar descargas. Como alternativa temporal, usar
-      \emph{Copiar criterios} o \emph{Guardar} JSON. \\
-    El caso reaparece o desaparece &
-      El estado pertenece al \texttt{localStorage} del origen actual. &
-      Usar siempre el mismo origen para recuperarlo; \emph{Reiniciar} o
-      borrar los datos del sitio lo elimina. Exportar JSON antes de borrar. \\
-    No aparece un criterio esperado &
-      Revisar fármacos, diagnósticos y analítica, y leer los umbrales del
-      aviso. Edad, sexo, dosis y duración no se capturan en la interfaz. &
-      No forzar una conclusión clínica. Contrastar con la guía y registrar
-      el caso para revisión; algunos criterios requieren confirmación manual
-      o datos no disponibles. \\
-    \bottomrule
-  \end{tabularx}
-  \caption{Comprobaciones ante incidencias de uso y exportación.}
-  \label{tab:errores-manual}
-\end{table}
+La~\cref{tab:errores-manual} del~\cref{anexo:errores-uso} resume síntomas
+frecuentes de puesta en marcha, exportación y evaluación, con la
+comprobación y la acción recomendadas. No sustituye el diagnóstico clínico
+cuando un criterio esperado no aparece: en ese caso hay que contrastar con
+la guía y registrar el caso para revisión.
 
 \section{Preguntas frecuentes}
 

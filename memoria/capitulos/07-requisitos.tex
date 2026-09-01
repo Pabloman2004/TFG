@@ -14,9 +14,9 @@ No se incluyen capacidades deliberadamente fuera de alcance
 (\cref{sec:limitaciones}): integración con la historia clínica electrónica,
 paso dedicado de ficha demográfica ni sustitución del juicio clínico. Cada
 requisito funcional es verificable sobre la interfaz o sobre el resultado de
-la evaluación. Los criterios de aceptación indican qué debe observarse para
-considerarlo satisfecho; no presuponen que la prueba se haya ejecutado ni
-sustituyen la evidencia del~\cref{cap:pruebas}.
+la evaluación. Los criterios de aceptación observables se recogen en
+el~\cref{anexo:aceptacion} (\cref{tab:aceptacion-rf}); no presuponen que la
+prueba se haya ejecutado ni sustituyen la evidencia del~\cref{cap:pruebas}.
 
 \section{Actores del sistema}
 \label{sec:actores}
@@ -120,53 +120,10 @@ a ayudas de captura, accesibilidad o reutilización del caso.
 
 \subsection{Criterios de aceptación de los requisitos funcionales}
 
-Para evitar repetir cada descripción, la~\cref{tab:aceptacion-rf} agrupa
-requisitos que comparten procedimiento. La comprobación parte de un caso
-vacío salvo que el propio escenario requiera datos previos.
-
-\begin{table}[H]
-  \centering
-  \small
-  \begin{tabular}{@{}lp{11.1cm}@{}}
-    \toprule
-    \textbf{Requisitos} & \textbf{Criterio de aceptación observable} \\
-    \midrule
-    RF01--RF03, RF07, RF13 y RF15 &
-      Tras realizar la acción descrita desde la interfaz, el valor visible
-      y el caso en memoria reflejan la selección, deselección, captura,
-      revisión o preferencia; al ejecutar la acción inversa se recupera el
-      estado anterior. Las preferencias de RF13 se conservan tras recargar. \\
-    RF04 y RF08 &
-      Al cambiar una entrada que hace aplicable o deja de hacer aplicable
-      una regla conocida, los paneles STOPP/START se actualizan sin pulsar
-      un botón de cálculo ni enviar el caso a un servidor. \\
-    RF05 &
-      Una prueba directa del motor devuelve un fármaco ausente cuyo añadido
-      satisfaría una regla con \texttt{excludes} y omite un candidato que no
-      la satisfaría. No se exige una representación en la interfaz. \\
-    RF06 &
-      Un ítem de otra pestaña que participa en una regla del sistema activo
-      aparece en «Relevantes de otros sistemas» y puede seleccionarse desde
-      ese bloque. \\
-    RF09 y RF10 &
-      La acción genera, respectivamente, una descarga PDF o texto de
-      portapapeles con los datos y criterios aplicables descritos; el caso
-      sin avisos produce el mensaje especificado en RF10. \\
-    RF11 &
-      Exportar e importar el fichero generado restaura el caso. Un fichero
-      malformado, de versión distinta o que incumpla el esquema muestra un
-      rechazo y deja intacto el caso previo. \\
-    RF12 &
-      Cancelar la confirmación conserva el caso; confirmarla vacía sus
-      campos y marcadores persistidos. \\
-    RF14 &
-      La guía rápida se abre desde la interfaz, contiene las tres materias
-      indicadas y ofrece el enlace al documento oficial. \\
-    \bottomrule
-  \end{tabular}
-  \caption{Criterios de aceptación de los requisitos funcionales.}
-  \label{tab:aceptacion-rf}
-\end{table}
+Para evitar repetir cada descripción, la~\cref{tab:aceptacion-rf} del
+\cref{anexo:aceptacion} agrupa requisitos que comparten procedimiento. La
+comprobación parte de un caso vacío salvo que el propio escenario requiera
+datos previos.
 
 \section{Requisitos no funcionales}
 \label{sec:rnf}

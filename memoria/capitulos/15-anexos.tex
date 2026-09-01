@@ -269,3 +269,145 @@ cada uno, identifique reglas, datos necesarios, caso positivo, caso
 negativo y estado (completo, parcial, manual, no evaluable o no
 implementado). Esa correspondencia no puede inferirse de los totales y no
 se inventa en esta memoria.
+
+\chapter{Criterios de aceptación de los requisitos funcionales}
+\label{anexo:aceptacion}
+
+La~\cref{tab:aceptacion-rf} complementa la~\cref{tab:rf} del
+\cref{cap:requisitos}. Agrupa requisitos que comparten procedimiento de
+comprobación. La comprobación parte de un caso vacío salvo que el propio
+escenario requiera datos previos. No presupone que la prueba se haya
+ejecutado ni sustituye la evidencia del~\cref{cap:pruebas}.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}lp{11.1cm}@{}}
+    \toprule
+    \textbf{Requisitos} & \textbf{Criterio de aceptación observable} \\
+    \midrule
+    RF01--RF03, RF07, RF13 y RF15 &
+      Tras realizar la acción descrita desde la interfaz, el valor visible
+      y el caso en memoria reflejan la selección, deselección, captura,
+      revisión o preferencia; al ejecutar la acción inversa se recupera el
+      estado anterior. Las preferencias de RF13 se conservan tras recargar. \\
+    RF04 y RF08 &
+      Al cambiar una entrada que hace aplicable o deja de hacer aplicable
+      una regla conocida, los paneles STOPP/START se actualizan sin pulsar
+      un botón de cálculo ni enviar el caso a un servidor. \\
+    RF05 &
+      Una prueba directa del motor devuelve un fármaco ausente cuyo añadido
+      satisfaría una regla con \texttt{excludes} y omite un candidato que no
+      la satisfaría. No se exige una representación en la interfaz. \\
+    RF06 &
+      Un ítem de otra pestaña que participa en una regla del sistema activo
+      aparece en «Relevantes de otros sistemas» y puede seleccionarse desde
+      ese bloque. \\
+    RF09 y RF10 &
+      La acción genera, respectivamente, una descarga PDF o texto de
+      portapapeles con los datos y criterios aplicables descritos; el caso
+      sin avisos produce el mensaje especificado en RF10. \\
+    RF11 &
+      Exportar e importar el fichero generado restaura el caso. Un fichero
+      malformado, de versión distinta o que incumpla el esquema muestra un
+      rechazo y deja intacto el caso previo. \\
+    RF12 &
+      Cancelar la confirmación conserva el caso; confirmarla vacía sus
+      campos y marcadores persistidos. \\
+    RF14 &
+      La guía rápida se abre desde la interfaz, contiene las tres materias
+      indicadas y ofrece el enlace al documento oficial. \\
+    \bottomrule
+  \end{tabular}
+  \caption{Criterios de aceptación de los requisitos funcionales.}
+  \label{tab:aceptacion-rf}
+\end{table}
+
+\chapter{Resolución de incidencias de uso}
+\label{anexo:errores-uso}
+
+La~\cref{tab:errores-manual} complementa el~\cref{cap:manual}. Recoge
+síntomas de puesta en marcha, exportación y evaluación, con la
+comprobación y la acción recomendadas.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{@{}p{3.8cm}XX@{}}
+    \toprule
+    \textbf{Síntoma} & \textbf{Comprobación} & \textbf{Acción} \\
+    \midrule
+    No abre la página local &
+      Revisar la consola de \texttt{ng serve} y que el puerto 4200 no esté
+      ocupado. &
+      Corregir el error mostrado o elegir otro puerto; abrir exactamente la
+      dirección indicada por la CLI. \\
+    La interfaz abre sin catálogo &
+      En las herramientas del navegador, comprobar la petición a
+      \texttt{assets/data/criteria.json}. &
+      Servir la aplicación desde su raíz; no abrir directamente
+      \texttt{index.html} como fichero local. \\
+    El JSON no se carga &
+      Confirmar que procede de \emph{Guardar}, que contiene
+      \texttt{version: "1.0"} y un \texttt{patientCase} válido. &
+      No editarlo a mano; volver a exportarlo. Un rechazo no debe reemplazar
+      el caso que ya estaba abierto. \\
+    No se copia el texto &
+      El navegador puede denegar el portapapeles por permisos o contexto. &
+      Conceder permiso si la política local lo permite o seleccionar el
+      contenido por otro medio; la interfaz debe mostrar el fallo. \\
+    Falla la descarga PDF &
+      Comprobar permisos de descarga y mensajes del navegador. &
+      Reintentar tras habilitar descargas. Como alternativa temporal, usar
+      \emph{Copiar criterios} o \emph{Guardar} JSON. \\
+    El caso reaparece o desaparece &
+      El estado pertenece al \texttt{localStorage} del origen actual. &
+      Usar siempre el mismo origen para recuperarlo; \emph{Reiniciar} o
+      borrar los datos del sitio lo elimina. Exportar JSON antes de borrar. \\
+    No aparece un criterio esperado &
+      Revisar fármacos, diagnósticos y analítica, y leer los umbrales del
+      aviso. Edad, sexo, dosis y duración no se capturan en la interfaz. &
+      No forzar una conclusión clínica. Contrastar con la guía y registrar
+      el caso para revisión; algunos criterios requieren confirmación manual
+      o datos no disponibles. \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Comprobaciones ante incidencias de uso y exportación.}
+  \label{tab:errores-manual}
+\end{table}
+
+\chapter{Detalle de errores detectados en el motor}
+\label{anexo:errores-motor}
+
+Este anexo detalla los cinco hallazgos A3--A14 resumidos en
+el~\cref{sec:errores-detectados}. En todos ellos la lógica correspondía a
+un criterio oficial pero estaba mal formalizada. El código contiene un caso
+positivo y otro negativo; su resultado actual queda pendiente de ejecutar.
+
+\begin{itemize}[leftmargin=1.4em,itemsep=0.25em]
+  \item \textbf{B20 (A3).} La lógica solo exigía antihipertensivo
+  \emph{central}; diuréticos y alfabloqueantes figuraban en el resumen y
+  en las exclusiones, pero no disparaban. Un paciente con estenosis
+  aórtica grave y furosemida no veía el STOPP. La regla es ahora una
+  disyunción de las cuatro clases; los casos esperan activación con
+  furosemida y con doxazosina.
+  \item \textbf{C16 (A5).} El AAS en prevención primaria no negaba
+  \texttt{cardiopatia\_isquemica} ni \texttt{ictus\_previo}. Un ictus
+  previo con AAS ---prevención secundaria correcta--- generaba el aviso
+  de prevención primaria, en contradicción con START-C2. Ambas
+  negaciones están en la lógica y en la spec.
+  \item \textbf{D12 (A4).} Cualquier neuroléptico en parkinsonismo o
+  Lewy disparaba, incluidas quetiapina y clozapina, que STOPP v3 exime.
+  El paciente bien tratado recibía un STOPP infundado. La lógica combina
+  la clase con la exclusión por identificador; la spec afirma el silencio
+  con quetiapina sola y el disparo si se añade haloperidol.
+  \item \textbf{J3 (A6).} Se usaba la clase \texttt{BETABLOQUEANTE}
+  completa en un criterio de no cardioselectivos: bisoprolol disparaba.
+  La lógica actual cita \texttt{BETABLOQUEANTE\_NO\_CARDIOSELECTIVO}; la
+  especificación distingue bisoprolol (no activa la regla) de carvedilol y
+  propranolol.
+  \item \textbf{C12 (A1).} El STOPP de ISRS con anticoagulante y
+  antecedentes de sangrado no exigía el ISRS: cualquier anticoagulado
+  con esos antecedentes recibía «evitar ISRS». Se añadió
+  \texttt{inDrugClass(ISRS)} y el caso negativo correspondiente.
+\end{itemize}

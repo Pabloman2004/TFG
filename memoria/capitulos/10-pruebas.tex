@@ -211,40 +211,11 @@ en \texttt{criteria-b.spec.ts}: el identificador dejó de resolver y el
 caso asociado desapareció.
 
 Una revisión posterior del motor (hallazgos A3--A14) corrigió lógica que
-sí correspondía a un criterio oficial pero estaba mal formalizada. Se
-resumen cinco por su efecto sobre el aviso generado. El código contiene
-para ellos un caso positivo y otro negativo, cuyo resultado actual queda
-pendiente de ejecutar:
-
-\begin{itemize}[leftmargin=1.4em,itemsep=0.25em]
-  \item \textbf{B20 (A3).} La lógica solo exigía antihipertensivo
-  \emph{central}; diuréticos y alfabloqueantes figuraban en el resumen y
-  en las exclusiones, pero no disparaban. Un paciente con estenosis
-  aórtica grave y furosemida no veía el STOPP. La regla es ahora una
-  disyunción de las cuatro clases; los casos esperan activación con
-  furosemida y con doxazosina.
-  \item \textbf{C16 (A5).} El AAS en prevención primaria no negaba
-  \texttt{cardiopatia\_isquemica} ni \texttt{ictus\_previo}. Un ictus
-  previo con AAS ---prevención secundaria correcta--- generaba el aviso
-  de prevención primaria, en contradicción con START-C2. Ambas
-  negaciones están en la lógica y en la spec.
-  \item \textbf{D12 (A4).} Cualquier neuroléptico en parkinsonismo o
-  Lewy disparaba, incluidas quetiapina y clozapina, que STOPP v3 exime.
-  El paciente bien tratado recibía un STOPP infundado. La lógica combina
-  la clase con la exclusión por identificador; la spec afirma el silencio
-  con quetiapina sola y el disparo si se añade haloperidol.
-  \item \textbf{J3 (A6).} Se usaba la clase \texttt{BETABLOQUEANTE}
-  completa en un criterio de no cardioselectivos: bisoprolol disparaba.
-  La lógica actual cita \texttt{BETABLOQUEANTE\_NO\_CARDIOSELECTIVO}; la
-  especificación distingue bisoprolol (no activa la regla) de carvedilol y
-  propranolol.
-  \item \textbf{C12 (A1).} El STOPP de ISRS con anticoagulante y
-  antecedentes de sangrado no exigía el ISRS: cualquier anticoagulado
-  con esos antecedentes recibía «evitar ISRS». Se añadió
-  \texttt{inDrugClass(ISRS)} y el caso negativo correspondiente.
-\end{itemize}
-
-Otros ajustes del mismo lote ---B6 acotado a amiodarona (clase III), I7
+sí correspondía a un criterio oficial pero estaba mal formalizada. El
+\cref{anexo:errores-motor} detalla cinco casos por su efecto sobre el aviso
+(B20, C16, D12, J3 y C12): cada uno tiene en el código un caso positivo y
+otro negativo, cuyo resultado actual queda pendiente de ejecutar. Otros
+ajustes del mismo lote ---B6 acotado a amiodarona (clase III), I7
 restringido a duloxetina en lugar de toda la clase ISRN, unificación de
 códigos de caídas en la sección K--- siguen el mismo patrón: el test
 nombra el fármaco o el diagnóstico que la guía distingue y falla si la
