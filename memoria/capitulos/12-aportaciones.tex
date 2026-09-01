@@ -15,11 +15,10 @@ con la guía
 oficial~\cite{omahony2023stopp,sacyl2023stopp}, tal como delimita el
 OE7.
 
-\section{Cumplimiento de los objetivos}
-
 \begin{table}[H]
   \centering
-  \small
+  \footnotesize
+  \renewcommand{\arraystretch}{0.92}
   \begin{tabularx}{\textwidth}{@{}lX@{}}
     \toprule
     \textbf{Objetivo} & \textbf{Aportación concreta} \\
@@ -55,7 +54,7 @@ OE7.
       versionado, copia en texto plano y persistencia local en el
       navegador, sin almacenamiento en servidor. \\
     OE7 &
-      Batería Karma + Jasmine ejecutada el 01/09/2026: 985/985 correctas
+      Batería Karma + Jasmine ejecutada el 01/09/2026: 989/989 correctas
       (\cref{cap:pruebas}, \cref{anexo:log-karma}), con casos de
       conformidad con la guía v3 y guardas de integridad del catálogo. No
       constituye ensayo clínico ni revisión independiente con perfil
@@ -82,7 +81,10 @@ contiene casos que afirman si determinados avisos deben activarse o no. Las
 guardas de
 catálogo (consistencia entre criterios, fármacos y diagnósticos)
 detectan referencias huérfanas. El inventario, su estado de ejecución y los
-hallazgos de esa batería se recogen en el~\cref{cap:pruebas}.
+hallazgos de esa batería se recogen en el~\cref{cap:pruebas}. La
+documentación enlazada (\texttt{@linked}, \texttt{docs/\_map.md}) mantiene
+ese contrato junto al código, como se describe en
+el~\cref{sec:herramientas}.
 
 \section{Aportaciones al ámbito clínico}
 

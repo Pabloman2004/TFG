@@ -1,5 +1,6 @@
 \begin{figure}[H]
   \centering
+  \resizebox{!}{0.40\textheight}{%
   \begin{tikzpicture}[
     font=\footnotesize\sffamily,
     arr/.style={-{Latex}, thick},
@@ -106,7 +107,8 @@
     \draw[thick] (si2.south) |- (joindown2);
     \draw[thick] (no2.south) |- (joindown2);
     \draw[arr] (joindown2) -- (res.north);
-  \end{tikzpicture}
+  \end{tikzpicture}%
+  }
   \caption{Funcionamiento general de la solución: en cada pestaña el motor
   evalúa el caso y marca el criterio como activo o inactivo; el resultado
   final distingue avisos STOPP y START.}

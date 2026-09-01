@@ -1,8 +1,9 @@
 \begin{figure}[H]
   \centering
+  \resizebox{!}{0.22\textheight}{%
   \begin{tikzpicture}[
     x=1.52cm,
-    y=-0.46cm,
+    y=-0.32cm,
     font=\footnotesize\sffamily
   ]
     % Rejilla mensual (mar = 0 ... fin de ago = 6)
@@ -66,7 +67,8 @@
     \draw[gray!70, thick] (2.10, 17.55) rectangle (2.55, 18.15);
     \node[anchor=west, font=\scriptsize\sffamily] at (2.65, 17.85)
       {Actividad hasta 16/08};
-  \end{tikzpicture}
+  \end{tikzpicture}%
+  }
   \caption{Cronograma del proyecto (marzo--agosto de 2026): barras claras,
   planificación inicial; barras oscuras, actividad reconstruida mediante Git
   hasta el 16 de agosto. La fase de pruebas se solapa con la implementación.

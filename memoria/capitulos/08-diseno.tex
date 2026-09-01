@@ -39,7 +39,7 @@ versionado, descrito en el~\cref{cap:datos}.
 
 \begin{figure}[H]
   \centering
-  \resizebox{\textwidth}{!}{%
+  \resizebox{0.92\textwidth}{!}{%
   \begin{tikzpicture}[
     font=\scriptsize\sffamily,
     cls/.style={
@@ -177,8 +177,46 @@ la regla dispararía. Esta capacidad está cubierta por pruebas, pero
 resultado. El índice \texttt{relevance}, ya construido en
 el arranque, alimenta el cubo «relevantes de otros sistemas» y, si el
 fármaco marcado era foráneo, el resaltado de grupos y avisos
-relacionados. El diagrama de esa secuencia está en
-el~\cref{anexo:diagramas-secuencia} (\cref{fig:diseno-secuencia}).
+relacionados. El diagrama de esa secuencia es la~\cref{fig:diseno-secuencia}.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.92\textwidth}{!}{%
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
+    arr/.style={-{Latex}, thick}
+  ]
+    \node[actor] (c) {Clínico};
+    \node[actor, right=1.55cm of c] (ui) {MedsStep};
+    \node[actor, right=1.55cm of ui] (st) {CaseStore};
+    \node[actor, right=1.55cm of st] (en) {Motor};
+
+    \foreach \x in {c, ui, st, en} {
+      \draw[gray!50, thick] (\x.south) -- ++(0,-6.15);
+    }
+
+    \draw[arr] ([yshift=-0.45cm]c.south) --
+      node[above, font=\tiny] {marca fármaco} ([yshift=-0.45cm]ui.south);
+    \draw[arr] ([yshift=-1.15cm]ui.south) --
+      node[above, font=\tiny] {\texttt{meds.set(...)}} ([yshift=-1.15cm]st.south);
+
+    \draw[arr] ([yshift=-1.95cm]ui.south) --
+      node[above, font=\tiny] {\texttt{evaluate(caso)}} ([yshift=-1.95cm]en.south);
+    \draw[arr] ([yshift=-2.65cm]en.south) --
+      node[above, font=\tiny] {\texttt{Crit[]} aplicables} ([yshift=-2.65cm]ui.south);
+
+    \draw[arr] ([yshift=-4.95cm]en.south) --
+      node[above, font=\tiny] {\texttt{relevance} / cubos} ([yshift=-4.95cm]ui.south);
+    \draw[arr] ([yshift=-5.65cm]ui.south) --
+      node[above, font=\tiny] {paneles STOPP/START} ([yshift=-5.65cm]c.south);
+  \end{tikzpicture}%
+  }
+  \caption{Secuencia implementada al marcar una medicación: el estado de
+  sesión cambia, el motor evalúa y la UI actualiza criterios y relevancia. El
+  cálculo auxiliar de \texttt{excludes} no está integrado en este flujo.}
+  \label{fig:diseno-secuencia}
+\end{figure}
 
 El paso de diagnósticos replica el mismo esquema
 (\texttt{toggleDiagnosis} $\rightarrow$ \texttt{diagnoses} $\rightarrow$
@@ -194,18 +232,51 @@ y entrega paciente, diagnósticos, medicaciones y \texttt{Crit[]} a
 \texttt{ReportService}. Este compone el documento con
 pdfmake~\cite{pdfmake} y el navegador descarga el fichero. Un error
 de generación se comunica con un \textit{snackbar}; no se escribe
-nada en el estado de sesión. El diagrama correspondiente es la
-\cref{fig:diseno-pdf} del~\cref{anexo:diagramas-secuencia}.
+nada en el estado de sesión.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.92\textwidth}{!}{%
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
+    arr/.style={-{Latex}, thick}
+  ]
+    \node[actor] (c) {Clínico};
+    \node[actor, right=1.7cm of c] (ui) {MedsStep};
+    \node[actor, right=1.7cm of ui] (en) {Motor};
+    \node[actor, right=1.7cm of en] (rp) {ReportService};
+
+    \foreach \x in {c, ui, en, rp} {
+      \draw[gray!50, thick] (\x.south) -- ++(0,-3.35);
+    }
+
+    \draw[arr] ([yshift=-0.45cm]c.south) --
+      node[above, font=\tiny] {exportar PDF} ([yshift=-0.45cm]ui.south);
+    \draw[arr] ([yshift=-1.15cm]ui.south) --
+      node[above, font=\tiny] {\texttt{evaluate}} ([yshift=-1.15cm]en.south);
+    \draw[arr] ([yshift=-1.85cm]en.south) --
+      node[above, font=\tiny] {\texttt{Crit[]}} ([yshift=-1.85cm]ui.south);
+    \draw[arr] ([yshift=-2.55cm]ui.south) --
+      node[above, font=\tiny] {\texttt{exportCase(...)}} ([yshift=-2.55cm]rp.south);
+    \draw[arr] ([yshift=-3.15cm]rp.south) --
+      node[above, font=\tiny] {descarga} ([yshift=-3.15cm]c.south);
+  \end{tikzpicture}%
+  }
+  \caption{Secuencia de exportación a PDF: evaluación al vuelo y
+  composición en el cliente.}
+  \label{fig:diseno-pdf}
+\end{figure}
 
 \subsection{Ciclo de persistencia}
 
-El servicio de sesión rehidrata cada señal en el constructor ---lectura de
-\texttt{localStorage}, o valor vacío si la clave no existe o el
-parseo falla--- y registra un \textit{effect} que serializa el valor
-en cada cambio. Si la escritura falla (cuota, modo incógnito), el
-error se silencia y la sesión sigue en memoria. Las claves de versiones
-anteriores que ya no se usan se eliminan al arrancar. El
-tratamiento de esos datos como información de salud se razona en
+El servicio de sesión rehidrata el caso en el constructor: lee las claves
+clínicas de \texttt{localStorage} y las valida con el mismo esquema Zod
+de la importación JSON. Si el parseo o el esquema fallan, el caso arranca
+vacío. Un \textit{effect} serializa cada cambio; si la escritura falla
+(cuota, modo incógnito), el error se silencia y la sesión sigue en memoria.
+Las claves de versiones anteriores que ya no se usan se eliminan al arrancar.
+El tratamiento de esos datos como información de salud se razona en
 el~\cref{cap:datos}.
 
 \section{Diseño de la interfaz}

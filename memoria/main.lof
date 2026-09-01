@@ -3,30 +3,48 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Ciclo rojo--verde--refactor aplicado en el desarrollo.}}{6}{figure.caption.4}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Funcionamiento general de la solución: en cada pestaña el motor evalúa el caso y marca el criterio como activo o inactivo; el resultado final distingue avisos STOPP y START.}}{5}{figure.caption.4}%
+\setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Ciclo rojo--verde--refactor aplicado en el desarrollo.}}{6}{figure.caption.5}%
+\addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Cronograma del proyecto (marzo--agosto de 2026): barras claras, planificación inicial; barras oscuras, actividad reconstruida mediante Git hasta el 16 de agosto. La fase de pruebas se solapa con la implementación. La redacción no se presenta como cerrada en esa fecha.}}{9}{figure.caption.6}%
+\setforeignlanguage {spanish}
+\addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Arquitectura de cajas: la UI actualiza el estado de sesión; el motor evalúa el caso con catálogos y \texttt {criteria.json}; las salidas leen una instantánea. El estado vive en memoria; \texttt {localStorage} guarda una copia en el navegador, no en una base de datos. \texttt {HttpClient} obtiene los activos mediante HTTP GET.}}{13}{figure.caption.8}%
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Dependencias lógicas: los pasos orquestan; el motor no depende de la UI; solo el servicio de intercambio JSON accede directamente al estado de sesión. Ese estado no es una base de datos.}}{15}{figure.caption.15}%
 \addvspace {10\p@ }
 \setforeignlanguage {spanish}
 \addvspace {10\p@ }
 \setforeignlanguage {spanish}
 \setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Dependencias lógicas: los pasos orquestan; el motor no depende de la UI; solo el servicio de intercambio JSON accede directamente al estado de sesión. Ese estado no es una base de datos.}}{13}{figure.caption.12}%
+\setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Diagrama de casos de uso. Las líneas continuas asocian al actor con cada objetivo. Las discontinuas marcan la relación \texttt {include}: evaluar y persistir se ejecutan siempre que cambia la captura, sin invocación aparte.}}{23}{figure.caption.23}%
+\setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {7.2}{\ignorespaces Entidades del dominio, con el nombre de cada relación sobre la línea y las multiplicidades en los extremos. \texttt {Crit} pertenece al catálogo; el resto constituye el caso de sesión.}}{24}{figure.caption.24}%
+\addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {8.1}{\ignorespaces Modelo de dominio simplificado. \texttt {Crit} no se persiste con el caso: el motor lo produce al evaluar.}}{25}{figure.caption.25}%
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {8.2}{\ignorespaces Secuencia implementada al marcar una medicación: el estado de sesión cambia, el motor evalúa y la UI actualiza criterios y relevancia. El cálculo auxiliar de \texttt {excludes} no está integrado en este flujo.}}{27}{figure.caption.27}%
+\setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {8.3}{\ignorespaces Secuencia de exportación a PDF: evaluación al vuelo y composición en el cliente.}}{27}{figure.caption.28}%
+\addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
 \addvspace {10\p@ }
 \setforeignlanguage {spanish}
 \addvspace {10\p@ }
 \setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {11.1}{\ignorespaces Diagnósticos: HTA (sin especificar) marcada y criterio START-B1 activado. Ejecución del 01/09/2026 sobre el artefacto de producción.}}{42}{figure.caption.49}%
 \setforeignlanguage {spanish}
+\contentsline {figure}{\numberline {11.2}{\ignorespaces Medicamentos: Amlodipino seleccionado; START-B1 deja de aplicar. Ejecución del 01/09/2026 sobre el artefacto de producción.}}{43}{figure.caption.50}%
 \setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {7.1}{\ignorespaces Entidades del dominio, con el nombre de cada relación sobre la línea y las multiplicidades en los extremos. \texttt {Crit} pertenece al catálogo; el resto constituye el caso de sesión.}}{21}{figure.caption.20}%
-\addvspace {10\p@ }
-\setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {8.1}{\ignorespaces Modelo de dominio simplificado. \texttt {Crit} no se persiste con el caso: el motor lo produce al evaluar.}}{23}{figure.caption.21}%
-\setforeignlanguage {spanish}
-\addvspace {10\p@ }
-\setforeignlanguage {spanish}
-\setforeignlanguage {spanish}
-\addvspace {10\p@ }
-\setforeignlanguage {spanish}
-\addvspace {10\p@ }
+\contentsline {figure}{\numberline {11.3}{\ignorespaces Panel de criterios activados del caso HTA, con START-B1 y sin avisos STOPP. Detalle de la ejecución del 01/09/2026.}}{44}{figure.caption.51}%
 \addvspace {10\p@ }
 \setforeignlanguage {spanish}
 \addvspace {10\p@ }
@@ -44,31 +62,8 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {H.1}{\ignorespaces Pantalla de medicamentos: pestañas de sistema, lista de fármacos en dos cubos y panel de criterios con acciones PDF/JSON.}}{62}{figure.caption.54}%
-\setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {H.2}{\ignorespaces Pantalla de diagnósticos: pestaña «Otros» con el panel fijo de analítica y el mismo panel de criterios a la derecha.}}{62}{figure.caption.55}%
-\setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {H.3}{\ignorespaces Panel de resultados STOPP/START, agrupado por sistema, visible en ambas pestañas del flujo.}}{63}{figure.caption.56}%
-\addvspace {10\p@ }
-\setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {I.1}{\ignorespaces Secuencia implementada al marcar una medicación: el estado de sesión cambia, el motor evalúa y la UI actualiza criterios y relevancia. El cálculo auxiliar de \texttt {excludes} no está integrado en este flujo.}}{64}{figure.caption.57}%
-\setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {I.2}{\ignorespaces Secuencia de exportación a PDF: evaluación al vuelo y composición en el cliente.}}{65}{figure.caption.58}%
-\addvspace {10\p@ }
-\setforeignlanguage {spanish}
-\addvspace {10\p@ }
-\setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {K.1}{\ignorespaces Funcionamiento general de la solución: en cada pestaña el motor evalúa el caso y marca el criterio como activo o inactivo; el resultado final distingue avisos STOPP y START.}}{67}{figure.caption.60}%
-\setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {K.2}{\ignorespaces Cronograma del proyecto (marzo--agosto de 2026): barras claras, planificación inicial; barras oscuras, actividad reconstruida mediante Git hasta el 16 de agosto. La fase de pruebas se solapa con la implementación. La redacción no se presenta como cerrada en esa fecha.}}{68}{figure.caption.61}%
-\setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {K.3}{\ignorespaces Arquitectura de cajas: la UI actualiza el estado de sesión; el motor evalúa el caso con catálogos y \texttt {criteria.json}; las salidas leen una instantánea. El estado vive en memoria; \texttt {localStorage} guarda una copia en el navegador, no en una base de datos. \texttt {HttpClient} obtiene los activos mediante HTTP GET.}}{68}{figure.caption.62}%
-\setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {K.4}{\ignorespaces Diagrama de casos de uso. Las líneas continuas asocian al actor con cada objetivo. Las discontinuas marcan la relación \texttt {include}: evaluar y persistir se ejecutan siempre que cambia la captura, sin invocación aparte.}}{69}{figure.caption.63}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {M.1}{\ignorespaces Diagnósticos: HTA marcada y criterio \texttt {START-B1-ANTIHIPERTENSIVO-HTA} activado. Ejecución del 01/09/2026 sobre el artefacto de producción.}}{71}{figure.caption.64}%
-\setforeignlanguage {spanish}
-\contentsline {figure}{\numberline {M.2}{\ignorespaces Medicamentos: Amlodipino seleccionado; START-B1 deja de aplicar. Ejecución del 01/09/2026 sobre el artefacto de producción.}}{72}{figure.caption.65}%
+\contentsline {figure}{\numberline {J.1}{\ignorespaces Informe PDF generado el 01/09/2026 para el caso HTA (sin antihipertensivo): título «Informe STOPP/START», diagnóstico y tabla START-B1.}}{64}{figure.caption.69}%
 \xpginauxfilefalse 

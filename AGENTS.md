@@ -16,7 +16,7 @@ script already runs `npm install`, so dependencies are present at session start.
   for development.
 - Unit tests (Karma + Jasmine): `npx ng test --watch=false --browsers=ChromeHeadless`.
  Headless Chrome is preinstalled at `/usr/bin/google-chrome-stable` and works without
- extra flags. The full suite (985 specs) passes; the `❌ Error evaluando criterio`
+ extra flags. The full suite (989 specs) passes; the `❌ Error evaluando criterio`
  console lines during the run are emitted by an intentional error-handling spec, not a
  failure — trust the final `TOTAL: ... SUCCESS` line.
 - Dev build: `npx ng build --configuration development`.

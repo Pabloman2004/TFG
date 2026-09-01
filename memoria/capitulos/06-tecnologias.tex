@@ -85,9 +85,9 @@ jsPDF porque este construye la página de forma imperativa, mientras que
 pdfmake parte de un objeto de definición ---bloques, tablas, estilos---
 más cercano a un informe de avisos STOPP y START.
 
-Zod~\cite{zod} valida el JSON importado antes de cargarlo: el compilador no
-ve ese fichero. No sustituye el tipado estático ni modela el catálogo
-interno. RxJS~\cite{rxjs} y zone.js viajan con Angular ---biblioteca reactiva
+Zod~\cite{zod} valida el JSON importado y el caso rehidratado desde
+\texttt{localStorage}: el compilador no ve esos valores. No sustituye el
+tipado estático ni modela el catálogo interno. RxJS~\cite{rxjs} y zone.js viajan con Angular ---biblioteca reactiva
 y detección de cambios--- y no son un diseño propio del autor.
 
 \section{Herramientas de desarrollo}
@@ -106,6 +106,29 @@ entrega más allá del andamiaje de Angular.
 Las pruebas automáticas se ejecutan con Karma y Jasmine. Karma lanza el
 navegador; Jasmine expresa los casos. La estrategia, los conteos y la
 validación frente a la guía corresponden al~\cref{cap:pruebas}.
+
+La documentación de diseño vive junto al código. Los ficheros de
+\texttt{src/} que concentran una decisión llevan un comentario
+\texttt{@linked} hacia un documento de \texttt{docs/}. El mapa
+\texttt{docs/\_map.md} lista esos enlaces; el script
+\texttt{scripts/check-links.sh} comprueba que no haya destinos rotos,
+documentos huérfanos ni ficheros fuera del mapa. Ese patrón no sustituye
+a esta memoria: fija el contrato entre código y notas de diseño para que
+un cambio de persistencia, de esquema o de criterio actualice el texto
+enlazado en el mismo incremento.
+
+Las dependencias se pinchan en \texttt{package-lock.json}. El 1 de
+septiembre de 2026, \texttt{npm audit -{}-omit=dev} informó 7
+vulnerabilidades de severidad alta, todas en la línea Angular~20.3.x
+(XSS en enlaces i18n, atributos SVG/MathML y \texttt{@angular/compiler};
+avisos GHSA-g93w-mfhg-p222 y afines). El artefacto estático no
+expone el servidor de desarrollo. El \texttt{npm audit} completo, con
+herramientas de construcción (Vite, Rollup), sumó 17 avisos. El log
+queda en \texttt{memoria/anexos/npm-audit-2026-09-01.txt}. No se aplicó
+\texttt{npm audit fix} en este cierre para no cambiar el pin de Angular
+sin reejecutar la batería sobre una versión nueva; Des1 exige no usar
+versiones con avisos conocidos, de modo que una actualización parcheada
+de Angular 20.3 queda como trabajo inmediato posterior.
 
 \section{Fuentes de datos clínicos}
 \label{sec:fuente-clinica}

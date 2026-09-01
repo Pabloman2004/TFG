@@ -58,8 +58,8 @@ transversal. Las taxonomías y el índice de relevancia se prueban como
 datos: sistemas, clases con miembros, familias diagnósticas (HTA) y
 dependencias que habilitan un diagnóstico solo cuando hay medicación
 predisponente. El almacén (\texttt{CaseStoreService}) cubre reset,
-pestañas revisadas y persistencia en \texttt{localStorage} sin mutar el
-caso a espaldas de las señales.
+pestañas revisadas, persistencia en \texttt{localStorage} y el rechazo
+del caso completo cuando la rehidratación no cumple el esquema Zod.
 
 \section{Pruebas de integración}
 
@@ -142,17 +142,17 @@ reintroducir el falso positivo o el falso negativo.
 \section{Inventario y ejecución de la batería}
 
 El recuento de la~\cref{tab:pruebas} coincide con las cláusulas
-\texttt{it(} de \texttt{src/**/*.spec.ts}: 985, sin \texttt{xit} ni
+\texttt{it(} de \texttt{src/**/*.spec.ts}: 989, sin \texttt{xit} ni
 \texttt{fit}. El~\cref{anexo:log-karma} adjunta la ejecución del
 1 de septiembre de 2026: \texttt{npx ng test -{}-watch=false
 -{}-browsers=ChromeHeadless}, Chrome Headless 148, Node.js~22.14.0.
-Veredicto: \texttt{TOTAL: 985 SUCCESS} (1,63\,s de runner; código de
+Veredicto: \texttt{TOTAL: 989 SUCCESS} (1,59\,s de runner; código de
 salida 0). Las líneas de consola «Error evaluando criterio» corresponden
 a una especificación deliberada de manejo de errores, no a un fallo.
 Una ejecución anterior, de alrededor de 807 especificaciones, quedó
 obsoleta al ampliar la batería. Por módulo: criterios A--M, 544; motor
 genérico, 22; catálogo y taxonomías (incluida integridad), 195; ayudas
-de agrupación y visibilidad, 98; almacén y preferencias, 28;
+de agrupación y visibilidad, 98; almacén y preferencias, 32;
 entrada/salida (JSON, PDF, portapapeles), 34; pasos de captura, 52;
 cascarón de interfaz, 12.
 
@@ -163,12 +163,12 @@ cascarón de interfaz, 12.
     \toprule
     \textbf{Tipo de prueba} & \textbf{N.\textsuperscript{o}} & \textbf{Estado} \\
     \midrule
-    Conformidad con la guía (criterios A--M) & 544 & Ejecutada el 01/09/2026, 985/985 correctas \\
-    Unitarias (motor, helpers, catálogo, almacén) & 338 & Ejecutada el 01/09/2026, 985/985 correctas \\
-    Integración (integridad, Zod, informes) & 39 & Ejecutada el 01/09/2026, 985/985 correctas \\
-    Interfaz (pasos y cascarón) & 64 & Ejecutada el 01/09/2026, 985/985 correctas \\
+    Conformidad con la guía (criterios A--M) & 544 & Ejecutada el 01/09/2026, 544/544 correctas \\
+    Unitarias (motor, helpers, catálogo, almacén) & 342 & Ejecutada el 01/09/2026, 342/342 correctas \\
+    Integración (integridad, Zod, informes) & 39 & Ejecutada el 01/09/2026, 39/39 correctas \\
+    Interfaz (pasos y cascarón) & 64 & Ejecutada el 01/09/2026, 64/64 correctas \\
     \midrule
-    \textbf{Total ejecutado} & \textbf{985} & \textbf{Ejecutada el 01/09/2026, 985/985 correctas} \\
+    \textbf{Total ejecutado} & \textbf{989} & \textbf{Ejecutada el 01/09/2026, 989/989 correctas} \\
     \bottomrule
   \end{tabular}
   \caption{Batería Karma + Jasmine ejecutada el 1 de septiembre de 2026
@@ -190,7 +190,7 @@ Tampoco se han realizado pruebas con pacientes ni una evaluación formal con
 profesionales. Por ello, esta batería ---aun ejecutada al completo el
 1 de septiembre de 2026--- no permite concluir utilidad clínica,
 impacto asistencial, comprensión de los avisos ni usabilidad. El log
-acredita que las 985 especificaciones compilan y terminan con éxito; no
+acredita que las 989 especificaciones compilan y terminan con éxito; no
 acredita la correspondencia clínica con los 190 enunciados oficiales.
 
 \section{Errores detectados y corregidos}
@@ -216,7 +216,7 @@ Una revisión posterior del motor (hallazgos A3--A14) corrigió lógica que
 sí correspondía a un criterio oficial pero estaba mal formalizada. El
 \cref{anexo:errores-motor} detalla cinco casos por su efecto sobre el aviso
 (B20, C16, D12, J3 y C12): cada uno tiene en el código un caso positivo y
-otro negativo, ambos cubiertos por la ejecución del 01/09/2026 (985/985).
+otro negativo, ambos cubiertos por la ejecución del 01/09/2026 (989/989).
 Otros
 ajustes del mismo lote ---B6 acotado a amiodarona (clase III), I7
 restringido a duloxetina en lugar de toda la clase ISRN, unificación de

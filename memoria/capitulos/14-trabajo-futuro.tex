@@ -11,62 +11,38 @@
 Las líneas siguientes convierten el fuera de alcance del~\cref{cap:objetivos}
 en trabajo posterior concreto: qué falta, por qué importa y qué haría falta.
 
-\section{Paso de datos del paciente en la interfaz}
+\paragraph{Paso de datos del paciente en la interfaz.}
+Falta captura de edad y sexo en la UI. El modelo los admite, pero sin ficha
+los criterios que los leen (p.~ej.\ STOPP-B16) solo pueden recibirlos por
+JSON. Haría falta un \texttt{patient-info-step} y pruebas de umbrales de
+edad.
 
-Falta un paso de captura de edad y sexo. El modelo ya los admite y la
-analítica se introduce en «Otros», pero sin ficha demográfica los
-criterios que dependen de esos datos (p.~ej.\ STOPP-B16) no se activan
-partiendo únicamente de la UI; actualmente solo pueden recibirlos mediante
-importación JSON.
-Haría falta un \texttt{patient-info-step} como primer paso de la ruta y
-pruebas de los umbrales de edad de la guía.
-
-\section{Generalización de variantes y dependencias diagnósticas}
-
-Falta extender a todos los sistemas el tratamiento de variantes y de
-dependencias diagnóstico--medicación, hoy modelado con mayor detalle en
+\paragraph{Generalización de variantes y dependencias diagnósticas.}
+Falta extender a todos los sistemas el tratamiento hoy detallado en
 cardiovascular e hipertensión. Sin eso, otras pestañas muestran opciones
-que no pueden disparar ningún criterio. Haría falta generalizar el
-mecanismo y, después, revisión con perfil clínico para completar cada sistema.
+que no disparan criterios. Haría falta generalizar el mecanismo y revisarlo
+con perfil clínico.
 
-\section{Integración con la historia clínica electrónica}
+\paragraph{Integración con la historia clínica electrónica.}
+Falta la conexión con la HCE: el profesional introduce fármacos y
+diagnósticos a mano. Es el escenario excluido en la~\cref{sec:limitaciones}.
+Haría falta un convenio asistencial, un adaptador de identificadores y
+minimización compatible con el diseño sin servidor.
 
-Falta la conexión con la HCE: el profesional introduce a mano fármacos y
-diagnósticos. Preseleccionar fármacos y diagnósticos desde la historia
-clínica es el escenario excluido en
-la~\cref{sec:limitaciones}; su efecto sobre el tiempo de uso tendría que
-medirse. Haría
-falta un convenio asistencial, un adaptador de identificadores y una
-política de minimización compatible con el diseño sin servidor.
+\paragraph{Normalización con SNOMED CT y entrada en lenguaje natural.}
+Falta resolver texto libre contra SNOMED~CT~\cite{snomedStarter} y, desde
+ahí, contra las reglas. Haría falta un mapa SNOMED~$\leftrightarrow$ catálogo,
+búsqueda y validación humana.
 
-\section{Normalización con SNOMED CT y entrada en lenguaje natural}
+\paragraph{Revisión profesional, dudas clínicas y catálogo.}
+Faltan tres cierres que el OE7 dejó fuera (\cref{cap:objetivos,cap:pruebas}):
+evaluación con profesionales (comprensión y desacuerdos, no un ensayo);
+resolver con la cotutora las dudas ya documentadas (fragilidad en STOPP-B16,
+antiarrítmicos Ia, variantes de IC); y ampliar fármacos citados en la guía
+poco usados en España, con clases y tests, sin clases huérfanas.
 
-Falta abandonar el catálogo cerrado como única vía de entrada. Un texto
-libre debería resolverse contra SNOMED~CT~\cite{snomedStarter} y, desde ahí, contra las
-reglas, con el objetivo de reducir errores de selección de la etiqueta
-interna. Haría
-falta un mapa SNOMED~$\leftrightarrow$ catálogo, búsqueda, y validación
-humana antes de evaluar si se aspira al lenguaje natural.
+\paragraph{Matriz de correspondencia con la guía.}
+Falta relacionar los 190 criterios oficiales con las 218 entradas: datos
+necesarios, casos positivo y negativo, y estado (evaluable en la UI, por
+JSON, confirmación manual, no evaluable o no implementado).
 
-\section{Revisión profesional, dudas clínicas y catálogo}
-
-Faltan tres cierres que el OE7 dejó fuera (\cref{cap:objetivos,cap:pruebas}).
-Una evaluación con profesionales ---sesiones de casos, no una validación
-clínica ni un ensayo--- para medir comprensión, usabilidad y desacuerdos
-sobre los avisos; harían falta un protocolo, métricas definidas y, si hay
-datos reales, un marco ético. Resolver con la cotutora las dudas ya
-documentadas: fragilidad como indicador de esperanza de vida en
-STOPP-B16, antiarrítmicos de clase~Ia ausentes del catálogo, y
-unificación de las variantes de insuficiencia cardíaca. Ampliar los
-fármacos poco usados en España pero citados en la guía, con clases y
-tests, sin crear clases huérfanas.
-
-\section{Matriz de correspondencia con la guía}
-
-Falta demostrar la relación entre los 190 criterios oficiales y las 218
-entradas del catálogo. Haría falta revisar cada criterio con perfil clínico y
-registrar sus reglas asociadas, datos necesarios, casos positivo y negativo y
-estado: evaluable desde la interfaz, evaluable mediante importación JSON,
-sujeto a confirmación manual, no evaluable o no implementado. Esta matriz
-permitiría delimitar la cobertura sin inferirla a partir del número de reglas
-o de pruebas.

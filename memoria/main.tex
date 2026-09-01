@@ -45,7 +45,7 @@
 \newcommand{\cotutorTFG}{}
 \newcommand{\gradoTFG}{Grado en Ingeniería Informática}
 \newcommand{\cursoTFG}{2025--2026}
-\newcommand{\mesTFG}{Septiembre}
+\newcommand{\mesTFG}{Setembro}
 \newcommand{\anhoTFG}{2026}
 \newcommand{\valorVacio}{}
 \newcommand{\numeroTFG}{EI 25/26-83}
@@ -78,6 +78,9 @@
 \usepackage{graphicx}
 \graphicspath{{figuras/}}
 \usepackage{float}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{6pt plus 2pt minus 2pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,backgrounds}
 \usepackage{booktabs}
@@ -85,13 +88,27 @@
 \usepackage{tabularx}
 \usepackage{multirow}
 \usepackage{caption}
+\captionsetup{
+  tablename=Tabla,
+  listtablename={Índice de tablas},
+  figurename=Figura,
+  listfigurename={Índice de ilustraciones},
+  skip=5pt,
+  font=small
+}
 \usepackage{subcaption}
 \usepackage{enumitem}
 \setlist{itemsep=0.15em, topsep=0.35em, parsep=0pt, partopsep=0pt}
 \usepackage{titlesec}
 \titleformat{\chapter}[display]
-  {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{12pt}{\Huge}
-\titlespacing*{\chapter}{0pt}{6pt}{14pt}
+  {\normalfont\Large\bfseries}{\chaptertitlename\ \thechapter}{6pt}{\LARGE}
+\titlespacing*{\chapter}{0pt}{-2pt}{8pt}
+\titleformat{\section}
+  {\normalfont\large\bfseries}{\thesection}{0.6em}{}
+\titlespacing*{\section}{0pt}{0.7em}{0.3em}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{0.5em}{0.2em}
 \usepackage{xcolor}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -115,7 +132,9 @@
   rulecolor=\color{gray!40},
   showstringspaces=false,
   captionpos=b,
-  tabsize=2
+  tabsize=2,
+  aboveskip=4pt,
+  belowskip=4pt
 }
 
 % ---------- Bibliografia (estilo IEEE, admitido por la guia) ----------
@@ -139,6 +158,12 @@
 \Crefname{section}{Sección}{Secciones}
 \crefname{listing}{listado}{listados}
 \Crefname{listing}{Listado}{Listados}
+
+\AtBeginDocument{%
+  \renewcommand{\listfigurename}{Índice de ilustraciones}%
+  \renewcommand{\listtablename}{Índice de tablas}%
+  \renewcommand{\tablename}{Tabla}%
+}
 
 \setlength{\emergencystretch}{3em}
 

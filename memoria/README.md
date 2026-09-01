@@ -41,18 +41,19 @@ Ya están en el texto de la memoria:
 
 | Comprobación | Resultado |
 |--------------|-----------|
-| `npx ng test --watch=false --browsers=ChromeHeadless` | **TOTAL: 985 SUCCESS** (1,63 s; Chrome Headless 148; Node 22.14.0). Log: `memoria/anexos/karma-2026-09-01.log` |
+| `npx ng test --watch=false --browsers=ChromeHeadless` | **TOTAL: 989 SUCCESS** (1,59 s; Chrome Headless 148; Node 22.14.0). Log: `memoria/anexos/karma-2026-09-01.log` |
+| `npm audit --omit=dev` | 7 high (Angular 20.3.x XSS advisories). Full `npm audit`: 17. Log: `memoria/anexos/npm-audit-2026-09-01.txt`. No `npm audit fix` applied. |
 | `npx ng build --configuration production` | Artefacto en `dist/stopp-start-app/browser` (código 0; advertencias de presupuesto CSS) |
 | Servicio estático | `python3 -m http.server 4173 --directory dist/stopp-start-app/browser` → `http://127.0.0.1:4173` |
 | Caso manual HTA → START-B1 → Amlodipino | Ejecutado el 01/09/2026; capturas en `memoria/figuras/` y JSON en `memoria/anexos/caso-hta-2026-09-01.json` |
 | `node scripts/audit-criteria.cjs` | Correcto: 218 reglas; sin sistemas, clases ni diagnósticos desconocidos |
 | `bash scripts/check-links.sh` | Correcto: 0 problemas |
-| Inventario estático | 985 cláusulas `it(`, sin `xit` ni `fit` localizados |
+| Inventario estático | 989 cláusulas `it(`, sin `xit` ni `fit` localizados |
 | Compilación LaTeX | XeLaTeX + Biber; PDF en `memoria/Memoria_TFG_STOPP_START.pdf` |
 
 La auditoría del catálogo demuestra consistencia referencial interna. No
 demuestra por sí sola la correspondencia clínica entre las 218 reglas y los
-190 criterios de la guía. La suite Karma acredita que las 985 especificaciones
+190 criterios de la guía. La suite Karma acredita que las 989 especificaciones
 pasan; no acredita utilidad clínica ni usabilidad.
 
 ## Pendientes que requieren evidencia o información externa

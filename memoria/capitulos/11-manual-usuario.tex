@@ -55,12 +55,6 @@ en los pasos de captura; la compilación terminó con código 0). La
 persistencia del caso vive en el \texttt{localStorage} de ese origen;
 borrar los datos del sitio equivale a reiniciar.
 
-Para publicar el mismo artefacto en GitHub Pages se regenera con
-\texttt{-{}-base-href /TFG/} (o la ruta del repositorio) y se copia el
-contenido de \texttt{dist/stopp-start-app/browser} a la rama o acción
-de Pages. Este capítulo acredita el servicio estático local, no una URL
-pública institucional.
-
 \subsection{Desarrollo}
 
 \begin{lstlisting}[numbers=none]
@@ -78,9 +72,8 @@ El flujo tiene dos pasos y un panel de resultados visible junto a la
 captura. No hay pantalla de datos demográficos: se seleccionan
 medicamentos, se completan diagnósticos y, si procede, las constantes de
 la pestaña «Otros»; los avisos STOPP y START se actualizan al vuelo. Las
-figuras de esta sección y del~\cref{anexo:capturas} son capturas de la
+figuras de esta sección son capturas de la
 ejecución del 1 de septiembre de 2026 sobre el artefacto de producción.
-Los esquemas de disposición siguen en el~\cref{anexo:wireframes}.
 
 El recorrido habitual es: (1)~marcar los fármacos activos; (2)~leer los
 avisos que ya puedan dispararse solo con medicación; (3)~pasar a
@@ -114,53 +107,63 @@ terapéutica. Se ejecutó el 1 de septiembre de 2026 en Chrome sobre
 resumen del criterio. \emph{Guardar} descargó un JSON versión~1.0 con
 \texttt{diagnoses: ["hta"]} y \texttt{medications} vacío; el fichero
 queda en el~\cref{anexo:capturas}. El PDF titulado «Informe STOPP/START»
-se obtuvo desde la misma sesión.
+de esa misma sesión (RF09) se adjunta como fichero
+\texttt{memoria/anexos/informe-hta-2026-09-01.pdf}; la
+\cref{fig:cap-informe-pdf} del mismo anexo reproduce su primera página.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{captura-hta-start-b1.png}
+  \caption{Diagnósticos: HTA (sin especificar) marcada y criterio
+    START-B1 activado. Ejecución del 01/09/2026 sobre el artefacto de
+    producción.}
+  \label{fig:cap-hta}
+\end{figure}
 
 \subsection{Pantalla de medicamentos}
 
-La~\cref{fig:cap-amlodipino} muestra el primer paso en la ejecución
-documentada. La cabecera alterna entre Medicamentos y Diagnósticos y
-ofrece \emph{Visualización} y \emph{Exportar PDF}. La barra permite
-guardar el caso en JSON, cargar uno previo, abrir la guía rápida y
-reiniciar ---esta última acción pide confirmación (\emph{Limpiar todo}).
+La~\cref{fig:cap-amlodipino} muestra el primer paso: raíl de sistemas,
+grupos propios y relevantes de otros sistemas, y el panel de avisos a la
+derecha. Marcar un fármaco foráneo no duplica la selección; \emph{Otro}
+añade un ítem con la clase del grupo. Cada pestaña vacía puede marcarse
+como revisada.
 
-A la izquierda, un raíl de sistemas filtra el catálogo. Dentro de cada
-sistema hay grupos propios y, debajo, los \emph{relevantes de otros
-sistemas}. Marcar un fármaco en el bloque foráneo no duplica la
-selección. Si el principio activo no está listado, \emph{Otro} añade un
-ítem con la clase del grupo.
-
-A la derecha, el panel \emph{Criterios activados} se actualiza al marcar
-o desmarcar. Cada pestaña puede marcarse como revisada cuando no hay
-selección. El esquema de disposición está en el~\cref{anexo:wireframes}
-(\cref{fig:wire-meds}).
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{captura-amlodipino.png}
+  \caption{Medicamentos: Amlodipino seleccionado; START-B1 deja de
+    aplicar. Ejecución del 01/09/2026 sobre el artefacto de producción.}
+  \label{fig:cap-amlodipino}
+\end{figure}
 
 \subsection{Pantalla de diagnósticos y analítica}
 
-La~\cref{fig:cap-hta} muestra el segundo paso. Las pestañas corresponden
-a sistemas diagnósticos. Algunas familias ---la hipertensión--- se
-presentan como opciones excluyentes: marcar «HTA grave» desmarca «HTA
-moderada».
-
-No hay un paso aparte de datos del paciente. La analítica y las
-constantes (TFGe, presión arterial, frecuencia, QTc, iones, TSH) viven
-en un panel fijo de la pestaña \emph{Otros}. Si un valor no se rellena,
-los criterios que lo leen no disparan. El esquema está en la
-\cref{fig:wire-dx} del~\cref{anexo:wireframes}.
+La~\cref{fig:cap-hta} muestra el segundo paso. Las familias como la
+hipertensión son excluyentes. No hay ficha demográfica: la analítica
+(TFGe, presión, frecuencia, QTc, iones, TSH) vive en la pestaña
+\emph{Otros}; si un valor no se rellena, los criterios que lo leen no
+disparan.
 
 \subsection{Resultados y generación del informe}
+\label{sec:resultados-manual}
 
-El panel derecho es el resultado: no hay una tercera pantalla. Los avisos
-START van encima; los STOPP, debajo. Cada bloque muestra un contador y
-agrupa las tarjetas por sistema. El texto de cada tarjeta es el
-\texttt{summary} del criterio; el profesional juzga si aplican umbrales
-de dosis o duración.
+El panel derecho (\cref{fig:cap-resultados}) es el resultado: no hay una
+tercera pantalla. Los avisos START van encima; los STOPP, debajo. Cada
+bloque muestra un contador y agrupa las tarjetas por sistema. El texto
+de cada tarjeta es el \texttt{summary} del criterio; el profesional
+juzga si aplican umbrales de dosis o duración.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.26\textheight,keepaspectratio]{captura-resultados.png}
+  \caption{Panel de criterios activados del caso HTA, con START-B1 y
+    sin avisos STOPP. Detalle de la ejecución del 01/09/2026.}
+  \label{fig:cap-resultados}
+\end{figure}
 
 Desde cualquier paso se puede exportar PDF, copiar criterios en texto
 plano, guardar o cargar JSON v1.0 y reiniciar tras confirmación. Un JSON
-ajeno o de versión distinta se rechaza con un mensaje comprensible. El
-esquema del panel está en la~\cref{fig:wire-resultados} del
-\cref{anexo:wireframes}.
+ajeno o de versión distinta se rechaza con un mensaje comprensible.
 
 \section{Resolución de errores}
 
@@ -187,8 +190,3 @@ un PDF.
 Sí. \emph{Guardar} descarga un JSON v1.0; \emph{Cargar} lo restaura.
 El fichero debe ser una exportación de esta aplicación.
 
-\paragraph{¿Y si el fármaco o el diagnóstico no está en el catálogo?}
-En el grupo correspondiente se marca \emph{Otro}. El ítem hereda la
-clase del grupo (medicamentos) o un código asociado al grupo
-(diagnósticos). No inventa un principio activo nuevo en el catálogo
-maestro.

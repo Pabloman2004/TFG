@@ -110,7 +110,7 @@ implementación, no un censo de la guía impresa~\cite{sacyl2023stopp}.
 
 La~\cref{tab:trazabilidad-requisitos} enlaza cada requisito con evidencia
 localizada en el repositorio y con la ejecución de Karma del
-1 de septiembre de 2026 (\texttt{TOTAL: 985 SUCCESS};
+1 de septiembre de 2026 (\texttt{TOTAL: 989 SUCCESS};
 \cref{anexo:log-karma}). «Localizada» significa que existe una
 especificación automática que expresa ese comportamiento; la columna de
 estado registra esa misma suite ejecutada. «Parcial» identifica requisitos
@@ -139,58 +139,58 @@ batería. Salvo las rutas que comienzan por
   RF01 & Seleccionar y deseleccionar medicamentos &
     \texttt{steps/meds-step/meds-step.component.spec.ts};
     \texttt{core/group-checked.spec.ts} &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF02 & Seleccionar diagnósticos y variantes excluyentes &
     \texttt{steps/diagnosis-step/diagnosis-step.component.spec.ts};
     \texttt{core/data/diagnosis-variants.spec.ts} &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF03 & Capturar analítica y constantes &
     \texttt{core/lab-capture.spec.ts};
     \texttt{steps/diagnosis-step/diagnosis-step.component.spec.ts} &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF04 & Reevaluar tras cambios del caso &
     \texttt{core/services/criteria-engine.service.spec.ts};
     especificaciones de ambos pasos &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF05 & Calcular advertencias preventivas de medicación &
     \texttt{core/services/criteria-engine.service.spec.ts} &
-    Solo motor; no integrado en la interfaz; ejecutada el 01/09/2026, 985/985 correctas \\
+    Solo motor; no integrado en la interfaz; ejecutada el 01/09/2026, 989/989 correctas \\
   RF06 & Mostrar elementos relevantes de otros sistemas &
     \texttt{core/data/system-relevance.spec.ts};
     \texttt{core/group-visibility.spec.ts} &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF07 & Marcar pestañas revisadas y persistir el estado &
     \texttt{core/case-store.service.spec.ts} &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF08 & Agrupar resultados por tipo y sistema &
     \texttt{core/criteria-groups.spec.ts};
     especificaciones de ambos pasos &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF09 & Generar y descargar el informe PDF &
     \texttt{core/report.service.spec.ts} &
-    Ejecutada el 01/09/2026, 985/985 correctas; informe del caso en el~\cref{anexo:capturas} \\
+    Ejecutada el 01/09/2026, 989/989 correctas; informe del caso en el~\cref{anexo:capturas} \\
   RF10 & Copiar criterios como texto plano &
     \texttt{core/clipboard-text.spec.ts};
     especificaciones de ambos pasos &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF11 & Exportar e importar JSON validado &
     \texttt{core/case-io.service.spec.ts} &
-    Ejecutada el 01/09/2026, 985/985 correctas; JSON del caso en el~\cref{anexo:capturas} \\
+    Ejecutada el 01/09/2026, 989/989 correctas; JSON del caso en el~\cref{anexo:capturas} \\
   RF12 & Reiniciar solo tras confirmación &
     \texttt{confirm-reset-dialog.component.spec.ts};
     \texttt{core/case-store.service.spec.ts} &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF13 & Escala de fuente y orientación persistentes &
     \texttt{core/display-settings.service.spec.ts};
     especificaciones de ambos pasos &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF14 & Guía rápida y enlace a la guía oficial &
     \texttt{quick-guide-dialog.component.spec.ts} &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF15 & Opción «Otro» por grupo &
     \texttt{core/group-checked.spec.ts};
     especificaciones de ambos pasos &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RNF01 & Flujo en dos pasos con resultados junto a la captura &
     \texttt{app.routes.spec.ts}; especificaciones de ambos pasos &
     Parcial: estructura localizada; usabilidad no evaluada \\
@@ -204,7 +204,7 @@ batería. Salvo las rutas que comienzan por
   RNF04 & Catálogo JSON separado del motor &
     \texttt{src/assets/data/criteria.json};
     \texttt{core/data/criteria-data-integrity.spec.ts} &
-    Ejecutada el 01/09/2026, 985/985 correctas \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RNF05 & Persistencia local del caso &
     \texttt{core/case-store.service.spec.ts};
     \texttt{core/case-io.service.spec.ts} &
@@ -228,7 +228,7 @@ La~\cref{tab:cobertura-catalogo} es deliberadamente una matriz de
 La presencia de un fichero por sección no demuestra por sí sola que
 cada una de sus reglas tenga casos positivo y negativo equivalentes a
 los 190 enunciados oficiales. Las especificaciones A--M sí se ejecutaron
-el 1 de septiembre de 2026 dentro de la suite completa (985/985 correctas;
+el 1 de septiembre de 2026 dentro de la suite completa (989/989 correctas;
 \cref{anexo:log-karma}). No se ha validado una correspondencia criterio
 por criterio entre los 190 enunciados de la guía (133 STOPP y 57 START) y
 las 218 reglas. Una regla
@@ -270,7 +270,7 @@ esta tabla demuestra cobertura completa de la guía.
     \texttt{criteria-m.spec.ts} & No validada \\
   \midrule
   \textbf{Total del catálogo} & \textbf{166} & \textbf{52} &
-    \textbf{Ejecutada el 01/09/2026, 985/985 correctas} &
+    \textbf{Ejecutada el 01/09/2026, 989/989 correctas} &
     \textbf{No validada} \\
 \end{longtable}
 }
@@ -474,7 +474,7 @@ Este anexo detalla los cinco hallazgos A3--A14 resumidos en
 el~\cref{sec:errores-detectados}. En todos ellos la lógica correspondía a
 un criterio oficial pero estaba mal formalizada. El código contiene un caso
 positivo y otro negativo; ambos forman parte de la ejecución del
-01/09/2026 (985/985 correctas; \cref{anexo:log-karma}).
+01/09/2026 (989/989 correctas; \cref{anexo:log-karma}).
 
 \begin{itemize}[leftmargin=1.4em,itemsep=0.25em]
   \item \textbf{B20 (A3).} La lógica solo exigía antihipertensivo
@@ -503,192 +503,6 @@ positivo y otro negativo; ambos forman parte de la ejecución del
   con esos antecedentes recibía «evitar ISRS». Se añadió
   \texttt{inDrugClass(ISRS)} y el caso negativo correspondiente.
 \end{itemize}
-
-\chapter{Esquemas de interfaz}
-\label{anexo:wireframes}
-
-Los tres esquemas siguientes complementan el~\cref{cap:manual}. Son
-bocetos de disposición; las capturas reales de la ejecución del
-1 de septiembre de 2026 están en el~\cref{anexo:capturas} y en el
-capítulo del manual.
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    caja/.style={draw, thick, inner sep=3pt, fill=gray!5, align=left},
-    tit/.style={font=\scriptsize\bfseries\sffamily}
-  ]
-    \node[caja, text width=14.0cm] (hdr)
-      {STOPP/START\quad [Medicamentos] Diagnósticos
-       \hfill Visualización\quad Exportar PDF};
-    \node[caja, below=0.12cm of hdr, text width=14.0cm] (bar)
-      {Guardar\quad Cargar\quad Guía\quad Reiniciar
-       \hfill 3 medicaciones $\vert$ 1 diagnóstico};
-    \node[caja, below=0.12cm of bar, text width=7.9cm, minimum height=5.0cm,
-      anchor=north west] (izq) at ([yshift=-0.12cm]bar.south west)
-      {\textbf{Sistemas:} Cardiovascular (activa), SNC, Renal \ldots{} Otros\\[4pt]
-       \textbf{Del sistema}\\
-       IECA \quad Betabloqueantes \quad Diurét.\ de asa\\
-       $\square$ Enalapril \quad $\square$ Ramipril\\
-       $\boxtimes$ Bisoprolol \quad $\boxtimes$ Furosemida\\[4pt]
-       \textbf{Relevantes de otros sistemas}\\
-       AINE (Osteo/músculo-esq.)\\
-       $\square$ Ibuprofeno \quad $\square$ Naproxeno\\
-       $\square$ Otro};
-    \node[caja, below=0.12cm of bar, text width=5.5cm, minimum height=5.0cm,
-      anchor=north east] (der) at ([yshift=-0.12cm]bar.south east)
-      {\textbf{Criterios activados}\hfill Copiar\\[4pt]
-       \textbf{START} 1\\
-       B8 --- Considerar iSGLT2\\
-       {\tiny en IC con FE reducida}\\[6pt]
-       \textbf{STOPP} 1\\
-       B19 --- Evitar AINE\\
-       {\tiny en IC con diurético de asa}};
-  \end{tikzpicture}
-  \caption{Pantalla de medicamentos: pestañas de sistema, lista de
-  fármacos en dos cubos y panel de criterios con acciones PDF/JSON.}
-  \label{fig:wire-meds}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    caja/.style={draw, thick, inner sep=3pt, fill=gray!5, align=left},
-    tit/.style={font=\scriptsize\bfseries\sffamily}
-  ]
-    \node[caja, text width=14.0cm] (hdr)
-      {STOPP/START\quad Medicamentos\quad [Diagnósticos]
-       \hfill Visualización\quad Exportar PDF};
-    \node[caja, below=0.12cm of hdr, text width=7.9cm, minimum height=5.3cm,
-      anchor=north west] (izq) at ([yshift=-0.12cm]hdr.south west)
-      {\textbf{Sistemas:} \ldots{} Urológico, \textbf{Otros} (activa)\\[4pt]
-       \textbf{Analítica y constantes}\\
-       TFGe (ml/min/1,73\,m$^2$) [\,42\,] \quad PAS (mmHg) [\,158\,]\\
-       PAD (mmHg) [\,92\,] \quad K$^+$ (mmol/l) [\,4,1\,]\\
-       QTc (ms) [\,\phantom{00}\,] \quad TSH (µU/ml) [\,\phantom{00}\,]\\[6pt]
-       \textbf{Diagnósticos (Otros / Geriátrico)}\\
-       $\boxtimes$ Caídas de repetición\\
-       $\square$ Fragilidad \quad $\square$ Otro};
-    \node[caja, below=0.12cm of hdr, text width=5.5cm, minimum height=5.3cm,
-      anchor=north east] (der) at ([yshift=-0.12cm]hdr.south east)
-      {\textbf{Criterios activados}\\[4pt]
-       START 1 --- B1 antihipertensivo\\
-       {\tiny (PAS $>$ 140 o PAD $>$ 90 y sin tratamiento)}\\[6pt]
-       STOPP 1 --- K1 benzodiacepina\\
-       {\tiny y caídas de repetición}};
-  \end{tikzpicture}
-  \caption{Pantalla de diagnósticos: pestaña «Otros» con el panel fijo
-  de analítica y el mismo panel de criterios a la derecha.}
-  \label{fig:wire-dx}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    caja/.style={draw, thick, inner sep=4pt, fill=gray!5, align=left}
-  ]
-    \node[font=\scriptsize\bfseries\sffamily, text width=11.4cm] (t)
-      {Criterios activados \hfill Copiar criterios};
-    \node[caja, fill=gray!14, below=0.15cm of t, text width=11.4cm] (st) {%
-      \textbf{START} 2\\[2pt]
-      Sistema cardiovascular\\
-      B1 --- Considerar antihipertensivo (PAS $>$ 140\,mmHg / PAD $>$ 90\,mmHg)\\
-      B8 --- Considerar iSGLT2 en insuficiencia cardíaca
-    };
-    \node[caja, fill=gray!10, below=0.18cm of st, text width=11.4cm] (sp) {%
-      \textbf{STOPP} 2\\[2pt]
-      Sistema cardiovascular\\
-      B19 --- Evitar AINE o corticoide en IC con diurético de asa\\[2pt]
-      Riesgo de caídas\\
-      K1 --- Evitar benzodiacepina si hay caídas de repetición
-    };
-  \end{tikzpicture}
-  \caption{Panel de resultados STOPP/START, agrupado por sistema, visible
-  en ambas pestañas del flujo.}
-  \label{fig:wire-resultados}
-\end{figure}
-
-\chapter{Diagramas de secuencia}
-\label{anexo:diagramas-secuencia}
-
-Los diagramas siguientes detallan el~\cref{cap:diseno}: el ciclo al marcar
-una medicación y la exportación a PDF.
-
-\begin{figure}[H]
-  \centering
-  \resizebox{\textwidth}{!}{%
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
-    arr/.style={-{Latex}, thick}
-  ]
-    \node[actor] (c) {Clínico};
-    \node[actor, right=1.55cm of c] (ui) {MedsStep};
-    \node[actor, right=1.55cm of ui] (st) {CaseStore};
-    \node[actor, right=1.55cm of st] (en) {Motor};
-
-    \foreach \x in {c, ui, st, en} {
-      \draw[gray!50, thick] (\x.south) -- ++(0,-6.15);
-    }
-
-    \draw[arr] ([yshift=-0.45cm]c.south) --
-      node[above, font=\tiny] {marca fármaco} ([yshift=-0.45cm]ui.south);
-    \draw[arr] ([yshift=-1.15cm]ui.south) --
-      node[above, font=\tiny] {\texttt{meds.set(...)}} ([yshift=-1.15cm]st.south);
-
-    \draw[arr] ([yshift=-1.95cm]ui.south) --
-      node[above, font=\tiny] {\texttt{evaluate(caso)}} ([yshift=-1.95cm]en.south);
-    \draw[arr] ([yshift=-2.65cm]en.south) --
-      node[above, font=\tiny] {\texttt{Crit[]} aplicables} ([yshift=-2.65cm]ui.south);
-
-    \draw[arr] ([yshift=-4.95cm]en.south) --
-      node[above, font=\tiny] {\texttt{relevance} / cubos} ([yshift=-4.95cm]ui.south);
-    \draw[arr] ([yshift=-5.65cm]ui.south) --
-      node[above, font=\tiny] {paneles STOPP/START} ([yshift=-5.65cm]c.south);
-  \end{tikzpicture}%
-  }
-  \caption{Secuencia implementada al marcar una medicación: el estado de
-  sesión cambia, el motor evalúa y la UI actualiza criterios y relevancia. El
-  cálculo auxiliar de \texttt{excludes} no está integrado en este flujo.}
-  \label{fig:diseno-secuencia}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \resizebox{\textwidth}{!}{%
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
-    arr/.style={-{Latex}, thick}
-  ]
-    \node[actor] (c) {Clínico};
-    \node[actor, right=1.7cm of c] (ui) {MedsStep};
-    \node[actor, right=1.7cm of ui] (en) {Motor};
-    \node[actor, right=1.7cm of en] (rp) {ReportService};
-
-    \foreach \x in {c, ui, en, rp} {
-      \draw[gray!50, thick] (\x.south) -- ++(0,-3.35);
-    }
-
-    \draw[arr] ([yshift=-0.45cm]c.south) --
-      node[above, font=\tiny] {exportar PDF} ([yshift=-0.45cm]ui.south);
-    \draw[arr] ([yshift=-1.15cm]ui.south) --
-      node[above, font=\tiny] {\texttt{evaluate}} ([yshift=-1.15cm]en.south);
-    \draw[arr] ([yshift=-1.85cm]en.south) --
-      node[above, font=\tiny] {\texttt{Crit[]}} ([yshift=-1.85cm]ui.south);
-    \draw[arr] ([yshift=-2.55cm]ui.south) --
-      node[above, font=\tiny] {\texttt{exportCase(...)}} ([yshift=-2.55cm]rp.south);
-    \draw[arr] ([yshift=-3.15cm]rp.south) --
-      node[above, font=\tiny] {descarga} ([yshift=-3.15cm]c.south);
-  \end{tikzpicture}%
-  }
-  \caption{Secuencia de exportación a PDF: evaluación al vuelo y
-  composición en el cliente.}
-  \label{fig:diseno-pdf}
-\end{figure}
 
 \chapter{Esquema de una regla del catálogo}
 \label{anexo:esquema-criterio}
@@ -748,18 +562,6 @@ cada entrada de \texttt{criteria.json} y un ejemplo real (STOPP-B1).
 }
 \end{lstlisting}
 
-\chapter{Diagramas del cuerpo de la memoria}
-\label{anexo:diagramas-cuerpo}
-
-Los cuatro diagramas siguientes complementan los capítulos 3, 4, 5 y 7.
-El texto de cada capítulo los interpreta; aquí se agrupan por formato
-de página completa.
-
-\input{figuras/fig-flujo-vision}
-\input{figuras/fig-gantt-inicial}
-\input{figuras/fig-arq-cajas}
-\input{figuras/fig-casos-uso}
-
 \chapter{Log de la batería Karma del 01/09/2026}
 \label{anexo:log-karma}
 
@@ -767,8 +569,8 @@ La~\cref{tab:pruebas} y los anexos~\ref{anexo:trazabilidad}
 y~\ref{anexo:cobertura-criterios} se apoyan en esta ejecución. Comando:
 \texttt{npx ng test -{}-watch=false -{}-browsers=ChromeHeadless}.
 Entorno: Node.js~22.14.0, npm~10.9.7, Google Chrome 148.0.7778.96,
-Linux. Fecha: 2026-09-01T14:04:21Z. Veredicto: \texttt{TOTAL: 985 SUCCESS},
-código de salida 0. El log completo, con el progreso de las 985
+Linux. Fecha: 2026-09-01T14:45:26Z. Veredicto: \texttt{TOTAL: 989 SUCCESS},
+código de salida 0. El log completo, con el progreso de las 989
 especificaciones, está en \texttt{memoria/anexos/karma-2026-09-01.log}.
 El~\cref{lst:karma-resumen} reproduce la cabecera y la línea de totales.
 
@@ -790,29 +592,13 @@ errores, no a un fallo de la suite.
 
 Ejecución manual del caso de la~\cref{sec:caso-manual} sobre el artefacto
 de producción servido en \texttt{http://127.0.0.1:4173} (Chrome, 1 de
-septiembre de 2026). El~\cref{cap:manual} describe el recorrido; las
-capturas reales son las~\cref{fig:cap-hta,fig:cap-amlodipino}.
+septiembre de 2026). Las capturas de interfaz están en el~\cref{cap:manual}
+(\cref{fig:cap-hta,fig:cap-amlodipino,fig:cap-resultados}). Este anexo
+adjunta el JSON y el informe PDF de esa misma sesión (RF09).
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{captura-hta-start-b1.png}
-  \caption{Diagnósticos: HTA marcada y criterio
-    \texttt{START-B1-ANTIHIPERTENSIVO-HTA} activado. Ejecución del
-    01/09/2026 sobre el artefacto de producción.}
-  \label{fig:cap-hta}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{captura-amlodipino.png}
-  \caption{Medicamentos: Amlodipino seleccionado; START-B1 deja de
-    aplicar. Ejecución del 01/09/2026 sobre el artefacto de producción.}
-  \label{fig:cap-amlodipino}
-\end{figure}
-
-El JSON exportado con \emph{Guardar} en el paso 4 del caso (HTA, sin
-amlodipino) se adjunta como \texttt{memoria/anexos/caso-hta-2026-09-01.json}.
-Fragmento relevante:
+El JSON exportado con \emph{Guardar} (HTA, sin amlodipino) se conserva
+como \texttt{memoria/anexos/caso-hta-2026-09-01.json}. Fragmento
+relevante:
 
 \begin{lstlisting}[numbers=none]
 {
@@ -828,3 +614,16 @@ Fragmento relevante:
   }
 }
 \end{lstlisting}
+
+El PDF generado (RF09) se conserva como
+\texttt{memoria/anexos/informe-hta-2026-09-01.pdf}. La figura siguiente
+reproduce su primera página.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{informe-hta-2026-09-01.png}
+  \caption{Informe PDF generado el 01/09/2026 para el caso HTA (sin
+    antihipertensivo): título «Informe STOPP/START», diagnóstico y tabla
+    START-B1.}
+  \label{fig:cap-informe-pdf}
+\end{figure}
