@@ -93,31 +93,8 @@ dosis o duración que el profesional deba confirmar leyendo el aviso.
 Las reglas clínicas no están compiladas en TypeScript: residen en
 \texttt{src/assets/data/criteria.json}, un objeto cuya propiedad
 \texttt{criteria} contiene el array de objetos \texttt{Crit}. Cada entrada
-tiene los campos de la~\cref{tab:campos-criterio}.
-
-\begin{table}[H]
-  \centering
-  \small
-  \begin{tabular}{@{}lp{10.2cm}@{}}
-    \toprule
-    \textbf{Campo} & \textbf{Significado} \\
-    \midrule
-    \texttt{id} & Identificador estable (\texttt{STOPP-B1-DIGOXINA}, \ldots). \\
-    \texttt{type} & \texttt{STOPP} o \texttt{START}. \\
-    \texttt{system} & Uno de los trece sistemas del catálogo. \\
-    \texttt{summary} & Texto del aviso mostrado al profesional. \\
-    \texttt{logic} & Árbol json-logic ejecutable (operadores estándar y
-      personalizados). \\
-    \texttt{excludes} & Fármacos o clases cuya adición activaría una
-      advertencia de prescripción potencialmente inapropiada (opcional).
-      Se conserva \texttt{excludes} como nombre técnico del campo. \\
-    \texttt{relevance} & Clases extra para el índice de visibilidad cuando no
-      se infieren de la lógica (opcional). \\
-    \bottomrule
-  \end{tabular}
-  \caption{Campos de una entrada de \texttt{criteria.json}.}
-  \label{tab:campos-criterio}
-\end{table}
+tiene los campos de la~\cref{tab:campos-criterio}
+(\cref{anexo:esquema-criterio}).
 
 La guía oficial STOPP/START v3 enumera 190 criterios (133 STOPP y
 57 START)~\cite{omahony2023stopp,sacyl2023stopp}. El fichero implementado
@@ -142,39 +119,12 @@ nervioso central, renal, gastrointestinal, respiratorio, musculoesquelético,
 urogenital, endocrino, riesgo de caídas, analgésicos y carga
 antimuscarínica/anticolinérgica.
 
-El~\cref{lst:criterio-b1} muestra una entrada real. STOPP-B1 se activa si el
-paciente toma un fármaco de clase \texttt{DIGOXINA} y tiene el diagnóstico
+El~\cref{lst:criterio-b1} del~\cref{anexo:esquema-criterio} muestra una
+entrada real. STOPP-B1 se activa si el paciente toma un fármaco de clase
+\texttt{DIGOXINA} y tiene el diagnóstico
 \texttt{ic\_funcion\_sistolica\_conservada}; \texttt{excludes} indica qué
 marcaría el motor como medicación potencialmente inapropiada en ese
 contexto. No equivale a una prohibición clínica absoluta.
-
-\begin{lstlisting}[
-  caption={Entrada real de \texttt{criteria.json}: STOPP-B1.},
-  label={lst:criterio-b1},
-  basicstyle=\ttfamily\scriptsize,
-  numbers=none,
-  frame=single,
-  breaklines=true
-]
-{
-  "id": "STOPP-B1-DIGOXINA",
-  "type": "STOPP",
-  "system": "Sistema cardiovascular",
-  "summary": "Evitar digoxina en pacientes con insuficiencia
-    cardiaca con funcion sistolica ventricular conservada.",
-  "logic": {
-    "and": [
-      {"inDrugClass": ["DIGOXINA", {"var": "medications"}]},
-      {"in": ["ic_funcion_sistolica_conservada",
-             {"var": "diagnoses"}]}
-    ]
-  },
-  "excludes": {
-    "medications": ["Digoxina"],
-    "drugClasses": ["DIGOXINA"]
-  }
-}
-\end{lstlisting}
 
 \section{Persistencia}
 \label{sec:persistencia}

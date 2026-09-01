@@ -158,46 +158,8 @@ A la derecha, el panel \emph{Criterios activados} se actualiza al
 marcar o desmarcar. Un contador en la barra resume medicaciones y
 diagnósticos ya elegidos. Cada pestaña puede marcarse como revisada
 cuando no hay selección, para dejar constancia de que se miró y no
-aplica nada.
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    caja/.style={draw, thick, inner sep=3pt, fill=gray!5, align=left},
-    tit/.style={font=\scriptsize\bfseries\sffamily}
-  ]
-    \node[caja, text width=14.0cm] (hdr)
-      {STOPP/START\quad [Medicamentos] Diagnósticos
-       \hfill Visualización\quad Exportar PDF};
-    \node[caja, below=0.12cm of hdr, text width=14.0cm] (bar)
-      {Guardar\quad Cargar\quad Guía\quad Reiniciar
-       \hfill 3 medicaciones $\vert$ 1 diagnóstico};
-    \node[caja, below=0.12cm of bar, text width=7.9cm, minimum height=5.0cm,
-      anchor=north west] (izq) at ([yshift=-0.12cm]bar.south west)
-      {\textbf{Sistemas:} Cardiovascular (activa), SNC, Renal \ldots{} Otros\\[4pt]
-       \textbf{Del sistema}\\
-       IECA \quad Betabloqueantes \quad Diurét.\ de asa\\
-       $\square$ Enalapril \quad $\square$ Ramipril\\
-       $\boxtimes$ Bisoprolol \quad $\boxtimes$ Furosemida\\[4pt]
-       \textbf{Relevantes de otros sistemas}\\
-       AINE (Osteo/músculo-esq.)\\
-       $\square$ Ibuprofeno \quad $\square$ Naproxeno\\
-       $\square$ Otro};
-    \node[caja, below=0.12cm of bar, text width=5.5cm, minimum height=5.0cm,
-      anchor=north east] (der) at ([yshift=-0.12cm]bar.south east)
-      {\textbf{Criterios activados}\hfill Copiar\\[4pt]
-       \textbf{START} 1\\
-       B8 --- Considerar iSGLT2\\
-       {\tiny en IC con FE reducida}\\[6pt]
-       \textbf{STOPP} 1\\
-       B19 --- Evitar AINE\\
-       {\tiny en IC con diurético de asa}};
-  \end{tikzpicture}
-  \caption{Pantalla de medicamentos: pestañas de sistema, lista de
-  fármacos en dos cubos y panel de criterios con acciones PDF/JSON.}
-  \label{fig:wire-meds}
-\end{figure}
+aplica nada. El esquema de esta pantalla está en
+el~\cref{anexo:wireframes} (\cref{fig:wire-meds}).
 
 \subsection{Pantalla de diagnósticos y analítica}
 
@@ -215,39 +177,7 @@ pestaña \emph{Otros}. El panel no depende de lo que esté marcado: un
 START como el de antihipertensivo ante PAS/PAD elevadas se evalúa por la
 ausencia de fármaco, y ninguna casilla «activaría» esos campos. Si un
 valor no se rellena, los criterios que lo leen no disparan.
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    caja/.style={draw, thick, inner sep=3pt, fill=gray!5, align=left},
-    tit/.style={font=\scriptsize\bfseries\sffamily}
-  ]
-    \node[caja, text width=14.0cm] (hdr)
-      {STOPP/START\quad Medicamentos\quad [Diagnósticos]
-       \hfill Visualización\quad Exportar PDF};
-    \node[caja, below=0.12cm of hdr, text width=7.9cm, minimum height=5.3cm,
-      anchor=north west] (izq) at ([yshift=-0.12cm]hdr.south west)
-      {\textbf{Sistemas:} \ldots{} Urológico, \textbf{Otros} (activa)\\[4pt]
-       \textbf{Analítica y constantes}\\
-       TFGe (ml/min/1,73\,m$^2$) [\,42\,] \quad PAS (mmHg) [\,158\,]\\
-       PAD (mmHg) [\,92\,] \quad K$^+$ (mmol/l) [\,4,1\,]\\
-       QTc (ms) [\,\phantom{00}\,] \quad TSH (µU/ml) [\,\phantom{00}\,]\\[6pt]
-       \textbf{Diagnósticos (Otros / Geriátrico)}\\
-       $\boxtimes$ Caídas de repetición\\
-       $\square$ Fragilidad \quad $\square$ Otro};
-    \node[caja, below=0.12cm of hdr, text width=5.5cm, minimum height=5.3cm,
-      anchor=north east] (der) at ([yshift=-0.12cm]hdr.south east)
-      {\textbf{Criterios activados}\\[4pt]
-       START 1 --- B1 antihipertensivo\\
-       {\tiny (PAS $>$ 140 o PAD $>$ 90 y sin tratamiento)}\\[6pt]
-       STOPP 1 --- K1 benzodiacepina\\
-       {\tiny y caídas de repetición}};
-  \end{tikzpicture}
-  \caption{Pantalla de diagnósticos: pestaña «Otros» con el panel fijo
-  de analítica y el mismo panel de criterios a la derecha.}
-  \label{fig:wire-dx}
-\end{figure}
+El esquema está en la~\cref{fig:wire-dx} del~\cref{anexo:wireframes}.
 
 \subsection{Resultados y generación del informe}
 
@@ -273,32 +203,8 @@ Desde cualquier paso se puede:
   confirmar.
 \end{itemize}
 
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    caja/.style={draw, thick, inner sep=4pt, fill=gray!5, align=left}
-  ]
-    \node[font=\scriptsize\bfseries\sffamily, text width=11.4cm] (t)
-      {Criterios activados \hfill Copiar criterios};
-    \node[caja, fill=gray!14, below=0.15cm of t, text width=11.4cm] (st) {%
-      \textbf{START} 2\\[2pt]
-      Sistema cardiovascular\\
-      B1 --- Considerar antihipertensivo (PAS $>$ 140\,mmHg / PAD $>$ 90\,mmHg)\\
-      B8 --- Considerar iSGLT2 en insuficiencia cardíaca
-    };
-    \node[caja, fill=gray!10, below=0.18cm of st, text width=11.4cm] (sp) {%
-      \textbf{STOPP} 2\\[2pt]
-      Sistema cardiovascular\\
-      B19 --- Evitar AINE o corticoide en IC con diurético de asa\\[2pt]
-      Riesgo de caídas\\
-      K1 --- Evitar benzodiacepina si hay caídas de repetición
-    };
-  \end{tikzpicture}
-  \caption{Panel de resultados STOPP/START, agrupado por sistema, visible
-  en ambas pestañas del flujo.}
-  \label{fig:wire-resultados}
-\end{figure}
+El esquema del panel está en la~\cref{fig:wire-resultados}
+del~\cref{anexo:wireframes}.
 
 \section{Resolución de errores}
 

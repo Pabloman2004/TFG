@@ -1,0 +1,69 @@
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    caja/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      inner sep=4pt, fill=gray!6
+    },
+    nucleo/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      inner sep=4pt, fill=gray!14
+    },
+    plat/.style={
+      draw, thick, rounded corners=2pt, align=center,
+      inner sep=4pt, fill=gray!22
+    },
+    arr/.style={-{Latex}, thick},
+    biarr/.style={{Latex}-{Latex}, thick},
+    seclabel/.style={font=\scriptsize\bfseries\sffamily}
+  ]
+    \node[caja, minimum width=11.6cm, minimum height=1.15cm] (ui)
+      {\textbf{Presentación}\\[1pt]
+       \texttt{MedsStep} \quad \texttt{DiagnosisStep} \quad
+       diálogos (guía, reinicio, visualización)};
+
+    \node[nucleo, below=0.42cm of ui, minimum width=11.6cm, minimum height=0.72cm] (store)
+      {\textbf{Estado de sesión} --- \texttt{CaseStoreService} (\textit{signals})};
+
+    \node[nucleo, below=0.55cm of store, minimum width=3.9cm, minimum height=1.35cm] (eng)
+      {\textbf{Motor}\\[1pt]
+       \texttt{CriteriaEngine}\\
+       \texttt{evaluate} / exclusiones\\
+       \textit{relevance}};
+    \node[caja, left=0.30cm of eng, minimum width=3.4cm, minimum height=1.35cm] (cat)
+      {\textbf{Catálogos}\\[1pt]
+       fármacos, dx,\\
+       taxonomías};
+    \node[caja, right=0.30cm of eng, minimum width=3.4cm, minimum height=1.35cm] (out)
+      {\textbf{Salidas}\\[1pt]
+       \texttt{ReportService}\\
+       \texttt{CaseIoService}};
+
+    \node[plat, below=0.42cm of eng, minimum width=3.9cm] (json)
+      {\texttt{criteria.json}};
+    \node[plat, below=0.55cm of json, xshift=-3.05cm,
+      minimum width=5.5cm, minimum height=0.55cm] (local)
+      {\texttt{localStorage} (copia del caso)};
+    \node[plat, below=0.55cm of json, xshift=3.05cm,
+      minimum width=5.5cm, minimum height=0.55cm] (http)
+      {HTTP GET de \texttt{assets}};
+
+    \draw[arr] (ui) -- (store);
+    \draw[arr] (store) -- (eng);
+    \draw[arr] (store.south) -- ++(0,-0.12) -| (out.north);
+    \draw[arr] (cat) -- (eng);
+    \draw[arr] (json) -- (eng);
+    \draw[arr] (eng) -- (out);
+    \draw[biarr] (local.north) -- (store.south west);
+    \draw[arr] (http.north) -- node[right, font=\tiny, pos=0.45] {GET} (json.south east);
+  \end{tikzpicture}%
+  }
+  \caption{Arquitectura de cajas: la UI actualiza el estado de sesión; el
+  motor evalúa el caso con catálogos y \texttt{criteria.json}; las salidas
+  leen una instantánea. El estado vive en memoria; \texttt{localStorage}
+  guarda una copia en el navegador, no en una base de datos.
+  \texttt{HttpClient} obtiene los activos mediante HTTP GET.}
+  \label{fig:arq-cajas}
+\end{figure}

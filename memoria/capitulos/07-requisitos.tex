@@ -36,87 +36,41 @@ profesional, según la visión del~\cref{cap:solucion}.
 \section{Requisitos funcionales}
 \label{sec:rf}
 
-La~\cref{tab:rf} recoge los requisitos funcionales con identificador estable,
-prioridad y descripción sin ambigüedad. La prioridad \emph{Alta} corresponde a
-capacidades sin las cuales el flujo de revisión no se completa; \emph{Media},
-a ayudas de captura, accesibilidad o reutilización del caso.
+La~\cref{tab:rf-resumen} identifica los requisitos funcionales con
+prioridad. La descripción completa, sin ambigüedad, está en
+la~\cref{tab:rf} del~\cref{anexo:aceptacion}. La prioridad \emph{Alta}
+corresponde a capacidades sin las cuales el flujo de revisión no se
+completa; \emph{Media}, a ayudas de captura, accesibilidad o reutilización
+del caso.
 
-{\small
-\begin{longtable}{@{}llp{9.2cm}@{}}
-  \caption{Requisitos funcionales del sistema implementado.}
-  \label{tab:rf} \\
-  \toprule
-  \textbf{ID} & \textbf{Prioridad} & \textbf{Descripción} \\
-  \midrule
-  \endfirsthead
-  \caption[]{Requisitos funcionales del sistema implementado (cont.).} \\
-  \toprule
-  \textbf{ID} & \textbf{Prioridad} & \textbf{Descripción} \\
-  \midrule
-  \endhead
-  \bottomrule
-  \endfoot
-  RF01 & Alta & El profesional podrá seleccionar y deseleccionar medicamentos
-    del catálogo, organizados por categoría terapéutica (pestañas
-    cardiovascular, anticoagulantes, SNC, renal, gastrointestinal,
-    respiratorio, endocrino, urológico, osteoarticular, antiinfecciosos y
-    «Otros»). Cada fármaco marcado formará parte del caso y podrá
-    desmarcarse en cualquier momento. \\
-  RF02 & Alta & El profesional podrá seleccionar y deseleccionar diagnósticos
-    del catálogo, organizados por sistema. En las familias con variantes
-    mutuamente excluyentes ---en la implementación actual, la hipertensión
-    arterial: HTA sin especificar, no complicada, moderada o grave---
-    marcar una variante retirará las hermanas. Los diagnósticos que
-    dependen de una medicación habilitante permanecerán no seleccionables
-    hasta que dicha medicación esté en el caso. \\
-  RF03 & Alta & En la pestaña «Otros» del paso de diagnósticos, el profesional
-    podrá introducir, modificar o dejar vacíos los parámetros de analítica y
-    constantes que algún criterio lee: TFGe, TSH, frecuencia cardíaca, QTc,
-    potasio, sodio, calcio corregido, PAS y PAD. El panel será fijo (no
-    condicionado a la selección). \\
-  RF04 & Alta & Tras cada cambio de medicación, diagnóstico o analítica, el
-    sistema evaluará automáticamente el caso frente al catálogo STOPP/START
-    y actualizará los avisos aplicables en el propio paso, sin petición
-    explícita ni ida y vuelta a un servidor. \\
-  RF05 & Baja & El motor ofrecerá un cálculo auxiliar de los medicamentos
-    del catálogo que, de añadirse al caso actual, dispararían una regla con
-    campo \texttt{excludes}. Esta capacidad no se presenta en la interfaz
-    actual y queda disponible para una integración posterior. \\
-  RF06 & Alta & En la pestaña activa, el sistema mostrará un bloque
-    «Relevantes de otros sistemas» con fármacos o diagnósticos de otras
-    pestañas que participan en criterios del sistema en revisión, de modo
-    que el profesional no deba abandonar la pestaña para marcarlos. \\
-  RF07 & Media & El profesional podrá marcar una pestaña como revisada cuando
-    no tenga selección, para dejar constancia de que la ha examinado y no
-    aplica nada. Si añade una selección, el marcador se retirará. Una
-    pestaña con selección no podrá marcarse como revisada. \\
-  RF08 & Alta & El sistema mostrará los criterios aplicables agrupados por
-    tipo (STOPP y START) y, dentro de cada tipo, por sistema orgánico,
-    con código de sección y texto del aviso. \\
-  RF09 & Alta & El profesional podrá descargar un informe PDF del caso con
-    cabecera institucional, fecha, diagnósticos, medicaciones y tablas de
-    criterios STOPP y START aplicables. \\
-  RF10 & Media & El profesional podrá copiar al portapapeles un texto plano
-    con los criterios aplicables, agrupados por sistema. Si no hay
-    avisos, el texto será «Sin criterios aplicables.». \\
-  RF11 & Alta & El profesional podrá exportar el caso completo a un fichero
-    JSON versionado e importar un fichero del mismo formato. Un JSON que
-    no supere la validación se rechazará sin alterar el caso en curso. \\
-  RF12 & Media & El profesional podrá reiniciar el caso. El sistema pedirá
-    confirmación explícita; solo si se confirma se vaciarán medicaciones,
-    diagnósticos, analítica y marcadores de revisión. \\
-  RF13 & Media & El profesional podrá elegir la escala de fuente (pequeño,
-    mediano o grande) y la orientación de las pestañas (raíl vertical u
-    horizontal). Ambas preferencias se conservarán entre recargas. \\
-  RF14 & Media & El profesional podrá abrir una guía rápida que explique STOPP
-    y START, el flujo en dos pasos y el enlace al PDF oficial de la
-    guía~\cite{sacyl2023stopp}. \\
-  RF15 & Media & El profesional podrá añadir, en un grupo del catálogo, un
-    ítem «Otro» que no figura como fármaco o diagnóstico nominado, de modo
-    que la clase o el grupo participe en la evaluación aunque el principio
-    activo concreto no esté listado. \\
-\end{longtable}
-}
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{@{}llX@{}}
+    \toprule
+    \textbf{ID} & \textbf{Prioridad} & \textbf{Enunciado breve} \\
+    \midrule
+    RF01 & Alta & Seleccionar y deseleccionar medicamentos por categoría. \\
+    RF02 & Alta & Seleccionar diagnósticos, con variantes excluyentes y dependencias. \\
+    RF03 & Alta & Capturar analítica y constantes en la pestaña «Otros». \\
+    RF04 & Alta & Reevaluar el caso en el cliente tras cada cambio. \\
+    RF05 & Baja & Calcular exclusiones preventivas (no expuesto en la UI). \\
+    RF06 & Alta & Mostrar relevantes de otros sistemas en la pestaña activa. \\
+    RF07 & Media & Marcar una pestaña vacía como revisada. \\
+    RF08 & Alta & Agrupar avisos por tipo STOPP/START y por sistema. \\
+    RF09 & Alta & Descargar el informe PDF del caso. \\
+    RF10 & Media & Copiar los criterios aplicables como texto plano. \\
+    RF11 & Alta & Exportar e importar el caso en JSON versionado. \\
+    RF12 & Media & Reiniciar el caso tras confirmación. \\
+    RF13 & Media & Persistir escala de fuente y orientación de pestañas. \\
+    RF14 & Media & Abrir la guía rápida y el enlace al PDF oficial. \\
+    RF15 & Media & Añadir un ítem «Otro» por grupo del catálogo. \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Requisitos funcionales (resumen). El enunciado completo está
+    en la~\cref{tab:rf}.}
+  \label{tab:rf-resumen}
+\end{table}
 
 \subsection{Criterios de aceptación de los requisitos funcionales}
 
@@ -193,102 +147,7 @@ De él se desprenden la captura (RF01--RF03, RF15), la consulta de avisos
 el caso, sin que el profesional los invoque aparte: \textbf{evaluar
 criterios} (RF04) y \textbf{persistir el caso} en el navegador. La
 exportación JSON sí es una acción explícita. La~\cref{fig:casos-uso}
-resume estas relaciones.
-
-\begin{figure}[H]
-  \centering
-  \resizebox{\textwidth}{!}{%
-  \begin{tikzpicture}[
-    font=\small\sffamily,
-    uc/.style={
-      ellipse, draw, thick, align=center,
-      minimum width=3.55cm, minimum height=0.92cm,
-      inner sep=1pt, fill=gray!6
-    },
-    ucinc/.style={
-      ellipse, draw, thick, align=center,
-      minimum width=3.15cm, minimum height=0.92cm,
-      inner sep=1pt, fill=gray!16
-    },
-    assoc/.style={thick},
-    inc/.style={-{Latex}, thick, dashed}
-  ]
-    % System boundary (origin)
-    \node[
-      draw, thick, inner sep=0pt,
-      minimum width=11.6cm, minimum height=10.6cm
-    ] (sys) {};
-    \node[font=\small\bfseries\sffamily, fill=white, inner sep=3pt]
-      at (sys.north) {Sistema STOPP/START};
-
-    % Actor, vertically centered with the system
-    \node[inner sep=0pt, minimum width=0.7cm, minimum height=1.15cm,
-      left=1.35cm of sys] (act) {};
-    \begin{scope}[shift={(act.center)}]
-      \fill (0,0.40) circle (0.11);
-      \draw[thick, line cap=round]
-        (0,0.29) -- (0,-0.10)
-        (-0.20,0.16) -- (0.20,0.16)
-        (0,-0.10) -- (-0.16,-0.42)
-        (0,-0.10) -- (0.16,-0.42);
-    \end{scope}
-    \node[below=0.08cm of act, align=center, font=\small\bfseries\sffamily]
-      (actlbl) {Profesional\\[-1pt]{\normalfont\scriptsize sanitario}};
-
-    % Primary use cases (left column, actor-facing)
-    \node[uc] at ([shift={(-2.95, 4.45)}]sys.center) (ucmed)
-      {Seleccionar\\medicación};
-    \node[uc] at ([shift={(-2.95, 3.20)}]sys.center) (ucdx)
-      {Seleccionar\\diagnósticos};
-    \node[uc] at ([shift={(-2.95, 1.95)}]sys.center) (uclab)
-      {Introducir\\analítica};
-    \node[uc] at ([shift={(-2.95, 0.70)}]sys.center) (ucver)
-      {Consultar avisos\\STOPP / START};
-    \node[uc] at ([shift={(-2.95,-0.55)}]sys.center) (ucexp)
-      {Exportar informe};
-    \node[uc] at ([shift={(-2.95,-1.80)}]sys.center) (ucges)
-      {Importar o\\reiniciar el caso};
-    \node[uc] at ([shift={(-2.95,-3.05)}]sys.center) (ucvis)
-      {Ajustar\\visualización};
-    \node[uc] at ([shift={(-2.95,-4.30)}]sys.center) (ucguia)
-      {Consultar\\guía rápida};
-
-    % Included use cases (right column)
-    \node[ucinc] at ([shift={(3.05, 3.20)}]sys.center) (uceval)
-      {Evaluar\\criterios};
-    \node[ucinc] at ([shift={(3.05, 1.95)}]sys.center) (ucpers)
-      {Persistir\\el caso};
-
-    % Actor associations: bus vertical y líneas horizontales
-    \draw[thick] (act.east |- ucmed.west) -- (act.east |- ucguia.west);
-    \draw[assoc] (act.east |- ucmed.west) -- (ucmed.west);
-    \draw[assoc] (act.east |- ucdx.west) -- (ucdx.west);
-    \draw[assoc] (act.east |- uclab.west) -- (uclab.west);
-    \draw[assoc] (act.east |- ucver.west) -- (ucver.west);
-    \draw[assoc] (act.east |- ucexp.west) -- (ucexp.west);
-    \draw[assoc] (act.east |- ucges.west) -- (ucges.west);
-    \draw[assoc] (act.east |- ucvis.west) -- (ucvis.west);
-    \draw[assoc] (act.east |- ucguia.west) -- (ucguia.west);
-
-    % Include: captura → evaluar / persistir (etiquetas sobre las líneas)
-    \coordinate (capjoin) at ([shift={(0.15, 2.58)}]sys.center);
-    \draw[inc] (ucmed.east) -- ++(0.45,0) |- (capjoin);
-    \draw[inc] (ucdx.east) -- ++(0.45,0) |- (capjoin);
-    \draw[inc] (uclab.east) -- ++(0.45,0) |- (capjoin);
-    \draw[inc] (capjoin) --
-      node[above, font=\scriptsize] {«include»}
-      (uceval.west);
-    \draw[inc] (capjoin) --
-      node[below, font=\scriptsize] {«include»}
-      (ucpers.west);
-  \end{tikzpicture}%
-  }
-  \caption{Diagrama de casos de uso. Las líneas continuas asocian al
-  actor con cada objetivo. Las discontinuas marcan la relación
-  \texttt{include}: evaluar y persistir se ejecutan siempre que cambia
-  la captura, sin invocación aparte.}
-  \label{fig:casos-uso}
-\end{figure}
+del~\cref{anexo:diagramas-cuerpo} resume estas relaciones.
 
 \section{Análisis}
 \label{sec:analisis}

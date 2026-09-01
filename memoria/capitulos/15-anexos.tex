@@ -273,11 +273,90 @@ se inventa en esta memoria.
 \chapter{Criterios de aceptación de los requisitos funcionales}
 \label{anexo:aceptacion}
 
-La~\cref{tab:aceptacion-rf} complementa la~\cref{tab:rf} del
-\cref{cap:requisitos}. Agrupa requisitos que comparten procedimiento de
-comprobación. La comprobación parte de un caso vacío salvo que el propio
-escenario requiera datos previos. No presupone que la prueba se haya
-ejecutado ni sustituye la evidencia del~\cref{cap:pruebas}.
+Este anexo complementa el~\cref{cap:requisitos}. La~\cref{tab:rf} formula
+cada requisito funcional con identificador, prioridad y descripción
+completa. La~\cref{tab:rf-resumen} del cuerpo solo identifica el enunciado
+breve. La~\cref{tab:aceptacion-rf} agrupa requisitos que comparten
+procedimiento de comprobación. La comprobación parte de un caso vacío salvo
+que el propio escenario requiera datos previos. No presupone que la prueba
+se haya ejecutado ni sustituye la evidencia del~\cref{cap:pruebas}.
+
+{\small
+\begin{longtable}{@{}llp{9.2cm}@{}}
+  \caption{Requisitos funcionales del sistema implementado.}
+  \label{tab:rf} \\
+  \toprule
+  \textbf{ID} & \textbf{Prioridad} & \textbf{Descripción} \\
+  \midrule
+  \endfirsthead
+  \caption[]{Requisitos funcionales del sistema implementado (cont.).} \\
+  \toprule
+  \textbf{ID} & \textbf{Prioridad} & \textbf{Descripción} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  RF01 & Alta & El profesional podrá seleccionar y deseleccionar medicamentos
+    del catálogo, organizados por categoría terapéutica (pestañas
+    cardiovascular, anticoagulantes, SNC, renal, gastrointestinal,
+    respiratorio, endocrino, urológico, osteoarticular, antiinfecciosos y
+    «Otros»). Cada fármaco marcado formará parte del caso y podrá
+    desmarcarse en cualquier momento. \\
+  RF02 & Alta & El profesional podrá seleccionar y deseleccionar diagnósticos
+    del catálogo, organizados por sistema. En las familias con variantes
+    mutuamente excluyentes ---en la implementación actual, la hipertensión
+    arterial: HTA sin especificar, no complicada, moderada o grave---
+    marcar una variante retirará las hermanas. Los diagnósticos que
+    dependen de una medicación habilitante permanecerán no seleccionables
+    hasta que dicha medicación esté en el caso. \\
+  RF03 & Alta & En la pestaña «Otros» del paso de diagnósticos, el profesional
+    podrá introducir, modificar o dejar vacíos los parámetros de analítica y
+    constantes que algún criterio lee: TFGe, TSH, frecuencia cardíaca, QTc,
+    potasio, sodio, calcio corregido, PAS y PAD. El panel será fijo (no
+    condicionado a la selección). \\
+  RF04 & Alta & Tras cada cambio de medicación, diagnóstico o analítica, el
+    sistema evaluará automáticamente el caso frente al catálogo STOPP/START
+    y actualizará los avisos aplicables en el propio paso, sin petición
+    explícita ni ida y vuelta a un servidor. \\
+  RF05 & Baja & El motor ofrecerá un cálculo auxiliar de los medicamentos
+    del catálogo que, de añadirse al caso actual, dispararían una regla con
+    campo \texttt{excludes}. Esta capacidad no se presenta en la interfaz
+    actual y queda disponible para una integración posterior. \\
+  RF06 & Alta & En la pestaña activa, el sistema mostrará un bloque
+    «Relevantes de otros sistemas» con fármacos o diagnósticos de otras
+    pestañas que participan en criterios del sistema en revisión, de modo
+    que el profesional no deba abandonar la pestaña para marcarlos. \\
+  RF07 & Media & El profesional podrá marcar una pestaña como revisada cuando
+    no tenga selección, para dejar constancia de que la ha examinado y no
+    aplica nada. Si añade una selección, el marcador se retirará. Una
+    pestaña con selección no podrá marcarse como revisada. \\
+  RF08 & Alta & El sistema mostrará los criterios aplicables agrupados por
+    tipo (STOPP y START) y, dentro de cada tipo, por sistema orgánico,
+    con código de sección y texto del aviso. \\
+  RF09 & Alta & El profesional podrá descargar un informe PDF del caso con
+    cabecera institucional, fecha, diagnósticos, medicaciones y tablas de
+    criterios STOPP y START aplicables. \\
+  RF10 & Media & El profesional podrá copiar al portapapeles un texto plano
+    con los criterios aplicables, agrupados por sistema. Si no hay
+    avisos, el texto será «Sin criterios aplicables.». \\
+  RF11 & Alta & El profesional podrá exportar el caso completo a un fichero
+    JSON versionado e importar un fichero del mismo formato. Un JSON que
+    no supere la validación se rechazará sin alterar el caso en curso. \\
+  RF12 & Media & El profesional podrá reiniciar el caso. El sistema pedirá
+    confirmación explícita; solo si se confirma se vaciarán medicaciones,
+    diagnósticos, analítica y marcadores de revisión. \\
+  RF13 & Media & El profesional podrá elegir la escala de fuente (pequeño,
+    mediano o grande) y la orientación de las pestañas (raíl vertical u
+    horizontal). Ambas preferencias se conservarán entre recargas. \\
+  RF14 & Media & El profesional podrá abrir una guía rápida que explique STOPP
+    y START, el flujo en dos pasos y el enlace al PDF oficial de la
+    guía~\cite{sacyl2023stopp}. \\
+  RF15 & Media & El profesional podrá añadir, en un grupo del catálogo, un
+    ítem «Otro» que no figura como fármaco o diagnóstico nominado, de modo
+    que la clase o el grupo participe en la evaluación aunque el principio
+    activo concreto no esté listado. \\
+\end{longtable}
+}
 
 \begin{table}[H]
   \centering
@@ -411,3 +490,258 @@ positivo y otro negativo; su resultado actual queda pendiente de ejecutar.
   con esos antecedentes recibía «evitar ISRS». Se añadió
   \texttt{inDrugClass(ISRS)} y el caso negativo correspondiente.
 \end{itemize}
+
+\chapter{Esquemas de interfaz}
+\label{anexo:wireframes}
+
+Los tres esquemas siguientes complementan el~\cref{cap:manual}. No son
+capturas de una ejecución fechada: describen la disposición implementada
+de medicamentos, diagnósticos y el panel de resultados.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    caja/.style={draw, thick, inner sep=3pt, fill=gray!5, align=left},
+    tit/.style={font=\scriptsize\bfseries\sffamily}
+  ]
+    \node[caja, text width=14.0cm] (hdr)
+      {STOPP/START\quad [Medicamentos] Diagnósticos
+       \hfill Visualización\quad Exportar PDF};
+    \node[caja, below=0.12cm of hdr, text width=14.0cm] (bar)
+      {Guardar\quad Cargar\quad Guía\quad Reiniciar
+       \hfill 3 medicaciones $\vert$ 1 diagnóstico};
+    \node[caja, below=0.12cm of bar, text width=7.9cm, minimum height=5.0cm,
+      anchor=north west] (izq) at ([yshift=-0.12cm]bar.south west)
+      {\textbf{Sistemas:} Cardiovascular (activa), SNC, Renal \ldots{} Otros\\[4pt]
+       \textbf{Del sistema}\\
+       IECA \quad Betabloqueantes \quad Diurét.\ de asa\\
+       $\square$ Enalapril \quad $\square$ Ramipril\\
+       $\boxtimes$ Bisoprolol \quad $\boxtimes$ Furosemida\\[4pt]
+       \textbf{Relevantes de otros sistemas}\\
+       AINE (Osteo/músculo-esq.)\\
+       $\square$ Ibuprofeno \quad $\square$ Naproxeno\\
+       $\square$ Otro};
+    \node[caja, below=0.12cm of bar, text width=5.5cm, minimum height=5.0cm,
+      anchor=north east] (der) at ([yshift=-0.12cm]bar.south east)
+      {\textbf{Criterios activados}\hfill Copiar\\[4pt]
+       \textbf{START} 1\\
+       B8 --- Considerar iSGLT2\\
+       {\tiny en IC con FE reducida}\\[6pt]
+       \textbf{STOPP} 1\\
+       B19 --- Evitar AINE\\
+       {\tiny en IC con diurético de asa}};
+  \end{tikzpicture}
+  \caption{Pantalla de medicamentos: pestañas de sistema, lista de
+  fármacos en dos cubos y panel de criterios con acciones PDF/JSON.}
+  \label{fig:wire-meds}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    caja/.style={draw, thick, inner sep=3pt, fill=gray!5, align=left},
+    tit/.style={font=\scriptsize\bfseries\sffamily}
+  ]
+    \node[caja, text width=14.0cm] (hdr)
+      {STOPP/START\quad Medicamentos\quad [Diagnósticos]
+       \hfill Visualización\quad Exportar PDF};
+    \node[caja, below=0.12cm of hdr, text width=7.9cm, minimum height=5.3cm,
+      anchor=north west] (izq) at ([yshift=-0.12cm]hdr.south west)
+      {\textbf{Sistemas:} \ldots{} Urológico, \textbf{Otros} (activa)\\[4pt]
+       \textbf{Analítica y constantes}\\
+       TFGe (ml/min/1,73\,m$^2$) [\,42\,] \quad PAS (mmHg) [\,158\,]\\
+       PAD (mmHg) [\,92\,] \quad K$^+$ (mmol/l) [\,4,1\,]\\
+       QTc (ms) [\,\phantom{00}\,] \quad TSH (µU/ml) [\,\phantom{00}\,]\\[6pt]
+       \textbf{Diagnósticos (Otros / Geriátrico)}\\
+       $\boxtimes$ Caídas de repetición\\
+       $\square$ Fragilidad \quad $\square$ Otro};
+    \node[caja, below=0.12cm of hdr, text width=5.5cm, minimum height=5.3cm,
+      anchor=north east] (der) at ([yshift=-0.12cm]hdr.south east)
+      {\textbf{Criterios activados}\\[4pt]
+       START 1 --- B1 antihipertensivo\\
+       {\tiny (PAS $>$ 140 o PAD $>$ 90 y sin tratamiento)}\\[6pt]
+       STOPP 1 --- K1 benzodiacepina\\
+       {\tiny y caídas de repetición}};
+  \end{tikzpicture}
+  \caption{Pantalla de diagnósticos: pestaña «Otros» con el panel fijo
+  de analítica y el mismo panel de criterios a la derecha.}
+  \label{fig:wire-dx}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    caja/.style={draw, thick, inner sep=4pt, fill=gray!5, align=left}
+  ]
+    \node[font=\scriptsize\bfseries\sffamily, text width=11.4cm] (t)
+      {Criterios activados \hfill Copiar criterios};
+    \node[caja, fill=gray!14, below=0.15cm of t, text width=11.4cm] (st) {%
+      \textbf{START} 2\\[2pt]
+      Sistema cardiovascular\\
+      B1 --- Considerar antihipertensivo (PAS $>$ 140\,mmHg / PAD $>$ 90\,mmHg)\\
+      B8 --- Considerar iSGLT2 en insuficiencia cardíaca
+    };
+    \node[caja, fill=gray!10, below=0.18cm of st, text width=11.4cm] (sp) {%
+      \textbf{STOPP} 2\\[2pt]
+      Sistema cardiovascular\\
+      B19 --- Evitar AINE o corticoide en IC con diurético de asa\\[2pt]
+      Riesgo de caídas\\
+      K1 --- Evitar benzodiacepina si hay caídas de repetición
+    };
+  \end{tikzpicture}
+  \caption{Panel de resultados STOPP/START, agrupado por sistema, visible
+  en ambas pestañas del flujo.}
+  \label{fig:wire-resultados}
+\end{figure}
+
+\chapter{Diagramas de secuencia}
+\label{anexo:diagramas-secuencia}
+
+Los diagramas siguientes detallan el~\cref{cap:diseno}: el ciclo al marcar
+una medicación y la exportación a PDF.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
+    arr/.style={-{Latex}, thick}
+  ]
+    \node[actor] (c) {Clínico};
+    \node[actor, right=1.55cm of c] (ui) {MedsStep};
+    \node[actor, right=1.55cm of ui] (st) {CaseStore};
+    \node[actor, right=1.55cm of st] (en) {Motor};
+
+    \foreach \x in {c, ui, st, en} {
+      \draw[gray!50, thick] (\x.south) -- ++(0,-6.15);
+    }
+
+    \draw[arr] ([yshift=-0.45cm]c.south) --
+      node[above, font=\tiny] {marca fármaco} ([yshift=-0.45cm]ui.south);
+    \draw[arr] ([yshift=-1.15cm]ui.south) --
+      node[above, font=\tiny] {\texttt{meds.set(...)}} ([yshift=-1.15cm]st.south);
+
+    \draw[arr] ([yshift=-1.95cm]ui.south) --
+      node[above, font=\tiny] {\texttt{evaluate(caso)}} ([yshift=-1.95cm]en.south);
+    \draw[arr] ([yshift=-2.65cm]en.south) --
+      node[above, font=\tiny] {\texttt{Crit[]} aplicables} ([yshift=-2.65cm]ui.south);
+
+    \draw[arr] ([yshift=-4.95cm]en.south) --
+      node[above, font=\tiny] {\texttt{relevance} / cubos} ([yshift=-4.95cm]ui.south);
+    \draw[arr] ([yshift=-5.65cm]ui.south) --
+      node[above, font=\tiny] {paneles STOPP/START} ([yshift=-5.65cm]c.south);
+  \end{tikzpicture}%
+  }
+  \caption{Secuencia implementada al marcar una medicación: el estado de
+  sesión cambia, el motor evalúa y la UI actualiza criterios y relevancia. El
+  cálculo auxiliar de \texttt{excludes} no está integrado en este flujo.}
+  \label{fig:diseno-secuencia}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+    font=\scriptsize\sffamily,
+    actor/.style={align=center, font=\scriptsize\bfseries\sffamily},
+    arr/.style={-{Latex}, thick}
+  ]
+    \node[actor] (c) {Clínico};
+    \node[actor, right=1.7cm of c] (ui) {MedsStep};
+    \node[actor, right=1.7cm of ui] (en) {Motor};
+    \node[actor, right=1.7cm of en] (rp) {ReportService};
+
+    \foreach \x in {c, ui, en, rp} {
+      \draw[gray!50, thick] (\x.south) -- ++(0,-3.35);
+    }
+
+    \draw[arr] ([yshift=-0.45cm]c.south) --
+      node[above, font=\tiny] {exportar PDF} ([yshift=-0.45cm]ui.south);
+    \draw[arr] ([yshift=-1.15cm]ui.south) --
+      node[above, font=\tiny] {\texttt{evaluate}} ([yshift=-1.15cm]en.south);
+    \draw[arr] ([yshift=-1.85cm]en.south) --
+      node[above, font=\tiny] {\texttt{Crit[]}} ([yshift=-1.85cm]ui.south);
+    \draw[arr] ([yshift=-2.55cm]ui.south) --
+      node[above, font=\tiny] {\texttt{exportCase(...)}} ([yshift=-2.55cm]rp.south);
+    \draw[arr] ([yshift=-3.15cm]rp.south) --
+      node[above, font=\tiny] {descarga} ([yshift=-3.15cm]c.south);
+  \end{tikzpicture}%
+  }
+  \caption{Secuencia de exportación a PDF: evaluación al vuelo y
+  composición en el cliente.}
+  \label{fig:diseno-pdf}
+\end{figure}
+
+\chapter{Esquema de una regla del catálogo}
+\label{anexo:esquema-criterio}
+
+Este anexo detalla el modelo de~\cref{sec:modelo-criterios}: los campos de
+cada entrada de \texttt{criteria.json} y un ejemplo real (STOPP-B1).
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}lp{10.2cm}@{}}
+    \toprule
+    \textbf{Campo} & \textbf{Significado} \\
+    \midrule
+    \texttt{id} & Identificador estable (\texttt{STOPP-B1-DIGOXINA}, \ldots). \\
+    \texttt{type} & \texttt{STOPP} o \texttt{START}. \\
+    \texttt{system} & Uno de los trece sistemas del catálogo. \\
+    \texttt{summary} & Texto del aviso mostrado al profesional. \\
+    \texttt{logic} & Árbol json-logic ejecutable (operadores estándar y
+      personalizados). \\
+    \texttt{excludes} & Fármacos o clases cuya adición activaría una
+      advertencia de prescripción potencialmente inapropiada (opcional).
+      Se conserva \texttt{excludes} como nombre técnico del campo. \\
+    \texttt{relevance} & Clases extra para el índice de visibilidad cuando no
+      se infieren de la lógica (opcional). \\
+    \bottomrule
+  \end{tabular}
+  \caption{Campos de una entrada de \texttt{criteria.json}.}
+  \label{tab:campos-criterio}
+\end{table}
+
+\begin{lstlisting}[
+  caption={Entrada real de \texttt{criteria.json}: STOPP-B1.},
+  label={lst:criterio-b1},
+  basicstyle=\ttfamily\scriptsize,
+  numbers=none,
+  frame=single,
+  breaklines=true
+]
+{
+  "id": "STOPP-B1-DIGOXINA",
+  "type": "STOPP",
+  "system": "Sistema cardiovascular",
+  "summary": "Evitar digoxina en pacientes con insuficiencia
+    cardiaca con funcion sistolica ventricular conservada.",
+  "logic": {
+    "and": [
+      {"inDrugClass": ["DIGOXINA", {"var": "medications"}]},
+      {"in": ["ic_funcion_sistolica_conservada",
+             {"var": "diagnoses"}]}
+    ]
+  },
+  "excludes": {
+    "medications": ["Digoxina"],
+    "drugClasses": ["DIGOXINA"]
+  }
+}
+\end{lstlisting}
+
+\chapter{Diagramas del cuerpo de la memoria}
+\label{anexo:diagramas-cuerpo}
+
+Los cuatro diagramas siguientes complementan los capítulos 3, 4, 5 y 7.
+El texto de cada capítulo los interpreta; aquí se agrupan por formato
+de página completa.
+
+\input{figuras/fig-flujo-vision}
+\input{figuras/fig-gantt-inicial}
+\input{figuras/fig-arq-cajas}
+\input{figuras/fig-casos-uso}
