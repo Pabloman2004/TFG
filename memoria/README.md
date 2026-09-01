@@ -1,6 +1,6 @@
 # Estado de revisión documental del TFG
 
-**Fecha de revisión:** 17 de agosto de 2026
+**Fecha de revisión:** 1 de septiembre de 2026
 **Objeto:** memoria del TFG Tipo I
 **Criterio:** no atribuir al producto resultados, cobertura o validaciones sin
 evidencia reproducible.
@@ -12,8 +12,6 @@ Ya están en el texto de la memoria:
 - El alcance se limita a los criterios evaluables con los datos disponibles.
   Se distinguen la captura desde la interfaz, los datos que solo llegan por
   JSON, la confirmación manual y los criterios no evaluables.
-- Las 985 cláusulas `it(` se presentan como inventario estático, no como una
-  suite superada. La tabla de pruebas indica que falta una ejecución final.
 - «Validación clínica» se sustituyó por «verificación de conformidad con la
   guía STOPP/START» y se añadieron amenazas a la validez.
 - Las afirmaciones no medidas sobre tiempo, usabilidad y utilidad clínica se
@@ -34,62 +32,42 @@ Ya están en el texto de la memoria:
   `localStorage`, retención, exportaciones, copias y riesgo residual.
 - Se añadió un estado del arte con sistemas informatizados comparables y
   resultados publicados.
-- El manual incluye un caso ficticio reproducible, salidas esperadas y
-  resolución de incidencias, sin inventar un despliegue ni capturas.
 - Se retiraron los agradecimientos de relleno y los campos administrativos
   vacíos no se imprimen en la portada.
 - Se corrigieron términos como `multiclasse`, «familia mutex», `Stopp/start`
   e «Ingenieria Informatica».
 
-## Correcciones de revisión (17 de agosto, caps. 1--8)
-
-- Diagramas y tablas se ajustan al ancho de texto (`\textwidth`); cleveref
-  nombra las tablas como «tabla», no «cuadro».
-- El estado de sesión no se presenta como base de datos ni como caché HTTP:
-  es memoria de la sesión más una copia en `localStorage`.
-- Se eliminó del PDF la funcionalidad retirada de historial de casos. Donde
-  correspondía, «historial» pasó a historia clínica electrónica o a
-  histórico de Git.
-- Se retiró la frase redundante de la tabla de bibliotecas y la sección de
-  licencias.
-- El catálogo de fármacos y diagnósticos se describe como subconjunto
-  modelado para este trabajo, no como tesauro.
-- Se reescribió la introducción de los requisitos no funcionales.
-- Los casos de uso se explican sin jerga de Cockburn. El diagrama lleva
-  asociaciones horizontales, relaciones «include» etiquetadas en las líneas
-  y el modelo de dominio, multiplicidades en los extremos.
-
-## Evidencia obtenida
+## Evidencia obtenida (1 de septiembre de 2026)
 
 | Comprobación | Resultado |
 |--------------|-----------|
+| `npx ng test --watch=false --browsers=ChromeHeadless` | **TOTAL: 985 SUCCESS** (1,63 s; Chrome Headless 148; Node 22.14.0). Log: `memoria/anexos/karma-2026-09-01.log` |
+| `npx ng build --configuration production` | Artefacto en `dist/stopp-start-app/browser` (código 0; advertencias de presupuesto CSS) |
+| Servicio estático | `python3 -m http.server 4173 --directory dist/stopp-start-app/browser` → `http://127.0.0.1:4173` |
+| Caso manual HTA → START-B1 → Amlodipino | Ejecutado el 01/09/2026; capturas en `memoria/figuras/` y JSON en `memoria/anexos/caso-hta-2026-09-01.json` |
 | `node scripts/audit-criteria.cjs` | Correcto: 218 reglas; sin sistemas, clases ni diagnósticos desconocidos |
 | `bash scripts/check-links.sh` | Correcto: 0 problemas |
 | Inventario estático | 985 cláusulas `it(`, sin `xit` ni `fit` localizados |
-| Suite Karma/Jasmine | No ejecutada en este entorno: `npm`/`npx` no disponibles |
-| Compilación LaTeX | No ejecutada en este entorno: XeLaTeX y Biber no disponibles |
+| Compilación LaTeX | XeLaTeX + Biber; PDF en `memoria/Memoria_TFG_STOPP_START.pdf` |
 
 La auditoría del catálogo demuestra consistencia referencial interna. No
 demuestra por sí sola la correspondencia clínica entre las 218 reglas y los
-190 criterios de la guía.
+190 criterios de la guía. La suite Karma acredita que las 985 especificaciones
+pasan; no acredita utilidad clínica ni usabilidad.
 
 ## Pendientes que requieren evidencia o información externa
 
 - Confirmar el título oficial, el número del TFG y el nombre completo de la
   cotutora; verificar también el mes de depósito indicado en la portada.
-- Ejecutar la suite final y sustituir «resultado no disponible» por fecha,
-  entorno, total ejecutado, omitidas, fallos y veredicto real.
-- Compilar con XeLaTeX, Biber y dos pasadas adicionales de XeLaTeX; revisar
-  referencias, paginación y desbordamientos del registro resultante.
 - Elaborar y revisar de forma independiente la correspondencia individual:
   criterio oficial, reglas, datos necesarios, caso positivo, caso negativo y
   estado.
-- Incorporar capturas reales y ejemplos generados de PDF y JSON si se desean
-  como evidencia visual de la entrega.
 - Comprobar la normativa de presentación, la guía docente, la rúbrica y las
   instrucciones de depósito vigentes.
 - Si se quiere afirmar usabilidad o utilidad clínica, realizar una evaluación
   formal con profesionales; la memoria actual no lo afirma.
+- Publicar el artefacto de producción en GitHub Pages si se desea una URL
+  pública además del servicio estático local ya documentado.
 
 ## Comandos de cierre
 
@@ -98,7 +76,9 @@ Desde la raíz del repositorio:
 ```bash
 npm install
 npx ng test --watch=false --browsers=ChromeHeadless
-npx ng build --configuration development
+npx ng build --configuration production
+python3 -m http.server 4173 --bind 127.0.0.1 \
+  --directory dist/stopp-start-app/browser
 node scripts/audit-criteria.cjs
 bash scripts/check-links.sh
 ```

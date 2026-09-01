@@ -1,0 +1,16 @@
+=== STOPP/START Karma execution ===
+date: 2026-09-01T14:04:21Z
+command: npx ng test --watch=false --browsers=ChromeHeadless
+node: v22.14.0
+npm: 10.9.7
+chrome: Google Chrome 148.0.7778.96
+pwd: /workspace
+git: 1a5b604 bugfix/memoria-pdf-65a9
+====================================
+01 09 2026 14:04:28.424:INFO [Chrome Headless 148.0.0.0 (Linux 0.0.0)]: Connected on socket r6RGWz_jPTI5U7XHAAAB with id 10464624
+Chrome Headless 148.0.0.0 (Linux 0.0.0): Executed 0 of 985 SUCCESS (0 secs / 0 secs)
+...
+Chrome Headless 148.0.0.0 (Linux 0.0.0): Executed 985 of 985 SUCCESS (0 secs / 1.34 secs)
+Chrome Headless 148.0.0.0 (Linux 0.0.0): Executed 985 of 985 SUCCESS (1.63 secs / 1.34 secs)
+TOTAL: 985 SUCCESS
+exit_code=0

@@ -139,39 +139,40 @@ reproducía el defecto se escribió primero; la regla en
 \texttt{criteria.json} se ajustó después; la misma prueba impide
 reintroducir el falso positivo o el falso negativo.
 
-\section{Inventario estático y estado de ejecución}
+\section{Inventario y ejecución de la batería}
 
-El recuento de la~\cref{tab:pruebas} es un inventario estático de las
-cláusulas \texttt{it(} presentes en \texttt{src/**/*.spec.ts}: 985 en
-total. No es el resultado de una ejecución. No se ha registrado una
-ejecución final de Karma para el estado documentado. La documentación
-operativa del repositorio cita una ejecución anterior de alrededor de 807 especificaciones,
-previa a varias ampliaciones, pero ese antecedente no permite atribuir un
-resultado a las 985 cláusulas actuales. El inventario no encontró
-\texttt{xit}/\texttt{fit}. Por módulo, el desglose estático es: criterios
-A--M, 544;
-motor genérico, 22; catálogo y taxonomías (incluida integridad), 195;
-ayudas de agrupación y visibilidad, 98; almacén y preferencias, 28;
+El recuento de la~\cref{tab:pruebas} coincide con las cláusulas
+\texttt{it(} de \texttt{src/**/*.spec.ts}: 985, sin \texttt{xit} ni
+\texttt{fit}. El~\cref{anexo:log-karma} adjunta la ejecución del
+1 de septiembre de 2026: \texttt{npx ng test -{}-watch=false
+-{}-browsers=ChromeHeadless}, Chrome Headless 148, Node.js~22.14.0.
+Veredicto: \texttt{TOTAL: 985 SUCCESS} (1,63\,s de runner; código de
+salida 0). Las líneas de consola «Error evaluando criterio» corresponden
+a una especificación deliberada de manejo de errores, no a un fallo.
+Una ejecución anterior, de alrededor de 807 especificaciones, quedó
+obsoleta al ampliar la batería. Por módulo: criterios A--M, 544; motor
+genérico, 22; catálogo y taxonomías (incluida integridad), 195; ayudas
+de agrupación y visibilidad, 98; almacén y preferencias, 28;
 entrada/salida (JSON, PDF, portapapeles), 34; pasos de captura, 52;
 cascarón de interfaz, 12.
 
 \begin{table}[H]
   \centering
-  \begin{tabular}{@{}lrr@{}}
+  \small
+  \begin{tabular}{@{}lr>{\raggedright\arraybackslash}p{5.4cm}@{}}
     \toprule
     \textbf{Tipo de prueba} & \textbf{N.\textsuperscript{o}} & \textbf{Estado} \\
     \midrule
-    Conformidad con la guía (criterios A--M) & 544 & No ejecutada actualmente \\
-    Unitarias (motor, helpers, catálogo, almacén) & 338 & No ejecutada actualmente \\
-    Integración (integridad, Zod, informes) & 39 & No ejecutada actualmente \\
-    Interfaz (pasos y cascarón) & 64 & No ejecutada actualmente \\
+    Conformidad con la guía (criterios A--M) & 544 & Ejecutada el 01/09/2026, 985/985 correctas \\
+    Unitarias (motor, helpers, catálogo, almacén) & 338 & Ejecutada el 01/09/2026, 985/985 correctas \\
+    Integración (integridad, Zod, informes) & 39 & Ejecutada el 01/09/2026, 985/985 correctas \\
+    Interfaz (pasos y cascarón) & 64 & Ejecutada el 01/09/2026, 985/985 correctas \\
     \midrule
-    \textbf{Total inventariado} & \textbf{985} & \textbf{Resultado no disponible} \\
+    \textbf{Total ejecutado} & \textbf{985} & \textbf{Ejecutada el 01/09/2026, 985/985 correctas} \\
     \bottomrule
   \end{tabular}
-  \caption{Inventario estático de la batería (conteo de cláusulas
-  \texttt{it(} en los \texttt{*.spec.ts}), sin resultado de ejecución
-  actual. El script
+  \caption{Batería Karma + Jasmine ejecutada el 1 de septiembre de 2026
+  (log en el~\cref{anexo:log-karma}). El script
   \texttt{audit-criteria.cjs} no forma parte de este total.}
   \label{tab:pruebas}
 \end{table}
@@ -186,10 +187,11 @@ de una revisión clínica independiente completa de la correspondencia entre los
 190 criterios oficiales y las 218 entradas del catálogo.
 
 Tampoco se han realizado pruebas con pacientes ni una evaluación formal con
-profesionales. Por ello, esta batería no permite concluir utilidad clínica,
-impacto asistencial, comprensión de los avisos ni usabilidad. Además, al no
-haber una ejecución actual de la suite, el inventario estático no demuestra que
-las pruebas compilen o terminen satisfactoriamente en el estado documentado.
+profesionales. Por ello, esta batería ---aun ejecutada al completo el
+1 de septiembre de 2026--- no permite concluir utilidad clínica,
+impacto asistencial, comprensión de los avisos ni usabilidad. El log
+acredita que las 985 especificaciones compilan y terminan con éxito; no
+acredita la correspondencia clínica con los 190 enunciados oficiales.
 
 \section{Errores detectados y corregidos}
 \label{sec:errores-detectados}
@@ -214,7 +216,8 @@ Una revisión posterior del motor (hallazgos A3--A14) corrigió lógica que
 sí correspondía a un criterio oficial pero estaba mal formalizada. El
 \cref{anexo:errores-motor} detalla cinco casos por su efecto sobre el aviso
 (B20, C16, D12, J3 y C12): cada uno tiene en el código un caso positivo y
-otro negativo, cuyo resultado actual queda pendiente de ejecutar. Otros
+otro negativo, ambos cubiertos por la ejecución del 01/09/2026 (985/985).
+Otros
 ajustes del mismo lote ---B6 acotado a amiodarona (clase III), I7
 restringido a duloxetina en lugar de toda la clase ISRN, unificación de
 códigos de caídas en la sección K--- siguen el mismo patrón: el test

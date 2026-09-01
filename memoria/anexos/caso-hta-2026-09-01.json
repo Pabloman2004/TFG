@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "exportedAt": "2026-09-01T14:12:25.627Z",
+  "patientCase": {
+    "info": null,
+    "diagnoses": [
+      "hta"
+    ],
+    "medications": [],
+    "labs": null,
+    "reviewedMedTabs": [],
+    "reviewedDxTabs": []
+  }
+}
