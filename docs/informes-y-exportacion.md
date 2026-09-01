@@ -31,7 +31,7 @@ desencadena por una acción explícita del usuario en `AppComponent`.
 |---|---|
 | `src/app/core/report.service.ts` | Servicio Angular que construye y descarga el PDF |
 | `src/app/core/case-io.service.ts` | Servicio Angular para exportar e importar el caso en JSON |
-| `src/app/core/case-export.schema.ts` | Schema Zod de `CaseExport` (frontera de confianza del import) |
+| `src/app/core/case-export.schema.ts` | Schema Zod de `CaseExport` y de `PatientCase` (importación y rehidratación de `localStorage`) |
 | `src/app/core/clipboard-text.ts` | Función pura que genera el texto plano de criterios |
 | `src/types/pdfmake-browser.d.ts` | Declaraciones de tipo ambient para `pdfmake` y `vfs_fonts` |
 | `scripts/verify-pdf-e2e.js` | Script Node.js de verificación e2e de ligaduras tipográficas |
@@ -71,6 +71,8 @@ steps.onFileLoad(file)
         ├─► caseExportSchema.safeParse(parsed)  // Zod; versión literal '1.0'
         └─► store.loadCase(result.data.patientCase)  // solo si el schema pasa
 ```
+
+La rehidratación de `localStorage` en `CaseStoreService` ensambla las claves clínicas y llama a `parseStoredPatientCase` (el mismo `patientCaseSchema`). Un valor parseable pero con tipos o códigos fuera de esquema se descarta y el caso arranca vacío.
 
 ### Función de portapapeles (`buildCriteriaText`)
 
