@@ -20,8 +20,8 @@
       fill=gray!6
     },
     decision/.style={
-      diamond, draw, thick, align=center, aspect=2.7,
-      inner sep=0.5pt, fill=gray!6, font=\scriptsize\sffamily
+      diamond, draw, thick, align=center, aspect=2.15,
+      inner sep=2.5pt, fill=gray!6, font=\scriptsize\sffamily
     },
     seccion/.style={
       draw, thick, rounded corners=3pt
@@ -95,15 +95,15 @@
     \draw[arr] (userlbl.south) -- (medsbox.north);
     \draw[arr] (medsbox.south) -- (eval.north);
     \draw[arr] (eval.south) -- (salta.north);
-    \draw[arr] (salta.west) -| node[above, font=\tiny, pos=0.2] {Sí} (si.north);
-    \draw[arr] (salta.east) -| node[above, font=\tiny, pos=0.2] {No} (no.north);
+    \draw[arr] (salta.west) -| (si.north);
+    \draw[arr] (salta.east) -| (no.north);
     \draw[thick] (si.south) |- (joindown);
     \draw[thick] (no.south) |- (joindown);
     \draw[arr] (joindown) -- (dxbox.north);
     \draw[arr] (dxbox.south) -- (eval2.north);
     \draw[arr] (eval2.south) -- (salta2.north);
-    \draw[arr] (salta2.west) -| node[above, font=\tiny, pos=0.2] {Sí} (si2.north);
-    \draw[arr] (salta2.east) -| node[above, font=\tiny, pos=0.2] {No} (no2.north);
+    \draw[arr] (salta2.west) -| (si2.north);
+    \draw[arr] (salta2.east) -| (no2.north);
     \draw[thick] (si2.south) |- (joindown2);
     \draw[thick] (no2.south) |- (joindown2);
     \draw[arr] (joindown2) -- (res.north);

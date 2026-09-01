@@ -162,8 +162,8 @@ clave--valor del propio navegador, limitado a esa sesión y a ese sitio.
   ]
     \node[caja] (steps) {Pasos + diálogos};
     \node[nucleo, below=1.15cm of steps] (store) {Estado de sesión};
-    \node[nucleo, left=0.7cm of store] (eng) {Motor};
-    \node[caja, right=0.7cm of store] (io) {Informes / IO};
+    \node[nucleo, left=1.15cm of store] (eng) {Motor};
+    \node[caja, right=1.15cm of store] (io) {Informes / IO};
     \node[caja, below=0.85cm of eng] (cat) {Catálogos};
     \node[caja, below=0.85cm of store] (http) {HTTP + \texttt{assets}};
 
@@ -173,7 +173,7 @@ clave--valor del propio navegador, limitado a esa sesión y a ese sitio.
     \draw[arr] (eng) -- (cat);
     \draw[arr] (eng) -- (http);
     \draw[arr] (io) -- (store)
-      node[midway, above, sloped, font=\tiny] {solo IO};
+      node[midway, below=6pt, fill=white, inner sep=1pt, font=\tiny] {solo IO};
   \end{tikzpicture}%
   }
   \caption{Dependencias lógicas: los pasos orquestan; el motor no

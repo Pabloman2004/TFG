@@ -179,7 +179,6 @@ los atributos y la secuencia se detallan en el~\cref{cap:diseno}.
 
 \begin{figure}[H]
   \centering
-  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
     font=\small\sffamily,
     ent/.style={
@@ -194,34 +193,33 @@ los atributos y la secuencia se detallan en el~\cref{cap:diseno}.
     }
   ]
     \node[agg] (pc) {PatientCase};
-    \node[ent, above left=1.15cm and 1.15cm of pc] (info) {PatientInfo};
-    \node[ent, above right=1.15cm and 1.15cm of pc] (med) {Med};
-    \node[ent, below left=1.15cm and 1.15cm of pc] (dx) {Diagnóstico};
-    \node[ent, below=1.35cm of pc] (labs) {Labs};
-    \node[ent, below right=1.15cm and 1.15cm of pc] (crit) {Crit};
+    \node[ent, above left=1.85cm and 2.05cm of pc] (info) {PatientInfo};
+    \node[ent, above right=1.85cm and 2.05cm of pc] (med) {Med};
+    \node[ent, below left=1.85cm and 2.05cm of pc] (dx) {Diagnóstico};
+    \node[ent, below=2.05cm of pc] (labs) {Labs};
+    \node[ent, below right=1.85cm and 2.05cm of pc] (crit) {Crit};
 
     \draw[thick] (pc) -- (info)
-      node[pos=0.12, left, font=\scriptsize] {1}
-      node[midway, above, sloped, font=\scriptsize] {ficha}
-      node[pos=0.88, right, font=\scriptsize] {0..1};
+      node[midway, sloped, above=8pt, fill=white, inner sep=1pt, font=\scriptsize] {ficha}
+      node[pos=0.16, sloped, below=7pt, fill=white, inner sep=0.8pt, font=\scriptsize] {1}
+      node[pos=0.84, sloped, below=7pt, fill=white, inner sep=0.8pt, font=\scriptsize] {0..1};
     \draw[thick] (pc) -- (med)
-      node[pos=0.12, right, font=\scriptsize] {1}
-      node[midway, above, sloped, font=\scriptsize] {medicaciones}
-      node[pos=0.88, left, font=\scriptsize] {0..*};
+      node[midway, sloped, above=8pt, fill=white, inner sep=1pt, font=\scriptsize] {medicaciones}
+      node[pos=0.16, sloped, below=7pt, fill=white, inner sep=0.8pt, font=\scriptsize] {1}
+      node[pos=0.84, sloped, below=7pt, fill=white, inner sep=0.8pt, font=\scriptsize] {0..*};
     \draw[thick] (pc) -- (dx)
-      node[pos=0.12, left, font=\scriptsize] {1}
-      node[midway, above, sloped, font=\scriptsize] {diagnósticos}
-      node[pos=0.88, right, font=\scriptsize] {0..*};
+      node[midway, sloped, above=8pt, fill=white, inner sep=1pt, font=\scriptsize] {diagnósticos}
+      node[pos=0.16, sloped, below=7pt, fill=white, inner sep=0.8pt, font=\scriptsize] {1}
+      node[pos=0.84, sloped, below=7pt, fill=white, inner sep=0.8pt, font=\scriptsize] {0..*};
     \draw[thick] (pc) -- (labs)
-      node[pos=0.12, left, font=\scriptsize] {1}
-      node[midway, left, font=\scriptsize] {analítica}
-      node[pos=0.88, left, font=\scriptsize] {0..1};
+      node[midway, left=8pt, fill=white, inner sep=1pt, font=\scriptsize] {analítica}
+      node[pos=0.16, right=6pt, fill=white, inner sep=0.8pt, font=\scriptsize] {1}
+      node[pos=0.84, right=6pt, fill=white, inner sep=0.8pt, font=\scriptsize] {0..1};
     \draw[thick, dashed] (crit) -- (pc)
-      node[midway, above, sloped, font=\scriptsize] {se evalúa frente a}
-      node[pos=0.12, right, font=\scriptsize] {*}
-      node[pos=0.88, right, font=\scriptsize] {1};
-  \end{tikzpicture}%
-  }
+      node[midway, sloped, above=8pt, fill=white, inner sep=1pt, font=\scriptsize] {se evalúa frente a}
+      node[pos=0.16, sloped, below=7pt, fill=white, inner sep=0.8pt, font=\scriptsize] {*}
+      node[pos=0.84, sloped, below=7pt, fill=white, inner sep=0.8pt, font=\scriptsize] {1};
+  \end{tikzpicture}
   \caption{Entidades del dominio, con el nombre de cada relación sobre la
   línea y las multiplicidades en los extremos. \texttt{Crit} pertenece al
   catálogo; el resto constituye el caso de sesión.}

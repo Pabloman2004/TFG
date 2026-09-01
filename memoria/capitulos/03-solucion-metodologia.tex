@@ -70,8 +70,12 @@ estado ejecutable y comprobable.
     \node[caja, right=0.85cm of verde] (ref) {Refactorizar};
     \draw[arr] (rojo) -- (verde);
     \draw[arr] (verde) -- (ref);
-    \draw[arr] (ref.south) -- ++(0,-0.5) -| node[below, font=\scriptsize, pos=0.25]
-      {siguiente incremento} (rojo.south);
+    \coordinate (rbot) at ([yshift=-0.85cm]ref.south);
+    \coordinate (lbot) at ([yshift=-0.85cm]rojo.south);
+    \draw[thick] (ref.south) -- (rbot) -- (lbot);
+    \draw[arr] (lbot) -- (rojo.south);
+    \node[below=5pt, font=\scriptsize, inner sep=1pt] at ($(lbot)!0.5!(rbot)$)
+      {siguiente incremento};
   \end{tikzpicture}
   \caption{Ciclo rojo--verde--refactor aplicado en el desarrollo.}
   \label{fig:ciclo-tdd}

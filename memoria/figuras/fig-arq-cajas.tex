@@ -56,8 +56,8 @@
     \draw[arr] (cat) -- (eng);
     \draw[arr] (json) -- (eng);
     \draw[arr] (eng) -- (out);
-    \draw[biarr] (local.north) -- (store.south west);
-    \draw[arr] (http.north) -- node[right, font=\tiny, pos=0.45] {GET} (json.south east);
+    \draw[biarr] (local.west) -- ++(-0.5,0) |- ([xshift=0.38cm]store.south);
+    \draw[arr] (http.north) -- (json.south east);
   \end{tikzpicture}%
   }
   \caption{Arquitectura de cajas: la UI actualiza el estado de sesión; el
