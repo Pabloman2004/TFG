@@ -57,11 +57,11 @@
     \node[motor, below=0.5cm of medsbox] (eval)
       {Analizar con el motor};
     \node[decision, below=0.42cm of eval] (salta)
-      {¿Salta el\\criterio?};
+      {¿Salta el\\evento?};
     \node[rama, below left=0.5cm and 0.02cm of salta] (si)
-      {Sí (criterio activo)};
+      {Sí (evento activo)};
     \node[rama, below right=0.5cm and 0.02cm of salta] (no)
-      {No (criterio inactivo)};
+      {No (evento inactivo)};
     \coordinate (join) at ($(si.south)!0.5!(no.south)$);
     \coordinate (joindown) at ([yshift=-0.48cm]join);
 
@@ -79,11 +79,11 @@
     \node[motor, below=0.5cm of dxbox] (eval2)
       {Analizar con el motor};
     \node[decision, below=0.42cm of eval2] (salta2)
-      {¿Salta el\\criterio?};
+      {¿Salta el\\evento?};
     \node[rama, below left=0.5cm and 0.02cm of salta2] (si2)
-      {Sí (criterio activo)};
+      {Sí (evento activo)};
     \node[rama, below right=0.5cm and 0.02cm of salta2] (no2)
-      {No (criterio inactivo)};
+      {No (evento inactivo)};
     \coordinate (join2) at ($(si2.south)!0.5!(no2.south)$);
     \coordinate (joindown2) at ([yshift=-0.48cm]join2);
 
@@ -110,7 +110,7 @@
   \end{tikzpicture}%
   }
   \caption{Funcionamiento general de la solución: en cada pestaña el motor
-  evalúa el caso y marca el criterio como activo o inactivo; el resultado
+  evalúa el caso y marca cada evento STOPP/START como activo o inactivo; el resultado
   final distingue avisos STOPP y START.}
   \label{fig:flujo-vision}
 \end{figure}

@@ -17,9 +17,10 @@ reescribir la lógica de la aplicación. El detalle interno del motor se
 desarrolla en los capítulos de arquitectura y diseño.
 
 El profesional recorre un flujo en dos pestañas. En medicamentos selecciona
-los fármacos del paciente; el motor evalúa el caso y marca cada criterio como
-activo o inactivo. En diagnóstico se completa la comorbilidad y el motor
-vuelve a evaluar, con la misma distinción entre criterio activo e inactivo.
+los fármacos del paciente; el motor evalúa el caso y marca cada evento
+STOPP/START como activo o inactivo. En diagnóstico se completa la
+comorbilidad y el motor vuelve a evaluar, con la misma distinción entre
+evento STOPP/START activo e inactivo.
 El resultado final agrupa los avisos STOPP (prescripción potencialmente
 inapropiada) y START (posible omisión de tratamiento indicado).
 La~\cref{fig:flujo-vision} resume este
@@ -31,18 +32,22 @@ posteriores.
 \section{Metodología de desarrollo}
 
 El desarrollo ha sido iterativo e incremental: cada cambio entra en
-incrementos pequeños y verificables, y se contrasta en rondas de revisión
+incrementos pequeños y verificables, y se contrasta en cada sprint
 antes de darlo por cerrado. Esta forma de trabajar se justifica por el
 dominio del TFG. Un criterio mal codificado puede silenciar un aviso STOPP
 o START; conviene detectar ese fallo en el mismo incremento en que se
 introduce, contrastando el comportamiento con la guía
 oficial~\cite{omahony2023stopp,sacyl2023stopp}.
 
-En la práctica, el trabajo se organizó en rondas temáticas: revisión
-sistemática de los criterios STOPP y START por sistemas, una ronda de
-corrección del motor y los datos clínicos, y otra de servicios e
-interfaz. El detalle de planificación, horas y desviaciones se recoge
-en el~\cref{cap:planificacion}; la batería de pruebas, en
+En la práctica, el trabajo se organizó en sprints sucesivos. El primero
+se dedicó a planificar y conocer el problema: la guía STOPP/START v3, el
+alcance y lo que debía quedar fuera. El segundo construyó una interfaz
+sobre la que poder revisar el caso. A partir de ahí, cada sistema clínico
+fue un sprint: se añadían sus criterios, se contrastaban con la guía y se
+dejaba el prototipo ejecutable antes de pasar al siguiente. El último
+sprint concentró pruebas y modificaciones pequeñas. El detalle de
+planificación, horas y desviaciones se recoge en
+el~\cref{cap:planificacion}; la batería de pruebas, en
 el~\cref{cap:pruebas}.
 
 \subsection{Desarrollo dirigido por pruebas (TDD)}

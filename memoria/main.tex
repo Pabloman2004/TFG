@@ -32,7 +32,7 @@
   a4paper,
   left=3cm, right=2.5cm,
   top=3cm, bottom=2.5cm,
-  headheight=15pt
+  headheight=28pt
 ]{geometry}
 
 \usepackage{setspace}
@@ -77,6 +77,22 @@
 % ---------- Paquetes de contenido ----------
 \usepackage{graphicx}
 \graphicspath{{figuras/}}
+\newcommand{\cabeceraIzq}{%
+  \includegraphics[height=0.72cm]{logo-esei}%
+  \hspace{0.4em}%
+  \raisebox{0.2cm}{\small\itshape\tituloTFG}%
+}
+\newcommand{\cabeceraDer}{\includegraphics[height=0.42cm]{logo-uvigo}}
+\renewcommand{\estiloCuerpoTFG}{%
+  \fancyhf{}%
+  \fancyhead[L]{\cabeceraIzq}%
+  \fancyhead[R]{\cabeceraDer}%
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{0.4pt}%
+}
+\estiloCuerpoTFG
+\pagestyle{fancy}
+\fancypagestyle{cuerpo}{\estiloCuerpoTFG}
 \usepackage{float}
 \setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
 \setlength{\intextsep}{6pt plus 2pt minus 2pt}
@@ -97,6 +113,7 @@
   font=small
 }
 \usepackage{subcaption}
+\captionsetup[figure]{font=it,labelfont=it}
 \counterwithout{figure}{chapter}
 \counterwithout{table}{chapter}
 \usepackage{enumitem}
