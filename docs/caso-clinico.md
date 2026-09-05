@@ -45,10 +45,10 @@ Servicio Angular singleton (`providedIn: 'root'`) basado exclusivamente en signa
 
 **Ciclo de persistencia/rehidratación:**
 
-1. En el `constructor`, cada signal se inicializa leyendo `localStorage` mediante los métodos privados `load<T>(key)` (JSON.parse) y `loadString(key)` (string literal). Los errores de parseo devuelven `null`.
+1. En el `constructor`, se leen las claves clínicas de `localStorage` (`patient`, `diagnoses`, `meds`, `labs`, `reviewedMedTabs`, `reviewedDxTabs`) con `JSON.parse`. El objeto ensamblado se valida con `patientCaseSchema` (`parseStoredPatientCase` en `case-export.schema.ts`), el mismo esquema Zod de la importación JSON. Si el parseo o el esquema fallan, el caso arranca vacío; no se mezcla un fragmento válido con otro corrupto.
 2. A continuación, un `effect()` por signal serializa el valor con `JSON.stringify` cada vez que cambia. Cuando el valor es `null`, elimina la clave. Los errores de escritura (cuota excedida, modo incógnito) se silencian con `try/catch`.
 3. Las claves legado `results`, `activeSystem` e `historial` se eliminan en el arranque.
-4. `reviewedMedTabs` y `reviewedDxTabs` son `Set<string>` en memoria pero se serializan como arrays al persistir (`[...signal()]`) y se rehidratan con `new Set(array)`.
+4. `reviewedMedTabs` y `reviewedDxTabs` son `Set<string>` en memoria pero se serializan como arrays al persistir (`[...signal()]`) y se rehidratan con `new Set(array)` tras pasar el esquema.
 
 **API pública relevante:**
 
@@ -69,6 +69,7 @@ Servicio Angular singleton (`providedIn: 'root'`) basado exclusivamente en signa
 - `PatientCase.medications` es siempre un array (nunca `undefined`); los componentes pueden iterar sobre él sin comprobar nulidad.
 - `PatientCase.diagnoses` es siempre un array (nunca `undefined`).
 - Los errores de `localStorage` (lectura o escritura) no propagan excepciones; la app continúa funcionando sin persistencia en ese caso.
+- Un valor persistido que no cumple `patientCaseSchema` no se rehidrata: el caso arranca vacío (misma frontera de confianza que la importación JSON).
 - `reviewedMedTabs` y `reviewedDxTabs` son `Set<string>` en memoria; se exponen como arrays en `PatientCase` para ser serializables en JSON.
 
 ## Si cambias esto…

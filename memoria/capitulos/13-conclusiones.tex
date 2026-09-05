@@ -22,9 +22,9 @@ La segunda es usar los tests como especificación ejecutable de la
 interpretación realizada, no solo como red de seguridad del
 software~\cite{beck2002tdd}. Formular un caso y su resultado esperado antes de
 implementar la regla convirtió esa expectativa en un contrato comprobable. El
-capítulo de pruebas separa el inventario estático de 985 cláusulas de su
-resultado: la suite actual no se ha podido ejecutar en el entorno de cierre y,
-por tanto, no se presenta como superada. También recoge las amenazas derivadas
+capítulo de pruebas documenta las 989 cláusulas y su ejecución del
+1 de septiembre de 2026 (\texttt{TOTAL: 989 SUCCESS}). También recoge las
+amenazas derivadas
 de compartir interpretación entre regla y prueba y de no disponer de revisión
 independiente completa.
 
@@ -36,46 +36,23 @@ almacenamiento local. El coste, aceptado en
 el~\cref{cap:objetivos}, es no cubrir escenarios multiusuario ni
 despliegue institucional.
 
-Los límites técnicos son igual de concretos. El catálogo de fármacos y
-diagnósticos está acotado a lo modelado: no cubre el arsenal terapéutico
-completo. El modelo de datos admite edad y sexo, pero la interfaz no
-ofrece un paso de ficha demográfica: esos campos solo llegan por
-importación JSON. La analítica sí se captura en la pestaña «Otros» del paso de
-diagnósticos. Así, la evaluación automática desde la UI se limita a
-medicación, diagnósticos y esos valores; la importación JSON añade los datos
-demográficos, aunque el catálogo actual solo consulta la edad; las condiciones
-de dosis y duración exigen confirmación manual; y los criterios dependientes
-de otros datos quedan sin evaluar. El recuento del catálogo (218 subcriterios
-en \texttt{criteria.json}) no coincide 1:1 con los
-190 enunciados de la guía: algunos se desglosan en varias reglas y no existe
-una matriz que demuestre la correspondencia completa. Por último, las
-dependencias diagnósticas y las familias de variantes se modelaron con mayor
-detalle en cardiovascular e hipertensión; el resto de sistemas no tiene el
-mismo grado de especialización.
+Los límites técnicos son concretos. El catálogo está acotado a lo modelado.
+La interfaz no ofrece ficha demográfica: edad y sexo solo llegan por JSON,
+y el catálogo actual solo consulta la edad. La analítica sí se captura en
+«Otros». Dosis y duración exigen confirmación manual. Las 218 entradas no
+acreditan los 190 enunciados oficiales, y el modelado fino de variantes se
+concentra en cardiovascular e hipertensión.
 
 \section{Conclusiones personales}
 
-El trabajo se desarrolló con dos perfiles de tutoría distintos: el
-tutor del área informática y la cotutora clínica. Esa dualidad obligó a
-traducir de forma continua entre restricciones de software (alcance,
-tests, interfaz) y matices de la guía. Cuando una duda clínica no
-bloqueaba el desarrollo, se documentó y se siguió con la parte técnica;
-cuando una petición de interfaz amenazaba el calendario, se dejó en
-cuarentena en lugar de fusionarla. Un ejemplo de ese filtro es el selector
-jerárquico de variantes, del que solo se incorporó la familia de
-hipertensión.
+El trabajo se desarrolló con tutoría informática y cotutora clínica: hubo que
+traducir entre alcance, tests e interfaz, y matices de la guía. Las dudas
+clínicas que no bloqueaban se documentaron; las peticiones de interfaz que
+amenazaban el calendario quedaron en cuarentena. Del selector jerárquico de
+variantes solo se fusionó la familia de hipertensión.
 
-Haría dos cosas de otro modo. La primera: registrar las horas desde el
-primer día. La dedicación se ha reconstruido a posteriori a partir del
-histórico de Git y de las rondas de trabajo, y esa reconstrucción es
-menos precisa que un registro contemporáneo. La segunda: anteponer el
-paso de datos del paciente (edad, sexo y constantes) a refinamientos de
-la taxonomía. Varios criterios del motor ya dependían de esos campos
-mientras la UI aún no permitía introducirlos; corregir ese desajuste
-antes habría alineado el modelo, las pruebas y el flujo de entrada.
-
-En conjunto, el proyecto muestra la importancia de acotar el alcance, hacer
-comprobables las reglas y declarar de forma explícita lo que la evidencia
-disponible todavía no permite sostener. Sin pacientes, revisión clínica
-independiente completa ni evaluación formal de usabilidad, no se concluye
-utilidad clínica ni mejora del trabajo en consulta.
+Haría dos cosas de otro modo: registrar las horas desde el primer día ---la
+reconstrucción desde Git es menos precisa--- y anteponer el paso de edad,
+sexo y constantes a refinamientos de taxonomía, para alinear modelo, pruebas
+y captura. Sin pacientes ni revisión clínica independiente completa, no se
+concluye utilidad clínica ni mejora del trabajo en consulta.

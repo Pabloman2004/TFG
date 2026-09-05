@@ -10,10 +10,12 @@
 
 Este anexo resume los comandos necesarios para instalar, ejecutar,
 comprobar y auditar el prototipo desde la raíz del repositorio. El
-recorrido de uso se describe en el~\cref{cap:manual}; aquí solo se
-documenta la operación técnica. El servidor de desarrollo debe lanzarse
-con la configuración \texttt{development}; no se emplea la
-compilación de producción como entorno de trabajo.
+recorrido de uso se describe en el~\cref{cap:manual}. Hay dos puestas en
+marcha: el servidor de desarrollo (\texttt{ng serve}) y el artefacto de
+producción (\texttt{ng build -{}-configuration production}) servido como
+ficheros estáticos. La batería de pruebas se ejecutó el 1 de septiembre
+de 2026 con el comando de \texttt{ng test} de la tabla
+(\cref{anexo:log-karma}).
 
 \begin{table}[H]
   \centering
@@ -33,8 +35,12 @@ compilación de producción como entorno de trabajo.
       Ejecuta la batería Karma + Jasmine en Chrome sin interfaz, una
       sola pasada. \\
     npx ng build
-    --configuration development &
-      Genera el artefacto de desarrollo (comprobación de tipos incluida). \\
+    --configuration production &
+      Genera el artefacto de producción en
+      \texttt{dist/stopp-start-app/browser}. \\
+    python3 -m http.server 4173
+    --directory dist/stopp-start-app/browser &
+      Sirve ese artefacto como estático (instalación de producción local). \\
     bash scripts/check-links.sh &
       Verifica el patrón de documentación enlazada (\texttt{@linked}):
       enlaces rotos, documentos huérfanos y ficheros fuera del mapa. \\
@@ -103,15 +109,18 @@ implementación, no un censo de la guía impresa~\cite{sacyl2023stopp}.
 \label{anexo:trazabilidad}
 
 La~\cref{tab:trazabilidad-requisitos} enlaza cada requisito con evidencia
-localizada en el repositorio. «Localizada» significa que existe una
-especificación automática que expresa ese comportamiento; no significa que
-la suite se haya ejecutado con éxito para esta edición de la memoria.
-«Parcial» identifica requisitos cuya dimensión completa exige medición,
-auditoría o prueba de uso adicional. Salvo las rutas que comienzan por
+localizada en el repositorio y con la ejecución de Karma del
+1 de septiembre de 2026 (\texttt{TOTAL: 989 SUCCESS};
+\cref{anexo:log-karma}). «Localizada» significa que existe una
+especificación automática que expresa ese comportamiento; la columna de
+estado registra esa misma suite ejecutada. «Parcial» identifica requisitos
+cuya dimensión completa exige medición, auditoría o prueba de uso adicional
+(usabilidad, latencia, accesibilidad o privacidad), no un fallo de la
+batería. Salvo las rutas que comienzan por
 \texttt{src/}, los nombres de fichero se refieren a \texttt{src/app/}.
 
 {\scriptsize
-\begin{longtable}{@{}p{0.7cm}p{3.4cm}p{6.0cm}p{2.7cm}@{}}
+\begin{longtable}{@{}p{0.7cm}p{3.2cm}p{5.4cm}p{3.5cm}@{}}
   \caption{Matriz requisitos--evidencia del repositorio.}
   \label{tab:trazabilidad-requisitos} \\
   \toprule
@@ -130,58 +139,58 @@ auditoría o prueba de uso adicional. Salvo las rutas que comienzan por
   RF01 & Seleccionar y deseleccionar medicamentos &
     \texttt{steps/meds-step/meds-step.component.spec.ts};
     \texttt{core/group-checked.spec.ts} &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF02 & Seleccionar diagnósticos y variantes excluyentes &
     \texttt{steps/diagnosis-step/diagnosis-step.component.spec.ts};
     \texttt{core/data/diagnosis-variants.spec.ts} &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF03 & Capturar analítica y constantes &
     \texttt{core/lab-capture.spec.ts};
     \texttt{steps/diagnosis-step/diagnosis-step.component.spec.ts} &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF04 & Reevaluar tras cambios del caso &
     \texttt{core/services/criteria-engine.service.spec.ts};
     especificaciones de ambos pasos &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF05 & Calcular advertencias preventivas de medicación &
     \texttt{core/services/criteria-engine.service.spec.ts} &
-    Solo motor; no integrado en la interfaz; ejecución final no registrada \\
+    Solo motor; no integrado en la interfaz; ejecutada el 01/09/2026, 989/989 correctas \\
   RF06 & Mostrar elementos relevantes de otros sistemas &
     \texttt{core/data/system-relevance.spec.ts};
     \texttt{core/group-visibility.spec.ts} &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF07 & Marcar pestañas revisadas y persistir el estado &
     \texttt{core/case-store.service.spec.ts} &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF08 & Agrupar resultados por tipo y sistema &
     \texttt{core/criteria-groups.spec.ts};
     especificaciones de ambos pasos &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF09 & Generar y descargar el informe PDF &
     \texttt{core/report.service.spec.ts} &
-    Localizada; no se adjunta PDF ejecutado \\
+    Ejecutada el 01/09/2026, 989/989 correctas; informe del caso en el~\cref{anexo:capturas} \\
   RF10 & Copiar criterios como texto plano &
     \texttt{core/clipboard-text.spec.ts};
     especificaciones de ambos pasos &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF11 & Exportar e importar JSON validado &
     \texttt{core/case-io.service.spec.ts} &
-    Localizada; no se adjunta JSON ejecutado \\
+    Ejecutada el 01/09/2026, 989/989 correctas; JSON del caso en el~\cref{anexo:capturas} \\
   RF12 & Reiniciar solo tras confirmación &
     \texttt{confirm-reset-dialog.component.spec.ts};
     \texttt{core/case-store.service.spec.ts} &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF13 & Escala de fuente y orientación persistentes &
     \texttt{core/display-settings.service.spec.ts};
     especificaciones de ambos pasos &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF14 & Guía rápida y enlace a la guía oficial &
     \texttt{quick-guide-dialog.component.spec.ts} &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RF15 & Opción «Otro» por grupo &
     \texttt{core/group-checked.spec.ts};
     especificaciones de ambos pasos &
-    Localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RNF01 & Flujo en dos pasos con resultados junto a la captura &
     \texttt{app.routes.spec.ts}; especificaciones de ambos pasos &
     Parcial: estructura localizada; usabilidad no evaluada \\
@@ -195,7 +204,7 @@ auditoría o prueba de uso adicional. Salvo las rutas que comienzan por
   RNF04 & Catálogo JSON separado del motor &
     \texttt{src/assets/data/criteria.json};
     \texttt{core/data/criteria-data-integrity.spec.ts} &
-    Estructura localizada; ejecución final no registrada \\
+    Ejecutada el 01/09/2026, 989/989 correctas \\
   RNF05 & Persistencia local del caso &
     \texttt{core/case-store.service.spec.ts};
     \texttt{core/case-io.service.spec.ts} &
@@ -216,10 +225,13 @@ catálogos.
 
 La~\cref{tab:cobertura-catalogo} es deliberadamente una matriz de
 \emph{evidencia del repositorio}, no una matriz de equivalencia clínica.
-La presencia de un fichero por sección tampoco demuestra por sí sola que
-cada una de sus reglas tenga casos positivo y negativo ejecutados.
-No se ha validado una correspondencia criterio por criterio entre los 190
-enunciados de la guía (133 STOPP y 57 START) y las 218 reglas. Una regla
+La presencia de un fichero por sección no demuestra por sí sola que
+cada una de sus reglas tenga casos positivo y negativo equivalentes a
+los 190 enunciados oficiales. Las especificaciones A--M sí se ejecutaron
+el 1 de septiembre de 2026 dentro de la suite completa (989/989 correctas;
+\cref{anexo:log-karma}). No se ha validado una correspondencia criterio
+por criterio entre los 190 enunciados de la guía (133 STOPP y 57 START) y
+las 218 reglas. Una regla
 puede desglosar parte de un enunciado, varias reglas pueden agruparse o un
 criterio puede necesitar datos no capturados. Por tanto, ningún recuento de
 esta tabla demuestra cobertura completa de la guía.
@@ -258,7 +270,7 @@ esta tabla demuestra cobertura completa de la guía.
     \texttt{criteria-m.spec.ts} & No validada \\
   \midrule
   \textbf{Total del catálogo} & \textbf{166} & \textbf{52} &
-    \textbf{Especificaciones localizadas; ejecución final no registrada} &
+    \textbf{Ejecutada el 01/09/2026, 989/989 correctas} &
     \textbf{No validada} \\
 \end{longtable}
 }
@@ -269,3 +281,349 @@ cada uno, identifique reglas, datos necesarios, caso positivo, caso
 negativo y estado (completo, parcial, manual, no evaluable o no
 implementado). Esa correspondencia no puede inferirse de los totales y no
 se inventa en esta memoria.
+
+\chapter{Criterios de aceptación de los requisitos funcionales}
+\label{anexo:aceptacion}
+
+Este anexo complementa el~\cref{cap:requisitos}. La~\cref{tab:rf} formula
+cada requisito funcional con identificador, prioridad y descripción
+completa. La~\cref{tab:rf-resumen} del cuerpo solo identifica el enunciado
+breve. La~\cref{tab:aceptacion-rf} agrupa requisitos que comparten
+procedimiento de comprobación. La comprobación parte de un caso vacío salvo
+que el propio escenario requiera datos previos. No presupone que la prueba
+se haya ejecutado ni sustituye la evidencia del~\cref{cap:pruebas}.
+
+{\small
+\begin{longtable}{@{}llp{9.2cm}@{}}
+  \caption{Requisitos funcionales del sistema implementado.}
+  \label{tab:rf} \\
+  \toprule
+  \textbf{ID} & \textbf{Prioridad} & \textbf{Descripción} \\
+  \midrule
+  \endfirsthead
+  \caption[]{Requisitos funcionales del sistema implementado (cont.).} \\
+  \toprule
+  \textbf{ID} & \textbf{Prioridad} & \textbf{Descripción} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  RF01 & Alta & El profesional podrá seleccionar y deseleccionar medicamentos
+    del catálogo, organizados por categoría terapéutica (pestañas
+    cardiovascular, anticoagulantes, SNC, renal, gastrointestinal,
+    respiratorio, endocrino, urológico, osteoarticular, antiinfecciosos y
+    «Otros»). Cada fármaco marcado formará parte del caso y podrá
+    desmarcarse en cualquier momento. \\
+  RF02 & Alta & El profesional podrá seleccionar y deseleccionar diagnósticos
+    del catálogo, organizados por sistema. En las familias con variantes
+    mutuamente excluyentes ---en la implementación actual, la hipertensión
+    arterial: HTA sin especificar, no complicada, moderada o grave---
+    marcar una variante retirará las hermanas. Los diagnósticos que
+    dependen de una medicación habilitante permanecerán no seleccionables
+    hasta que dicha medicación esté en el caso. \\
+  RF03 & Alta & En la pestaña «Otros» del paso de diagnósticos, el profesional
+    podrá introducir, modificar o dejar vacíos los parámetros de analítica y
+    constantes que algún criterio lee: TFGe, TSH, frecuencia cardíaca, QTc,
+    potasio, sodio, calcio corregido, PAS y PAD. El panel será fijo (no
+    condicionado a la selección). \\
+  RF04 & Alta & Tras cada cambio de medicación, diagnóstico o analítica, el
+    sistema evaluará automáticamente el caso frente al catálogo STOPP/START
+    y actualizará los avisos aplicables en el propio paso, sin petición
+    explícita ni ida y vuelta a un servidor. \\
+  RF05 & Baja & El motor ofrecerá un cálculo auxiliar de los medicamentos
+    del catálogo que, de añadirse al caso actual, dispararían una regla con
+    campo \texttt{excludes}. Esta capacidad no se presenta en la interfaz
+    actual y queda disponible para una integración posterior. \\
+  RF06 & Alta & En la pestaña activa, el sistema mostrará un bloque
+    «Relevantes de otros sistemas» con fármacos o diagnósticos de otras
+    pestañas que participan en criterios del sistema en revisión, de modo
+    que el profesional no deba abandonar la pestaña para marcarlos. \\
+  RF07 & Media & El profesional podrá marcar una pestaña como revisada cuando
+    no tenga selección, para dejar constancia de que la ha examinado y no
+    aplica nada. Si añade una selección, el marcador se retirará. Una
+    pestaña con selección no podrá marcarse como revisada. \\
+  RF08 & Alta & El sistema mostrará los criterios aplicables agrupados por
+    tipo (STOPP y START) y, dentro de cada tipo, por sistema orgánico,
+    con código de sección y texto del aviso. \\
+  RF09 & Alta & El profesional podrá descargar un informe PDF del caso con
+    cabecera institucional, fecha, diagnósticos, medicaciones y tablas de
+    criterios STOPP y START aplicables. \\
+  RF10 & Media & El profesional podrá copiar al portapapeles un texto plano
+    con los criterios aplicables, agrupados por sistema. Si no hay
+    avisos, el texto será «Sin criterios aplicables.». \\
+  RF11 & Alta & El profesional podrá exportar el caso completo a un fichero
+    JSON versionado e importar un fichero del mismo formato. Un JSON que
+    no supere la validación se rechazará sin alterar el caso en curso. \\
+  RF12 & Media & El profesional podrá reiniciar el caso. El sistema pedirá
+    confirmación explícita; solo si se confirma se vaciarán medicaciones,
+    diagnósticos, analítica y marcadores de revisión. \\
+  RF13 & Media & El profesional podrá elegir la escala de fuente (pequeño,
+    mediano o grande) y la orientación de las pestañas (raíl vertical u
+    horizontal). Ambas preferencias se conservarán entre recargas. \\
+  RF14 & Media & El profesional podrá abrir una guía rápida que explique STOPP
+    y START, el flujo en dos pasos y el enlace al PDF oficial de la
+    guía~\cite{sacyl2023stopp}. \\
+  RF15 & Media & El profesional podrá añadir, en un grupo del catálogo, un
+    ítem «Otro» que no figura como fármaco o diagnóstico nominado, de modo
+    que la clase o el grupo participe en la evaluación aunque el principio
+    activo concreto no esté listado. \\
+\end{longtable}
+}
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}lp{11.1cm}@{}}
+    \toprule
+    \textbf{Requisitos} & \textbf{Criterio de aceptación observable} \\
+    \midrule
+    RF01--RF03, RF07, RF13 y RF15 &
+      Tras realizar la acción descrita desde la interfaz, el valor visible
+      y el caso en memoria reflejan la selección, deselección, captura,
+      revisión o preferencia; al ejecutar la acción inversa se recupera el
+      estado anterior. Las preferencias de RF13 se conservan tras recargar. \\
+    RF04 y RF08 &
+      Al cambiar una entrada que hace aplicable o deja de hacer aplicable
+      una regla conocida, los paneles STOPP/START se actualizan sin pulsar
+      un botón de cálculo ni enviar el caso a un servidor. \\
+    RF05 &
+      Una prueba directa del motor devuelve un fármaco ausente cuyo añadido
+      satisfaría una regla con \texttt{excludes} y omite un candidato que no
+      la satisfaría. No se exige una representación en la interfaz. \\
+    RF06 &
+      Un ítem de otra pestaña que participa en una regla del sistema activo
+      aparece en «Relevantes de otros sistemas» y puede seleccionarse desde
+      ese bloque. \\
+    RF09 y RF10 &
+      La acción genera, respectivamente, una descarga PDF o texto de
+      portapapeles con los datos y criterios aplicables descritos; el caso
+      sin avisos produce el mensaje especificado en RF10. \\
+    RF11 &
+      Exportar e importar el fichero generado restaura el caso. Un fichero
+      malformado, de versión distinta o que incumpla el esquema muestra un
+      rechazo y deja intacto el caso previo. \\
+    RF12 &
+      Cancelar la confirmación conserva el caso; confirmarla vacía sus
+      campos y marcadores persistidos. \\
+    RF14 &
+      La guía rápida se abre desde la interfaz, contiene las tres materias
+      indicadas y ofrece el enlace al documento oficial. \\
+    \bottomrule
+  \end{tabular}
+  \caption{Criterios de aceptación de los requisitos funcionales.}
+  \label{tab:aceptacion-rf}
+\end{table}
+
+\chapter{Resolución de incidencias de uso}
+\label{anexo:errores-uso}
+
+La~\cref{tab:errores-manual} complementa el~\cref{cap:manual}. Recoge
+síntomas de puesta en marcha, exportación y evaluación, con la
+comprobación y la acción recomendadas.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{@{}p{3.8cm}XX@{}}
+    \toprule
+    \textbf{Síntoma} & \textbf{Comprobación} & \textbf{Acción} \\
+    \midrule
+    No abre la página local &
+      Revisar que el servidor estático (puerto 4173) o \texttt{ng serve}
+      (puerto 4200) esté en marcha y que el puerto no esté ocupado. &
+      Corregir el error mostrado o elegir otro puerto; abrir exactamente la
+      dirección indicada. \\
+    La interfaz abre sin catálogo &
+      En las herramientas del navegador, comprobar la petición a
+      \texttt{assets/data/criteria.json}. &
+      Servir la aplicación desde su raíz; no abrir directamente
+      \texttt{index.html} como fichero local. \\
+    El JSON no se carga &
+      Confirmar que procede de \emph{Guardar}, que contiene
+      \texttt{version: "1.0"} y un \texttt{patientCase} válido. &
+      No editarlo a mano; volver a exportarlo. Un rechazo no debe reemplazar
+      el caso que ya estaba abierto. \\
+    No se copia el texto &
+      El navegador puede denegar el portapapeles por permisos o contexto. &
+      Conceder permiso si la política local lo permite o seleccionar el
+      contenido por otro medio; la interfaz debe mostrar el fallo. \\
+    Falla la descarga PDF &
+      Comprobar permisos de descarga y mensajes del navegador. &
+      Reintentar tras habilitar descargas. Como alternativa temporal, usar
+      \emph{Copiar criterios} o \emph{Guardar} JSON. \\
+    El caso reaparece o desaparece &
+      El estado pertenece al \texttt{localStorage} del origen actual. &
+      Usar siempre el mismo origen para recuperarlo; \emph{Reiniciar} o
+      borrar los datos del sitio lo elimina. Exportar JSON antes de borrar. \\
+    No aparece un criterio esperado &
+      Revisar fármacos, diagnósticos y analítica, y leer los umbrales del
+      aviso. Edad, sexo, dosis y duración no se capturan en la interfaz. &
+      No forzar una conclusión clínica. Contrastar con la guía y registrar
+      el caso para revisión; algunos criterios requieren confirmación manual
+      o datos no disponibles. \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Comprobaciones ante incidencias de uso y exportación.}
+  \label{tab:errores-manual}
+\end{table}
+
+\chapter{Detalle de errores detectados en el motor}
+\label{anexo:errores-motor}
+
+Este anexo detalla los cinco hallazgos A3--A14 resumidos en
+el~\cref{sec:errores-detectados}. En todos ellos la lógica correspondía a
+un criterio oficial pero estaba mal formalizada. El código contiene un caso
+positivo y otro negativo; ambos forman parte de la ejecución del
+01/09/2026 (989/989 correctas; \cref{anexo:log-karma}).
+
+\begin{itemize}[leftmargin=1.4em,itemsep=0.25em]
+  \item \textbf{B20 (A3).} La lógica solo exigía antihipertensivo
+  \emph{central}; diuréticos y alfabloqueantes figuraban en el resumen y
+  en las exclusiones, pero no disparaban. Un paciente con estenosis
+  aórtica grave y furosemida no veía el STOPP. La regla es ahora una
+  disyunción de las cuatro clases; los casos esperan activación con
+  furosemida y con doxazosina.
+  \item \textbf{C16 (A5).} El AAS en prevención primaria no negaba
+  \texttt{cardiopatia\_isquemica} ni \texttt{ictus\_previo}. Un ictus
+  previo con AAS ---prevención secundaria correcta--- generaba el aviso
+  de prevención primaria, en contradicción con START-C2. Ambas
+  negaciones están en la lógica y en la spec.
+  \item \textbf{D12 (A4).} Cualquier neuroléptico en parkinsonismo o
+  Lewy disparaba, incluidas quetiapina y clozapina, que STOPP v3 exime.
+  El paciente bien tratado recibía un STOPP infundado. La lógica combina
+  la clase con la exclusión por identificador; la spec afirma el silencio
+  con quetiapina sola y el disparo si se añade haloperidol.
+  \item \textbf{J3 (A6).} Se usaba la clase \texttt{BETABLOQUEANTE}
+  completa en un criterio de no cardioselectivos: bisoprolol disparaba.
+  La lógica actual cita \texttt{BETABLOQUEANTE\_NO\_CARDIOSELECTIVO}; la
+  especificación distingue bisoprolol (no activa la regla) de carvedilol y
+  propranolol.
+  \item \textbf{C12 (A1).} El STOPP de ISRS con anticoagulante y
+  antecedentes de sangrado no exigía el ISRS: cualquier anticoagulado
+  con esos antecedentes recibía «evitar ISRS». Se añadió
+  \texttt{inDrugClass(ISRS)} y el caso negativo correspondiente.
+\end{itemize}
+
+\chapter{Esquema de una regla del catálogo}
+\label{anexo:esquema-criterio}
+
+Este anexo detalla el modelo de~\cref{sec:modelo-criterios}: los campos de
+cada entrada de \texttt{criteria.json} y un ejemplo real (STOPP-B1).
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{@{}lp{10.2cm}@{}}
+    \toprule
+    \textbf{Campo} & \textbf{Significado} \\
+    \midrule
+    \texttt{id} & Identificador estable (\texttt{STOPP-B1-DIGOXINA}, \ldots). \\
+    \texttt{type} & \texttt{STOPP} o \texttt{START}. \\
+    \texttt{system} & Uno de los trece sistemas del catálogo. \\
+    \texttt{summary} & Texto del aviso mostrado al profesional. \\
+    \texttt{logic} & Árbol json-logic ejecutable (operadores estándar y
+      personalizados). \\
+    \texttt{excludes} & Fármacos o clases cuya adición activaría una
+      advertencia de prescripción potencialmente inapropiada (opcional).
+      Se conserva \texttt{excludes} como nombre técnico del campo. \\
+    \texttt{relevance} & Clases extra para el índice de visibilidad cuando no
+      se infieren de la lógica (opcional). \\
+    \bottomrule
+  \end{tabular}
+  \caption{Campos de una entrada de \texttt{criteria.json}.}
+  \label{tab:campos-criterio}
+\end{table}
+
+\begin{lstlisting}[
+  caption={Entrada real de \texttt{criteria.json}: STOPP-B1.},
+  label={lst:criterio-b1},
+  basicstyle=\ttfamily\scriptsize,
+  numbers=none,
+  frame=single,
+  breaklines=true
+]
+{
+  "id": "STOPP-B1-DIGOXINA",
+  "type": "STOPP",
+  "system": "Sistema cardiovascular",
+  "summary": "Evitar digoxina en pacientes con insuficiencia
+    cardiaca con funcion sistolica ventricular conservada.",
+  "logic": {
+    "and": [
+      {"inDrugClass": ["DIGOXINA", {"var": "medications"}]},
+      {"in": ["ic_funcion_sistolica_conservada",
+             {"var": "diagnoses"}]}
+    ]
+  },
+  "excludes": {
+    "medications": ["Digoxina"],
+    "drugClasses": ["DIGOXINA"]
+  }
+}
+\end{lstlisting}
+
+\chapter{Log de la batería Karma del 01/09/2026}
+\label{anexo:log-karma}
+
+La~\cref{tab:pruebas} y los anexos~\ref{anexo:trazabilidad}
+y~\ref{anexo:cobertura-criterios} se apoyan en esta ejecución. Comando:
+\texttt{npx ng test -{}-watch=false -{}-browsers=ChromeHeadless}.
+Entorno: Node.js~22.14.0, npm~10.9.7, Google Chrome 148.0.7778.96,
+Linux. Fecha: 2026-09-01T14:45:26Z. Veredicto: \texttt{TOTAL: 989 SUCCESS},
+código de salida 0. El log completo, con el progreso de las 989
+especificaciones, está en \texttt{memoria/anexos/karma-2026-09-01.log}.
+El~\cref{lst:karma-resumen} reproduce la cabecera y la línea de totales.
+
+\lstinputlisting[
+  numbers=none,
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  frame=single,
+  caption={Resumen de la ejecución Karma del 1 de septiembre de 2026.},
+  label={lst:karma-resumen}
+]{anexos/karma-2026-09-01-resumen.txt}
+
+Las líneas de consola «Error evaluando criterio» que aparecen en el log
+completo corresponden a una especificación deliberada de manejo de
+errores, no a un fallo de la suite.
+
+\chapter{Capturas y exportaciones del caso del 01/09/2026}
+\label{anexo:capturas}
+
+Ejecución manual del caso de la~\cref{sec:caso-manual} sobre el artefacto
+de producción servido en \texttt{http://127.0.0.1:4173} (Chrome, 1 de
+septiembre de 2026). Las capturas de interfaz están en el~\cref{cap:manual}
+(\cref{fig:cap-hta,fig:cap-amlodipino,fig:cap-resultados}). Este anexo
+adjunta el JSON y el informe PDF de esa misma sesión (RF09).
+
+El JSON exportado con \emph{Guardar} (HTA, sin amlodipino) se conserva
+como \texttt{memoria/anexos/caso-hta-2026-09-01.json}. Fragmento
+relevante:
+
+\begin{lstlisting}[numbers=none]
+{
+  "version": "1.0",
+  "exportedAt": "2026-09-01T14:12:25.627Z",
+  "patientCase": {
+    "info": null,
+    "diagnoses": ["hta"],
+    "medications": [],
+    "labs": null,
+    "reviewedMedTabs": [],
+    "reviewedDxTabs": []
+  }
+}
+\end{lstlisting}
+
+El PDF generado (RF09) se conserva como
+\texttt{memoria/anexos/informe-hta-2026-09-01.pdf}. La figura siguiente
+reproduce su primera página.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{informe-hta-2026-09-01.png}
+  \caption{Informe PDF generado el 01/09/2026 para el caso HTA (sin
+    antihipertensivo): título «Informe STOPP/START», diagnóstico y tabla
+    START-B1.}
+  \label{fig:cap-informe-pdf}
+\end{figure}

@@ -38,7 +38,7 @@ const labsSchema = z.object({
   pad_mmhg: nullableNumber,
 });
 
-const patientCaseSchema = z.object({
+export const patientCaseSchema = z.object({
   info: patientInfoSchema.nullable(),
   diagnoses: z.array(z.string()),
   medications: z.array(medSchema),
@@ -54,3 +54,17 @@ export const caseExportSchema = z.object({
 });
 
 export type CaseExportParsed = z.infer<typeof caseExportSchema>;
+export type PatientCaseParsed = z.infer<typeof patientCaseSchema>;
+
+export const parseStoredPatientCase = (raw: unknown): PatientCaseParsed => {
+  const result = patientCaseSchema.safeParse(raw);
+  if (result.success) return result.data;
+  return {
+    info: null,
+    diagnoses: [],
+    medications: [],
+    labs: null,
+    reviewedMedTabs: [],
+    reviewedDxTabs: [],
+  };
+};

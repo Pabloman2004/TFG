@@ -98,3 +98,69 @@ describe('CaseStoreService — tabs revisados', () => {
     expect(localStorage.getItem('historial')).toBeNull();
   });
 });
+
+const validLabs = {
+  egfr_ml_min_173: 42,
+  tsh_uUl: null,
+  fc_lpm: null,
+  qtc_ms: null,
+  potasio_mmol_l: null,
+  sodio_mmol_l: null,
+  calcio_corregido_mmol_l: null,
+  pas_mmhg: 158,
+  pad_mmhg: 92,
+};
+
+function storeFromLocalStorage(): CaseStoreService {
+  TestBed.resetTestingModule();
+  TestBed.configureTestingModule({});
+  return TestBed.inject(CaseStoreService);
+}
+
+describe('CaseStoreService — rehidratación con esquema Zod', () => {
+  beforeEach(() => localStorage.clear());
+  afterEach(() => localStorage.clear());
+
+  it('descarta medicaciones persistidas que no cumplen el esquema y arranca vacío', () => {
+    localStorage.setItem('meds', JSON.stringify([{ id: 12, drugClasses: 'AINE' }]));
+    localStorage.setItem('diagnoses', JSON.stringify(['hta']));
+    const store = storeFromLocalStorage();
+    expect(store.meds()).toEqual([]);
+    expect(store.diagnoses()).toEqual([]);
+  });
+
+  it('descarta un paciente persistido con sexo inválido y no mezcla el resto del caso', () => {
+    localStorage.setItem('patient', JSON.stringify({
+      name: 'Ana', age: 80, sex: 'X',
+    }));
+    localStorage.setItem('meds', JSON.stringify([
+      { id: 'Amlodipino', drugClasses: ['CALCIOANTAGONISTA_DHP'] },
+    ]));
+    const store = storeFromLocalStorage();
+    expect(store.patient()).toBeNull();
+    expect(store.meds()).toEqual([]);
+  });
+
+  it('rehidrata un caso persistido válido, descartando claves de analítica retiradas', () => {
+    localStorage.setItem('diagnoses', JSON.stringify(['hta']));
+    localStorage.setItem('meds', JSON.stringify([
+      { id: 'Amlodipino', drugClasses: ['CALCIOANTAGONISTA_DHP'] },
+    ]));
+    localStorage.setItem('labs', JSON.stringify({
+      ...validLabs,
+      glucose_mg_dl: 110,
+    }));
+    const store = storeFromLocalStorage();
+    expect(store.diagnoses()).toEqual(['hta']);
+    expect(store.meds()).toEqual([
+      { id: 'Amlodipino', drugClasses: ['CALCIOANTAGONISTA_DHP'] },
+    ]);
+    expect(store.labs()).toEqual(validLabs);
+  });
+
+  it('si los diagnósticos persistidos no son un array, arranca con la lista vacía', () => {
+    localStorage.setItem('diagnoses', JSON.stringify({ hta: true }));
+    const store = storeFromLocalStorage();
+    expect(store.diagnoses()).toEqual([]);
+  });
+});

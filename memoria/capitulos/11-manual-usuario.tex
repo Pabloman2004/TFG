@@ -11,69 +11,69 @@
 
 La aplicación es una página web que se ejecuta por completo en el
 navegador. No requiere cuenta ni instalación de cliente una vez servidos
-los ficheros estáticos. No se ha aportado una URL de despliegue público;
-por ello, este manual solo documenta la puesta en marcha local verificable
-desde el repositorio. El profesional necesita:
+los ficheros estáticos. El profesional necesita:
 
 \begin{itemize}[leftmargin=1.4em,itemsep=0.2em]
-  \item Un navegador compatible con la compilación de Angular 20 y con
-  JavaScript activado. No se documenta una matriz de navegadores ensayada,
-  por lo que no se afirma compatibilidad certificada con versiones
-  concretas.
+  \item Un navegador con JavaScript activado. La ejecución documentada
+  en este capítulo usó Google Chrome 148; no se aporta una matriz de
+  compatibilidad certificada con otros navegadores o versiones.
   \item Una pantalla que permita manejar el formulario y el panel de
-  resultados. El código incluye adaptaciones de disposición, pero no se
-  aporta una campaña de pruebas por resolución; la respuesta visual debe
-  comprobarse en el entorno de uso antes de emplear la herramienta.
+  resultados. El código incluye adaptaciones de disposición, pero no hay
+  campaña de pruebas por resolución.
   \item Conectividad solo para cargar la página y el catálogo de
   criterios. El caso no se envía a ningún servidor.
 \end{itemize}
 
-Para ejecutar o modificar el proyecto en local se requiere, además,
-una versión de Node.js compatible con Angular 20
-(\texttt{\^{}20.19.0}, \texttt{\^{}22.12.0} o \texttt{\^{}24.0.0}) y npm.
-No hace falta base de datos ni ningún servicio en segundo plano.
+Para instalar o modificar el proyecto se requiere, además, una versión
+de Node.js compatible con Angular 20 (\texttt{\^{}20.19.0},
+\texttt{\^{}22.12.0} o \texttt{\^{}24.0.0}) y npm. No hace falta base de
+datos ni ningún servicio en segundo plano. La ejecución de este manual
+usó Node.js~22.14.0 y npm~10.9.7.
 
-\section{Puesta en marcha local para evaluación}
+\section{Instalación}
 
-Desde la raíz del repositorio:
+Hay dos modos. El de \textbf{producción} es el que acredita este manual:
+se genera el artefacto estático y se sirve como ficheros. El de
+\textbf{desarrollo} queda para quien vaya a modificar el código.
+
+\subsection{Producción (artefacto estático)}
+\label{sec:instalacion-produccion}
+
+Desde la raíz del repositorio, el 1 de septiembre de 2026:
 
 \begin{lstlisting}[numbers=none]
 npm install
+npx ng build --configuration production
+python3 -m http.server 4173 --bind 127.0.0.1 \
+  --directory dist/stopp-start-app/browser
+\end{lstlisting}
+
+El navegador abre \texttt{http://127.0.0.1:4173}. El resultado de
+\texttt{ng build} fue un paquete inicial de 3,53\,MB en
+\texttt{dist/stopp-start-app/browser} (advertencias de presupuesto CSS
+en los pasos de captura; la compilación terminó con código 0). La
+persistencia del caso vive en el \texttt{localStorage} de ese origen;
+borrar los datos del sitio equivale a reiniciar.
+
+\subsection{Desarrollo}
+
+\begin{lstlisting}[numbers=none]
 npx ng serve --host 127.0.0.1 --port 4200
 \end{lstlisting}
 
-Estas órdenes levantan un \textbf{servidor de desarrollo}; no constituyen
-una instalación de producción ni acreditan un despliegue final. El servidor
-queda en \texttt{http://127.0.0.1:4200}. El
-navegador abre la pestaña de medicamentos. La configuración de
-desarrollo es la predeterminada de \texttt{ng serve}; no se utiliza la
-compilación de producción para trabajar.
-
-Otras órdenes útiles:
-
-\begin{itemize}[leftmargin=1.4em,itemsep=0.2em]
-  \item Compilación de desarrollo:
-  \texttt{npx ng build -{}-configuration development}.
-  \item Batería de pruebas, una sola pasada, Chrome sin ventana:
-  \texttt{npx ng test -{}-watch=false -{}-browsers=ChromeHeadless}.
-\end{itemize}
-
-La persistencia del caso en curso vive en el \texttt{localStorage} del
-origen (\texttt{127.0.0.1:4200} en local). Borrar los datos del sitio
-equivale a reiniciar el caso.
+El servidor de desarrollo queda en \texttt{http://127.0.0.1:4200} y no
+sustituye la instalación de producción. Otras órdenes:
+\texttt{npx ng test -{}-watch=false -{}-browsers=ChromeHeadless}
+(\cref{anexo:log-karma}) y los comandos del~\cref{anexo:comandos}.
 
 \section{Guía de uso}
 
 El flujo tiene dos pasos y un panel de resultados visible junto a la
-captura en la disposición descrita por la interfaz. No
-hay pantalla de datos demográficos: se seleccionan
+captura. No hay pantalla de datos demográficos: se seleccionan
 medicamentos, se completan diagnósticos y, si procede, las constantes de
 la pestaña «Otros»; los avisos STOPP y START se actualizan al vuelo. Las
-figuras de esta sección son esquemas de interfaz (\textit{wireframes}), no
-capturas. En el momento del cierre documental no se aportaron capturas
-reales ni un registro de ejecución manual; las conductas descritas se
-contrastan con el código y las especificaciones automáticas localizadas en
-el repositorio, cuya ejecución final debe registrarse por separado.
+figuras de esta sección son capturas de la
+ejecución del 1 de septiembre de 2026 sobre el artefacto de producción.
 
 El recorrido habitual es: (1)~marcar los fármacos activos; (2)~leer los
 avisos que ya puedan dispararse solo con medicación; (3)~pasar a
@@ -81,272 +81,95 @@ diagnósticos; (4)~rellenar la analítica en «Otros» cuando un criterio
 dependa de TFGe, presión arterial, iones u otras constantes; (5)~exportar
 PDF, copiar el texto, guardar el JSON o reiniciar.
 
-\subsection{Caso ficticio reproducible}
+\subsection{Caso ficticio ejecutado el 01/09/2026}
 \label{sec:caso-manual}
 
 El siguiente caso no representa a una persona real ni es una recomendación
-terapéutica. Su finalidad es permitir que otra persona reproduzca un
-recorrido mínimo y compare el resultado con una regla concreta del
-catálogo:
+terapéutica. Se ejecutó el 1 de septiembre de 2026 en Chrome sobre
+\texttt{http://127.0.0.1:4173}:
 
 \begin{enumerate}[leftmargin=1.7em,itemsep=0.25em]
-  \item Pulsar \emph{Reiniciar} y confirmar \emph{Limpiar} para partir de un
-  caso vacío.
+  \item Pulsar \emph{Reiniciar} y confirmar \emph{Limpiar todo} para
+  partir de un caso vacío.
   \item Mantener vacía la selección de medicamentos.
   \item En \emph{Diagnósticos}, abrir el sistema cardiovascular y el grupo
   \emph{Hipertensión}; marcar \emph{HTA (sin especificar)}.
-  \item Comprobar que el panel muestra el criterio
-  \texttt{START-B1-ANTIHIPERTENSIVO-HTA}, que propone considerar un
-  antihipertensivo cuando hay HTA y no consta uno en el caso.
+  \item Comprobar que el panel muestra
+  \texttt{START-B1-ANTIHIPERTENSIVO-HTA} (\cref{fig:cap-hta}).
   \item Volver a \emph{Medicamentos}, seleccionar \emph{Amlodipino} y
-  comprobar que ese criterio deja de resultar aplicable.
+  comprobar que ese criterio deja de resultar aplicable
+  (\cref{fig:cap-amlodipino}).
 \end{enumerate}
 
-El resultado de los pasos 3--5 se deduce de
-\texttt{criteria.json} y de los casos positivo y negativo de
-\texttt{criteria-b.spec.ts}. No se presenta como una ejecución manual
-fechada. Para conservar evidencia de una ejecución real deberán anotarse
-fecha, versión, navegador y resultado observado, y adjuntarse las capturas
-o exportaciones producidas.
-
-\paragraph{Salidas esperadas antes de seleccionar amlodipino.}
-\emph{Copiar criterios} debe producir texto que incluya \texttt{START}, el
-sistema cardiovascular, el código \texttt{B1} y el resumen del criterio.
-El PDF debe titularse «Informe STOPP/START» e incluir el diagnóstico y la
-tabla START. \emph{Guardar} debe descargar un JSON versión~1.0 cuya parte
-relevante tenga esta forma (la fecha de exportación y los campos de revisión
-dependen de la sesión):
-
-\begin{lstlisting}[numbers=none]
-{
-  "version": "1.0",
-  "exportedAt": "<fecha ISO de la ejecución>",
-  "patientCase": {
-    "info": null,
-    "diagnoses": ["hta"],
-    "medications": [],
-    "labs": null
-  }
-}
-\end{lstlisting}
-
-Estos ejemplos describen formato y contenido esperado según
-\texttt{case-io.service.spec.ts}, \texttt{clipboard-text.spec.ts} y
-\texttt{report.service.spec.ts}; no sustituyen los ficheros generados en
-una ejecución documentada.
-
-\subsection{Pantalla de medicamentos}
-
-La~\cref{fig:wire-meds} resume el primer paso. La cabecera alterna entre
-Medicamentos y Diagnósticos y ofrece \emph{Visualización} (orientación
-de las pestañas de sistema) y \emph{Exportar PDF}. La barra de herramientas
-permite guardar el caso en JSON, cargar uno previo, abrir la guía rápida
-y reiniciar ---esta última acción pide confirmación---.
-
-A la izquierda, un raíl de sistemas (Cardiovascular, Neurológico, Renal,
-etc., más «Otros») filtra el catálogo. Dentro de cada sistema hay dos
-bloques: los grupos propios de esa pestaña y, debajo, los
-\emph{relevantes de otros sistemas}, que la aplicación muestra porque
-algún criterio de la pestaña activa los cita. Marcar un fármaco en el
-bloque foráneo no duplica la selección: el mismo identificador se
-comparte entre pestañas. Si el principio activo no está listado, la
-opción \emph{Otro} del grupo añade un ítem con la clase farmacológica
-del grupo, de modo que los criterios que miran esa clase puedan
-disparar.
-
-A la derecha, el panel \emph{Criterios activados} se actualiza al
-marcar o desmarcar. Un contador en la barra resume medicaciones y
-diagnósticos ya elegidos. Cada pestaña puede marcarse como revisada
-cuando no hay selección, para dejar constancia de que se miró y no
-aplica nada.
+\paragraph{Salidas observadas.}
+\emph{Copiar criterios} (antes de amlodipino) produjo texto con
+\texttt{START}, el sistema cardiovascular, el código \texttt{B1} y el
+resumen del criterio. \emph{Guardar} descargó un JSON versión~1.0 con
+\texttt{diagnoses: ["hta"]} y \texttt{medications} vacío; el fichero
+queda en el~\cref{anexo:capturas}. El PDF titulado «Informe STOPP/START»
+de esa misma sesión (RF09) se adjunta como fichero
+\texttt{memoria/anexos/informe-hta-2026-09-01.pdf}; la
+\cref{fig:cap-informe-pdf} del mismo anexo reproduce su primera página.
 
 \begin{figure}[H]
   \centering
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    caja/.style={draw, thick, inner sep=3pt, fill=gray!5, align=left},
-    tit/.style={font=\scriptsize\bfseries\sffamily}
-  ]
-    \node[caja, text width=14.0cm] (hdr)
-      {STOPP/START\quad [Medicamentos] Diagnósticos
-       \hfill Visualización\quad Exportar PDF};
-    \node[caja, below=0.12cm of hdr, text width=14.0cm] (bar)
-      {Guardar\quad Cargar\quad Guía\quad Reiniciar
-       \hfill 3 medicaciones $\vert$ 1 diagnóstico};
-    \node[caja, below=0.12cm of bar, text width=7.9cm, minimum height=5.0cm,
-      anchor=north west] (izq) at ([yshift=-0.12cm]bar.south west)
-      {\textbf{Sistemas:} Cardiovascular (activa), SNC, Renal \ldots{} Otros\\[4pt]
-       \textbf{Del sistema}\\
-       IECA \quad Betabloqueantes \quad Diurét.\ de asa\\
-       $\square$ Enalapril \quad $\square$ Ramipril\\
-       $\boxtimes$ Bisoprolol \quad $\boxtimes$ Furosemida\\[4pt]
-       \textbf{Relevantes de otros sistemas}\\
-       AINE (Osteo/músculo-esq.)\\
-       $\square$ Ibuprofeno \quad $\square$ Naproxeno\\
-       $\square$ Otro};
-    \node[caja, below=0.12cm of bar, text width=5.5cm, minimum height=5.0cm,
-      anchor=north east] (der) at ([yshift=-0.12cm]bar.south east)
-      {\textbf{Criterios activados}\hfill Copiar\\[4pt]
-       \textbf{START} 1\\
-       B8 --- Considerar iSGLT2\\
-       {\tiny en IC con FE reducida}\\[6pt]
-       \textbf{STOPP} 1\\
-       B19 --- Evitar AINE\\
-       {\tiny en IC con diurético de asa}};
-  \end{tikzpicture}
-  \caption{Pantalla de medicamentos: pestañas de sistema, lista de
-  fármacos en dos cubos y panel de criterios con acciones PDF/JSON.}
-  \label{fig:wire-meds}
+  \includegraphics[width=\textwidth]{captura-hta-start-b1.png}
+  \caption{Diagnósticos: HTA (sin especificar) marcada y criterio
+    START-B1 activado. Ejecución del 01/09/2026 sobre el artefacto de
+    producción.}
+  \label{fig:cap-hta}
+\end{figure}
+
+\subsection{Pantalla de medicamentos}
+
+La~\cref{fig:cap-amlodipino} muestra el primer paso: raíl de sistemas,
+grupos propios y relevantes de otros sistemas, y el panel de avisos a la
+derecha. Marcar un fármaco foráneo no duplica la selección; \emph{Otro}
+añade un ítem con la clase del grupo. Cada pestaña vacía puede marcarse
+como revisada.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{captura-amlodipino.png}
+  \caption{Medicamentos: Amlodipino seleccionado; START-B1 deja de
+    aplicar. Ejecución del 01/09/2026 sobre el artefacto de producción.}
+  \label{fig:cap-amlodipino}
 \end{figure}
 
 \subsection{Pantalla de diagnósticos y analítica}
 
-La~\cref{fig:wire-dx} muestra el segundo paso, con la misma cabecera y
-el mismo panel de criterios. Las pestañas corresponden a sistemas
-diagnósticos (Cardiovascular, Neurológico, \ldots). Dentro de cada una
-vuelven a aparecer el cubo propio y el de diagnósticos relevantes de
-otros sistemas. Algunas familias ---la hipertensión--- se presentan como
-opciones excluyentes: marcar «HTA grave» desmarca «HTA moderada».
-
-No hay un paso aparte de datos del paciente. La analítica y las
-constantes (TFGe, presión arterial sistólica y diastólica, frecuencia,
-QTc, potasio, sodio, calcio corregido, TSH) viven en un panel fijo de la
-pestaña \emph{Otros}. El panel no depende de lo que esté marcado: un
-START como el de antihipertensivo ante PAS/PAD elevadas se evalúa por la
-ausencia de fármaco, y ninguna casilla «activaría» esos campos. Si un
-valor no se rellena, los criterios que lo leen no disparan.
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    caja/.style={draw, thick, inner sep=3pt, fill=gray!5, align=left},
-    tit/.style={font=\scriptsize\bfseries\sffamily}
-  ]
-    \node[caja, text width=14.0cm] (hdr)
-      {STOPP/START\quad Medicamentos\quad [Diagnósticos]
-       \hfill Visualización\quad Exportar PDF};
-    \node[caja, below=0.12cm of hdr, text width=7.9cm, minimum height=5.3cm,
-      anchor=north west] (izq) at ([yshift=-0.12cm]hdr.south west)
-      {\textbf{Sistemas:} \ldots{} Urológico, \textbf{Otros} (activa)\\[4pt]
-       \textbf{Analítica y constantes}\\
-       TFGe (ml/min/1,73\,m$^2$) [\,42\,] \quad PAS (mmHg) [\,158\,]\\
-       PAD (mmHg) [\,92\,] \quad K$^+$ (mmol/l) [\,4,1\,]\\
-       QTc (ms) [\,\phantom{00}\,] \quad TSH (µU/ml) [\,\phantom{00}\,]\\[6pt]
-       \textbf{Diagnósticos (Otros / Geriátrico)}\\
-       $\boxtimes$ Caídas de repetición\\
-       $\square$ Fragilidad \quad $\square$ Otro};
-    \node[caja, below=0.12cm of hdr, text width=5.5cm, minimum height=5.3cm,
-      anchor=north east] (der) at ([yshift=-0.12cm]hdr.south east)
-      {\textbf{Criterios activados}\\[4pt]
-       START 1 --- B1 antihipertensivo\\
-       {\tiny (PAS $>$ 140 o PAD $>$ 90 y sin tratamiento)}\\[6pt]
-       STOPP 1 --- K1 benzodiacepina\\
-       {\tiny y caídas de repetición}};
-  \end{tikzpicture}
-  \caption{Pantalla de diagnósticos: pestaña «Otros» con el panel fijo
-  de analítica y el mismo panel de criterios a la derecha.}
-  \label{fig:wire-dx}
-\end{figure}
+La~\cref{fig:cap-hta} muestra el segundo paso. Las familias como la
+hipertensión son excluyentes. No hay ficha demográfica: la analítica
+(TFGe, presión, frecuencia, QTc, iones, TSH) vive en la pestaña
+\emph{Otros}; si un valor no se rellena, los criterios que lo leen no
+disparan.
 
 \subsection{Resultados y generación del informe}
+\label{sec:resultados-manual}
 
-El panel derecho (\cref{fig:wire-resultados}) es el resultado: no hay
-una tercera pantalla. Los avisos START (omisión de tratamiento indicado)
-van encima; los STOPP (prescripción potencialmente inapropiada), debajo.
-Cada bloque muestra un contador y agrupa las tarjetas por sistema
-orgánico, plegables. El texto de cada tarjeta es el \texttt{summary} del
-criterio, con umbrales de dosis o duración cuando la guía los menciona
----el profesional juzga si aplican; la interfaz no pide esos datos.
-
-Desde cualquier paso se puede:
-
-\begin{itemize}[leftmargin=1.4em,itemsep=0.2em]
-  \item \textbf{Exportar PDF:} informe del caso y de los criterios
-  activados, generado en el navegador.
-  \item \textbf{Copiar criterios:} texto plano al portapapeles, útil
-  para pegarlo en la historia clínica.
-  \item \textbf{Guardar / Cargar:} fichero JSON versión 1.0 (medicación,
-  diagnósticos, analítica). Un JSON ajeno o de versión distinta se
-  rechaza con un mensaje comprensible.
-  \item \textbf{Reiniciar:} vacía el caso de \texttt{localStorage} tras
-  confirmar.
-\end{itemize}
+El panel derecho (\cref{fig:cap-resultados}) es el resultado: no hay una
+tercera pantalla. Los avisos START van encima; los STOPP, debajo. Cada
+bloque muestra un contador y agrupa las tarjetas por sistema. El texto
+de cada tarjeta es el \texttt{summary} del criterio; el profesional
+juzga si aplican umbrales de dosis o duración.
 
 \begin{figure}[H]
   \centering
-  \begin{tikzpicture}[
-    font=\scriptsize\sffamily,
-    caja/.style={draw, thick, inner sep=4pt, fill=gray!5, align=left}
-  ]
-    \node[font=\scriptsize\bfseries\sffamily, text width=11.4cm] (t)
-      {Criterios activados \hfill Copiar criterios};
-    \node[caja, fill=gray!14, below=0.15cm of t, text width=11.4cm] (st) {%
-      \textbf{START} 2\\[2pt]
-      Sistema cardiovascular\\
-      B1 --- Considerar antihipertensivo (PAS $>$ 140\,mmHg / PAD $>$ 90\,mmHg)\\
-      B8 --- Considerar iSGLT2 en insuficiencia cardíaca
-    };
-    \node[caja, fill=gray!10, below=0.18cm of st, text width=11.4cm] (sp) {%
-      \textbf{STOPP} 2\\[2pt]
-      Sistema cardiovascular\\
-      B19 --- Evitar AINE o corticoide en IC con diurético de asa\\[2pt]
-      Riesgo de caídas\\
-      K1 --- Evitar benzodiacepina si hay caídas de repetición
-    };
-  \end{tikzpicture}
-  \caption{Panel de resultados STOPP/START, agrupado por sistema, visible
-  en ambas pestañas del flujo.}
-  \label{fig:wire-resultados}
+  \includegraphics[height=0.26\textheight,keepaspectratio]{captura-resultados.png}
+  \caption{Panel de criterios activados del caso HTA, con START-B1 y
+    sin avisos STOPP. Detalle de la ejecución del 01/09/2026.}
+  \label{fig:cap-resultados}
 \end{figure}
+
+Desde cualquier paso se puede exportar PDF, copiar criterios en texto
+plano, guardar o cargar JSON v1.0 y reiniciar tras confirmación. Un JSON
+ajeno o de versión distinta se rechaza con un mensaje comprensible.
 
 \section{Resolución de errores}
 
-\begin{table}[H]
-  \centering
-  \small
-  \begin{tabularx}{\textwidth}{@{}p{3.8cm}XX@{}}
-    \toprule
-    \textbf{Síntoma} & \textbf{Comprobación} & \textbf{Acción} \\
-    \midrule
-    No abre la página local &
-      Revisar la consola de \texttt{ng serve} y que el puerto 4200 no esté
-      ocupado. &
-      Corregir el error mostrado o elegir otro puerto; abrir exactamente la
-      dirección indicada por la CLI. \\
-    La interfaz abre sin catálogo &
-      En las herramientas del navegador, comprobar la petición a
-      \texttt{assets/data/criteria.json}. &
-      Servir la aplicación desde su raíz; no abrir directamente
-      \texttt{index.html} como fichero local. \\
-    El JSON no se carga &
-      Confirmar que procede de \emph{Guardar}, que contiene
-      \texttt{version: "1.0"} y un \texttt{patientCase} válido. &
-      No editarlo a mano; volver a exportarlo. Un rechazo no debe reemplazar
-      el caso que ya estaba abierto. \\
-    No se copia el texto &
-      El navegador puede denegar el portapapeles por permisos o contexto. &
-      Conceder permiso si la política local lo permite o seleccionar el
-      contenido por otro medio; la interfaz debe mostrar el fallo. \\
-    Falla la descarga PDF &
-      Comprobar permisos de descarga y mensajes del navegador. &
-      Reintentar tras habilitar descargas. Como alternativa temporal, usar
-      \emph{Copiar criterios} o \emph{Guardar} JSON. \\
-    El caso reaparece o desaparece &
-      El estado pertenece al \texttt{localStorage} del origen actual. &
-      Usar siempre el mismo origen para recuperarlo; \emph{Reiniciar} o
-      borrar los datos del sitio lo elimina. Exportar JSON antes de borrar. \\
-    No aparece un criterio esperado &
-      Revisar fármacos, diagnósticos y analítica, y leer los umbrales del
-      aviso. Edad, sexo, dosis y duración no se capturan en la interfaz. &
-      No forzar una conclusión clínica. Contrastar con la guía y registrar
-      el caso para revisión; algunos criterios requieren confirmación manual
-      o datos no disponibles. \\
-    \bottomrule
-  \end{tabularx}
-  \caption{Comprobaciones ante incidencias de uso y exportación.}
-  \label{tab:errores-manual}
-\end{table}
+La~\cref{tab:errores-manual} del~\cref{anexo:errores-uso} resume síntomas
+de puesta en marcha, exportación y evaluación. No sustituye el
+diagnóstico clínico cuando un criterio esperado no aparece.
 
 \section{Preguntas frecuentes}
 
@@ -358,17 +181,12 @@ situación concreta y de la guía~\cite{omahony2023stopp,sacyl2023stopp}.
 
 \paragraph{¿Dónde se guardan los datos?}
 En el \texttt{localStorage} del navegador, en el origen desde el que se
-sirve la página. No hay servidor de aplicación ni cuenta de usuario. El
-contenido no sale del equipo salvo que se exporte un JSON o un PDF.
+sirve la página (en la ejecución documentada,
+\texttt{127.0.0.1:4173}). No hay servidor de aplicación ni cuenta de
+usuario. El contenido no sale del equipo salvo que se exporte un JSON o
+un PDF.
 
 \paragraph{¿Puedo cargar un caso ya revisado?}
-Sí. \emph{Guardar} descarga un JSON v1.0; \emph{Cargar} lo restaura
-(medicación, diagnósticos y analítica). El fichero debe ser una
-exportación de esta aplicación; un documento arbitrario se rechaza.
+Sí. \emph{Guardar} descarga un JSON v1.0; \emph{Cargar} lo restaura.
+El fichero debe ser una exportación de esta aplicación.
 
-\paragraph{¿Y si el fármaco o el diagnóstico no está en el catálogo?}
-En el grupo correspondiente se marca \emph{Otro}. El ítem hereda la
-clase del grupo (medicamentos) o un código asociado al grupo
-(diagnósticos), de forma que los criterios que razonan por clase o por
-familia puedan evaluarse. No inventa un principio activo nuevo en el
-catálogo maestro.

@@ -93,31 +93,8 @@ dosis o duración que el profesional deba confirmar leyendo el aviso.
 Las reglas clínicas no están compiladas en TypeScript: residen en
 \texttt{src/assets/data/criteria.json}, un objeto cuya propiedad
 \texttt{criteria} contiene el array de objetos \texttt{Crit}. Cada entrada
-tiene los campos de la~\cref{tab:campos-criterio}.
-
-\begin{table}[H]
-  \centering
-  \small
-  \begin{tabular}{@{}lp{10.2cm}@{}}
-    \toprule
-    \textbf{Campo} & \textbf{Significado} \\
-    \midrule
-    \texttt{id} & Identificador estable (\texttt{STOPP-B1-DIGOXINA}, \ldots). \\
-    \texttt{type} & \texttt{STOPP} o \texttt{START}. \\
-    \texttt{system} & Uno de los trece sistemas del catálogo. \\
-    \texttt{summary} & Texto del aviso mostrado al profesional. \\
-    \texttt{logic} & Árbol json-logic ejecutable (operadores estándar y
-      personalizados). \\
-    \texttt{excludes} & Fármacos o clases cuya adición activaría una
-      advertencia de prescripción potencialmente inapropiada (opcional).
-      Se conserva \texttt{excludes} como nombre técnico del campo. \\
-    \texttt{relevance} & Clases extra para el índice de visibilidad cuando no
-      se infieren de la lógica (opcional). \\
-    \bottomrule
-  \end{tabular}
-  \caption{Campos de una entrada de \texttt{criteria.json}.}
-  \label{tab:campos-criterio}
-\end{table}
+tiene los campos de la~\cref{tab:campos-criterio}
+(\cref{anexo:esquema-criterio}).
 
 La guía oficial STOPP/START v3 enumera 190 criterios (133 STOPP y
 57 START)~\cite{omahony2023stopp,sacyl2023stopp}. El fichero implementado
@@ -142,39 +119,12 @@ nervioso central, renal, gastrointestinal, respiratorio, musculoesquelético,
 urogenital, endocrino, riesgo de caídas, analgésicos y carga
 antimuscarínica/anticolinérgica.
 
-El~\cref{lst:criterio-b1} muestra una entrada real. STOPP-B1 se activa si el
-paciente toma un fármaco de clase \texttt{DIGOXINA} y tiene el diagnóstico
+El~\cref{lst:criterio-b1} del~\cref{anexo:esquema-criterio} muestra una
+entrada real. STOPP-B1 se activa si el paciente toma un fármaco de clase
+\texttt{DIGOXINA} y tiene el diagnóstico
 \texttt{ic\_funcion\_sistolica\_conservada}; \texttt{excludes} indica qué
 marcaría el motor como medicación potencialmente inapropiada en ese
 contexto. No equivale a una prohibición clínica absoluta.
-
-\begin{lstlisting}[
-  caption={Entrada real de \texttt{criteria.json}: STOPP-B1.},
-  label={lst:criterio-b1},
-  basicstyle=\ttfamily\scriptsize,
-  numbers=none,
-  frame=single,
-  breaklines=true
-]
-{
-  "id": "STOPP-B1-DIGOXINA",
-  "type": "STOPP",
-  "system": "Sistema cardiovascular",
-  "summary": "Evitar digoxina en pacientes con insuficiencia
-    cardiaca con funcion sistolica ventricular conservada.",
-  "logic": {
-    "and": [
-      {"inDrugClass": ["DIGOXINA", {"var": "medications"}]},
-      {"in": ["ic_funcion_sistolica_conservada",
-             {"var": "diagnoses"}]}
-    ]
-  },
-  "excludes": {
-    "medications": ["Digoxina"],
-    "drugClasses": ["DIGOXINA"]
-  }
-}
-\end{lstlisting}
 
 \section{Persistencia}
 \label{sec:persistencia}
@@ -183,10 +133,12 @@ No hay base de datos ni API de pacientes. El estado de la sesión se serializa
 en \texttt{localStorage} del origen de la aplicación, porque el sistema es
 una SPA sin backend (\cref{cap:arquitectura}). Cada señal de dominio tiene
 su clave; un efecto escribe el JSON en cada cambio y, si el valor es nulo,
-borra la clave. Al arrancar, el servicio de sesión rehidrata las señales con
-\texttt{JSON.parse}; un error de lectura deja el valor por defecto y la
-aplicación sigue utilizable. Los fallos de escritura (cuota, modo incógnito)
-se silencian: el caso permanece en memoria durante la sesión.
+borra la clave. Al arrancar, el servicio de sesión ensambla las claves
+clínicas y las valida con el mismo esquema Zod de la importación
+(\texttt{patientCaseSchema}). Si \texttt{JSON.parse} falla o el valor no
+cumple el esquema, el caso arranca vacío: no se admite un fragmento
+válido mezclado con otro corrupto. Los fallos de escritura (cuota, modo
+incógnito) se silencian: el caso permanece en memoria durante la sesión.
 
 \begin{table}[H]
   \centering
@@ -214,12 +166,13 @@ Al iniciar se eliminan claves de versiones anteriores que ya no se usan
 (\texttt{results}, \texttt{activeSystem}). \texttt{collapsedSections} es
 estado efímero de interfaz y no se persiste.
 
-La rehidratación no valida el esquema Zod: ese contrato se aplica al
-\emph{importar} un fichero. En \texttt{localStorage}, un JSON que no pueda
-parsearse cae al valor por defecto, pero un valor sintácticamente válido con
-estructura inesperada puede entrar en memoria. Por ello el almacenamiento
-del navegador no se considera una frontera de confianza ni aporta garantía
-de integridad.
+La rehidratación y la importación JSON comparten frontera de confianza:
+el esquema Zod rechaza tipos, enumeraciones y estructuras inesperadas
+(p.~ej.\ un sexo distinto de \texttt{F}/\texttt{M}, un array de
+medicaciones mal formado). Las claves de analítica retiradas se descartan
+y el resto carga, igual que en un fichero importado. El almacenamiento
+del navegador sigue sin cifrado; la validación cubre integridad
+estructural, no autenticidad clínica.
 
 \section{Privacidad y protección de datos}
 \label{sec:privacidad}
@@ -248,12 +201,12 @@ al comportamiento del portapapeles y del sistema operativo.
 
 \paragraph{Integridad y corrupción.}
 Un actor con acceso al perfil o a las herramientas del navegador puede
-manipular las claves locales. El JSON ilegible se sustituye por el valor por
-defecto, pero la rehidratación no aplica Zod y no detecta necesariamente un
-objeto parseable con tipos o códigos alterados. Esto puede cambiar el caso
-evaluado o provocar un comportamiento no previsto. En cambio, los ficheros
-importados sí se validan antes de llamar a \texttt{loadCase}; esa validación
-estructural no acredita que los datos clínicos sean verdaderos.
+manipular las claves locales. El JSON ilegible o el valor que no cumple
+el esquema se sustituyen por un caso vacío; no se rehidrata un objeto
+parseable con tipos o códigos alterados. Esa mitigación es la misma que
+en la importación. No acredita que los datos clínicos sean verdaderos
+ni impide que quien controla el perfil escriba un JSON \emph{bien
+formado} con contenido clínico falso.
 
 \paragraph{Retención y borrado.}
 No existe caducidad automática: cerrar el navegador no elimina el caso. La
@@ -268,13 +221,14 @@ eliminarse en sus respectivos destinos.
 \paragraph{Uso previsto y riesgo residual.}
 Al abrir la guía rápida no se adjuntan datos del caso: el enlace al PDF de
 Sacyl~\cite{sacyl2023stopp} es público y no lleva parámetros clínicos. Aun
-así, por la persistencia sin cifrado, la falta de validación de integridad
-al rehidratar y la ausencia de control sobre exportaciones y copias, esta
-implementación de TFG no debe emplearse con datos reales identificables sin
-una evaluación organizativa y técnica adicional. El riesgo residual incluye
-acceso local no autorizado, manipulación silenciosa, retención superior a
-la prevista y divulgación de una exportación; la ausencia de backend reduce
-la superficie de exposición, pero no elimina esos riesgos.
+así, por la persistencia sin cifrar y por la ausencia de control sobre
+exportaciones y copias, esta implementación de TFG no debe emplearse con
+datos reales identificables sin una evaluación organizativa y técnica
+adicional. El riesgo residual incluye acceso local no autorizado,
+retención superior a la prevista y divulgación de una exportación; la
+validación Zod al rehidratar cierra la corrupción estructural silenciosa,
+pero no el contenido clínico bien formado ni el cifrado. La ausencia de
+backend reduce la superficie de exposición, pero no elimina esos riesgos.
 
 \section{Generación de informes}
 \label{sec:informes}

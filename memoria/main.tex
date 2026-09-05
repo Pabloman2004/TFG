@@ -25,6 +25,7 @@
 \setmainfont{Times New Roman}
 \setsansfont{Arial}
 \setmonofont{DejaVu Sans Mono}[Scale=0.85]
+\usepackage{microtype}
 
 % ---------- Geometria de pagina ----------
 \usepackage[
@@ -37,35 +38,49 @@
 \usepackage{setspace}
 \onehalfspacing
 
+% Datos del trabajo (antes de fancyhdr: el encabezado usa \tituloTFG)
+\newcommand{\tituloTFG}{STOPP/START}
+\newcommand{\autorTFG}{Pablo Freire Gullón}
+\newcommand{\tutorTFG}{Martín Pérez Pérez}
+\newcommand{\cotutorTFG}{}
+\newcommand{\gradoTFG}{Grado en Ingeniería Informática}
+\newcommand{\cursoTFG}{2025--2026}
+\newcommand{\mesTFG}{Setembro}
+\newcommand{\anhoTFG}{2026}
+\newcommand{\valorVacio}{}
+\newcommand{\numeroTFG}{EI 25/26-83}
+\newcommand{\areaTFG}{Linguaxes e Sistemas Informáticos}
+\newcommand{\departamentoTFG}{Informática}
+
 % ---------- Encabezado y pie ----------
 % La guia exige: encabezado con el titulo (minimo) y numeracion en el pie.
 % Preliminaries (portada, indices): sin numero.
-% Cuerpo (desde Introduccion hasta el final): arabigo en el pie.
+% Cuerpo (desde Introduccion hasta el final, incluida la 1.a de cada
+% capitulo): arabigo en el pie. No redefinir \fancypagestyle{plain} con
+% \fancyhf{} antes del cuerpo: en fancyhdr eso vacia tambien el estilo
+% fancy y deja las paginas interiores sin encabezado ni numero.
 \usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\small\itshape\tituloTFG}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
-
-% Estilo de la primera pagina de cada \chapter (report usa "plain")
-\fancypagestyle{plain}{%
-  \fancyhf{}
-  \fancyhead[L]{\small\itshape\tituloTFG}
-  \fancyfoot[C]{\thepage}
-  \renewcommand{\headrulewidth}{0.4pt}
+\newcommand{\estiloCuerpoTFG}{%
+  \fancyhf{}%
+  \fancyhead[L]{\small\itshape\tituloTFG}%
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{0.4pt}%
 }
-
-% Sin encabezado ni numero (preliminares)
+\estiloCuerpoTFG
+\pagestyle{fancy}
+\fancypagestyle{cuerpo}{\estiloCuerpoTFG}
 \fancypagestyle{preliminar}{%
-  \fancyhf{}
-  \renewcommand{\headrulewidth}{0pt}
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
 }
 
 % ---------- Paquetes de contenido ----------
 \usepackage{graphicx}
 \graphicspath{{figuras/}}
 \usepackage{float}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{6pt plus 2pt minus 2pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,backgrounds}
 \usepackage{booktabs}
@@ -73,8 +88,27 @@
 \usepackage{tabularx}
 \usepackage{multirow}
 \usepackage{caption}
+\captionsetup{
+  tablename=Tabla,
+  listtablename={Índice de tablas},
+  figurename=Figura,
+  listfigurename={Índice de ilustraciones},
+  skip=5pt,
+  font=small
+}
 \usepackage{subcaption}
 \usepackage{enumitem}
+\setlist{itemsep=0.15em, topsep=0.35em, parsep=0pt, partopsep=0pt}
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries}{\chaptertitlename\ \thechapter}{6pt}{\LARGE}
+\titlespacing*{\chapter}{0pt}{-2pt}{8pt}
+\titleformat{\section}
+  {\normalfont\large\bfseries}{\thesection}{0.6em}{}
+\titlespacing*{\section}{0pt}{0.7em}{0.3em}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{0.5em}{0.2em}
 \usepackage{xcolor}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -98,7 +132,9 @@
   rulecolor=\color{gray!40},
   showstringspaces=false,
   captionpos=b,
-  tabsize=2
+  tabsize=2,
+  aboveskip=4pt,
+  belowskip=4pt
 }
 
 % ---------- Bibliografia (estilo IEEE, admitido por la guia) ----------
@@ -123,23 +159,13 @@
 \crefname{listing}{listado}{listados}
 \Crefname{listing}{Listado}{Listados}
 
-\setlength{\emergencystretch}{3em}
+\AtBeginDocument{%
+  \renewcommand{\listfigurename}{Índice de ilustraciones}%
+  \renewcommand{\listtablename}{Índice de tablas}%
+  \renewcommand{\tablename}{Tabla}%
+}
 
-% =====================================================================
-%  DATOS DEL TRABAJO
-% =====================================================================
-\newcommand{\tituloTFG}{STOPP/START}
-\newcommand{\autorTFG}{Pablo Freire Gullón}
-\newcommand{\tutorTFG}{Martín Pérez Pérez}
-\newcommand{\cotutorTFG}{}
-\newcommand{\gradoTFG}{Grado en Ingeniería Informática}
-\newcommand{\cursoTFG}{2025--2026}
-\newcommand{\mesTFG}{Septiembre}
-\newcommand{\anhoTFG}{2026}
-\newcommand{\valorVacio}{}
-\newcommand{\numeroTFG}{}                % Lo asigna la Secretaria del centro
-\newcommand{\areaTFG}{Linguaxes e Sistemas Informáticos}
-\newcommand{\departamentoTFG}{Informática}
+\setlength{\emergencystretch}{3em}
 
 % =====================================================================
 \begin{document}
@@ -147,11 +173,12 @@
 % ---------- 5.1 Portada ----------
 \input{capitulos/00-portada}
 
-% Preliminaries: sin numeracion visible
+% Preliminaries: sin numeracion visible (plain vacio solo aqui:
+% \chapter* de los indices usa \thispagestyle{plain}).
 \pagestyle{preliminar}
 \fancypagestyle{plain}{%
-  \fancyhf{}
-  \renewcommand{\headrulewidth}{0pt}
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
 }
 \pagenumbering{roman}
 
@@ -170,13 +197,13 @@
 % =====================================================================
 \clearpage
 \pagenumbering{arabic}
+% Restaurar fancy tras el plain vacio de preliminares y hacer que la
+% primera pagina de cada \chapter (plain) use el mismo encabezado/pie.
+\estiloCuerpoTFG
 \pagestyle{fancy}
-\fancypagestyle{plain}{%
-  \fancyhf{}
-  \fancyhead[L]{\small\itshape\tituloTFG}
-  \fancyfoot[C]{\thepage}
-  \renewcommand{\headrulewidth}{0.4pt}
-}
+\fancypagestyle{plain}{\estiloCuerpoTFG}
+\estiloCuerpoTFG
+\pagestyle{fancy}
 
 \input{capitulos/01-introduccion}          % 5.7
 \input{capitulos/02-objetivos}             % 5.8

@@ -1,0 +1,20 @@
+=== STOPP/START Karma execution ===
+date: 2026-09-01T14:45:26Z
+command: npx ng test --watch=false --browsers=ChromeHeadless
+node: v22.14.0
+npm: 10.9.7
+chrome: Google Chrome 148.0.7778.96 
+pwd: /workspace
+git: 3bfb10d bugfix/memoria-pdf-65a9
+====================================
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+❯ Building...
+✔ Building...
+01 09 2026 14:45:31.469:INFO [Chrome Headless 148.0.0.0 (Linux 0.0.0)]: Connected on socket JtqsUtT1H60Z_7mUAAAB with id 10868409
+...
+Chrome Headless 148.0.0.0 (Linux 0.0.0): Executed 988 of 989 SUCCESS (0 secs / 1.294 secs)
+WARN: 'The 'allowSignalWrites' flag is deprecated and no longer impacts effect() (writes are always allowed)'
+Chrome Headless 148.0.0.0 (Linux 0.0.0): Executed 989 of 989 SUCCESS (0 secs / 1.3 secs)
+Chrome Headless 148.0.0.0 (Linux 0.0.0): Executed 989 of 989 SUCCESS (1.59 secs / 1.3 secs)
+TOTAL: 989 SUCCESS
+exit_code=0

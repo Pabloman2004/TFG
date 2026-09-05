@@ -3,6 +3,7 @@
 
 import { Injectable, signal, effect } from '@angular/core';
 import { PatientInfo, Labs, PatientCase, Med } from './types';
+import { parseStoredPatientCase } from './case-export.schema';
 
 @Injectable({ providedIn: 'root' })
 export class CaseStoreService {
@@ -20,13 +21,14 @@ export class CaseStoreService {
   private readonly REVIEWED_DX_KEY = 'reviewedDxTabs';
 
   constructor() {
-    this.patient.set(this.load('patient'));
-    this.diagnoses.set(this.load('diagnoses') ?? []);
-    this.meds.set(this.load('meds') ?? []);
-    this.labs.set(this.load('labs'));
+    const stored = this.readStoredCase();
+    this.patient.set(stored.info);
+    this.diagnoses.set(stored.diagnoses);
+    this.meds.set(stored.medications);
+    this.labs.set(stored.labs);
     this.activeSystemTab.set(this.loadString('activeSystemTab') ?? 'cardiovascular');
-    this.reviewedMedTabs.set(new Set(this.load<string[]>(this.REVIEWED_MED_KEY) ?? []));
-    this.reviewedDxTabs.set(new Set(this.load<string[]>(this.REVIEWED_DX_KEY) ?? []));
+    this.reviewedMedTabs.set(new Set(stored.reviewedMedTabs ?? []));
+    this.reviewedDxTabs.set(new Set(stored.reviewedDxTabs ?? []));
     this.persist('results', null); // limpiar resultados cacheados de versiones anteriores
     this.persist('activeSystem', null); // limpiar signal UI legado
     this.persist('historial', null); // limpiar historial legado (feature eliminada)
@@ -40,10 +42,23 @@ export class CaseStoreService {
     effect(() => this.persist(this.REVIEWED_DX_KEY, [...this.reviewedDxTabs()]));
   }
 
-  private load<T>(key: string): T | null {
+  private readStoredCase() {
+    return parseStoredPatientCase({
+      info: this.loadJson('patient'),
+      diagnoses: this.loadJson('diagnoses') ?? [],
+      medications: this.loadJson('meds') ?? [],
+      labs: this.loadJson('labs'),
+      reviewedMedTabs: this.loadJson(this.REVIEWED_MED_KEY) ?? [],
+      reviewedDxTabs: this.loadJson(this.REVIEWED_DX_KEY) ?? [],
+    });
+  }
+
+  private loadJson(key: string): unknown {
     try {
       const raw = localStorage.getItem(key);
-      return raw ? (JSON.parse(raw) as T) : null;
+      if (!raw) return null;
+      const parsed: unknown = JSON.parse(raw);
+      return parsed;
     } catch {
       return null;
     }

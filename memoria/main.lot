@@ -1,31 +1,73 @@
+\xpginauxfiletrue 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Comparación entre la dedicación estimada y la real, en horas, por fase. La fila de la memoria está en curso y su valor real es un corte, no un cierre.}}{10}{table.caption.8}%
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {4.1}{\ignorespaces Comparación entre el plan y la estimación retrospectiva de dedicación hasta el 16 de agosto de 2026. No es un registro de horas ni el cierre definitivo del proyecto.}}{9}{table.caption.7}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Directorios relevantes de la aplicación.}}{13}{table.caption.10}%
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {5.1}{\ignorespaces Directorios relevantes de la aplicación.}}{13}{table.caption.9}%
+\setforeignlanguage {spanish}
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {6.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Productos de terceros y versión del manifiesto.}}{18}{table.caption.21}%
-\contentsline {table}{\numberline {6.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Licencias de los productos de terceros usados en tiempo de ejecución.}}{19}{table.caption.22}%
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {6.1}{\ignorespaces Productos de terceros y versión resuelta en el fichero de bloqueo.}}{18}{table.caption.20}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {7.1}{\ignorespaces Requisitos funcionales del sistema implementado.}}{21}{table.7.1}%
-\contentsline {table}{\numberline {7.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Requisitos no funcionales, referidos al modelo de calidad ISO/IEC~25010.}}{23}{table.caption.23}%
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {7.1}{\ignorespaces Requisitos funcionales (resumen). El enunciado completo está en la~\cref {tab:rf}.}}{21}{table.caption.21}%
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {7.2}{\ignorespaces Requisitos no funcionales, referidos al modelo de calidad ISO/IEC~25010.}}{22}{table.caption.22}%
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {8.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Campos de \texttt {Crit} a nivel de tipo.}}{26}{table.caption.27}%
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {8.1}{\ignorespaces Campos de \texttt {Crit} a nivel de tipo.}}{26}{table.caption.26}%
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {9.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Parámetros de \texttt {Labs} capturados en la pestaña «Otros» de diagnósticos.}}{32}{table.caption.39}%
-\contentsline {table}{\numberline {9.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Campos de una entrada de \texttt {criteria.json}.}}{32}{table.caption.40}%
-\contentsline {table}{\numberline {9.3}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Claves de \texttt {localStorage} vigentes.}}{34}{table.caption.41}%
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {9.1}{\ignorespaces Parámetros de \texttt {Labs} capturados en la pestaña «Otros» de diagnósticos.}}{31}{table.caption.38}%
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {9.2}{\ignorespaces Claves de \texttt {localStorage} vigentes.}}{32}{table.caption.39}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {10.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Resumen de la batería de pruebas (conteo de cláusulas \texttt {it(} en los \texttt {*.spec.ts}). El script \texttt {audit-criteria.cjs} no forma parte de este total.}}{39}{table.caption.45}%
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {10.1}{\ignorespaces Batería Karma + Jasmine ejecutada el 1 de septiembre de 2026 (log en el~\cref {anexo:log-karma}). El script \texttt {audit-criteria.cjs} no forma parte de este total.}}{38}{table.caption.47}%
+\addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
+\setforeignlanguage {spanish}
+\addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {12.1}{\ignorespaces Correspondencia entre los objetivos específicos (\cref {cap:objetivos}) y las aportaciones del trabajo.}}{45}{table.caption.55}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {12.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Correspondencia entre los objetivos específicos (\cref {cap:objetivos}) y las aportaciones del trabajo.}}{46}{table.caption.53}%
+\addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {A.1}{\ignorespaces Comandos de instalación, ejecución, prueba y auditoría.}}{51}{table.caption.64}%
+\addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {B.1}{\ignorespaces Reglas implementadas por sistema clínico (catálogo \texttt {criteria.json}).}}{52}{table.caption.65}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {C.1}{\ignorespaces Matriz requisitos--evidencia del repositorio.}}{53}{table.C.1}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {D.1}{\ignorespaces Matriz de cobertura demostrable del catálogo, sin equivalencia 190$\rightarrow $218.}}{55}{table.D.1}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {E.1}{\ignorespaces Requisitos funcionales del sistema implementado.}}{56}{table.E.1}%
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {E.2}{\ignorespaces Criterios de aceptación de los requisitos funcionales.}}{58}{table.caption.66}%
+\addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {F.1}{\ignorespaces Comprobaciones ante incidencias de uso y exportación.}}{59}{table.caption.67}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\contentsline {table}{\numberline {H.1}{\ignorespaces Campos de una entrada de \texttt {criteria.json}.}}{61}{table.caption.68}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {A.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Comandos de instalación, ejecución, prueba y auditoría.}}{54}{table.caption.56}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {B.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Reglas implementadas por sistema clínico (catálogo \texttt {criteria.json}).}}{55}{table.caption.57}%
-\addvspace {10\p@ }
+\setforeignlanguage {spanish}
+\xpginauxfilefalse 

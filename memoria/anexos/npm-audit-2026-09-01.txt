@@ -1,0 +1,169 @@
+=== npm audit --omit=dev (producción) ===
+date: 2026-09-01T14:42:33Z
+node: v22.14.0
+npm: 10.9.7
+
+# npm audit report
+
+@angular/common  20.0.0-next.0 - 20.3.26
+Severity: high
+Depends on vulnerable versions of @angular/core
+Angular is Vulnerable to XSRF Token Leakage via Protocol-Relative URLs in Angular HTTP Client - https://github.com/advisories/GHSA-58c5-g7wp-6w37
+@angular/common: Denial of Service (DoS) via OOM in Date Formatting (formatDate) - https://github.com/advisories/GHSA-48r7-hpm6-gfxm
+@angular/common: Weak 32-Bit Cache Key Hashing in `HttpTransferCache` Leading to Cross-Request Data Leakage and State Poisoning - https://github.com/advisories/GHSA-39pv-4j6c-2g6v
+@angular/common: Denial of Service (DoS) via OOM in Number Formatting (digitsInfo) - https://github.com/advisories/GHSA-p3vc-36g9-x9gr
+@angular/common: Information Leak via Default Caching of Credentialed Requests in HttpTransferCache - https://github.com/advisories/GHSA-q6f4-qqrg-jv6x
+Angular: Cache-Key Ambiguity in HttpTransferCache Leading to Cross-Request Response Reuse and State Poisoning - https://github.com/advisories/GHSA-jhpw-976m-542j
+fix available via `npm audit fix`
+node_modules/@angular/common
+  @angular/forms  4.4.0-RC.0 - 4.4.0 || 20.0.0-next.0 - 20.3.16
+  Depends on vulnerable versions of @angular/common
+  Depends on vulnerable versions of @angular/core
+  Depends on vulnerable versions of @angular/platform-browser
+  node_modules/@angular/forms
+  @angular/platform-browser  20.0.0-next.0 - 20.3.16
+  Depends on vulnerable versions of @angular/animations
+  Depends on vulnerable versions of @angular/common
+  Depends on vulnerable versions of @angular/core
+  node_modules/@angular/platform-browser
+  @angular/router  10.0.0-next.0 - 10.0.0-rc.1 || 20.0.0-next.0 - 20.3.16
+  Depends on vulnerable versions of @angular/common
+  Depends on vulnerable versions of @angular/core
+  Depends on vulnerable versions of @angular/platform-browser
+  node_modules/@angular/router
+
+@angular/compiler  20.0.0-next.0 - 20.3.26
+Severity: high
+Angular vulnerable to XSS in i18n attribute bindings - https://github.com/advisories/GHSA-g93w-mfhg-p222
+Angular has XSS Vulnerability via Unsanitized SVG Script Attributes - https://github.com/advisories/GHSA-jrmj-c5cx-3cw6
+Angular Stored XSS Vulnerability via SVG Animation, SVG URL and MathML Attributes - https://github.com/advisories/GHSA-v4hv-rgfq-gp49
+@angular/compiler: Two-Way Property Binding Sanitization Bypass (XSS) - https://github.com/advisories/GHSA-58w9-8g37-x9v5
+Angular: Template and Attribute Namespace Sanitization Bypass (XSS) - https://github.com/advisories/GHSA-f3m7-gqxr-g87x
+Angular i18n: Cross-Site Scripting (XSS) via event-handler attributes - https://github.com/advisories/GHSA-jj27-h5hq-8x99
+fix available via `npm audit fix`
+node_modules/@angular/compiler
+  @angular/core  20.0.0-next.0 - 20.3.26
+  Depends on vulnerable versions of @angular/compiler
+  node_modules/@angular/core
+    @angular/animations  20.0.0-next.0 - 20.3.16
+    Depends on vulnerable versions of @angular/core
+    node_modules/@angular/animations
+
+
+7 high severity vulnerabilities
+
+To address all issues, run:
+  npm audit fix
+
+=== npm audit (incluye devDependencies) ===
+# npm audit report
+
+@angular/common  20.0.0-next.0 - 20.3.26
+Severity: high
+Depends on vulnerable versions of @angular/core
+Angular is Vulnerable to XSRF Token Leakage via Protocol-Relative URLs in Angular HTTP Client - https://github.com/advisories/GHSA-58c5-g7wp-6w37
+@angular/common: Denial of Service (DoS) via OOM in Date Formatting (formatDate) - https://github.com/advisories/GHSA-48r7-hpm6-gfxm
+@angular/common: Weak 32-Bit Cache Key Hashing in `HttpTransferCache` Leading to Cross-Request Data Leakage and State Poisoning - https://github.com/advisories/GHSA-39pv-4j6c-2g6v
+@angular/common: Denial of Service (DoS) via OOM in Number Formatting (digitsInfo) - https://github.com/advisories/GHSA-p3vc-36g9-x9gr
+@angular/common: Information Leak via Default Caching of Credentialed Requests in HttpTransferCache - https://github.com/advisories/GHSA-q6f4-qqrg-jv6x
+Angular: Cache-Key Ambiguity in HttpTransferCache Leading to Cross-Request Response Reuse and State Poisoning - https://github.com/advisories/GHSA-jhpw-976m-542j
+fix available via `npm audit fix`
+node_modules/@angular/common
+  @angular/forms  4.4.0-RC.0 - 4.4.0 || 20.0.0-next.0 - 20.3.16
+  Depends on vulnerable versions of @angular/common
+  Depends on vulnerable versions of @angular/core
+  Depends on vulnerable versions of @angular/platform-browser
+  node_modules/@angular/forms
+  @angular/platform-browser  20.0.0-next.0 - 20.3.16
+  Depends on vulnerable versions of @angular/animations
+  Depends on vulnerable versions of @angular/common
+  Depends on vulnerable versions of @angular/core
+  node_modules/@angular/platform-browser
+  @angular/router  10.0.0-next.0 - 10.0.0-rc.1 || 20.0.0-next.0 - 20.3.16
+  Depends on vulnerable versions of @angular/common
+  Depends on vulnerable versions of @angular/core
+  Depends on vulnerable versions of @angular/platform-browser
+  node_modules/@angular/router
+
+@angular/compiler  20.0.0-next.0 - 20.3.26
+Severity: high
+Angular vulnerable to XSS in i18n attribute bindings - https://github.com/advisories/GHSA-g93w-mfhg-p222
+Angular has XSS Vulnerability via Unsanitized SVG Script Attributes - https://github.com/advisories/GHSA-jrmj-c5cx-3cw6
+Angular Stored XSS Vulnerability via SVG Animation, SVG URL and MathML Attributes - https://github.com/advisories/GHSA-v4hv-rgfq-gp49
+@angular/compiler: Two-Way Property Binding Sanitization Bypass (XSS) - https://github.com/advisories/GHSA-58w9-8g37-x9v5
+Angular: Template and Attribute Namespace Sanitization Bypass (XSS) - https://github.com/advisories/GHSA-f3m7-gqxr-g87x
+Angular i18n: Cross-Site Scripting (XSS) via event-handler attributes - https://github.com/advisories/GHSA-jj27-h5hq-8x99
+fix available via `npm audit fix`
+node_modules/@angular/compiler
+  @angular/compiler-cli  15.1.0-next.0 - 20.3.25 || 21.0.0-next.0 - 21.2.17 || 22.0.0-next.0 - 22.0.2
+  Depends on vulnerable versions of @angular/compiler
+  Depends on vulnerable versions of @babel/core
+  node_modules/@angular/compiler-cli
+  @angular/core  20.0.0-next.0 - 20.3.26
+  Depends on vulnerable versions of @angular/compiler
+  node_modules/@angular/core
+    @angular/animations  20.0.0-next.0 - 20.3.16
+    Depends on vulnerable versions of @angular/core
+    node_modules/@angular/animations
+
+
+@babel/core  <=7.29.0
+@babel/core: Arbitrary File Read via sourceMappingURL Comment - https://github.com/advisories/GHSA-4x5r-pxfx-6jf8
+fix available via `npm audit fix`
+node_modules/@babel/core
+  @angular/build  <=20.3.29 || 21.0.0-next.0 - 21.2.16 || 22.0.0-next.0 - 22.0.6 || 22.1.0-next.0 - 22.1.0-rc.0
+  Depends on vulnerable versions of @angular-devkit/architect
+  Depends on vulnerable versions of @babel/core
+  Depends on vulnerable versions of picomatch
+  Depends on vulnerable versions of piscina
+  Depends on vulnerable versions of rollup
+  Depends on vulnerable versions of vite
+  node_modules/@angular/build
+
+ajv  7.0.0-alpha.0 - 8.17.1
+Severity: moderate
+ajv has ReDoS when using `$data` option - https://github.com/advisories/GHSA-2g4f-4pwh-qvx6
+fix available via `npm audit fix`
+node_modules/ajv
+  @angular-devkit/core  12.0.0-next.0 - 19.2.22 || 20.0.0-next.0 - 20.3.21 || 21.0.0-next.0 - 21.2.4 || 22.0.0-next.0 - 22.0.0-rc.3
+  Depends on vulnerable versions of ajv
+  Depends on vulnerable versions of picomatch
+  node_modules/@angular-devkit/core
+    @angular-devkit/architect  0.1000.0-next.0 - 0.1000.0-rc.1 || 0.1200.0-next.0 - 0.1902.21 || 0.2000.0-next.0 - 0.2003.17 || 0.2100.0-next.0 - 0.2101.4 || 0.2102.0-next.0 - 0.2102.0-rc.2
+    Depends on vulnerable versions of @angular-devkit/core
+    node_modules/@angular-devkit/architect
+
+picomatch  4.0.0 - 4.0.3
+Severity: high
+Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching - https://github.com/advisories/GHSA-3v7f-55p6-f55p
+Picomatch has a ReDoS vulnerability via extglob quantifiers - https://github.com/advisories/GHSA-c2c7-rcm5-vvqj
+fix available via `npm audit fix`
+node_modules/picomatch
+
+piscina  5.0.0-alpha.0 - 5.1.4
+Severity: high
+piscina: Prototype Pollution Gadget → RCE via inherited options.filename - https://github.com/advisories/GHSA-x9g3-xrwr-cwfg
+fix available via `npm audit fix`
+node_modules/piscina
+
+rollup  4.0.0 - 4.58.0
+Severity: high
+Rollup 4 has Arbitrary File Write via Path Traversal - https://github.com/advisories/GHSA-mw96-cpmx-2vgc
+fix available via `npm audit fix`
+node_modules/rollup
+
+vite  7.0.0 - 7.3.3
+Severity: high
+vite allows server.fs.deny bypass via backslash on Windows - https://github.com/advisories/GHSA-93m4-6634-74q7
+Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling - https://github.com/advisories/GHSA-4w7w-66w2-5vf9
+Vite: `server.fs.deny` bypassed with queries - https://github.com/advisories/GHSA-v2wj-q39q-566r
+Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket - https://github.com/advisories/GHSA-p9ff-h696-f583
+launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows - https://github.com/advisories/GHSA-v6wh-96g9-6wx3
+vite: `server.fs.deny` bypass on Windows alternate paths - https://github.com/advisories/GHSA-fx2h-pf6j-xcff
+fix available via `npm audit fix`
+node_modules/vite
+
+17 vulnerabilities (1 low, 3 moderate, 13 high)
+
+To address all issues, run:
+  npm audit fix
