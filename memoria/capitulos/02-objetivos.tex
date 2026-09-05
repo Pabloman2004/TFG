@@ -10,10 +10,12 @@
 \section{Objetivo principal}
 
 Desarrollar una aplicación web de apoyo a la decisión clínica que integre un
-motor de inferencia basado en los criterios STOPP/START v3, de modo que el
-profesional sanitario pueda obtener avisos a partir de los datos disponibles
-en el caso, distinguiendo la evaluación automática de la información que
-requiere confirmación manual.
+motor de inferencia por reglas basado en los criterios STOPP/START v3, de
+modo que el profesional sanitario pueda mejorar el procesamiento de los
+criterios médicos establecidos, lo que les ahorra tiempo, distinguiendo la
+evaluación automática de la información que requiere confirmación manual.
+Todos los datos se alojan en el navegador del cliente para preservar la
+privacidad.
 
 \section{Objetivos específicos}
 
@@ -26,8 +28,8 @@ oficiales; los aspectos que dependen de datos no capturados se conservan, cuando
 procede, como texto para la valoración del profesional.
 
 \medskip
-\noindent\textbf{OE2: Implementar un motor de reglas que evalúe el caso
-del paciente frente a dichas reglas.}
+\noindent\textbf{OE2: Implementar un motor de reglas que contraste los
+antecedentes del paciente frente a dichas reglas.}
 
 \textbf{Alcance:} a partir de medicación, diagnósticos, analítica y los datos
 importados que cada regla consulte, determinar qué avisos STOPP y START se
@@ -37,12 +39,13 @@ integración con historias clínicas electrónicas externas ni inferencia de dat
 ausentes.
 
 \medskip
-\noindent\textbf{OE3: Diseñar un flujo de captura guiado de datos clínicos
-relevantes.}
+\noindent\textbf{OE3: Diseñar una interfaz centrada en la experiencia del
+usuario.}
 
-\textbf{Alcance:} interfaz para seleccionar medicamentos y diagnósticos e
-introducir los valores analíticos implementados. La interfaz no captura edad,
-sexo, dosis ni duración; edad y sexo solo pueden proceder de un JSON importado.
+\textbf{Alcance:} interfaz centrada en la experiencia de uso para seleccionar
+medicamentos y diagnósticos e introducir los valores analíticos
+implementados. La interfaz no captura edad, sexo, dosis ni duración; edad y
+sexo solo pueden proceder de un JSON importado.
 
 \medskip
 \noindent\textbf{OE4: Incorporar ayudas de interfaz para guiar la revisión.}
@@ -94,7 +97,7 @@ aspectos:
   START aplicables al caso, pero la interpretación y la decisión
   terapéutica final corresponden siempre al profesional sanitario.
   \item \textbf{Catálogo clínico acotado.}
-  Medicamentos y diagnósticos disponibles son los modelados en la
+  Medicamentos y diagnósticos pautados son los modelados en la
   aplicación. No se pretende cubrir la totalidad del arsenal terapéutico
   ni todos los posibles códigos diagnósticos.
   \item \textbf{Arquitectura sin servidor.}
