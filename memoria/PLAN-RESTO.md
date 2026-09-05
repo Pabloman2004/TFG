@@ -17,7 +17,7 @@ Diagramas TikZ en escala de grises (estilo cap. 3). No inventar features.
 - Motor: `json-logic-js` + operadores custom. Reglas en `criteria.json`.
 - Salidas: PDF (pdfmake), JSON v1.0 (Zod), texto plano al portapapeles.
 - Tests: Karma + Jasmine, TDD. ~800–1000 specs (contar `it(` reales).
-- Tutores: Martín Pérez Pérez (informático) + cotutora clínica Raquel.
+- Tutores: Martín Pérez Pérez (informático) + cotutora clínica Raquel Montans García.
 - Cronograma git: 2026-03 inicial; 04 reunión; 05 layout/CV; 06 UI+TDD;
   07 auditoría STOPP/START; 08 memoria.
 - ECTS TFG: 12 → 300 h planificadas.

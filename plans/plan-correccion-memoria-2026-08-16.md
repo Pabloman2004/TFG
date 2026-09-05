@@ -24,7 +24,6 @@ verificada de los datos administrativos o clínicos todavía pendientes.
 
 ## Datos que no deben inventarse
 
-- Nombre completo de la cotutora.
 - Número oficial del TFG.
 - Agradecimientos personales.
 - Correspondencias clínicas que necesiten validación independiente.

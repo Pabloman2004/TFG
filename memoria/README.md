@@ -58,8 +58,8 @@ pasan; no acredita utilidad clínica ni usabilidad.
 
 ## Pendientes que requieren evidencia o información externa
 
-- Confirmar el título oficial, el número del TFG y el nombre completo de la
-  cotutora; verificar también el mes de depósito indicado en la portada.
+- Confirmar el título oficial; verificar también el mes de depósito
+  indicado en la portada.
 - Elaborar y revisar de forma independiente la correspondencia individual:
   criterio oficial, reglas, datos necesarios, caso positivo, caso negativo y
   estado.
