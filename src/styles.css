@@ -1,5 +1,5 @@
 /* @linked docs/accesibilidad-ui.md */
-/* Si cambias .app-tooltip, --arrow-x o --font-scale, actualiza el doc enlazado. */
+/* Si cambias .app-tooltip, .app-link-popover, --arrow-x o --font-scale, actualiza el doc enlazado. */
 :root {
   --font-scale: 1;
 }
@@ -212,6 +212,96 @@ body {
   border: 6px solid transparent;
   border-top: 6px solid #e5e7eb;
   border-bottom: 0;
+}
+
+/* ========================
+   POPOVER DEL CHIP DE ENLACE
+   Popover HTML nativo (click, no hover) con listas/sublistas. Vive en la
+   capa superior del navegador, así que los estilos van aquí y no en el
+   componente encapsulado.
+======================== */
+.app-link-popover {
+  position: fixed;
+  inset: unset;
+  margin: 0;
+  max-width: min(280px, calc(100vw - 24px));
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12), 0 1px 3px rgba(0,0,0,.06);
+  color: #374151;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: calc(12px * var(--font-scale, 1));
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  overflow: visible;
+  z-index: 9999;
+  --arrow-x: 50%;
+}
+
+.app-link-popover-lead {
+  margin: 0 0 6px;
+}
+
+.app-link-popover-group {
+  margin: 8px 0 2px;
+  font-size: calc(11px * var(--font-scale, 1));
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.app-link-popover-group:first-of-type {
+  margin-top: 0;
+}
+
+.app-link-popover ul {
+  margin: 0;
+  padding-left: 1.15em;
+}
+
+.app-link-popover li + li {
+  margin-top: 2px;
+}
+
+.app-link-popover::after,
+.app-link-popover::before {
+  content: '';
+  position: absolute;
+  left: var(--arrow-x);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+}
+
+.app-link-popover::after {
+  top: 100%;
+  border-top: 6px solid #ffffff;
+  border-bottom: 0;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.07));
+}
+
+.app-link-popover::before {
+  top: calc(100% + 1px);
+  border-top: 6px solid #e5e7eb;
+  border-bottom: 0;
+}
+
+.app-link-popover--below::after {
+  top: auto;
+  bottom: 100%;
+  border-top: 0;
+  border-bottom: 6px solid #ffffff;
+  filter: drop-shadow(0 -1px 1px rgba(0,0,0,.07));
+}
+
+.app-link-popover--below::before {
+  top: auto;
+  bottom: calc(100% + 1px);
+  border-top: 0;
+  border-bottom: 6px solid #e5e7eb;
 }
 
 /* ========================

@@ -731,3 +731,54 @@ describe('DiagnosisStepComponent — el badge de sistema no invade el título de
     expect(badge!.getAttribute('aria-label')).toContain(badge!.textContent!.trim());
   });
 });
+
+describe('DiagnosisStepComponent — último lote de criterios START/STOPP', () => {
+  const c1: Crit = { id: 'STOPP-B1-X', type: 'STOPP', system: 'Sistema cardiovascular', summary: 'Uno' };
+  const c2: Crit = { id: 'STOPP-B4-Y', type: 'STOPP', system: 'Sistema cardiovascular', summary: 'Dos' };
+  const c3: Crit = { id: 'START-A1-Z', type: 'START', system: 'Sistema cardiovascular', summary: 'Tres' };
+  const CATALOG = [c1, c2, c3];
+  let results: Crit[] = [];
+
+  const render = async () => {
+    results = [];
+    TestBed.configureTestingModule({
+      imports: [DiagnosisStepComponent],
+      providers: [
+        provideRouter(routes),
+        {
+          provide: CriteriaEngineService,
+          useValue: {
+            relevance: signal(null),
+            dxDependencies: signal(TEST_DX_DEPS),
+            evaluate: (): Crit[] => results,
+            loadCriteria: () => Promise.resolve(CATALOG),
+          },
+        },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(DiagnosisStepComponent);
+    fixture.componentInstance.store.reset();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    return fixture;
+  };
+
+  afterEach(() => {
+    TestBed.inject(CaseStoreService).reset();
+  });
+
+  it('resalta todos los criterios que aparecen a la vez', async () => {
+    const fixture = await render();
+    results = [c1, c2, c3];
+    fixture.componentInstance.store.diagnoses.set(['hta']);
+    fixture.detectChanges();
+
+    expect([...fixture.componentInstance.newlyAddedCriterionIds()]).toEqual([c1.id, c2.id, c3.id]);
+    expect((fixture.nativeElement as HTMLElement).querySelectorAll('.crit-card--new').length).toBe(3);
+  });
+});

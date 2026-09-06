@@ -92,6 +92,7 @@ visibilidad de medicamentos por grupos del tab en `clinical-capture.ts`
 (`medsVisibleInTabGroups`; sin captura UI de dosis/duración — los umbrales
 viven en el `summary` del criterio),
 resaltado de procedencia al marcar un fármaco foráneo en `foreign-provenance.ts`,
+resaltado y autoscroll del último lote de criterios en `new-criteria.ts`,
 panel fijo de analíticas/constantes en `lab-capture.ts` (todos los campos, siempre; pestaña «Otros» de diagnósticos),
 helpers `isMedGroupChecked`/`isDxGroupChecked`, agrupación `groupBySystem`/`critCode`.
 
@@ -105,6 +106,7 @@ helpers `isMedGroupChecked`/`isDxGroupChecked`, agrupación `groupBySystem`/`cri
 - `src/app/core/group-visibility.ts`
 - `src/app/core/clinical-capture.ts`
 - `src/app/core/foreign-provenance.ts`
+- `src/app/core/new-criteria.ts`
 - `src/app/core/lab-capture.ts`
 
 ---
@@ -153,18 +155,19 @@ transversales de confirmación y guía.
 ## Doc: docs/accesibilidad-ui.md
 
 **Concepto**: las utilidades transversales de UI y accesibilidad — escala de
-fuente persistida (tres niveles, variable CSS `--font-scale`) y el tooltip
-custom, cuyo contrato visual se reparte entre la directiva y los estilos
-globales.
+fuente persistida (tres niveles, variable CSS `--font-scale`), el tooltip
+custom y el popover HTML del chip de enlace clínico, cuyo contrato visual se
+reparte entre los componentes y los estilos globales.
 
 **Debe cubrir**: `DisplaySettingsService` + diálogo de opciones de
 visualización, `TooltipDirective` y su contrato implícito con `.app-tooltip`
-en `styles.css`.
+en `styles.css`, y `LinkBadgeComponent` con el popover HTML `.app-link-popover`.
 
 ### Ficheros que enlazan
 - `src/app/core/display-settings.service.ts`
 - `src/app/display-options-dialog.component.ts`
 - `src/app/shared/tooltip.directive.ts`
+- `src/app/shared/link-badge.component.ts`
 - `src/styles.css`
 
 ---

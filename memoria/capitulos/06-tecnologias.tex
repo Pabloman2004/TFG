@@ -41,8 +41,8 @@ módulos \texttt{NgModule}, desproporcionado para una sola aplicación. Las
 señales permiten expresar el estado del caso ---medicación, diagnósticos,
 resultado de la evaluación--- como valores que la plantilla consume de
 forma síncrona, sin convertir cada cambio en una tubería de observables.
-RxJS sigue presente porque Angular lo requiere; no se ha construido la
-interfaz alrededor de él. Material~\cite{material} aporta los componentes
+Reactive Extensions for JavaScript (RxJS) sigue presente porque Angular
+lo requiere; no se ha construido la interfaz alrededor de él. Material~\cite{material} aporta los componentes
 de pestañas, listas y controles usados en la interfaz. Su empleo no se toma
 como prueba de accesibilidad del producto completo, que requeriría una
 auditoría específica.
@@ -66,7 +66,7 @@ y el motivo de cada uno. Las versiones son las resueltas en
     json-logic-js      & 2.0.5  & Evalúa reglas JSON. Alternativa: criterios en código. \\
     pdfmake            & 0.2.20 & PDF declarativo en el navegador. Alternativa: jsPDF. \\
     zod                & 4.4.3  & Valida el JSON importado en tiempo de ejecución. \\
-    RxJS               & 7.8.2  & Dependencia reactiva de Angular; no modela el estado. \\
+    RxJS               & 7.8.2  & Reactive Extensions for JavaScript; Angular lo exige; no modela el estado. \\
     zone.js            & 0.15.1 & Detección de cambios por defecto de Angular. \\
     \bottomrule
   \end{tabularx}
@@ -87,8 +87,9 @@ más cercano a un informe de avisos STOPP y START.
 
 Zod~\cite{zod} valida el JSON importado y el caso rehidratado desde
 \texttt{localStorage}: el compilador no ve esos valores. No sustituye el
-tipado estático ni modela el catálogo interno. RxJS~\cite{rxjs} y zone.js viajan con Angular ---biblioteca reactiva
-y detección de cambios--- y no son un diseño propio del autor.
+tipado estático ni modela el catálogo interno. Reactive Extensions for
+JavaScript (RxJS)~\cite{rxjs} y zone.js viajan con Angular ---biblioteca
+reactiva y detección de cambios--- y no son un diseño propio del autor.
 
 \section{Herramientas de desarrollo}
 \label{sec:herramientas}

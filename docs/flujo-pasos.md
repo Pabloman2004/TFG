@@ -51,6 +51,7 @@ En ambos pasos:
 | `src/app/core/group-visibility.ts` | Lógica unificada de visibilidad de buckets (T8) |
 | `src/app/core/clinical-capture.ts` | Helper de visibilidad de medicamentos por grupos del tab (`medsVisibleInTabGroups`) |
 | `src/app/core/lab-capture.ts` | Presentación del panel fijo de analítica/constantes (todos los campos, siempre; pestaña «Otros» de diagnósticos) |
+| `src/app/core/new-criteria.ts` | Detección del último lote de criterios añadidos, expansión de secciones y autoscroll |
 
 ### Flujo reactivo (ambos componentes)
 
@@ -68,7 +69,7 @@ applicableCriteria (computed)
 ```
 
 Los efectos registrados en el constructor con `allowSignalWrites: true` hacen:
-- **Efecto de `lastCriterionId`**: detecta criterios nuevos comparando el conjunto actual con el anterior y actualiza la señal (el ID no se usa en plantilla actualmente — ver Asunciones).
+- **Efecto de último lote añadido** (`new-criteria.ts`): compara los ids aplicables actuales con los anteriores. El primer snapshot con catálogo cargado no resalta (carga inicial o caso persistido). A partir de ahí, **todos** los criterios que aparecen en la misma evaluación —no solo el último id— quedan con `crit-card--new` (verde más intenso en START, rojo más intenso en STOPP) hasta que entre un lote más reciente. Si la sección estaba colapsada, se expande; después hay autoscroll al último START y al último STOPP del lote (`scrollIntoView` con `block: nearest`).
 - **Efecto de limpieza de tabs revisados**: si un tab tiene selección, el flag "revisado explícito" se elimina automáticamente para evitar inconsistencias en el JSON exportado.
 - **Efecto de dependencias cardiovasculares** (solo `DiagnosisStepComponent`): cuando cambia `meds()`, filtra los diagnósticos activos y elimina los que ya no están habilitados según `isDiagnosisEnabled`.
 
@@ -149,14 +150,15 @@ Exporta cuatro funciones puras y sus tipos asociados:
     vía `drugClassLabel`.
   - `foreignLinksByOwnGroup` / `foreignLinksByOwnDx` calculan un enlace **persistente**:
     mientras el fármaco (o diagnóstico) foráneo siga marcado, el grupo propio relacionado
-    muestra un `.link-badge` con el número de casillas foráneas que apuntan a él. Es lo que
-    permite ver que dos selecciones distintas convergen en el mismo grupo, algo que el pulso
-    transitorio por sí solo no comunica.
+    muestra un `app-link-badge` (botón de color fijo) con el número de casillas foráneas
+    que apuntan a él. Al pulsarlo, un popover HTML lista esas asociaciones agrupadas
+    en medicamentos y diagnósticos. Es lo que permite ver que dos selecciones distintas
+    convergen en el mismo grupo, algo que el pulso transitorio por sí solo no comunica.
   - `relatedSelectionLinks` extiende ese enlace **a través de pasos y pestañas**, en sentido
     inverso: dado un elemento de la pestaña actual, devuelve qué elementos **ya marcados**
-    (de cualquier paso) lo necesitan. Es lo que hace que, tras un aviso del tipo «requiere:
+    (de cualquier paso) la literatura asocia con él. Es lo que hace que, tras un aviso del tipo «requiere:
     Intervalo QTc prolongado (diagnóstico · paso 2 · Cardiovascular)», al llegar a ese
-    diagnóstico se vea un chip 🔗 con los fármacos que lo esperan. Se apoya en los índices
+    diagnóstico se vea un chip 🔗 con los fármacos asociados. Se apoya en los índices
     inversos globales `criteriaByRequiredClass` / `criteriaByDx` de `Relevance` y respeta la
     misma regla de alternativas. Ambos componentes combinan los dos mapas con
     `mergeLinkMaps`. En el paso 1 los objetivos incluyen la clase del grupo **y** las de sus
@@ -236,6 +238,7 @@ El marcador de tab revisado se gestiona en `CaseStoreService` (`reviewedMedTabs`
 - **Cambiar la lógica de buckets foráneos** (`groupBuckets` o `groupsVisibleInTab`): hay **dos implementaciones paralelas** en cada componente que deben mantenerse en sintonía, más el método privado `dxGroupsVisibleInTab` en `DiagnosisStepComponent`. Actualiza ambas y este documento.
 - **Cambiar `isMedGroupChecked` o `isDxGroupChecked`** (`src/app/core/group-checked.ts`): revisar los tests `core/group-checked.spec.ts`, y verificar que `tabHasSelection`, `groupHasAnySelection` y la clase CSS `drug-col-sel` siguen funcionando correctamente. Actualiza este documento.
 - **Cambiar `groupBySystem` o `critCode`** (`src/app/core/criteria-groups.ts`): revisar `core/criteria-groups.spec.ts`, y verificar la columna derecha de ambos pasos y `buildCriteriaText` (`docs/informes-y-exportacion.md`). Actualiza este documento.
+- **Cambiar el resaltado del último lote** (`src/app/core/new-criteria.ts`): revisar `core/new-criteria.spec.ts` y los specs de ambos pasos que cubren `crit-card--new` y el autoscroll. El resaltado azul `crit-card--highlight` es el de procedencia foránea (`foreign-provenance.ts`), no este.
 - **Cambiar el formato de códigos de ítems "Otro"** (`otro__<group.id>` / `<group.id>__otro`): afecta a `group-checked.ts`, al informe PDF (`report.service.ts`), a la exportación JSON (`CaseExport`), y a los tests de `group-checked.spec.ts` y `case-io.service.spec.ts`. Ver `docs/informes-y-exportacion.md` y `docs/caso-clinico.md`.
 - **Cambiar la estructura de `CaseStoreService`** (signals de tabs revisados, `collapsedSections`, `activeSystemTab`): ambos componentes dependen de estas señales para tabs, buckets y secciones colapsadas. Ver `docs/caso-clinico.md`.
 - **Añadir o modificar efectos con `allowSignalWrites`**: riesgo de ciclos reactivos. Comprobar que todas las ramas del efecto tienen condiciones de guarda que eviten escrituras redundantes.
@@ -243,7 +246,6 @@ El marcador de tab revisado se gestiona en `CaseStoreService` (`reviewedMedTabs`
 
 ## Asunciones
 
-- `lastCriterionId` se calcula en un efecto con `allowSignalWrites: true` en ambos componentes, pero no se referencia en ninguna plantilla. Se asume que es una funcionalidad de scroll-to-new-criterion pendiente de implementar o retirada, no un bug de compilación.
 - `MEDICATIONS` está importado en `DiagnosisStepComponent` (línea 17) pero ningún método del componente lo usa directamente. Se asume que es un import residual de una refactorización anterior.
 - La señal `criteria` en ambos componentes es local (no viene del store). Se asume que esto es deliberado para evitar compartir el array de criterios cargados entre los dos pasos, aunque en la práctica `loadCriteria()` devuelve el mismo JSON ambas veces.
 - El tab "Otros" de `DiagnosisStepComponent` delega directamente en `tab.groups` sin transformación adicional, mientras que en `MedsStepComponent` el tab "Otros" se construye dinámicamente agrupando fármacos de `drugs.length === 1` (excluyendo los unitarios que afloran por relevancia). El conteo y la selección del tab "Otros" en `MedsStepComponent` derivan de `groupsVisibleInTab('otros')` (fuente única de verdad), no de un recálculo manual de `drugs.length === 1`. Esta asimetría parece intencional por diferencia en la naturaleza de los catálogos.

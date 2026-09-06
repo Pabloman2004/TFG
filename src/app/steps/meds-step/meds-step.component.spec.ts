@@ -1,11 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { signal } from '@angular/core';
+import { ApplicationRef, signal } from '@angular/core';
 import { of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
 import { MedsStepComponent } from './meds-step.component';
+import { CaseStoreService } from '../../core/case-store.service';
 import { CriteriaEngineService } from '../../core/services/criteria-engine.service';
 import { ReportService } from '../../core/report.service';
 import { CaseIoService } from '../../core/case-io.service';
@@ -344,6 +345,44 @@ describe('MedsStepComponent — chip de enlace hacia grupos foráneos', () => {
 
     expect(component.foreignLinks().get('diur_asa')).toContain('Prednisona');
   });
+
+  it('el chip es un botón de color único que abre un popover con listas', async () => {
+    TestBed.configureTestingModule({
+      imports: [MedsStepComponent],
+      providers: [
+        provideRouter(routes),
+        {
+          provide: CriteriaEngineService,
+          useValue: engineStubWithRelevance(buildRelevance(ALL_CRITERIA, ALL_MED_TAB_IDS)),
+        },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(MedsStepComponent);
+    const component = fixture.componentInstance;
+    component.store.activeSystemTab.set('cardiovascular');
+    component.store.meds.set([{ id: 'Prednisona', drugClasses: ['CORTICOIDE_SISTEMICO'] }]);
+    fixture.detectChanges();
+
+    const badges = [...(fixture.nativeElement as HTMLElement).querySelectorAll('button.link-badge')] as HTMLButtonElement[];
+    expect(badges.length).toBeGreaterThan(0);
+    expect(badges.every(b => !b.classList.contains('link-badge--multi'))).toBeTrue();
+
+    badges[0].click();
+    fixture.detectChanges();
+    await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
+
+    const popover = document.querySelector('.app-link-popover:popover-open');
+    expect(popover?.textContent).toContain('literatura científica');
+    expect(popover?.querySelector('ul')).toBeTruthy();
+    expect(popover?.textContent).not.toContain('(medicamento)');
+    expect(popover?.textContent).not.toContain('necesita');
+    (popover as HTMLElement | null)?.hidePopover?.();
+    component.store.reset();
+  });
 });
 
 describe('MedsStepComponent — el resaltado no sobrevive al cambio de pestaña', () => {
@@ -364,12 +403,15 @@ describe('MedsStepComponent — el resaltado no sobrevive al cambio de pestaña'
     });
     const fixture = TestBed.createComponent(MedsStepComponent);
     fixture.detectChanges();
-    return fixture.componentInstance;
+    return fixture;
   };
 
   it('cambiar de pestaña limpia el resaltado', () => {
-    const component = setup();
+    const fixture = setup();
+    const component = fixture.componentInstance;
+    component.store.reset();
     component.store.activeSystemTab.set('cardiovascular');
+    fixture.detectChanges();
     component.toggleDrug('Prednisona');
     expect(component.highlightedGroupIds().size).toBeGreaterThan(0);
 
@@ -534,5 +576,110 @@ describe('MedsStepComponent — el badge de sistema no invade el título del gru
 
     expect(badge).withContext('ningún badge recortado').toBeDefined();
     expect(badge!.getAttribute('aria-label')).toContain(badge!.textContent!.trim());
+  });
+});
+
+describe('MedsStepComponent — último lote de criterios START/STOPP', () => {
+  const c1: Crit = { id: 'STOPP-B1-X', type: 'STOPP', system: 'Sistema cardiovascular', summary: 'Uno' };
+  const c2: Crit = { id: 'STOPP-B4-Y', type: 'STOPP', system: 'Sistema cardiovascular', summary: 'Dos' };
+  const c3: Crit = { id: 'START-A1-Z', type: 'START', system: 'Sistema cardiovascular', summary: 'Tres' };
+  const CATALOG = [c1, c2, c3];
+  let results: Crit[] = [];
+
+  const render = async (initial: Crit[] = []) => {
+    results = initial;
+    TestBed.configureTestingModule({
+      imports: [MedsStepComponent],
+      providers: [
+        provideRouter(routes),
+        {
+          provide: CriteriaEngineService,
+          useValue: {
+            relevance: signal(null),
+            dxDependencies: signal({}),
+            evaluate: (): Crit[] => results,
+            loadCriteria: () => Promise.resolve(CATALOG),
+            getExcludedMedications: () => new Map<string, Crit>(),
+          },
+        },
+        { provide: ReportService, useValue: {} },
+        { provide: CaseIoService, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => undefined } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(MedsStepComponent);
+    fixture.componentInstance.store.reset();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    return fixture;
+  };
+
+  afterEach(() => {
+    TestBed.inject(CaseStoreService).reset();
+  });
+
+  const addMedsToTrigger = (fixture: { componentInstance: MedsStepComponent; detectChanges: () => void }): void => {
+    fixture.componentInstance.store.meds.set([{ id: 'Trigger', drugClasses: [] }]);
+    fixture.detectChanges();
+  };
+
+  it('no resalta criterios ya presentes al cargar el catálogo', async () => {
+    const fixture = await render([c1]);
+
+    expect(fixture.componentInstance.newlyAddedCriterionIds().size).toBe(0);
+    expect((fixture.nativeElement as HTMLElement).querySelectorAll('.crit-card--new').length).toBe(0);
+  });
+
+  it('resalta todos los criterios que aparecen a la vez', async () => {
+    const fixture = await render();
+    results = [c1, c2, c3];
+    addMedsToTrigger(fixture);
+
+    expect([...fixture.componentInstance.newlyAddedCriterionIds()]).toEqual([c1.id, c2.id, c3.id]);
+    expect((fixture.nativeElement as HTMLElement).querySelectorAll('.crit-card--new').length).toBe(3);
+  });
+
+  it('al añadir un lote nuevo, deja de resaltar el anterior', async () => {
+    const fixture = await render();
+    results = [c1, c2];
+    addMedsToTrigger(fixture);
+    results = [c1, c2, c3];
+    fixture.componentInstance.store.meds.set([
+      { id: 'Trigger', drugClasses: [] },
+      { id: 'Otro', drugClasses: [] },
+    ]);
+    fixture.detectChanges();
+
+    expect([...fixture.componentInstance.newlyAddedCriterionIds()]).toEqual([c3.id]);
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelectorAll('.crit-card--new').length).toBe(1);
+    expect(host.querySelector('.crit-card--new')?.getAttribute('data-crit-id')).toBe(c3.id);
+  });
+
+  it('expande la sección colapsada que contiene el criterio nuevo', async () => {
+    const fixture = await render();
+    fixture.componentInstance.store.collapsedSections.set(['stopp:Sistema cardiovascular']);
+    results = [c1];
+    addMedsToTrigger(fixture);
+
+    expect(fixture.componentInstance.store.collapsedSections()).not.toContain('stopp:Sistema cardiovascular');
+  });
+
+  it('hace autoscroll al último START y al último STOPP del lote', async () => {
+    const fixture = await render();
+    const scrolled: string[] = [];
+    spyOn(HTMLElement.prototype, 'scrollIntoView').and.callFake(function (this: HTMLElement) {
+      const id = this.getAttribute('data-crit-id');
+      if (id) scrolled.push(id);
+    });
+    results = [c1, c2, c3];
+    addMedsToTrigger(fixture);
+    TestBed.inject(ApplicationRef).tick();
+    await fixture.whenStable();
+
+    expect(scrolled).toContain(c3.id);
+    expect(scrolled).toContain(c2.id);
   });
 });

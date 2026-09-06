@@ -24,7 +24,15 @@ catálogo y la interfaz muestra los avisos aplicables. Ese estado vive en
 memoria y se copia en el \texttt{localStorage} del navegador: no hay
 base de datos.
 
-La~\cref{fig:arq-cajas} resume el encaje. La capa de presentación
+La~\cref{fig:arq-cajas} sitúa las cuatro piezas de esa visión. El
+profesional captura el caso en el navegador; el motor de reglas lo
+evalúa frente al catálogo STOPP/START; el mismo cliente exporta el
+informe en PDF. Navegador y motor conviven en el cliente: no hay un
+servidor de aplicación entre medias.
+
+\input{figuras/fig-arq-cajas}
+
+El encaje interno es el siguiente. La capa de presentación
 (\texttt{MedsStepComponent}, \texttt{DiagnosisStepComponent} y los
 diálogos de guía, reinicio y opciones de visualización) no calcula
 reglas: muta el \texttt{CaseStoreService}, cuyos \textit{signals}
@@ -40,8 +48,6 @@ fichero JSON--- las construyen \texttt{ReportService} y
 segundo accede al estado de sesión. El
 navegador aporta dos servicios de plataforma: \texttt{localStorage}
 para la copia del caso y \texttt{HttpClient} para los activos.
-
-\input{figuras/fig-arq-cajas}
 
 Los componentes son \textit{standalone}: no hay \texttt{NgModule} de
 negocio. Los «módulos» de este capítulo son agrupaciones lógicas de
@@ -182,27 +188,27 @@ clave--valor del propio navegador, limitado a esa sesión y a ese sitio.
   \label{fig:arq-deps}
 \end{figure}
 
-\section{Pipeline de evaluación}
+\section{Flujo de evaluación}
 
-Al montar un paso, \texttt{loadCriteria} obtiene \texttt{criteria.json},
-construye el índice de relevancia y el mapa de dependencias
-diagnóstico--medicación, y guarda la lista de criterios en una señal
-local. A partir de ese instante el pipeline es reactivo y no vuelve a
-pedir el fichero.
+Al entrar en medicamentos o en diagnósticos se cargan en el navegador
+los criterios STOPP/START, para analizarlos con las selecciones del
+usuario. Esa lectura se hace al abrir el paso; el catálogo queda en
+memoria y no se vuelve a pedir en cada clic.
 
-Cada vez que cambian medicación, diagnósticos o analítica, un
-\textit{computed} del paso llama a \texttt{evaluate} con la instantánea
-\texttt{patientCase}. El motor normaliza el caso y filtra los criterios
-cuya lógica se cumple; la plantilla parte el resultado en grupos STOPP
-y START. El método \texttt{getExcludedMedications}, invocado en pruebas
-del motor pero no conectado a la plantilla, calcula qué
-fármacos del catálogo dispararían un criterio con campo
-\texttt{excludes} si se añadieran al caso ---es el contrato técnico de
-advertencia preventiva del motor, no una prohibición clínica
-absoluta---. Por su parte, la señal \texttt{relevance}
-alimenta los dos cubos de cada pestaña (ítems propios e ítems
-relevantes de otros sistemas). El detalle de operadores y del árbol
-JSON se reserva al~\cref{cap:diseno} y al~\cref{cap:datos}.
+A partir de ahí el flujo es el mismo en las dos pestañas. Cada vez que
+el profesional marca o desmarca una medicación, un diagnóstico o un
+dato de analítica, el motor vuelve a evaluar el caso. Se queda con los
+criterios que se cumplen y la pantalla los separa en avisos STOPP y
+avisos START. Al mismo tiempo, cada pestaña muestra lo que es propio de
+ese sistema y lo que, aun viniendo de otro, resulta relevante para lo
+ya marcado.
+
+El motor puede, además, adelantar qué fármacos del catálogo
+dispararían un aviso si se añadieran al tratamiento. Esa comprobación
+está cubierta por las pruebas, pero no aparece en la interfaz: no es
+una prohibición clínica, sino una advertencia preventiva. El detalle de
+cómo están escritas las reglas y del fichero que las contiene se deja
+para el~\cref{cap:diseno} y el~\cref{cap:datos}.
 
 \section{Decisiones arquitectónicas}
 
@@ -230,21 +236,22 @@ motor, y una prueba puede cargar el mismo fichero que la aplicación.
 La contrapartida ---operadores de dominio que el estándar no trae--- se
 concentra en un único registro, no en una función por regla.
 
-\paragraph{\textit{Signals} frente a un estado basado en RxJS.}
+\paragraph{\textit{Signals} frente a un estado basado en
+Reactive Extensions for JavaScript (RxJS).}
 El estado es local, síncrono y de un solo usuario. Un modelo basado
 en observables~\cite{rxjs} habría añadido suscripciones,
 \textit{subjects} y cancelación para un flujo que no espera eventos
 de red ni hilos concurrentes. Las señales de Angular, con
 \textit{computed} y \textit{effect}, cubren lectura, derivación y
 copia en \texttt{localStorage} sin esa maquinaria~\cite{angular2026}.
-RxJS permanece en el proyecto solo donde el propio framework lo exige
-(por ejemplo, \texttt{HttpClient}).
+Reactive Extensions for JavaScript permanece en el proyecto solo donde
+el propio framework lo exige (por ejemplo, \texttt{HttpClient}).
 
-\paragraph{Dos pasos frente a un asistente de cinco pantallas.}
-Un asistente largo ---paciente, analítica, medicación, diagnóstico,
-resultados--- fragmentaría un acto que en consulta es único. Medicación
-y diagnóstico bastan para disparar la mayoría de los criterios; la
-analítica cabe en la pestaña «Otros» del segundo paso, porque varios
-avisos START dependen de constantes que ninguna casilla «activa». No
-hay paso de ficha demográfica ni pantalla final de resultados: los
-avisos viven en el propio paso, a la vista mientras se marca.
+\paragraph{Dos pestañas frente a un asistente de cinco.}
+Un asistente con cinco pestañas ---paciente, analítica, medicación,
+diagnóstico y resultados--- fragmenta demasiado la información. Incluso
+induce a añadir datos que no hacen falta para el objetivo del sistema y
+aleja del propósito real: ahorrar tiempo. Medicación y diagnóstico
+bastan para disparar la mayoría de los criterios; la analítica cabe en
+la pestaña «Otros» del segundo paso, porque varios avisos START
+dependen de constantes que ninguna casilla «activa».

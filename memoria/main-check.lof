@@ -1,0 +1,26 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Funcionamiento general de la solución: en cada pestaña el motor evalúa el caso y marca el criterio como activo o inactivo; los avisos STOPP y START se muestran en el propio paso, no en una pantalla final.}}{8}{figure.caption.4}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Ciclo rojo--verde--refactor aplicado en el desarrollo.}}{9}{figure.caption.5}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Cronograma del proyecto (marzo--agosto de 2026). Las pruebas se solapan con la implementación; la redacción no se presenta como cerrada.}}{11}{figure.caption.6}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Arquitectura de cajas: la UI actualiza el estado de sesión; el motor evalúa el caso con catálogos y \texttt {criteria.json}; las salidas leen una instantánea. \texttt {HttpClient} obtiene los activos mediante HTTP GET.}}{15}{figure.caption.8}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {7.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Diagrama de casos de uso. Las líneas continuas asocian al actor con cada objetivo. El recuadro discontinuo agrupa la captura; desde él, \texttt {include} dispara evaluar y persistir en cada cambio del caso, sin invocación aparte.}}{27}{figure.caption.22}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {8.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Modelo de dominio simplificado. \texttt {Crit} no se persiste con el caso: el motor lo produce al evaluar.}}{30}{figure.caption.23}%
+\contentsline {figure}{\numberline {8.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Secuencia al marcar una medicación: llamadas síncronas (flecha continua) y retornos (discontinua). El cálculo auxiliar de \texttt {excludes} no forma parte de este flujo.}}{31}{figure.caption.25}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {11.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Pantalla de medicamentos: pestañas de sistema, lista de fármacos en dos cubos y panel de criterios con acciones PDF/JSON.}}{45}{figure.caption.41}%
+\contentsline {figure}{\numberline {11.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Pantalla de diagnósticos: pestaña «Otros» con el panel fijo de analítica y el mismo panel de criterios a la derecha.}}{46}{figure.caption.42}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }

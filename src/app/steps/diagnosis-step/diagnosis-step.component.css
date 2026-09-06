@@ -980,38 +980,37 @@
   animation: foreign-highlight-pulse 1.6s ease-in-out 5;
 }
 
+.crit-card--new.start-card {
+  border-color: #15803d;
+  background: #dcfce7;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.4);
+  animation: new-crit-pulse-start 1.2s ease-in-out 2;
+}
+.crit-card--new.stopp-card {
+  border-color: #b91c1c;
+  background: #fee2e2;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.4);
+  animation: new-crit-pulse-stopp 1.2s ease-in-out 2;
+}
+
 @keyframes foreign-highlight-pulse {
   0%, 100% { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25); }
   50% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.4); }
 }
 
-/* Marca persistente: cuántos diagnósticos foráneos seleccionados apuntan aquí. */
-.link-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  margin-left: auto;
-  flex-shrink: 0;
-  padding: 1px 5px;
-  border-radius: 999px;
-  border: 1px solid #93c5fd;
-  background: #dbeafe;
-  color: #1d4ed8;
-  font-size: calc(10px * var(--font-scale, 1));
-  font-weight: 700;
-  line-height: 1.4;
-  cursor: help;
+@keyframes new-crit-pulse-start {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.4); }
+  50% { box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.55); }
 }
-
-.link-badge--multi {
-  border-color: #1d4ed8;
-  background: #1d4ed8;
-  color: #fff;
+@keyframes new-crit-pulse-stopp {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.4); }
+  50% { box-shadow: 0 0 0 5px rgba(220, 38, 38, 0.55); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .drug-row--highlight,
-  .crit-card--highlight {
+  .crit-card--highlight,
+  .crit-card--new {
     animation: none;
   }
 }

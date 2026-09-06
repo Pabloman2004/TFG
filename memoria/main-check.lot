@@ -1,0 +1,32 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Comparación entre el plan y la estimación retrospectiva de dedicación hasta el 22 de agosto de 2026. No es un registro de horas ni el cierre definitivo del proyecto.}}{11}{table.caption.7}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Directorios relevantes de la aplicación.}}{15}{table.caption.9}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Productos de terceros y versión resuelta en el fichero de bloqueo.}}{20}{table.caption.19}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {7.1}{\ignorespaces Requisitos funcionales del sistema implementado.}}{23}{table.7.1}%
+\contentsline {table}{\numberline {7.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Criterios de aceptación de los requisitos funcionales.}}{25}{table.caption.20}%
+\contentsline {table}{\numberline {7.3}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Requisitos no funcionales, referidos al modelo de calidad ISO/IEC~25010.}}{26}{table.caption.21}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {8.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Campos de \texttt {Crit} a nivel de tipo.}}{30}{table.caption.24}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {9.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Parámetros de \texttt {Labs} capturados en la pestaña «Otros» de diagnósticos.}}{35}{table.caption.35}%
+\contentsline {table}{\numberline {9.2}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Claves de \texttt {localStorage} vigentes.}}{36}{table.caption.36}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {10.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Inventario estático de la batería (conteo de cláusulas \texttt {it(} en los \texttt {*.spec.ts}), sin resultado de ejecución actual. El script \texttt {audit-criteria.cjs} no forma parte de este total.}}{41}{table.caption.40}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {11.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Comprobaciones ante incidencias de uso y exportación.}}{47}{table.caption.43}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {12.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Correspondencia entre los objetivos específicos (\cref {cap:objetivos}) y las aportaciones del trabajo.}}{48}{table.caption.44}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {A.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Comandos de instalación, ejecución, prueba y auditoría.}}{54}{table.caption.52}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {B.1}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Reglas implementadas por sistema clínico (catálogo \texttt {criteria.json}) y especificación asociada.}}{55}{table.caption.53}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {C.1}{\ignorespaces Matriz requisitos--evidencia del repositorio.}}{57}{table.C.1}%

@@ -10,7 +10,9 @@ Este concepto agrupa las utilidades transversales de UI que afectan a toda la ap
 
 3. **Tooltip custom** (`TooltipDirective` + `.app-tooltip` en `styles.css`): directiva standalone que muestra un globo flotante sobre cualquier elemento al pasar el ratón. El tooltip se crea en el `<body>`, se posiciona con `getBoundingClientRect` y se destruye al salir. Una flecha apunta siempre al centro del elemento disparador aunque el globo esté desplazado horizontalmente para no salirse de la ventana.
 
-Ambas utilidades son transversales: las usan los pasos del flujo clínico (`flujo-pasos`) y el shell de navegación (`navegacion-y-shell`).
+4. **Chip de enlace clínico** (`LinkBadgeComponent` + `.app-link-popover`): botón de color fijo que abre un popover HTML al pulsar (también en táctil). Lista las asociaciones de la literatura en medicamentos y diagnósticos, sin tooltip de hover ni etiquetas entre paréntesis.
+
+Estas utilidades son transversales: las usan los pasos del flujo clínico (`flujo-pasos`) y el shell de navegación (`navegacion-y-shell`).
 
 ## Cómo está implementado
 
@@ -74,10 +76,26 @@ Ambas utilidades son transversales: las usan los pasos del flujo clínico (`fluj
   - `::after`: flecha visible (blanca, borde superior).
   - `::before`: contorno externo de la flecha (gris `#e5e7eb`), desplazado 1 px hacia abajo.
 
+### Popover del chip de enlace
+
+**`src/app/shared/link-badge.component.ts`**
+
+- Botón standalone (no un `<span>`) para que funcione en táctil: el popover se abre al pulsar, no al hacer hover.
+- Color fijo (`#dbeafe` / `#1d4ed8`): el número de asociaciones no oscurece el chip.
+- Usa el **Popover API** nativo (`popover="auto"` + `popovertarget`) para contenido HTML: un texto de asociación y listas anidadas (Medicamentos / Diagnósticos) en lugar de un tooltip plano con «(medicamento)».
+- El texto no dice que un elemento «necesite» al otro: «La literatura científica reconoce una asociación entre este elemento y:». «Este elemento» es el que lleva el icono; la lista nombra con qué se asocia. El número del chip no se repite en la frase.
+- El click/keydown/pointerdown se detienen en el host para que, en el paso 2, pulsar el chip no conmute la casilla de diagnóstico.
+
+**`src/styles.css`** (mismo fichero)
+
+- `.app-link-popover` anula el centrado por defecto del Popover API (`inset: unset; margin: 0; position: fixed`) y se posiciona junto al botón. `--arrow-x` apunta al trigger, como el tooltip.
+
 ## Decisiones de diseño
 
 - **Variable CSS como canal de comunicación**: en lugar de propagar la escala con Input/Output o con un observable, `DisplaySettingsService` escribe directamente en `document.documentElement`. Esto hace que cualquier componente pueda usar `calc(... * var(--font-scale))` sin saber nada del servicio. Es simple y eficaz para una SPA de uso interno.
 - **Tooltip en el `<body>` con posición `fixed`**: evita problemas de `overflow: hidden` en contenedores intermedios. La directiva asume que nada forzará un contexto de apilamiento por encima de `z-index: 9999`.
+- **Popover HTML en vez de tooltip de hover**: el chip de enlace es un botón porque en móvil y tablet no hay hover. El Popover API nativo admite listas HTML y se cierra al pulsar fuera (`popover="auto"`). No se añade Bootstrap: el proyecto ya usa Angular Material y el Popover API cubre el mismo contrato (click + HTML).
+- **Asociación, no necesidad**: el chip no afirma que un fármaco «necesite» un diagnóstico. STOPP/START registra asociaciones de la literatura; el texto del popover lo dice así, y el icono ya indica con qué elemento se asocia la lista.
 - **Contrato implícito directiva–estilos**: la directiva escribe el nombre de clase `app-tooltip` y la variable `--arrow-x`; los estilos los consumen. No hay ninguna importación TypeScript entre ambos. El contrato es puramente por convención de nombre.
 - **`requestAnimationFrame` antes de reposicionar**: necesario porque el `<div>` recién creado tiene dimensiones `0` hasta que el navegador hace un layout. Sin el RAF, `offsetWidth`/`offsetHeight` serían `0` y el tooltip quedaría mal posicionado.
 - **Orientación como clase de componente, no como variable CSS**: la escala afecta a cualquier componente que se apunte, así que una variable CSS global es lo correcto. La orientación solo afecta al layout de los dos pasos, así que se resuelve con una clase (`.card-body--vertical`) sobre un marcado único. Así no hay dos plantillas que mantener en paralelo y el cambio es instantáneo, sin recrear el DOM ni perder la selección.
@@ -93,6 +111,7 @@ Ambas utilidades son transversales: las usan los pasos del flujo clínico (`fluj
 - El tooltip nunca se superpone a sí mismo: `show()` llama a `remove()` antes de crear el nuevo `<div>`.
 - El elemento `<div class="app-tooltip">` siempre se elimina del DOM cuando el ratón abandona el trigger o cuando la directiva se destruye (`ngOnDestroy`).
 - La flecha del tooltip (`--arrow-x`) apunta siempre al centro horizontal del trigger, independientemente del clamping horizontal del globo.
+- El chip de enlace es siempre un `<button>` del mismo color, con o sin varias asociaciones. El popover lista medicamentos y diagnósticos en sublistas, sin etiquetas entre paréntesis.
 
 ## Si cambias esto…
 
@@ -110,6 +129,11 @@ Ambas utilidades son transversales: las usan los pasos del flujo clínico (`fluj
 - El template de `display-options-dialog.component.ts` referencia `orientations[0]` y `orientations[1]` por índice: añadir una orientación exige añadir su `<mat-button-toggle>`.
 - El CSS vive **duplicado** en `meds-step.component.css` y `diagnosis-step.component.css` (bloque «Cuerpo de la tarjeta»). Si tocas uno, toca el otro: son estilos de componente encapsulados, no compartidos.
 - Actualiza los tests de `display-settings.service.spec.ts` y los bloques «orientación de las pestañas» de los spec de ambos pasos.
+
+### Si cambias el popover del chip de enlace
+- El contrato de clase `.app-link-popover` / `--arrow-x` está en `link-badge.component.ts` (que lo escribe) y `src/styles.css` (que lo consume), igual que el tooltip.
+- El texto de asociación vive en `associationLeadText`. Si lo cambias, actualiza `link-badge.component.spec.ts`.
+- Actualiza este documento.
 
 ### Si cambias el nombre de clase `app-tooltip` o la variable `--arrow-x`
 - Actualiza simultáneamente `tooltip.directive.ts` (que escribe el nombre de clase y la variable) y `src/styles.css` (que los consume). Son un contrato implícito: si cambia uno sin el otro, el tooltip dejará de funcionar visualmente sin ningún error en consola.

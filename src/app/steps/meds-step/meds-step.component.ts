@@ -1,6 +1,6 @@
 // @linked docs/flujo-pasos.md
-// Si cambias la lógica de groupBuckets, groupsVisibleInTab, tabs revisados o ítems "Otro", actualiza el doc enlazado.
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, computed, signal, effect, inject, ViewChild, ElementRef } from '@angular/core';
+// Si cambias la lógica de groupBuckets, groupsVisibleInTab, tabs revisados, ítems "Otro" o el resaltado del último lote de criterios, actualiza el doc enlazado.
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, computed, signal, effect, inject, ViewChild, ElementRef, Injector, afterNextRender, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,6 +32,12 @@ import {
   mergeLinkMaps,
 } from '../../core/foreign-provenance';
 import { TooltipDirective } from '../../shared/tooltip.directive';
+import { LinkBadgeComponent } from '../../shared/link-badge.component';
+import {
+  detectNewlyAddedCriteria,
+  remainingCollapsedSections,
+  scrollCriteriaIntoView,
+} from '../../core/new-criteria';
 
 const HIGHLIGHT_MS = 8000;
 
@@ -43,7 +49,7 @@ const DX_LABELS_BY_CODE: ReadonlyMap<string, string> = new Map(
   selector: 'app-meds-step',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatDialogModule, TooltipDirective],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatDialogModule, TooltipDirective, LinkBadgeComponent],
   templateUrl: './meds-step.component.html',
   styleUrl: './meds-step.component.css',
 })
@@ -115,6 +121,13 @@ export class MedsStepComponent implements OnInit, OnDestroy {
   readonly highlightedCriterionIds = signal<ReadonlySet<string>>(new Set());
   private highlightTimer: ReturnType<typeof setTimeout> | null = null;
 
+  readonly newlyAddedCriterionIds = signal<ReadonlySet<string>>(new Set());
+  private previousCriteriaIds: ReadonlySet<string> = new Set();
+  private criteriaPrimed = false;
+  private highlightedNewIds: ReadonlySet<string> = new Set();
+  private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly injector = inject(Injector);
+
   // Enlaces persistentes: mientras un fármaco foráneo siga marcado, el grupo
   // propio con el que se relaciona lo muestra en su cabecera. Así se ve que dos
   // casillas distintas de «Relevantes de otros sistemas» apuntan al mismo grupo.
@@ -171,6 +184,8 @@ export class MedsStepComponent implements OnInit, OnDestroy {
         }
       }
     }, { allowSignalWrites: true });
+
+    effect(() => this.syncNewlyAddedCriteria(), { allowSignalWrites: true });
   }
 
   private groupsVisibleInTab(tabId: string): readonly DrugGroup[] {
@@ -248,20 +263,39 @@ export class MedsStepComponent implements OnInit, OnDestroy {
     return this.foreignLinks().get(group.id) ?? [];
   }
 
-  linkedForeignTooltip(group: DrugGroup): string {
-    const items = this.linkedForeignDrugs(group);
-    if (items.length === 0) return '';
-    const medIds = new Set(this.store.meds().map(m => m.id));
-    const described = items.map(name =>
-      medIds.has(name) ? `${name} (medicamento)` : `${name} (diagnóstico)`,
-    );
-    return items.length === 1
-      ? `Ya has marcado ${described[0]} y se relaciona con este grupo`
-      : `${items.length} elementos ya marcados se relacionan con este grupo: ${described.join(', ')}`;
-  }
-
   isCriterionHighlighted(c: Crit): boolean {
     return this.highlightedCriterionIds().has(c.id);
+  }
+
+  isNewlyAdded(c: Crit): boolean {
+    return this.newlyAddedCriterionIds().has(c.id);
+  }
+
+  private syncNewlyAddedCriteria(): void {
+    const current = this.applicableCriteria();
+    const result = detectNewlyAddedCriteria({
+      previousIds: this.previousCriteriaIds,
+      currentIds: current.map(c => c.id),
+      primed: this.criteriaPrimed,
+      catalogReady: this.criteria().length > 0,
+      currentlyHighlighted: this.highlightedNewIds,
+    });
+    this.previousCriteriaIds = result.nextPrevious;
+    this.criteriaPrimed = result.primed;
+    this.highlightedNewIds = new Set(result.highlightIds);
+    this.newlyAddedCriterionIds.set(this.highlightedNewIds);
+    if (!result.shouldScroll) return;
+    untracked(() => {
+      const highlighted = current.filter(c => this.highlightedNewIds.has(c.id));
+      const collapsed = this.store.collapsedSections();
+      const nextCollapsed = remainingCollapsedSections(collapsed, highlighted);
+      if (nextCollapsed.length !== collapsed.length) {
+        this.store.collapsedSections.set(nextCollapsed);
+      }
+      afterNextRender(() => {
+        scrollCriteriaIntoView(this.host.nativeElement, result.highlightIds);
+      }, { injector: this.injector });
+    });
   }
 
   private clearHighlightTimer(): void {

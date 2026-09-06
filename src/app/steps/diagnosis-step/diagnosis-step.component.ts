@@ -1,6 +1,6 @@
 // @linked docs/flujo-pasos.md
-// Si cambias la lógica de groupBuckets, dxGroupsVisibleInTab, tabs revisados, dependencias de diagnósticos o ítems "Otro", actualiza el doc enlazado.
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, computed, signal, effect, inject, ViewChild, ElementRef } from '@angular/core';
+// Si cambias la lógica de groupBuckets, dxGroupsVisibleInTab, tabs revisados, dependencias de diagnósticos, ítems "Otro" o el resaltado del último lote de criterios, actualiza el doc enlazado.
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, computed, signal, effect, inject, ViewChild, ElementRef, Injector, afterNextRender, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -36,6 +36,12 @@ import {
   relatedSelectionLinks,
   mergeLinkMaps,
 } from '../../core/foreign-provenance';
+import { LinkBadgeComponent } from '../../shared/link-badge.component';
+import {
+  detectNewlyAddedCriteria,
+  remainingCollapsedSections,
+  scrollCriteriaIntoView,
+} from '../../core/new-criteria';
 
 const HIGHLIGHT_MS = 8000;
 
@@ -59,7 +65,7 @@ const emptyLabs = (): Labs => ({
   selector: 'app-diagnosis-step',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatDialogModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatSnackBarModule, MatDialogModule, LinkBadgeComponent],
   templateUrl: './diagnosis-step.component.html',
   styleUrls: ['./diagnosis-step.component.css'],
 })
@@ -83,6 +89,10 @@ export class DiagnosisStepComponent implements OnInit, OnDestroy {
 
   readonly selectedCodes = computed<Set<string>>(
     () => new Set(this.store.diagnoses()),
+  );
+
+  readonly selectedMedIds = computed<ReadonlySet<string>>(
+    () => new Set(this.store.meds().map(m => m.id)),
   );
 
   readonly applicableCriteria = computed<Crit[]>(() => {
@@ -118,6 +128,13 @@ export class DiagnosisStepComponent implements OnInit, OnDestroy {
   readonly highlightedDxLabels = signal<ReadonlySet<string>>(new Set());
   readonly highlightedCriterionIds = signal<ReadonlySet<string>>(new Set());
   private highlightTimer: ReturnType<typeof setTimeout> | null = null;
+
+  readonly newlyAddedCriterionIds = signal<ReadonlySet<string>>(new Set());
+  private previousCriteriaIds: ReadonlySet<string> = new Set();
+  private criteriaPrimed = false;
+  private highlightedNewIds: ReadonlySet<string> = new Set();
+  private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly injector = inject(Injector);
 
   // Enlaces persistentes: ver `foreignLinks` en MedsStepComponent.
   readonly foreignLinks = computed(() => {
@@ -181,6 +198,8 @@ export class DiagnosisStepComponent implements OnInit, OnDestroy {
         }
       }
     }, { allowSignalWrites: true });
+
+    effect(() => this.syncNewlyAddedCriteria(), { allowSignalWrites: true });
   }
 
   isDxEnabled(label: string): boolean {
@@ -245,20 +264,39 @@ export class DiagnosisStepComponent implements OnInit, OnDestroy {
     return this.foreignLinks().get(label) ?? [];
   }
 
-  linkedForeignDxTooltip(label: string): string {
-    const items = this.linkedForeignDxs(label);
-    if (items.length === 0) return '';
-    const medIds = new Set(this.store.meds().map(m => m.id));
-    const described = items.map(name =>
-      medIds.has(name) ? `${name} (medicamento)` : `${name} (diagnóstico)`,
-    );
-    return items.length === 1
-      ? `Ya has marcado ${described[0]} y necesita este diagnóstico`
-      : `${items.length} elementos ya marcados necesitan este diagnóstico: ${described.join(', ')}`;
-  }
-
   isCriterionHighlighted(c: Crit): boolean {
     return this.highlightedCriterionIds().has(c.id);
+  }
+
+  isNewlyAdded(c: Crit): boolean {
+    return this.newlyAddedCriterionIds().has(c.id);
+  }
+
+  private syncNewlyAddedCriteria(): void {
+    const current = this.applicableCriteria();
+    const result = detectNewlyAddedCriteria({
+      previousIds: this.previousCriteriaIds,
+      currentIds: current.map(c => c.id),
+      primed: this.criteriaPrimed,
+      catalogReady: this.criteria().length > 0,
+      currentlyHighlighted: this.highlightedNewIds,
+    });
+    this.previousCriteriaIds = result.nextPrevious;
+    this.criteriaPrimed = result.primed;
+    this.highlightedNewIds = new Set(result.highlightIds);
+    this.newlyAddedCriterionIds.set(this.highlightedNewIds);
+    if (!result.shouldScroll) return;
+    untracked(() => {
+      const highlighted = current.filter(c => this.highlightedNewIds.has(c.id));
+      const collapsed = this.store.collapsedSections();
+      const nextCollapsed = remainingCollapsedSections(collapsed, highlighted);
+      if (nextCollapsed.length !== collapsed.length) {
+        this.store.collapsedSections.set(nextCollapsed);
+      }
+      afterNextRender(() => {
+        scrollCriteriaIntoView(this.host.nativeElement, result.highlightIds);
+      }, { injector: this.injector });
+    });
   }
 
   private clearHighlightTimer(): void {

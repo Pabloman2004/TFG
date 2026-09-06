@@ -192,6 +192,11 @@
                              (keydown.enter)="toggleDiagnosis(family.rootLabel)" (keydown.space)="$event.preventDefault(); toggleDiagnosis(family.rootLabel)">
                           <div class="rbx" [class.checked]="isSelected(family.rootLabel)" aria-hidden="true"></div>
                           <span class="drug-name" [class.sel]="isSelected(family.rootLabel)">{{ family.rootDisplayLabel }}</span>
+                          @if (linkedForeignDxs(family.rootLabel).length > 0) {
+                            <app-link-badge
+                              [items]="linkedForeignDxs(family.rootLabel)"
+                              [medicationIds]="selectedMedIds()" />
+                          }
                         </div>
                       }
                       @for (dx of family.variants; track trackDx($index, dx)) {
@@ -205,6 +210,11 @@
                              (keydown.enter)="toggleDiagnosis(dx)" (keydown.space)="$event.preventDefault(); toggleDiagnosis(dx)">
                           <div class="rbx" [class.checked]="isSelected(dx)" aria-hidden="true"></div>
                           <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
+                          @if (linkedForeignDxs(dx).length > 0) {
+                            <app-link-badge
+                              [items]="linkedForeignDxs(dx)"
+                              [medicationIds]="selectedMedIds()" />
+                          }
                         </div>
                       }
                     </div>
@@ -222,15 +232,9 @@
                       <div class="cbx" [class.checked]="isSelected(dx)" aria-hidden="true"></div>
                       <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
                       @if (linkedForeignDxs(dx).length > 0) {
-                        <span class="link-badge"
-                              [class.link-badge--multi]="linkedForeignDxs(dx).length > 1"
-                              [title]="linkedForeignDxTooltip(dx)">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                          </svg>
-                          {{ linkedForeignDxs(dx).length }}
-                        </span>
+                        <app-link-badge
+                          [items]="linkedForeignDxs(dx)"
+                          [medicationIds]="selectedMedIds()" />
                       }
                     </div>
                   }
@@ -294,15 +298,9 @@
                               <div class="rbx" [class.checked]="isSelected(family.rootLabel)" aria-hidden="true"></div>
                               <span class="drug-name" [class.sel]="isSelected(family.rootLabel)">{{ family.rootDisplayLabel }}</span>
                               @if (linkedForeignDxs(family.rootLabel).length > 0) {
-                                <span class="link-badge"
-                                      [class.link-badge--multi]="linkedForeignDxs(family.rootLabel).length > 1"
-                                      [title]="linkedForeignDxTooltip(family.rootLabel)">
-                                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                                    <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                                  </svg>
-                                  {{ linkedForeignDxs(family.rootLabel).length }}
-                                </span>
+                                <app-link-badge
+                                  [items]="linkedForeignDxs(family.rootLabel)"
+                                  [medicationIds]="selectedMedIds()" />
                               }
                             </div>
                           }
@@ -318,15 +316,9 @@
                               <div class="rbx" [class.checked]="isSelected(dx)" aria-hidden="true"></div>
                               <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
                               @if (linkedForeignDxs(dx).length > 0) {
-                                <span class="link-badge"
-                                      [class.link-badge--multi]="linkedForeignDxs(dx).length > 1"
-                                      [title]="linkedForeignDxTooltip(dx)">
-                                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                                    <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                                  </svg>
-                                  {{ linkedForeignDxs(dx).length }}
-                                </span>
+                                <app-link-badge
+                                  [items]="linkedForeignDxs(dx)"
+                                  [medicationIds]="selectedMedIds()" />
                               }
                             </div>
                           }
@@ -344,15 +336,9 @@
                           <div class="cbx" [class.checked]="isSelected(dx)" aria-hidden="true"></div>
                           <span class="drug-name" [class.sel]="isSelected(dx)">{{ dx }}</span>
                           @if (linkedForeignDxs(dx).length > 0) {
-                            <span class="link-badge"
-                                  [class.link-badge--multi]="linkedForeignDxs(dx).length > 1"
-                                  [title]="linkedForeignDxTooltip(dx)">
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                                <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                              </svg>
-                              {{ linkedForeignDxs(dx).length }}
-                            </span>
+                            <app-link-badge
+                              [items]="linkedForeignDxs(dx)"
+                              [medicationIds]="selectedMedIds()" />
                           }
                         </div>
                       }
@@ -444,7 +430,9 @@
                   <div class="sys-body-inner">
                     @for (c of group.items; track trackCrit($index, c)) {
                       <div class="crit-card start-card"
-                           [class.crit-card--highlight]="isCriterionHighlighted(c)">
+                           [attr.data-crit-id]="c.id"
+                           [class.crit-card--highlight]="isCriterionHighlighted(c)"
+                           [class.crit-card--new]="isNewlyAdded(c)">
                         <div class="crit-card-left">
                           <span class="crit-code">{{ critCode(c.id) }}</span>
                         </div>
@@ -508,7 +496,9 @@
                   <div class="sys-body-inner">
                     @for (c of group.items; track trackCrit($index, c)) {
                       <div class="crit-card stopp-card"
-                           [class.crit-card--highlight]="isCriterionHighlighted(c)">
+                           [attr.data-crit-id]="c.id"
+                           [class.crit-card--highlight]="isCriterionHighlighted(c)"
+                           [class.crit-card--new]="isNewlyAdded(c)">
                         <div class="crit-card-left">
                           <span class="crit-code">{{ critCode(c.id) }}</span>
                         </div>
