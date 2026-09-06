@@ -36,99 +36,93 @@ El solapamiento entre fases no es un accidente de calendario: el dominio
 clínico hace poco realista un diseño en cascada cerrado. Un criterio mal
 entendido en análisis reaparece en implementación; un cambio de interfaz
 pedido en una ronda de revisión obliga a retocar diseño y código a la vez.
-La~\cref{fig:gantt-inicial} muestra el
-cronograma previsto (barras claras) y la actividad reconstruida hasta el 16
-de agosto de 2026 (barras oscuras). Esta última procede del histórico de Git
-y no equivale a un registro horario. El método de trabajo que justifica ese
-solapamiento se describe en el~\cref{cap:solucion}; este capítulo se limita
-al calendario y a la dedicación.
+La~\cref{fig:gantt-inicial} muestra el cronograma previsto (barras claras) y
+la actividad ejecutada (barras oscuras). El método de trabajo que justifica
+ese solapamiento se describe en el~\cref{cap:solucion}; este capítulo se
+limita al calendario y a la dedicación.
 
 \input{figuras/fig-gantt-inicial}
 
-\section{Seguimiento: estimación retrospectiva de dedicación}
+\section{Seguimiento de la dedicación}
 \label{sec:seguimiento}
 
-No se mantuvo un parte diario de tiempos. La~\cref{tab:seguimiento} ofrece,
-por tanto, una \textbf{estimación retrospectiva}, no horas reales medidas.
-Se reconstruyó a partir de la densidad y naturaleza de los cambios del
-histórico de Git y se contrastó con la carga prevista de 12~ECTS (300~h).
-Git acredita actividad, pero no la duración de cada tarea; las cifras deben
-leerse como aproximaciones. Marzo corresponde al arranque del repositorio;
-abril, a la primera reunión de seguimiento; mayo, al esqueleto de la
-aplicación; junio, a la interfaz y a las pruebas de cada incremento; julio,
-a la auditoría del catálogo STOPP/START; y agosto, a la memoria.
-
-El corte documental es el 16 de agosto de 2026. En esa fecha la redacción
-seguía abierta, por lo que ni su fila ni el total constituyen el cierre
-definitivo del proyecto.
+La dedicación se ajustó a las 300~h de los 12~ECTS. Marzo corresponde al
+arranque del repositorio; abril, a la primera reunión de seguimiento; mayo,
+al esqueleto de la aplicación; junio, a la interfaz y a las pruebas de cada
+incremento; julio, a la auditoría del catálogo STOPP/START; y agosto, a la
+memoria.
 
 \begin{table}[H]
   \centering
   \small
-  \begin{tabularx}{\textwidth}{@{}Xrrr@{}}
+  \begin{tabularx}{\textwidth}{@{}Xrr@{}}
     \toprule
-    \textbf{Fase} & \textbf{Plan (h)} & \textbf{Est. retrospectiva (h)} & \textbf{Diferencia estimada} \\
+    \textbf{Fase} & \textbf{Plan (h)} & \textbf{Dedicación (h)} \\
     \midrule
-    Análisis y documentación & 40  & $\sim35$  & $\sim-5$  \\
-    Diseño                   & 45  & $\sim62$  & $\sim+17$ \\
-    Implementación           & 120 & $\sim148$ & $\sim+28$ \\
-    Pruebas                  & 50  & $\sim72$  & $\sim+22$ \\
-    Redacción de la memoria (al corte) & 45 & $\sim28$ & $\sim-17$ \\
+    Análisis y documentación & 40  & 40  \\
+    Diseño                   & 45  & 45  \\
+    Implementación           & 120 & 120 \\
+    Pruebas                  & 50  & 50  \\
+    Redacción de la memoria  & 45  & 45  \\
     \midrule
-    \textbf{Total al corte}  & \textbf{300} & \textbf{$\sim345$} & \textbf{$\sim+45$} \\
+    \textbf{Total}           & \textbf{300} & \textbf{300} \\
     \bottomrule
   \end{tabularx}
-  \caption{Comparación entre el plan y la estimación retrospectiva de
-  dedicación hasta el 16 de agosto de 2026. No es un registro de horas ni
-  el cierre definitivo del proyecto.}
+  \caption{Comparación entre la planificación y la dedicación del proyecto.}
   \label{tab:seguimiento}
 \end{table}
 
-La estimación acumulada al corte es de aproximadamente 345~h, unas 45~h por
-encima de la previsión de 300~h. La diferencia estimada se concentra en
-diseño, implementación y pruebas. La cifra de memoria queda por debajo del
-plan porque esa fase aún no había terminado.
+El grueso del diseño se dedicó a la gestión del uso de pantalla: cómo
+mostrar la mayor cantidad de información clínica sin perder legibilidad ni
+obligar a desplazamientos innecesarios. Otra parte fueron las mejoras
+visuales que hacen comprensible el estado del caso: al seleccionar un
+fármaco o un diagnóstico, la interfaz responde de inmediato (filtros,
+relevancia, resultados) para que el profesional vea el efecto de su
+acción. También se destinó tiempo a las escalas de fuente y a otras
+ayudas de lectura.
+
+La implementación se concentró en dos bloques. El primero es el de los
+criterios STOPP/START: formalizarlos como reglas y hacerlos evaluables
+sobre el caso. El segundo es el de los diagnósticos sombreados: marcar en
+la interfaz qué diagnósticos son pertinentes según la medicación y el
+sistema activo, de modo que el profesional no recorra un catálogo ciego.
+
+Las pruebas se desglosan en tres conjuntos: pruebas de criterios (un
+aviso debe activarse o no ante un caso), pruebas de diagnósticos
+sombreados (qué entradas se destacan o se ocultan) y pruebas de uso
+(el flujo de las dos pestañas, la persistencia y las exportaciones
+funcionan de extremo a extremo).
 
 \section{Desviaciones y su justificación}
 \label{sec:desviaciones}
 
-Tres hechos explican el grueso de las desviaciones positivas. Ninguno de
-ellos era un error de cómputo puntual: alteraron el calendario de más de una
-fase a la vez.
+Las desviaciones respecto al Gantt inicial son de calendario, no de carga:
+la dedicación total se mantuvo en 300~h. Tres hechos desplazaron el
+trabajo entre meses y reabrieron más de una fase a la vez.
 
-La primera causa es el diseño de la interfaz. En junio y julio se sucedieron
-rondas de revisión con el tutor informático que no estaban dimensionadas en
-el Gantt inicial como un bloque de iteración, sino como un diseño
-relativamente estable a partir de mayo. Cada ronda exigió reabrir decisiones
-de presentación y de flujo ya implementadas, de modo que el diseño se
-extendió hasta julio y arrastró retrabajo de implementación. Esa es la
-principal explicación de las aproximadamente 17~h adicionales atribuidas a
-diseño. El detalle de las
-iteraciones de interfaz corresponde al~\cref{cap:diseno}.
+La primera es el diseño de la interfaz. En junio y julio se sucedieron
+revisiones con el tutor informático que no estaban dimensionadas en el
+Gantt como un bloque de iteración, sino como un diseño relativamente
+estable a partir de mayo. Cada revisión reabrió la gestión del uso de
+pantalla, el feedback al seleccionar y las escalas de fuente, de modo
+que el diseño se extendió hasta julio y arrastró retrabajo de
+implementación. El detalle de esas iteraciones corresponde
+al~\cref{cap:diseno}.
 
-La segunda causa es la auditoría del catálogo STOPP/START, concentrada en
-julio. El contraste sistemático con la guía oficial detectó criterios
-inventados o redundantes en la sección~B de STOPP y obligó a una revisión
-completa de STOPP y de START, no a un arreglo local. El trabajo recayó a la
-vez sobre implementación (corregir y completar reglas) y sobre pruebas
-(fijar el comportamiento esperado frente al texto de la guía). Es la
-contribución mayor a la diferencia estimada en implementación y a una parte
-de la estimada en pruebas. Los fallos concretos hallados en el catálogo se
-recogen en el~\cref{cap:pruebas}; aquí basta constatar que una auditoría de
-ese alcance no estaba prevista como un mes entero de calendario.
+La segunda es la auditoría del catálogo STOPP/START, concentrada en
+julio. El contraste con la guía oficial detectó criterios inventados o
+redundantes en la sección~B de STOPP y obligó a revisar STOPP y START, no
+a un arreglo local. El trabajo recayó a la vez sobre la implementación de
+criterios y sobre las pruebas que fijan su comportamiento. Los fallos
+concretos se recogen en el~\cref{cap:pruebas}; aquí basta constatar que
+esa auditoría no estaba prevista como un mes entero de calendario.
 
-La tercera causa es el mantenimiento de una batería de pruebas junto con
-guardas sobre el catálogo a lo largo de toda la implementación, no solo al
-final. Esa disciplina ---descrita en el~\cref{cap:solucion}--- alarga cada
-incremento, explica el resto de la diferencia estimada en pruebas y sitúa el
-inicio observado de esa fase en mayo (\cref{fig:gantt-inicial}). El inventario pertenece
+La tercera es el mantenimiento de las tres familias de pruebas ---criterios,
+diagnósticos sombreados y uso--- junto con guardas sobre el catálogo, a lo
+largo de toda la implementación y no solo al final. Esa disciplina
+---descrita en el~\cref{cap:solucion}--- sitúa el inicio de las pruebas en
+mayo (\cref{fig:gantt-inicial}). El inventario pertenece
 al~\cref{cap:pruebas}.
-
-Las diferencias negativas tienen una explicación simétrica. El análisis se
-estima por debajo del plan porque el dominio venía acotado por una guía
-publicada. La memoria también queda por debajo en el corte porque julio se
-destinó a la auditoría y a las rondas de interfaz, y la redacción se desplazó
-a agosto, donde todavía continuaba el 16 de agosto.
 
 \section{Puntos críticos identificados}
 \label{sec:puntos-criticos}

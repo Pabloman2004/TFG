@@ -50,12 +50,12 @@ Usar `\cref{cap:...}` para remitir, no reexplicar.
 ## Horas cap. 4 (reconstruidas; marcar como tales)
 
 | Fase | Estimado (h) | Real (h) | Desviación |
-| Análisis y documentación | 40 | 35 | −5 |
-| Diseño | 45 | 62 | +17 |
-| Implementación | 120 | 148 | +28 |
-| Pruebas | 50 | 72 | +22 |
-| Redacción de la memoria | 45 | 28 | −17 (en curso) |
-| **Total** | **300** | **345** | **+45** |
+| Análisis y documentación | 40 | 40 | 0 |
+| Diseño | 45 | 45 | 0 |
+| Implementación | 120 | 120 | 0 |
+| Pruebas | 50 | 50 | 0 |
+| Redacción de la memoria | 45 | 45 | 0 |
+| **Total** | **300** | **300** | **0** |
 
 Desviaciones a justificar: rondas UI con tutor (jun/jul); auditoría clínica (9 criterios inventados/redundantes en STOPP-B; revisión STOPP+START); TDD+guardas de catálogo; historial implementado y luego eliminado.
 

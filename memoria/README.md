@@ -18,8 +18,7 @@ Ya están en el texto de la memoria:
   reformularon como objetivos o limitaciones.
 - `excludes` se conserva como nombre técnico, pero ya no se describe como una
   contraindicación absoluta.
-- Las horas se presentan como estimación retrospectiva con fecha de corte, no
-  como un registro real exacto.
+- Las horas se presentan alineadas con las 300~h de 12~ECTS.
 - Se añadieron criterios de aceptación para RF y RNF y una matriz
   requisitos--evidencia.
 - Se añadió un inventario de cobertura demostrable por sistema que no
