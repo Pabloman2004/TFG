@@ -10,20 +10,18 @@
 \contentsline {figure}{\numberline {5}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Dependencias lógicas: los pasos orquestan; el motor no depende de la UI; solo el servicio de intercambio JSON accede directamente al estado de sesión. Ese estado no es una base de datos.}}{13}{figure.caption.15}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {6}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Diagrama de casos de uso. Las líneas continuas asocian al actor con cada objetivo. Las discontinuas marcan la relación \texttt {include}: evaluar y persistir se ejecutan siempre que cambia la captura, sin invocación aparte.}}{22}{figure.caption.23}%
-\contentsline {figure}{\numberline {7}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Entidades del dominio, con el nombre de cada relación sobre la línea y las multiplicidades en los extremos. \texttt {Crit} pertenece al catálogo; el resto constituye el caso de sesión.}}{23}{figure.caption.24}%
+\contentsline {figure}{\numberline {6}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Diagrama de casos de uso. Las líneas continuas asocian al actor con cada objetivo. Las discontinuas marcan la relación \texttt {include}: evaluar y persistir se ejecutan siempre que cambia la captura, sin invocación aparte.}}{21}{figure.caption.23}%
+\contentsline {figure}{\numberline {7}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Entidades del dominio, con el nombre de cada relación sobre la línea y las multiplicidades en los extremos. \texttt {Crit} pertenece al catálogo; el resto constituye el caso de sesión.}}{22}{figure.caption.24}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {8}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Modelo de dominio simplificado. \texttt {Crit} no se persiste con el caso: el motor lo produce al evaluar.}}{24}{figure.caption.25}%
-\contentsline {figure}{\numberline {9}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Secuencia implementada al marcar una medicación: el estado de sesión cambia, el motor evalúa y la UI actualiza criterios y relevancia. El cálculo auxiliar de \texttt {excludes} no está integrado en este flujo.}}{26}{figure.caption.27}%
-\contentsline {figure}{\numberline {10}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Secuencia de exportación a PDF: evaluación al vuelo y composición en el cliente.}}{26}{figure.caption.28}%
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\contentsline {figure}{\numberline {11}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Diagnósticos: HTA (sin especificar) marcada y criterio START-B1 activado. Ejecución del 01/09/2026 sobre el artefacto de producción.}}{41}{figure.caption.49}%
-\contentsline {figure}{\numberline {12}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Medicamentos: Amlodipino seleccionado; START-B1 deja de aplicar. Ejecución del 01/09/2026 sobre el artefacto de producción.}}{42}{figure.caption.50}%
-\contentsline {figure}{\numberline {13}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Panel de criterios activados del caso HTA, con START-B1 y sin avisos STOPP. Detalle de la ejecución del 01/09/2026.}}{43}{figure.caption.51}%
+\contentsline {figure}{\numberline {8}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Modelo de dominio simplificado. \texttt {Crit} no se persiste con el caso: el motor lo produce al evaluar.}}{23}{figure.caption.25}%
+\contentsline {figure}{\numberline {9}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Secuencia implementada al marcar una medicación: el estado de sesión cambia, el motor evalúa y la UI actualiza criterios y relevancia. El cálculo auxiliar de \texttt {excludes} no está integrado en este flujo.}}{25}{figure.caption.27}%
+\contentsline {figure}{\numberline {10}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Secuencia de exportación a PDF: evaluación al vuelo y composición en el cliente.}}{25}{figure.caption.28}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {11}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Diagnósticos: HTA (sin especificar) marcada y criterio START-B1 activado. Ejecución del 01/09/2026 sobre el artefacto de producción.}}{39}{figure.caption.49}%
+\contentsline {figure}{\numberline {12}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Medicamentos: Amlodipino seleccionado; START-B1 deja de aplicar. Ejecución del 01/09/2026 sobre el artefacto de producción.}}{40}{figure.caption.50}%
+\contentsline {figure}{\numberline {13}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Panel de criterios activados del caso HTA, con START-B1 y sin avisos STOPP. Detalle de la ejecución del 01/09/2026.}}{41}{figure.caption.51}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
@@ -35,4 +33,6 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {14}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Informe PDF generado el 01/09/2026 para el caso HTA (sin antihipertensivo): título «Informe STOPP/START», diagnóstico y tabla START-B1.}}{63}{figure.caption.69}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {14}{\ignorespaces \xpg@aux {}{spanish}\ignorespaces Informe PDF generado el 01/09/2026 para el caso HTA (sin antihipertensivo): título «Informe STOPP/START», diagnóstico y tabla START-B1.}}{60}{figure.caption.69}%

@@ -11,14 +11,15 @@
 Este capítulo describe el lenguaje, el marco, las bibliotecas y las
 herramientas, y deja explícito qué no es de autoría propia: Angular y sus
 dependencias, las bibliotecas de reglas, validación y PDF, y la fuente
-clínica STOPP/START v3. La autoría del TFG se limita a la aplicación que
-las integra. La organización interna se trata en el~\cref{cap:arquitectura}.
+clínica STOPP/START v3. La organización interna se trata en
+el~\cref{cap:arquitectura}.
 
 \section{Lenguaje y framework}
 \label{sec:lenguaje-framework}
 
 El sistema está escrito en TypeScript 5.9 y se ejecuta como una aplicación
-de una sola página (SPA) sobre Angular 20~\cite{angular2026}. La elección
+de una sola página (SPA) sobre Angular 20~\cite{angular2026} (versión
+20.3.4 en el fichero de bloqueo). La elección
 de una SPA de cliente ---sin servidor de aplicación--- responde al alcance
 del TFG: el profesional introduce el caso, el motor lo evalúa en el
 navegador y el resultado no sale de esa sesión salvo que se exporte. Un
@@ -28,11 +29,13 @@ el~\cref{cap:objetivos}. Angular cubre ese escenario con enrutado, plantillas
 y un ciclo de vida de componentes suficiente para un flujo de dos pestañas,
 sin introducir una API propia.
 
-TypeScript en modo estricto no es un adorno de estilo. El dominio maneja
-identificadores de fármacos, diagnósticos y criterios que deben
-conservarse de un extremo a otro; un tipado laxo permitiría mezclarlos
-sin que el compilador protestara. En la frontera del JSON importado el
-tipado estático no basta, y por eso se recurre a Zod, más abajo.
+TypeScript se usa en modo estricto. El compilador obliga a declarar
+los tipos y a tener en cuenta los valores que pueden faltar antes de
+usarlos. En un flujo donde el caso cambia a cada clic y el motor lo
+vuelve a evaluar, conviene que un campo mal pasado se detecte al
+compilar y no al revisar un paciente. Lo que llega de fuera ---un JSON
+importado o la copia guardada en el navegador--- no pasa por ese
+control; esa validación se explica con Zod en la~\cref{sec:bibliotecas}.
 
 Angular 20 se eligió, además, por el modelo de componentes independientes
 (\textit{standalone}) y por las señales (\textit{signals}). Los componentes
@@ -41,62 +44,75 @@ módulos \texttt{NgModule}, desproporcionado para una sola aplicación. Las
 señales permiten expresar el estado del caso ---medicación, diagnósticos,
 resultado de la evaluación--- como valores que la plantilla consume de
 forma síncrona, sin convertir cada cambio en una tubería de observables.
-Reactive Extensions for JavaScript (RxJS) sigue presente porque Angular
-lo requiere; no se ha construido la interfaz alrededor de él. Material~\cite{material} aporta los componentes
-de pestañas, listas y controles usados en la interfaz. Su empleo no se toma
-como prueba de accesibilidad del producto completo, que requeriría una
-auditoría específica.
 
 \section{Bibliotecas de terceros}
 \label{sec:bibliotecas}
 
-La~\cref{tab:terceros} resume los productos usados en tiempo de ejecución
-y el motivo de cada uno. Las versiones son las resueltas en
-\texttt{package-lock.json}, no solo los rangos del manifiesto.
+Angular ya está justificado en la~\cref{sec:lenguaje-framework}. Aquí
+el peso está en las bibliotecas que se integran sobre ese marco: el
+evaluador de reglas, el informe PDF, la validación de lo que entra de
+fuera y los controles de la interfaz. La~\cref{tab:terceros} las lista
+con la versión pinada en \texttt{package-lock.json}.
 
 \begin{table}[H]
   \centering
-  \small
+  \scriptsize
   \begin{tabularx}{\textwidth}{@{}llX@{}}
     \toprule
     \textbf{Producto} & \textbf{Versión} & \textbf{Uso y justificación} \\
     \midrule
-    Angular            & 20.3.4 & SPA: componentes, enrutado y plantillas. \\
-    Angular Material   & 20.2.8 & Pestañas, listas y campos de interfaz. \\
-    json-logic-js      & 2.0.5  & Evalúa reglas JSON. Alternativa: criterios en código. \\
-    pdfmake            & 0.2.20 & PDF declarativo en el navegador. Alternativa: jsPDF. \\
-    zod                & 4.4.3  & Valida el JSON importado en tiempo de ejecución. \\
-    RxJS               & 7.8.2  & Reactive Extensions for JavaScript; Angular lo exige; no modela el estado. \\
-    zone.js            & 0.15.1 & Detección de cambios por defecto de Angular. \\
+    json-logic-js      & 2.0.5  & Evalúa las reglas STOPP/START escritas en JSON. \\
+    pdfmake            & 0.2.20 & Compone el informe PDF en el navegador. \\
+    zod                & 4.4.3  & Valida el JSON importado y la copia guardada. \\
+    Angular Material   & 20.2.8 & Pestañas, listas y campos de la interfaz. \\
+    RxJS               & 7.8.2  & Reactive Extensions for JavaScript; la trae Angular. \\
+    zone.js            & 0.15.1 & Detección de cambios de Angular. \\
     \bottomrule
   \end{tabularx}
-  \caption{Productos de terceros y versión resuelta en el fichero de bloqueo.}
+  \caption{Bibliotecas de terceros y versión resuelta en el fichero de bloqueo.
+  El marco Angular se ha justificado en la~\cref{sec:lenguaje-framework}.}
   \label{tab:terceros}
 \end{table}
 
-json-logic-js~\cite{jsonlogic} evalúa las reglas del catálogo, serializadas
-como JSON. La alternativa ---incrustar cada criterio en TypeScript--- acopla
-el texto clínico al programa: corregir un aviso exigiría tocar código de
-producción. El evaluador JSON invierte esa dependencia; extender operadores
-se paga una vez, no por cada criterio.
+json-logic-js~\cite{jsonlogic} es quien aplica los criterios. Las reglas
+van en un JSON, no en funciones TypeScript: corregir un aviso o añadir
+un criterio no obliga a reescribir el motor. La alternativa ---un
+\texttt{if} por cada STOPP y cada START--- acoplaría el texto clínico
+al programa y haría que cada matiz de la guía tocara código de
+producción y sus pruebas. Con el evaluador, los operadores de dominio
+que el estándar no trae se registran una vez; el mismo fichero que usa
+la aplicación es el que cargan las pruebas.
 
-pdfmake~\cite{pdfmake} genera el informe en el navegador. Se prefirió a
-jsPDF porque este construye la página de forma imperativa, mientras que
-pdfmake parte de un objeto de definición ---bloques, tablas, estilos---
-más cercano a un informe de avisos STOPP y START.
+pdfmake~\cite{pdfmake} genera el informe en el navegador, sin pasar por
+un servidor. Se prefirió a jsPDF porque este construye la página paso a
+paso (líneas, coordenadas), mientras que pdfmake parte de un objeto de
+definición ---bloques, tablas y estilos--- más cercano a un informe con
+avisos STOPP y START. El profesional se lleva el caso en un PDF sin
+salir del cliente.
 
-Zod~\cite{zod} valida el JSON importado y el caso rehidratado desde
-\texttt{localStorage}: el compilador no ve esos valores. No sustituye el
-tipado estático ni modela el catálogo interno. Reactive Extensions for
-JavaScript (RxJS)~\cite{rxjs} y zone.js viajan con Angular ---biblioteca
-reactiva y detección de cambios--- y no son un diseño propio del autor.
+Zod~\cite{zod} valida el JSON que se importa y el caso que se recupera
+de \texttt{localStorage}. El compilador no ve esos valores: llegan como
+texto y hay que comprobar en ejecución que la versión, los tipos y la
+estructura coinciden con lo esperado. Zod no sustituye el tipado
+estático ni modela el catálogo interno; solo cierra esa frontera.
+
+Angular Material~\cite{material} aporta las pestañas, las listas y los
+campos de la interfaz. Se usa como kit visual, no como prueba de
+accesibilidad del producto: eso pediría una auditoría específica.
+
+Reactive Extensions for JavaScript (RxJS)~\cite{rxjs} es la biblioteca
+reactiva que Angular trae consigo ---por ejemplo, la usa
+\texttt{HttpClient}---. Está en el proyecto porque el marco la exige,
+no porque la interfaz se haya construido sobre ella. zone.js viaja
+también con Angular y se ocupa de la detección de cambios.
 
 \section{Herramientas de desarrollo}
 \label{sec:herramientas}
 
-El código se versiona con Git. El~\cref{cap:solucion} describe el flujo de
-ramas; aquí Git es la herramienta de registro de la actividad descrita
-en el~\cref{cap:planificacion}.
+El entorno de edición es Cursor. El código se versiona con Git.
+El~\cref{cap:solucion} describe el flujo de ramas; aquí Git es la
+herramienta de registro de la actividad descrita en
+el~\cref{cap:planificacion}.
 
 Angular CLI (\texttt{ng serve}, \texttt{ng test}, \texttt{ng build}) es el
 entorno de desarrollo y de construcción. No hay integración continua propia:
@@ -117,18 +133,6 @@ documentos huérfanos ni ficheros fuera del mapa. Ese patrón no sustituye
 a esta memoria: fija el contrato entre código y notas de diseño para que
 un cambio de persistencia, de esquema o de criterio actualice el texto
 enlazado en el mismo incremento.
-
-Las dependencias se pinchan en \texttt{package-lock.json}. El 1 de
-septiembre de 2026, \texttt{npm audit -{}-omit=dev} informó 7
-vulnerabilidades de severidad alta, todas en la línea Angular~20.3.x
-(XSS en enlaces i18n, atributos SVG/MathML y \texttt{@angular/compiler};
-avisos GHSA-g93w-mfhg-p222 y afines). El artefacto estático no
-expone el servidor de desarrollo. El \texttt{npm audit} completo, con
-herramientas de construcción (Vite, Rollup), sumó 17 avisos. El log
-queda en \texttt{memoria/anexos/npm-audit-2026-09-01.txt}. No se aplicó
-\texttt{npm audit fix} para no cambiar el pin de Angular sin reejecutar
-la batería. Una actualización parcheada de Angular~20.3 queda como
-trabajo inmediato posterior.
 
 \section{Fuentes de datos clínicos}
 \label{sec:fuente-clinica}
